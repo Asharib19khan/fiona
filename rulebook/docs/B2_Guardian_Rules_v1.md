@@ -4,7 +4,7 @@ Owner: Abdullah lane (fiona-fa). Version 1.0.0, effective 14 October 2026 (G1).
 Machine-readable: [guardian.yaml](../guardian.yaml), [mandates.yaml](../mandates.yaml), thresholds in [thresholds.yaml](../thresholds.yaml).
 Implemented by Daniyal (deterministic checks D5, wallet D6) and Asharib (adversarial review and combiner A6, mandate UI A5).
 
-**Source.** This finalises the twelve draft rules in the Build Blueprint, section "Guardian rules v1". Nothing was silently replaced: every change is listed in "Changes from the draft" with its reason, and three new rules (G-13 to G-15) are marked *proposed*.
+**Source.** This finalises the twelve draft rules in the Build Blueprint, section "Guardian rules v1". Nothing was silently replaced: every change is listed in "Changes from the draft" with its reason, and three new rules were added: G-13 is final (Tier 1, approved by fiona-b7 on 13 Oct); G-14 and G-15 are *proposed* for Tier 2.
 
 ## The four outcomes
 
@@ -41,9 +41,9 @@ The Guardian may block but never executes anything, never approves as a user, an
 | G-10 | Payments today would exceed the daily cap | Policy | Escalate | Mandate daily cap (owner policy) | S-10 |
 | G-11 | Supplier tax ID missing, malformed or different from file | Policy | Escalate | Country pack pattern (unverified) | S-11 |
 | G-12 | Adversarial reviewer's concern is high, or the reviewer fails | Adversarial | Escalate | "high" | S-12, DEMO-1 |
-| G-13 *(proposed)* | Action type outside the mandate or a material decision; category or window outside | Policy | **Block** / escalate | — | — |
-| G-14 *(proposed)* | Forecast or balance stale; low-confidence extraction; sources conflict | Evidence | Escalate | 24 h forecast, 48 h balance | — |
-| G-15 *(proposed)* | Payee account belongs to an employee, user or related party | Policy | Escalate | — | — |
+| G-13 (final, Tier 1) | Action type outside the mandate or a material decision; category or window outside | Policy | **Block** / escalate | — | — |
+| G-14 *(proposed, Tier 2)* | Forecast or balance stale; low-confidence extraction; sources conflict | Evidence | Escalate | 24 h forecast, 48 h balance | — |
+| G-15 *(proposed, Tier 2)* | Payee account belongs to an employee, user or related party | Policy | Escalate | — | — |
 
 The S-numbers are the IDs in Daniyal's answer key (`data/fixtures/FORMATS.md` §3.14); B3 finalises them with him.
 
@@ -106,7 +106,7 @@ Every agent starts at **advise**. Only the owner moves an agent up or down, each
 | G-08 | Incremental test against the baseline; never pays after the due date; statutory payments escalate | Approved by fiona-b7, 13 Oct |
 | G-09 | Evidence required per proposal type; contradictions block; free-text mismatches escalate | Makes "claim without evidence" testable without a model |
 | G-12 | Reviewer errors escalate; deterministic pre-scan for injection and urgency cues | Fail closed; prompt-injection test |
-| G-13–G-15 | New, proposed | Mandate enforcement, stale data and conflicts of interest had no rule |
+| G-13–G-15 | New; G-13 final, G-14 and G-15 proposed (Tier 2) | Mandate enforcement, stale data and conflicts of interest had no rule |
 
 ## Known limits
 
