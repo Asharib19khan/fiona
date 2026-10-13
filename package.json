@@ -16,6 +16,7 @@
     "doctor": "node scripts/doctor.mjs",
     "check:env": "node scripts/check-env.mjs",
     "check:env-coverage": "node scripts/check-env-coverage.mjs",
+    "gen:env": "node scripts/gen-env-example.mjs",
     "check:boundaries": "uv run --no-project --python 3.12 python scripts/check-boundaries.py",
     "test:boundaries": "uv run --no-project --python 3.12 python scripts/check-boundaries.py --self-test",
     "test:gitleaks": "node scripts/test-gitleaks.mjs",
@@ -28,6 +29,7 @@
     "prepare": "node scripts/setup-hooks.mjs"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "0.133.0",
     "turbo": "2.11.7"
   }
 }

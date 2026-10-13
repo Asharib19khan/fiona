@@ -1,0 +1,32 @@
+# Folder owners (PLAN.md §1). Replace each placeholder handle with the teammate's GitHub
+# username when the repository is created (docs/lane-a/S2_SETUP.md, step 1).
+# GitHub requires approval from ANY listed owner; "both Asharib and Daniyal" for contracts is
+# enforced by the branch rule "require 2 approvals" plus the decision log (PLAN.md §5).
+
+*                                   @asharib-gh
+
+/apps/web/                          @asharib-gh
+/apps/mobile/                       @abdullah-gh
+/packages/ui/                       @asharib-gh
+/packages/contracts/                @asharib-gh @daniyal-gh
+/services/agents/                   @asharib-gh
+/services/guardian/                 @asharib-gh
+/services/engine/app/               @asharib-gh
+/services/engine/pyproject.toml     @asharib-gh
+/services/engine/ledger/            @daniyal-gh
+/services/engine/guardian_checks/   @daniyal-gh
+/services/engine/connectors/        @daniyal-gh
+/services/engine/forecast/          @yahya-gh
+/services/engine/decisions/         @yahya-gh
+/services/engine/mcp/               @yahya-gh
+/services/engine/analysis/          @abdullah-gh
+/services/engine/frameworks/        @abdullah-gh
+/rulebook/                          @abdullah-gh
+/evals/                             @abdullah-gh
+/supabase/                          @daniyal-gh
+/data/generator/                    @daniyal-gh
+/data/fixtures/                     @daniyal-gh
+/data/public/                       @yahya-gh
+/docs/orchestrator/                 @asharib-gh
+/.github/                           @asharib-gh
+/scripts/                           @asharib-gh

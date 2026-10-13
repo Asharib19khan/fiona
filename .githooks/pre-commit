@@ -1,0 +1,8 @@
+#!/bin/sh
+# Secret scan of staged changes (R16). CI scans again with a pinned gitleaks.
+if command -v gitleaks >/dev/null 2>&1; then
+  exec gitleaks git --pre-commit --staged --redact --no-banner
+fi
+echo "pre-commit: gitleaks not installed, so the local secret scan was skipped (CI still scans)." >&2
+echo "  Install: winget install Gitleaks.Gitleaks  |  brew install gitleaks" >&2
+exit 0

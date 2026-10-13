@@ -1,0 +1,45 @@
+# Deploys the three Fly.io apps. Runs only by hand (Actions → deploy-services → Run workflow)
+# or on a push to `integration` if that branch is used (D-004). Needs the FLY_API_TOKEN secret.
+name: deploy-services
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: Which service to deploy
+        type: choice
+        options: [all, engine, agents, guardian]
+        default: all
+  push:
+    branches: [integration]
+
+concurrency:
+  group: deploy-services
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [engine, agents, guardian]
+    steps:
+      - uses: actions/checkout@v7
+        if: github.event_name != 'workflow_dispatch' || inputs.service == 'all' || inputs.service == matrix.service
+      - uses: superfly/flyctl-actions/setup-flyctl@1.5
+        if: github.event_name != 'workflow_dispatch' || inputs.service == 'all' || inputs.service == matrix.service
+      - name: fly deploy
+        if: github.event_name != 'workflow_dispatch' || inputs.service == 'all' || inputs.service == matrix.service
+        run: >-
+          flyctl deploy --remote-only
+          --config services/${{ matrix.service }}/fly.toml
+          --dockerfile services/${{ matrix.service }}/Dockerfile
+          .
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

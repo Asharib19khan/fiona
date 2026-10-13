@@ -1,0 +1,15 @@
+# Build context is the repo root for every service image. Keep secrets and bulk out of it (R16).
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.hypothesis
+**/.next
+**/.turbo
+.env
+.env.*
+!.env.example
+docs/*.pdf
+apps/web/.next

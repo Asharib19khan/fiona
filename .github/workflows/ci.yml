@@ -1,0 +1,126 @@
+# The team's single test gate (PLAN.md §5): every push to main and every pull request.
+# Needs no Anthropic key and no other secret: LLM tests use recorded responses (R2).
+name: ci
+
+on:
+  push:
+    branches: [main, integration]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_PUBLIC_API_MODE: mock
+  FIONA_MODE: mock
+  TURBO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  web:
+    name: web + packages (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
+      - name: Lint, typecheck, test, build (mock mode)
+        run: pnpm turbo run lint typecheck test build --filter=./apps/* --filter=./packages/* --cache-dir=.turbo/cache
+      - name: Generated code is up to date
+        run: |
+          pnpm gen
+          git diff --exit-code
+      - name: Every env var read in code is documented in .env.example
+        run: node scripts/check-env-coverage.mjs
+
+  python:
+    name: ${{ matrix.service }} (ruff, pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [engine, agents, guardian]
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+          cache-dependency-glob: services/${{ matrix.service }}/uv.lock
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      # The engine's ledger tests start a portable PostgreSQL 17 (engine.ledger.pg_local) and
+      # create a throwaway database per run, exactly as on a laptop. Cache the binaries.
+      - if: matrix.service == 'engine'
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/fiona
+          key: portable-pg-${{ runner.os }}-${{ hashFiles('services/engine/ledger/pg_local.py') }}
+      - run: uv run pytest -q
+
+  boundaries:
+    name: import boundaries (R1, R8)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - name: Every rule fires on a deliberately bad import
+        run: uv run --no-project --python 3.12 python scripts/check-boundaries.py --self-test
+      - name: The repo has no violations
+        run: uv run --no-project --python 3.12 python scripts/check-boundaries.py
+
+  secrets:
+    name: secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks 8.30.1 (checksum-verified)
+        run: |
+          curl -sSLo gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  gitleaks.tgz" | sha256sum -c -
+          tar -xzf gitleaks.tgz gitleaks && sudo mv gitleaks /usr/local/bin/ && rm gitleaks.tgz
+      - name: Scan the full git history
+        run: gitleaks git . --config .gitleaks.toml --redact --no-banner
+      - name: The scanner catches a planted fake key
+        run: node scripts/test-gitleaks.mjs --require
+
+  images:
+    name: ${{ matrix.service }} image builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [engine, agents, guardian]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: services/${{ matrix.service }}/Dockerfile
+          push: false
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}

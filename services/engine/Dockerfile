@@ -15,6 +15,8 @@ FROM python:3.12-slim AS runtime
 RUN useradd --create-home --uid 10001 fiona
 WORKDIR /srv/services/engine
 COPY --from=build --chown=fiona:fiona /srv/services/engine /srv/services/engine
+# engine.ledger.db finds migrations at <repo root>/supabase/migrations (parents[3] of ledger/db.py = /srv).
+COPY --chown=fiona:fiona supabase/migrations /srv/supabase/migrations
 ENV PATH="/srv/services/engine/.venv/bin:${PATH}" \
     PYTHONUNBUFFERED=1 \
     FIONA_MODE=mock
