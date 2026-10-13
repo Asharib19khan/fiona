@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.mypy_cache/
+
+# Build output and caches
+.next/
+out/
+dist/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+coverage/
+playwright-report/
+test-results/
+
+# Env files and secrets (R16): only the template is committed
+.env
+.env.*
+!.env.example
+
+# Local tooling state
+supabase/.temp/
+.vercel/
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+*.log
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
