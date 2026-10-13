@@ -4,7 +4,7 @@
   "private": true,
   "description": "Turborepo shim for the Python engine (FastAPI, uv).",
   "scripts": {
-    "dev": "uv run uvicorn engine.app.main:app --app-dir .. --reload --reload-dir . --port 8000",
+    "dev": "uv run python app/dev.py",
     "lint": "uv run ruff check . && uv run ruff format --check .",
     "test": "uv run pytest -q"
   }

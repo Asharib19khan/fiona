@@ -17,6 +17,8 @@ pnpm dev                 # web :3000, engine :8000, agents :8100, guardian :8200
 
 With no `.env.local`, everything starts in **mock mode** and needs no keys. Each Python service creates its own `.venv` with `uv` the first time it runs.
 
+**Local database.** Start the shared local Postgres once, in its own terminal, from `services/`: `uv run --project engine python -m engine.ledger.db start`. Never let a test run you might Ctrl-C be the process that starts it, because a console Ctrl-C kills the server. Tests create and drop their own throwaway databases on that server; `pnpm db:reset` resets the shared `fiona_dev` database.
+
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Starts all four services (Turborepo) |

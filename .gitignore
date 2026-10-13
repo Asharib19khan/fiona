@@ -19,6 +19,7 @@ dist/
 .turbo/
 *.tsbuildinfo
 next-env.d.ts
+apps/web/AGENTS.md
 coverage/
 playwright-report/
 test-results/
@@ -33,6 +34,7 @@ supabase/.temp/
 .vercel/
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
+.playwright-mcp/
 *.log
 .DS_Store
 Thumbs.db

@@ -16,3 +16,6 @@
 
 pnpm-lock.yaml linguist-generated=true
 uv.lock linguist-generated=true
+
+# Fixtures are hashed byte-for-byte in manifest.json: never convert their line endings.
+data/fixtures/** -text

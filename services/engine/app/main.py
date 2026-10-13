@@ -42,6 +42,7 @@ CONTRACT_OWNERS: dict[str, str] = {
     "/v1/inventory": "forecast",
     "/v1/launch-lab": "forecast",
     "/v1/decisions": "decisions",
+    "/v1/financing": "financing",
 }
 
 Mode = Literal["mock", "live"]
