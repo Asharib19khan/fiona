@@ -1,0 +1,98 @@
+{
+  "synthetic": true,
+  "source": "rulebook/mandates.yaml v1.0.0",
+  "mandates": [
+    {
+      "tenant_id": "ten_karachi_apparel",
+      "id": "mnd_treasurer_v1",
+      "agent": "treasurer",
+      "version": 1,
+      "currency": "PKR",
+      "autonomy": {
+        "payment": "act_within_mandate"
+      },
+      "per_payment_cap_minor": 15000000,
+      "daily_cap_minor": 45000000,
+      "allowed_action_types": [
+        "payment"
+      ],
+      "allowed_categories": [
+        "inventory_supplier",
+        "utilities",
+        "rent",
+        "logistics"
+      ],
+      "payee_scope": "allow_list_only",
+      "payment_windows": {
+        "days": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat"
+        ],
+        "local_start": "09:00",
+        "local_end": "17:00",
+        "timezone": "Asia/Karachi",
+        "exclude_public_holidays": true
+      },
+      "effective_from": "2026-08-01",
+      "approved_by": "usr_owner"
+    },
+    {
+      "tenant_id": "ten_karachi_apparel",
+      "id": "mnd_controller_v1",
+      "agent": "controller",
+      "version": 1,
+      "currency": "PKR",
+      "autonomy": {
+        "bill_approval": "prepare",
+        "journal_adjustment": "prepare",
+        "send_document": "prepare",
+        "reconciliation_match": "prepare"
+      },
+      "per_payment_cap_minor": 0,
+      "daily_cap_minor": 0,
+      "allowed_action_types": [
+        "bill_approval",
+        "journal_adjustment",
+        "send_document",
+        "reconciliation_match"
+      ],
+      "effective_from": "2026-08-01",
+      "approved_by": "usr_owner"
+    },
+    {
+      "tenant_id": "ten_karachi_apparel",
+      "id": "mnd_cfo_strategist_v1",
+      "agent": "cfo_strategist",
+      "version": 1,
+      "currency": "PKR",
+      "autonomy": {
+        "decision_memo": "advise"
+      },
+      "per_payment_cap_minor": 0,
+      "daily_cap_minor": 0,
+      "allowed_action_types": [],
+      "effective_from": "2026-08-01",
+      "approved_by": "usr_owner"
+    },
+    {
+      "tenant_id": "ten_karachi_apparel",
+      "id": "mnd_growth_analyst_v1",
+      "agent": "growth_analyst",
+      "version": 1,
+      "currency": "PKR",
+      "autonomy": {
+        "purchase_order": "advise",
+        "decision_memo": "advise"
+      },
+      "per_payment_cap_minor": 0,
+      "daily_cap_minor": 0,
+      "allowed_action_types": [],
+      "effective_from": "2026-08-01",
+      "approved_by": "usr_owner"
+    }
+  ]
+}

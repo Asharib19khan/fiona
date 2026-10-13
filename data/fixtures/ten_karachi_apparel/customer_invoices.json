@@ -1,0 +1,293 @@
+{
+  "synthetic": true,
+  "invoices": [
+    {
+      "invoice_id": "inv_0001",
+      "number": "KAC-INV-0001",
+      "customer_id": "cus_9001",
+      "issue_date": "2026-08-25",
+      "due_date": "2026-09-24",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 29,
+          "unit_price_minor": 254237,
+          "line_total_minor": 7372873
+        }
+      ],
+      "subtotal_minor": 7372873,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 1327117
+        }
+      ],
+      "total_minor": 8699990
+    },
+    {
+      "invoice_id": "inv_0002",
+      "number": "KAC-INV-0002",
+      "customer_id": "cus_9003",
+      "issue_date": "2026-08-31",
+      "due_date": "2026-09-15",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 44,
+          "unit_price_minor": 254237,
+          "line_total_minor": 11186428
+        }
+      ],
+      "subtotal_minor": 11186428,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 2013557
+        }
+      ],
+      "total_minor": 13199985
+    },
+    {
+      "invoice_id": "inv_0003",
+      "number": "KAC-INV-0003",
+      "customer_id": "cus_9004",
+      "issue_date": "2026-09-06",
+      "due_date": "2026-10-06",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 13,
+          "unit_price_minor": 669491,
+          "line_total_minor": 8703383
+        },
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 14,
+          "unit_price_minor": 161016,
+          "line_total_minor": 2254224
+        }
+      ],
+      "subtotal_minor": 10957607,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 1972369
+        }
+      ],
+      "total_minor": 12929976
+    },
+    {
+      "invoice_id": "inv_0004",
+      "number": "KAC-INV-0004",
+      "customer_id": "cus_9005",
+      "issue_date": "2026-09-12",
+      "due_date": "2026-10-27",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 15,
+          "unit_price_minor": 254237,
+          "line_total_minor": 3813555
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 18,
+          "unit_price_minor": 254237,
+          "line_total_minor": 4576266
+        }
+      ],
+      "subtotal_minor": 8389821,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 1510168
+        }
+      ],
+      "total_minor": 9899989
+    },
+    {
+      "invoice_id": "inv_0005",
+      "number": "KAC-INV-0005",
+      "customer_id": "cus_9002",
+      "issue_date": "2026-09-18",
+      "due_date": "2026-10-18",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_price_minor": 161016,
+          "line_total_minor": 966096
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 7,
+          "unit_price_minor": 161016,
+          "line_total_minor": 1127112
+        }
+      ],
+      "subtotal_minor": 2093208,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 376777
+        }
+      ],
+      "total_minor": 2469985
+    },
+    {
+      "invoice_id": "inv_0006",
+      "number": "KAC-INV-0006",
+      "customer_id": "cus_9002",
+      "issue_date": "2026-09-24",
+      "due_date": "2026-10-24",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 7,
+          "unit_price_minor": 254237,
+          "line_total_minor": 1779659
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 9,
+          "unit_price_minor": 669491,
+          "line_total_minor": 6025419
+        }
+      ],
+      "subtotal_minor": 7805078,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 1404914
+        }
+      ],
+      "total_minor": 9209992
+    },
+    {
+      "invoice_id": "inv_0007",
+      "number": "KAC-INV-0007",
+      "customer_id": "cus_9004",
+      "issue_date": "2026-09-30",
+      "due_date": "2026-10-30",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 9,
+          "unit_price_minor": 254237,
+          "line_total_minor": 2288133
+        }
+      ],
+      "subtotal_minor": 2288133,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 411864
+        }
+      ],
+      "total_minor": 2699997
+    },
+    {
+      "invoice_id": "inv_0008",
+      "number": "KAC-INV-0008",
+      "customer_id": "cus_9005",
+      "issue_date": "2026-10-06",
+      "due_date": "2026-11-20",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 14,
+          "unit_price_minor": 254237,
+          "line_total_minor": 3559318
+        }
+      ],
+      "subtotal_minor": 3559318,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 640677
+        }
+      ],
+      "total_minor": 4199995
+    },
+    {
+      "invoice_id": "inv_0009",
+      "number": "KAC-INV-0009",
+      "customer_id": "cus_9002",
+      "issue_date": "2026-10-12",
+      "due_date": "2026-11-11",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_price_minor": 254237,
+          "line_total_minor": 3050844
+        }
+      ],
+      "subtotal_minor": 3050844,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 549152
+        }
+      ],
+      "total_minor": 3599996
+    },
+    {
+      "invoice_id": "inv_0010",
+      "number": "KAC-INV-0010",
+      "customer_id": "cus_9003",
+      "issue_date": "2026-10-18",
+      "due_date": "2026-11-02",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 16,
+          "unit_price_minor": 669491,
+          "line_total_minor": 10711856
+        }
+      ],
+      "subtotal_minor": 10711856,
+      "tax": [
+        {
+          "code": "GST",
+          "rate_bp": 1800,
+          "amount_minor": 1928134
+        }
+      ],
+      "total_minor": 12639990
+    }
+  ]
+}

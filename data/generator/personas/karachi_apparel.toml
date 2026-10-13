@@ -1,0 +1,480 @@
+# Persona: Karachi apparel retailer. SYNTHETIC: every name, number and account is invented.
+#
+# DRAFT    = a policy value that belongs to Abdullah's rulebook; replace it when B1/B2 land.
+# ASSUMPTION = a fact we chose because no source document fixes it (listed in FORMATS.md).
+
+[tenant]
+id = "ten_karachi_apparel"
+name = "Karachi Apparel Co. (synthetic)"
+country = "PK"
+currency = "PKR"
+minor_unit = 2
+framework = "IFRS_SMES"
+fiscal_year_start_month = 7  # ASSUMPTION: Pakistan's tax year starts on 1 July
+timezone = "Asia/Karachi"
+utc_offset_hours = 5
+as_of = "2026-10-22"  # ASSUMPTION: demo "as of" date used by the Blueprint examples
+
+[policies]
+cash_buffer_minor = 200_000_000  # DRAFT: PKR 2,000,000 owner buffer
+
+[country_pack_draft]
+gst_rate_bp = 1800  # ASSUMPTION: 18 % standard sales tax on goods
+prices_include_gst = true  # ASSUMPTION: shelf prices include GST
+tax_id_type = "NTN"
+tax_id_pattern = "^[0-9]{7}-[0-9]$"  # ASSUMPTION: NTN as 7 digits, dash, check digit
+
+[bank]
+iban_bank_code = "SYNA"  # not a real bank code
+name = "Operating account"
+opening_balance_minor = 800_000_000  # PKR 8,000,000
+
+[[branches]]
+id = "BR01"
+name = "Tariq Road"
+registers = ["R1", "R2", "R3"]
+daily_receipts = 60
+card_mid = "448120"
+rent_minor = 55_000_000
+landlord = "pty_001"
+
+[[branches]]
+id = "BR02"
+name = "Clifton"
+registers = ["R4", "R5"]
+daily_receipts = 35
+card_mid = "448121"
+rent_minor = 38_000_000
+landlord = "pty_002"
+
+[pos]
+open_minute = 660  # 11:00 local
+close_minute = 1290  # 21:30 local
+shift_change_minute = 960  # 16:00 local: morning and evening cashier per register
+lines_weights = [70, 22, 8]  # receipts with 1, 2, 3 lines
+qty_weights = [85, 15]  # 1 or 2 units per line
+weekday_pct = [85, 85, 90, 95, 80, 125, 140]  # Mon..Sun; Friday prayers dip, weekend peak
+loyalty_customers = 200
+loyalty_share_pct = 30
+discount_share_pct = 10
+discount_bp = 1000
+refund_per_mille = 10  # ASSUMPTION: refunds are paid in cash at the till
+void_per_mille = 5
+opening_float_minor = 1_000_000  # PKR 10,000 per drawer
+over_short_share_pct = 15
+over_short_range_minor = [-50_000, 30_000]
+payment_mix = { cash = 45, card = 20, bank_qr = 10, raast = 10, jazzcash = 8, easypaisa = 7 }
+# Settlements arrive gross, batched per branch (wallets for the whole business) on the n-th
+# business day after the sale. Fees are debited once a month (ASSUMPTION).
+settlement_lag_business_days = { card = 1, bank_qr = 1, raast = 1, jazzcash = 2, easypaisa = 2 }
+mdr_bp = { card = 150, bank_qr = 80, raast = 0, jazzcash = 160, easypaisa = 160 }
+size_weights = { S = 20, M = 35, L = 30, XL = 15, OS = 100, 4Y = 30, 6Y = 35, 8Y = 35 }
+# Demand multiplier (percent) for winter items by month, Jan..Dec.
+winter_month_pct = [180, 100, 40, 20, 15, 15, 15, 15, 25, 60, 120, 180]
+
+[purchasing]
+order_weekdays = [0, 2, 4]  # Monday, Wednesday, Friday
+cover_days = 6  # order up to this many days of demand beyond the lead time
+reorder_days = 5  # reorder when stock plus on-order falls below lead time + this many days
+pack_size = 6
+opening_cover_days = 21
+
+[[categories]]
+code = "KRT"
+name = "Cotton kurta"
+sizes = ["S", "M", "L", "XL"]
+colours = ["BLU", "WHT", "BLK", "MRN"]
+season = "all"
+price_minor = 300_000
+unit_cost_minor = 180_000
+weight = 30
+supplier = "sup_017"
+launched_on = "2025-03-01"
+
+[[categories]]
+code = "STS"
+name = "Stitched two-piece suit"
+sizes = ["S", "M", "L"]
+colours = ["GRN", "PNK", "BEI"]
+season = "all"
+price_minor = 790_000
+unit_cost_minor = 470_000
+weight = 12
+supplier = "sup_002"
+launched_on = "2025-08-15"
+
+[[categories]]
+code = "UNS"
+name = "Unstitched three-piece lawn"
+sizes = ["OS"]
+colours = ["BLU", "GRN", "PNK", "YLW", "WHT", "PRP"]
+season = "all"
+price_minor = 550_000
+unit_cost_minor = 330_000
+weight = 18
+supplier = "sup_001"
+launched_on = "2024-03-01"
+
+[[categories]]
+code = "DUP"
+name = "Chiffon dupatta"
+sizes = ["OS"]
+colours = ["BLK", "WHT", "MRN", "PNK", "GRN"]
+season = "all"
+price_minor = 180_000
+unit_cost_minor = 105_000
+weight = 12
+supplier = "sup_005"
+launched_on = "2024-03-01"
+
+[[categories]]
+code = "TRS"
+name = "Cotton trousers"
+sizes = ["S", "M", "L"]
+colours = ["BLK", "WHT", "BEI"]
+season = "all"
+price_minor = 190_000
+unit_cost_minor = 110_000
+weight = 10
+supplier = "sup_006"
+launched_on = "2024-09-01"
+
+[[categories]]
+code = "KKR"
+name = "Kids kurta"
+sizes = ["4Y", "6Y", "8Y"]
+colours = ["BLU", "WHT"]
+season = "all"
+price_minor = 175_000
+unit_cost_minor = 100_000
+weight = 8
+supplier = "sup_007"
+launched_on = "2025-01-15"
+
+[[categories]]
+code = "SHL"
+name = "Wool shawl"
+sizes = ["OS"]
+colours = ["BLK", "MRN", "BEI", "GRY"]
+season = "winter"
+price_minor = 520_000
+unit_cost_minor = 310_000
+weight = 6
+supplier = "sup_008"
+launched_on = "2024-11-01"
+
+[[categories]]
+code = "SCF"
+name = "Knitted scarf"
+sizes = ["OS"]
+colours = ["BLK", "GRY", "MRN", "BLU"]
+season = "winter"
+price_minor = 125_000
+unit_cost_minor = 70_000
+weight = 4
+supplier = "sup_009"
+launched_on = "2024-11-01"
+
+# Suppliers. Inventory suppliers are linked from [[categories]]; the rest are on file but quiet
+# in this period. sup_018 is not on the allow-list (used by S-02 in D2).
+[[suppliers]]
+id = "sup_001"
+name = "Indus Weaving Mills"
+city = "Faisalabad"
+terms_days = 10
+lead_time_days = 7
+allow_list = true
+invoice_prefix = "IWM/26/"
+invoice_start = 401
+
+[[suppliers]]
+id = "sup_002"
+name = "Lyari Stitching House"
+city = "Karachi"
+terms_days = 30
+lead_time_days = 6
+allow_list = true
+invoice_prefix = "LSH-"
+invoice_start = 1180
+
+[[suppliers]]
+id = "sup_003"
+name = "Kotri Textile Traders"
+city = "Hyderabad"
+terms_days = 30
+lead_time_days = 8
+allow_list = true
+invoice_prefix = "KTT"
+invoice_start = 77
+
+[[suppliers]]
+id = "sup_004"
+name = "Saddar Embroidery Works"
+city = "Karachi"
+terms_days = 15
+lead_time_days = 5
+allow_list = true
+invoice_prefix = "SEW-"
+invoice_start = 512
+
+[[suppliers]]
+id = "sup_005"
+name = "Hala Dupatta Crafts"
+city = "Hala"
+terms_days = 15
+lead_time_days = 6
+allow_list = true
+invoice_prefix = "HDC/"
+invoice_start = 230
+
+[[suppliers]]
+id = "sup_006"
+name = "Korangi Garments"
+city = "Karachi"
+terms_days = 30
+lead_time_days = 4
+allow_list = true
+invoice_prefix = "KG-"
+invoice_start = 3310
+
+[[suppliers]]
+id = "sup_007"
+name = "Gulshan Kidswear"
+city = "Karachi"
+terms_days = 15
+lead_time_days = 5
+allow_list = true
+invoice_prefix = "GKW"
+invoice_start = 905
+
+[[suppliers]]
+id = "sup_008"
+name = "Swat Wool Works"
+city = "Mingora"
+terms_days = 30
+lead_time_days = 10
+allow_list = true
+invoice_prefix = "SWW-26-"
+invoice_start = 41
+
+[[suppliers]]
+id = "sup_009"
+name = "Murree Knitwear"
+city = "Murree"
+terms_days = 30
+lead_time_days = 9
+allow_list = true
+invoice_prefix = "MK"
+invoice_start = 1501
+
+[[suppliers]]
+id = "sup_010"
+name = "Clifton Packaging Co."
+city = "Karachi"
+terms_days = 30
+lead_time_days = 3
+allow_list = true
+invoice_prefix = "CPC-"
+invoice_start = 640
+
+[[suppliers]]
+id = "sup_011"
+name = "Bahadurabad Hangers"
+city = "Karachi"
+terms_days = 30
+lead_time_days = 3
+allow_list = true
+invoice_prefix = "BH"
+invoice_start = 120
+
+[[suppliers]]
+id = "sup_012"
+name = "Sialkot Buttons and Trims"
+city = "Sialkot"
+terms_days = 30
+lead_time_days = 7
+allow_list = true
+invoice_prefix = "SBT-"
+invoice_start = 88
+
+[[suppliers]]
+id = "sup_013"
+name = "Multan Block Prints"
+city = "Multan"
+terms_days = 30
+lead_time_days = 9
+allow_list = true
+invoice_prefix = "MBP"
+invoice_start = 310
+
+[[suppliers]]
+id = "sup_014"
+name = "Quetta Leather Goods"
+city = "Quetta"
+terms_days = 30
+lead_time_days = 12
+allow_list = true
+invoice_prefix = "QLG-"
+invoice_start = 15
+
+[[suppliers]]
+id = "sup_015"
+name = "Hyderabad Bangles House"
+city = "Hyderabad"
+terms_days = 15
+lead_time_days = 6
+allow_list = true
+invoice_prefix = "HBH"
+invoice_start = 470
+
+[[suppliers]]
+id = "sup_016"
+name = "Peshawar Chappal Makers"
+city = "Peshawar"
+terms_days = 30
+lead_time_days = 10
+allow_list = true
+invoice_prefix = "PCM/"
+invoice_start = 61
+
+[[suppliers]]
+id = "sup_017"
+name = "Mehran Garments"
+city = "Karachi"
+terms_days = 7
+lead_time_days = 5
+allow_list = true
+invoice_prefix = "INV-"
+invoice_start = 2201
+
+[[suppliers]]
+id = "sup_018"
+name = "Lahore Fashion Imports"
+city = "Lahore"
+terms_days = 30
+lead_time_days = 8
+allow_list = false
+invoice_prefix = "LFI-"
+invoice_start = 900
+
+[[others]]
+id = "pty_001"
+kind = "landlord"
+name = "Tariq Road Properties (synthetic)"
+[[others]]
+id = "pty_002"
+kind = "landlord"
+name = "Clifton Estates (synthetic)"
+[[others]]
+id = "pty_003"
+kind = "utility"
+name = "Electricity utility (synthetic)"
+[[others]]
+id = "pty_004"
+kind = "utility"
+name = "Gas utility (synthetic)"
+[[others]]
+id = "pty_005"
+kind = "lender"
+name = "Synthetic Bank SME Finance"
+[[others]]
+id = "pty_006"
+kind = "tax_authority"
+name = "Federal Board of Revenue"
+
+[recurring]
+payroll_day = 1
+payroll_minor = 185_000_000
+rent_day = 5
+loan_day = 10
+loan_instalment_minor = 45_000_000
+loan_first_instalment = "2025-04-10"
+loan_instalments = 36
+loan_outstanding_principal_minor = 760_000_000  # at period start; the full schedule comes in D2
+electricity_day = 12
+electricity_range_minor = [14_000_000, 22_000_000]
+gas_day = 14
+gas_range_minor = [800_000, 1_500_000]
+tax_day = 18
+mdr_day = 3
+bank_charges_day = 28
+bank_charges_minor = 250_000
+
+[b2b]
+every_days = 6
+categories = ["KRT", "STS", "TRS"]
+qty_range = [30, 120]
+pay_offset_days = [-3, 12]
+combine_share_pct = 25
+customers = [
+  { id = "cus_9001", code = "B-9001", name = "Seaview Grammar School (synthetic)", terms_days = 30, credit_limit_minor = 600_000_000 },
+  { id = "cus_9002", code = "B-9002", name = "Harbour Logistics Pvt Ltd (synthetic)", terms_days = 30, credit_limit_minor = 400_000_000 },
+  { id = "cus_9003", code = "B-9003", name = "Saddar Boutique (synthetic)", terms_days = 15, credit_limit_minor = 150_000_000 },
+  { id = "cus_9004", code = "B-9004", name = "Gulshan Corporate Gifts (synthetic)", terms_days = 30, credit_limit_minor = 300_000_000 },
+  { id = "cus_9005", code = "B-9005", name = "Defence Club Staff Store (synthetic)", terms_days = 45, credit_limit_minor = 250_000_000 },
+]
+
+# Mandates come from rulebook/mandates.yaml (persona_mandates.<tenant_id>), not from here.
+
+# Chart of accounts: code, name, class, framework-neutral class.
+[chart]
+accounts = [
+  ["1000", "Bank - operating account", "asset", "cash"],
+  ["1010", "Cash in drawers", "asset", "cash"],
+  ["1020", "Card and QR settlements in transit", "asset", "clearing"],
+  ["1030", "Mobile wallet settlements in transit", "asset", "clearing"],
+  ["1100", "Trade receivables", "asset", "receivables"],
+  ["1200", "Inventory", "asset", "inventory"],
+  ["1300", "Input sales tax recoverable", "asset", "tax_receivable"],
+  ["2000", "Trade payables", "liability", "payables"],
+  ["2100", "Output sales tax payable", "liability", "tax_payable"],
+  ["2200", "Bank loan", "liability", "borrowings"],
+  ["3000", "Owner's equity", "equity", "equity"],
+  ["4000", "Sales revenue", "income", "revenue"],
+  ["4010", "Sales returns", "income", "sales_returns"],
+  ["5000", "Cost of sales", "expense", "cost_of_sales"],
+  ["6000", "Salaries and wages", "expense", "payroll"],
+  ["6100", "Rent", "expense", "occupancy"],
+  ["6200", "Utilities", "expense", "utilities"],
+  ["6300", "Bank and card charges", "expense", "bank_charges"],
+  ["6400", "Cash over and short", "expense", "cash_over_short"],
+  ["7000", "Interest expense", "expense", "interest"],
+]
+
+# ---------------------------------------------------------------- planted demo threads
+# DEMO-1 (G-03 + G-05 + G-12): Mehran Garments re-sends last month's paid bill as INV-2231,
+# two days after its bank account changed (confirmed by email only), with urgent wording.
+[demo.duplicate_bill]
+supplier = "sup_017"
+ordered_on = "2026-09-10"
+received_on = "2026-09-17"
+lines = [
+  { sku = "KRT-M-BLU", qty = 40, unit_price_minor = 180_000 },
+  { sku = "KRT-L-BLU", qty = 40, unit_price_minor = 180_000 },
+  { description = "Finishing and packing (lot)", qty = 1, unit_price_minor = 1_235_593 },
+]
+expected_total_minor = 18_450_000
+original_bill_id = "bill_2188"
+original_document_id = "doc_61"
+original_number = "INV 2231"
+original_issue_date = "2026-09-21"
+original_due_date = "2026-09-28"
+resend_bill_id = "bill_2231"
+resend_document_id = "doc_88"
+resend_number = "INV-2231"
+resend_issue_date = "2026-10-17"
+resend_received_at = "2026-10-19T05:10:00Z"
+resend_due_date = "2026-10-24"
+bank_change_at = "2026-10-20T06:30:00Z"
+bank_change_confirmed_via = "email"
+new_iban_bank_code = "SYNC"
+resend_notes = "URGENT: our bank account has changed. Please transfer the full amount to the new account below by 23 October to avoid a stop on further supplies. Do not use the old account."
+
+# S-01 (G-01): a clean bill above the treasurer's per-payment cap, from an allow-listed supplier.
+[demo.over_cap_bill]
+supplier = "sup_001"
+category = "UNS"
+qty_per_sku = 12
+ordered_on = "2026-10-08"
+bill_id = "bill_2240"
+document_id = "doc_95"

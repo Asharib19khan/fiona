@@ -1,0 +1,3741 @@
+{
+  "synthetic": true,
+  "goods_received": [
+    {
+      "grn_id": "grn_1003",
+      "po_id": "po_1003",
+      "supplier_id": "sup_017",
+      "received_on": "2026-08-31",
+      "lines": [
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1002",
+      "po_id": "po_1002",
+      "supplier_id": "sup_009",
+      "received_on": "2026-09-02",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SCF-OS-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1001",
+      "po_id": "po_1001",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-03",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1006",
+      "po_id": "po_1006",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-04",
+      "lines": [
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1009",
+      "po_id": "po_1009",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-05",
+      "lines": [
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1005",
+      "po_id": "po_1005",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-06",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1013",
+      "po_id": "po_1013",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-06",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1004",
+      "po_id": "po_1004",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-07",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1015",
+      "po_id": "po_1015",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-07",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 42
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1011",
+      "po_id": "po_1011",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-08",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1012",
+      "po_id": "po_1012",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-08",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1019",
+      "po_id": "po_1019",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-08",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1008",
+      "po_id": "po_1008",
+      "supplier_id": "sup_009",
+      "received_on": "2026-09-09",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1010",
+      "po_id": "po_1010",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-09",
+      "lines": [
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1021",
+      "po_id": "po_1021",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-09",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1007",
+      "po_id": "po_1007",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-10",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1017",
+      "po_id": "po_1017",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-10",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1018",
+      "po_id": "po_1018",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-10",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1016",
+      "po_id": "po_1016",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-11",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1025",
+      "po_id": "po_1025",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-11",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 18
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1014",
+      "po_id": "po_1014",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-12",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1026",
+      "po_id": "po_1026",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-12",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1029",
+      "po_id": "po_1029",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-12",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1023",
+      "po_id": "po_1023",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-13",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 18
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 18
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1024",
+      "po_id": "po_1024",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-13",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1033",
+      "po_id": "po_1033",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-13",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1020",
+      "po_id": "po_1020",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-14",
+      "lines": [
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1022",
+      "po_id": "po_1022",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-14",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1034",
+      "po_id": "po_1034",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-14",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1035",
+      "po_id": "po_1035",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-14",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1031",
+      "po_id": "po_1031",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-15",
+      "lines": [
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1032",
+      "po_id": "po_1032",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-15",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1040",
+      "po_id": "po_1040",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-15",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1028",
+      "po_id": "po_1028",
+      "supplier_id": "sup_009",
+      "received_on": "2026-09-16",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1030",
+      "po_id": "po_1030",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-16",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1041",
+      "po_id": "po_1041",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-16",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1043",
+      "po_id": "po_1043",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-16",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1027",
+      "po_id": "po_1027",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-17",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1036",
+      "po_id": "po_1036",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-17",
+      "lines": [
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 40
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 40
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1038",
+      "po_id": "po_1038",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-17",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1039",
+      "po_id": "po_1039",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-17",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1037",
+      "po_id": "po_1037",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-18",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1047",
+      "po_id": "po_1047",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-18",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1048",
+      "po_id": "po_1048",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-19",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1051",
+      "po_id": "po_1051",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-19",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 36
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1042",
+      "po_id": "po_1042",
+      "supplier_id": "sup_009",
+      "received_on": "2026-09-20",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1045",
+      "po_id": "po_1045",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-20",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1046",
+      "po_id": "po_1046",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-20",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1055",
+      "po_id": "po_1055",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-20",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1044",
+      "po_id": "po_1044",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-21",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 30
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 30
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 24
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1056",
+      "po_id": "po_1056",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-21",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1057",
+      "po_id": "po_1057",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-21",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1053",
+      "po_id": "po_1053",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-22",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1054",
+      "po_id": "po_1054",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-22",
+      "lines": [
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1061",
+      "po_id": "po_1061",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-22",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1050",
+      "po_id": "po_1050",
+      "supplier_id": "sup_009",
+      "received_on": "2026-09-23",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1052",
+      "po_id": "po_1052",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-23",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1062",
+      "po_id": "po_1062",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-23",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1064",
+      "po_id": "po_1064",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-23",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1049",
+      "po_id": "po_1049",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-24",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1059",
+      "po_id": "po_1059",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-24",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1060",
+      "po_id": "po_1060",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-24",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1058",
+      "po_id": "po_1058",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-25",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1068",
+      "po_id": "po_1068",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-25",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1069",
+      "po_id": "po_1069",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-26",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1071",
+      "po_id": "po_1071",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-26",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1066",
+      "po_id": "po_1066",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-27",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1067",
+      "po_id": "po_1067",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-27",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1075",
+      "po_id": "po_1075",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-27",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1063",
+      "po_id": "po_1063",
+      "supplier_id": "sup_008",
+      "received_on": "2026-09-28",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1065",
+      "po_id": "po_1065",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-28",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 24
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1076",
+      "po_id": "po_1076",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-28",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1078",
+      "po_id": "po_1078",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-28",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1073",
+      "po_id": "po_1073",
+      "supplier_id": "sup_002",
+      "received_on": "2026-09-29",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1074",
+      "po_id": "po_1074",
+      "supplier_id": "sup_005",
+      "received_on": "2026-09-29",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1082",
+      "po_id": "po_1082",
+      "supplier_id": "sup_006",
+      "received_on": "2026-09-29",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1072",
+      "po_id": "po_1072",
+      "supplier_id": "sup_001",
+      "received_on": "2026-09-30",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1083",
+      "po_id": "po_1083",
+      "supplier_id": "sup_007",
+      "received_on": "2026-09-30",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1085",
+      "po_id": "po_1085",
+      "supplier_id": "sup_017",
+      "received_on": "2026-09-30",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1070",
+      "po_id": "po_1070",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-01",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 18
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 18
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1080",
+      "po_id": "po_1080",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-01",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1081",
+      "po_id": "po_1081",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-01",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1077",
+      "po_id": "po_1077",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-02",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "SCF-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "SCF-OS-GRY",
+          "qty_received": 12
+        },
+        {
+          "sku": "SCF-OS-MRN",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1079",
+      "po_id": "po_1079",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-02",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1089",
+      "po_id": "po_1089",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-02",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1090",
+      "po_id": "po_1090",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-03",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1092",
+      "po_id": "po_1092",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-03",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1087",
+      "po_id": "po_1087",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-04",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 18
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1088",
+      "po_id": "po_1088",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-04",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 30
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1096",
+      "po_id": "po_1096",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-04",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1084",
+      "po_id": "po_1084",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-05",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1086",
+      "po_id": "po_1086",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-05",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 30
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 24
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1097",
+      "po_id": "po_1097",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-05",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1100",
+      "po_id": "po_1100",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-05",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1094",
+      "po_id": "po_1094",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-06",
+      "lines": [
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1095",
+      "po_id": "po_1095",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-06",
+      "lines": [
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1104",
+      "po_id": "po_1104",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-06",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1093",
+      "po_id": "po_1093",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-07",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1105",
+      "po_id": "po_1105",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-07",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1108",
+      "po_id": "po_1108",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-07",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1091",
+      "po_id": "po_1091",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-08",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1102",
+      "po_id": "po_1102",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-08",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1103",
+      "po_id": "po_1103",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-08",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1099",
+      "po_id": "po_1099",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-09",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1101",
+      "po_id": "po_1101",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-09",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1112",
+      "po_id": "po_1112",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-09",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1098",
+      "po_id": "po_1098",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-10",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1113",
+      "po_id": "po_1113",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-10",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1116",
+      "po_id": "po_1116",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-10",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 24
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1107",
+      "po_id": "po_1107",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-11",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1110",
+      "po_id": "po_1110",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-11",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1111",
+      "po_id": "po_1111",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-11",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1120",
+      "po_id": "po_1120",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-11",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1106",
+      "po_id": "po_1106",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-12",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1109",
+      "po_id": "po_1109",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-12",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 30
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 30
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1121",
+      "po_id": "po_1121",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-12",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1124",
+      "po_id": "po_1124",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-12",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1118",
+      "po_id": "po_1118",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-13",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1119",
+      "po_id": "po_1119",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-13",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1128",
+      "po_id": "po_1128",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-13",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1115",
+      "po_id": "po_1115",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-14",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1117",
+      "po_id": "po_1117",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-14",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1129",
+      "po_id": "po_1129",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-14",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1132",
+      "po_id": "po_1132",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-14",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1114",
+      "po_id": "po_1114",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-15",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1125",
+      "po_id": "po_1125",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-15",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1126",
+      "po_id": "po_1126",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-15",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1127",
+      "po_id": "po_1127",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-15",
+      "lines": [
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1123",
+      "po_id": "po_1123",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-16",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SCF-OS-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1136",
+      "po_id": "po_1136",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-16",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1122",
+      "po_id": "po_1122",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-17",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1137",
+      "po_id": "po_1137",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-17",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1140",
+      "po_id": "po_1140",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-17",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 30
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "qty_received": 18
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1131",
+      "po_id": "po_1131",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-18",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1134",
+      "po_id": "po_1134",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-18",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1135",
+      "po_id": "po_1135",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-18",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 24
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1144",
+      "po_id": "po_1144",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-18",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1130",
+      "po_id": "po_1130",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-19",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1133",
+      "po_id": "po_1133",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-19",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1145",
+      "po_id": "po_1145",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-19",
+      "lines": [
+        {
+          "sku": "KKR-6Y-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1147",
+      "po_id": "po_1147",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-19",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1142",
+      "po_id": "po_1142",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-20",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-L-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-PNK",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1143",
+      "po_id": "po_1143",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-20",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "qty_received": 18
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1151",
+      "po_id": "po_1151",
+      "supplier_id": "sup_006",
+      "received_on": "2026-10-20",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1139",
+      "po_id": "po_1139",
+      "supplier_id": "sup_009",
+      "received_on": "2026-10-21",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLU",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1141",
+      "po_id": "po_1141",
+      "supplier_id": "sup_001",
+      "received_on": "2026-10-21",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "qty_received": 12
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "qty_received": 6
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1152",
+      "po_id": "po_1152",
+      "supplier_id": "sup_007",
+      "received_on": "2026-10-21",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1154",
+      "po_id": "po_1154",
+      "supplier_id": "sup_017",
+      "received_on": "2026-10-21",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "qty_received": 12
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "qty_received": 18
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "qty_received": 6
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1138",
+      "po_id": "po_1138",
+      "supplier_id": "sup_008",
+      "received_on": "2026-10-22",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "qty_received": 6
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "qty_received": 12
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "qty_received": 12
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1149",
+      "po_id": "po_1149",
+      "supplier_id": "sup_002",
+      "received_on": "2026-10-22",
+      "lines": [
+        {
+          "sku": "STS-M-BEI",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-M-PNK",
+          "qty_received": 6
+        },
+        {
+          "sku": "STS-S-GRN",
+          "qty_received": 6
+        }
+      ]
+    },
+    {
+      "grn_id": "grn_1150",
+      "po_id": "po_1150",
+      "supplier_id": "sup_005",
+      "received_on": "2026-10-22",
+      "lines": [
+        {
+          "sku": "DUP-OS-GRN",
+          "qty_received": 6
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "qty_received": 6
+        }
+      ]
+    }
+  ]
+}

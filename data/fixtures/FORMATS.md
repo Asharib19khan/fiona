@@ -1,6 +1,6 @@
 # Fiona fixture file formats (v0 — proposed for G1 sign-off)
 
-**Status:** PROPOSED by Daniyal's lane (D2a), 13 Oct 2026. Needs Asharib's sign-off at G1 (Wed 14 Oct).
+**Status:** PROPOSED by Daniyal's lane (D2a), 13 Oct 2026; orchestrator rulings applied. Seed-42 files are generated in `ten_karachi_apparel/`. Needs Asharib's sign-off at G1 (Wed 14 Oct).
 After sign-off, changes are additive only (new files, new optional columns or fields).
 
 **All data in these files is SYNTHETIC.** It describes invented businesses, people, suppliers and
@@ -128,27 +128,27 @@ accounts are obviously synthetic.
 
 ### 3.2 `mandates.json`
 
+The mandates are copied verbatim from `rulebook/mandates.yaml` → `persona_mandates.<tenant_id>`,
+Abdullah's source of truth. The generator never hand-copies the numbers. `source` names the
+rulebook version. Mandate fields beyond the core columns (`autonomy`, `allowed_categories`,
+`payee_scope`, `payment_windows`, `approved_by`) pass through unchanged.
+
 ```json
 {
   "synthetic": true,
-  "status": "DRAFT",
+  "source": "rulebook/mandates.yaml v1.0.0",
   "mandates": [
-    {
-      "id": "mnd_treasurer_v1", "tenant_id": "ten_karachi_apparel", "agent": "treasurer", "version": 1,
-      "currency": "PKR",
-      "per_payment_cap_minor": 20000000,
-      "daily_cap_minor": 60000000,
-      "allowed_action_types": ["payment"],
-      "effective_from": "2026-08-01"
-    }
+    { "tenant_id": "ten_karachi_apparel", "id": "mnd_treasurer_v1", "agent": "treasurer", "version": 1,
+      "currency": "PKR", "autonomy": { "payment": "act_within_mandate" },
+      "per_payment_cap_minor": 15000000, "daily_cap_minor": 45000000,
+      "allowed_action_types": ["payment"], "allowed_categories": ["inventory_supplier", "utilities", "rent", "logistics"],
+      "payee_scope": "allow_list_only", "payment_windows": { "...": "..." },
+      "effective_from": "2026-08-01", "approved_by": "usr_owner" }
   ]
 }
 ```
 
-The values are DRAFT defaults until Abdullah's rulebook (B2) lands. The final Mandate shape
-(allowed categories, payment windows, autonomy per action type) is defined in A2 and will be
-added here additively. The cash buffer is **not** a mandate field; it lives in
-`tenant.json → policies`.
+The cash buffer is **not** a mandate field; it lives in `tenant.json → policies`.
 
 ### 3.3 `accounts.csv`
 
@@ -329,7 +329,7 @@ bill_extraction, invoicing, manual`.
 {
   "synthetic": true, "tenant_id": "ten_karachi_apparel", "seed": 42, "as_of": "2026-10-22",
   "scenarios": [
-    { "id": "DEMO-1", "rules": ["G-03", "G-05", "G-12"], "expected_outcome": "block",
+    { "id": "DEMO-1", "rules": ["G-03", "G-05", "G-12"], "also_fires": ["G-01"], "expected_outcome": "block",
       "refs": { "bill_ids": ["bill_2231", "bill_2188"], "document_ids": ["doc_88", "doc_61"],
                 "party_ids": ["sup_017"], "event_ids": ["evt_…"] },
       "note": "INV-2231 re-sent after last month's INV 2231 was paid; bank account changed 2 days ago" }
@@ -337,10 +337,14 @@ bill_extraction, invoicing, manual`.
   "matches": [ { "bank_line_id": "bln_…", "line_no": 57, "kind": "supplier_payment", "event_ids": ["evt_…"] } ],
   "unmatched_bank_lines": [ { "bank_line_id": "bln_…", "line_no": 3, "category": "payroll" } ],
   "clean_bill_ids": ["bill_1001"],
+  "open_bill_ids": ["bill_2231"],
   "other_lanes": { }
 }
 ```
 
+`also_fires` lists rules that also trigger but do not decide the outcome (for example, INV-2231
+is above the treasurer cap as well). `open_bill_ids` lists bills still unpaid at `as_of`.
+A `cash_deposit` match carries `over_short_minor`: deposit = sum of its events + over/short.
 `matches[].kind` ∈ `supplier_payment, customer_receipt, pos_settlement, cash_deposit`. A
 one-to-many match lists several `event_ids`. `unmatched_bank_lines` are lines that have no book
 event by design (payroll, rent, utilities, loan, fees, tax) with their category. D2 adds all

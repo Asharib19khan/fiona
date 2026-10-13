@@ -1,0 +1,53 @@
+{
+  "synthetic": true,
+  "id": "ten_karachi_apparel",
+  "name": "Karachi Apparel Co. (synthetic)",
+  "country": "PK",
+  "currency": "PKR",
+  "minor_unit": 2,
+  "framework": "IFRS_SMES",
+  "fiscal_year_start_month": 7,
+  "timezone": "Asia/Karachi",
+  "as_of": "2026-10-22",
+  "period": {
+    "start": "2026-08-23",
+    "end": "2026-10-22"
+  },
+  "branches": [
+    {
+      "id": "BR01",
+      "name": "Tariq Road",
+      "registers": [
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "card_mid": "448120"
+    },
+    {
+      "id": "BR02",
+      "name": "Clifton",
+      "registers": [
+        "R4",
+        "R5"
+      ],
+      "card_mid": "448121"
+    }
+  ],
+  "bank_accounts": [
+    {
+      "iban": "PK72SYNA3011793858792276",
+      "name": "Operating account",
+      "opening_balance_minor": 800000000
+    }
+  ],
+  "policies": {
+    "cash_buffer_minor": 200000000
+  },
+  "country_pack_draft": {
+    "gst_rate_bp": 1800,
+    "prices_include_gst": true,
+    "tax_id_type": "NTN",
+    "tax_id_pattern": "^[0-9]{7}-[0-9]$"
+  }
+}

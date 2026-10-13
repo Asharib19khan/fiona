@@ -1,0 +1,6275 @@
+{
+  "synthetic": true,
+  "purchase_orders": [
+    {
+      "po_id": "po_1001",
+      "number": "PO-1001",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-08-24",
+      "expected_on": "2026-09-03",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 7440000
+    },
+    {
+      "po_id": "po_1002",
+      "number": "PO-1002",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-08-24",
+      "expected_on": "2026-09-02",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "description": "Knitted scarf - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-BLU",
+          "description": "Knitted scarf - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 840000
+    },
+    {
+      "po_id": "po_1003",
+      "number": "PO-1003",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-08-26",
+      "expected_on": "2026-08-31",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 3240000
+    },
+    {
+      "po_id": "po_1004",
+      "number": "PO-1004",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-07",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 3960000
+    },
+    {
+      "po_id": "po_1005",
+      "number": "PO-1005",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-06",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1890000
+    },
+    {
+      "po_id": "po_1006",
+      "number": "PO-1006",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-04",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 660000
+    },
+    {
+      "po_id": "po_1007",
+      "number": "PO-1007",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1008",
+      "number": "PO-1008",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "description": "Knitted scarf - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1009",
+      "number": "PO-1009",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-08-31",
+      "expected_on": "2026-09-05",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 3240000
+    },
+    {
+      "po_id": "po_1010",
+      "number": "PO-1010",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 9900000
+    },
+    {
+      "po_id": "po_1011",
+      "number": "PO-1011",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 8460000
+    },
+    {
+      "po_id": "po_1012",
+      "number": "PO-1012",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1890000
+    },
+    {
+      "po_id": "po_1013",
+      "number": "PO-1013",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-06",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 2640000
+    },
+    {
+      "po_id": "po_1014",
+      "number": "PO-1014",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1015",
+      "number": "PO-1015",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-02",
+      "expected_on": "2026-09-07",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 42,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 11880000
+    },
+    {
+      "po_id": "po_1016",
+      "number": "PO-1016",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 13860000
+    },
+    {
+      "po_id": "po_1017",
+      "number": "PO-1017",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 16920000
+    },
+    {
+      "po_id": "po_1018",
+      "number": "PO-1018",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3150000
+    },
+    {
+      "po_id": "po_1019",
+      "number": "PO-1019",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1320000
+    },
+    {
+      "po_id": "po_1020",
+      "number": "PO-1020",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1021",
+      "number": "PO-1021",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-04",
+      "expected_on": "2026-09-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 7560000
+    },
+    {
+      "po_id": "po_1022",
+      "number": "PO-1022",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 35640000
+    },
+    {
+      "po_id": "po_1023",
+      "number": "PO-1023",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 18,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 18,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 42300000
+    },
+    {
+      "po_id": "po_1024",
+      "number": "PO-1024",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 5040000
+    },
+    {
+      "po_id": "po_1025",
+      "number": "PO-1025",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 18,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 8580000
+    },
+    {
+      "po_id": "po_1026",
+      "number": "PO-1026",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 4200000
+    },
+    {
+      "po_id": "po_1027",
+      "number": "PO-1027",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 3720000
+    },
+    {
+      "po_id": "po_1028",
+      "number": "PO-1028",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "description": "Knitted scarf - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1029",
+      "number": "PO-1029",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-07",
+      "expected_on": "2026-09-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 31320000
+    },
+    {
+      "po_id": "po_1030",
+      "number": "PO-1030",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 7920000
+    },
+    {
+      "po_id": "po_1031",
+      "number": "PO-1031",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 5640000
+    },
+    {
+      "po_id": "po_1032",
+      "number": "PO-1032",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3150000
+    },
+    {
+      "po_id": "po_1033",
+      "number": "PO-1033",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1320000
+    },
+    {
+      "po_id": "po_1034",
+      "number": "PO-1034",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 600000
+    },
+    {
+      "po_id": "po_1035",
+      "number": "PO-1035",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-09",
+      "expected_on": "2026-09-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 12960000
+    },
+    {
+      "po_id": "po_1036",
+      "number": "PO-1036",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-10",
+      "expected_on": "2026-09-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 40,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 40,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": null,
+          "description": "Finishing and packing (lot)",
+          "qty": 1,
+          "unit_cost_minor": 1235593
+        }
+      ],
+      "total_minor": 15635593
+    },
+    {
+      "po_id": "po_1037",
+      "number": "PO-1037",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 17820000
+    },
+    {
+      "po_id": "po_1038",
+      "number": "PO-1038",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 28200000
+    },
+    {
+      "po_id": "po_1039",
+      "number": "PO-1039",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3150000
+    },
+    {
+      "po_id": "po_1040",
+      "number": "PO-1040",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 2640000
+    },
+    {
+      "po_id": "po_1041",
+      "number": "PO-1041",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3000000
+    },
+    {
+      "po_id": "po_1042",
+      "number": "PO-1042",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "description": "Knitted scarf - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1043",
+      "number": "PO-1043",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-11",
+      "expected_on": "2026-09-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 14040000
+    },
+    {
+      "po_id": "po_1044",
+      "number": "PO-1044",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 30,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 30,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 47520000
+    },
+    {
+      "po_id": "po_1045",
+      "number": "PO-1045",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 25380000
+    },
+    {
+      "po_id": "po_1046",
+      "number": "PO-1046",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 7560000
+    },
+    {
+      "po_id": "po_1047",
+      "number": "PO-1047",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 8580000
+    },
+    {
+      "po_id": "po_1048",
+      "number": "PO-1048",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 4800000
+    },
+    {
+      "po_id": "po_1049",
+      "number": "PO-1049",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-24",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 5580000
+    },
+    {
+      "po_id": "po_1050",
+      "number": "PO-1050",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-23",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "description": "Knitted scarf - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1051",
+      "number": "PO-1051",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-14",
+      "expected_on": "2026-09-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 36,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 34560000
+    },
+    {
+      "po_id": "po_1052",
+      "number": "PO-1052",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-23",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 7920000
+    },
+    {
+      "po_id": "po_1053",
+      "number": "PO-1053",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 11280000
+    },
+    {
+      "po_id": "po_1054",
+      "number": "PO-1054",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1890000
+    },
+    {
+      "po_id": "po_1055",
+      "number": "PO-1055",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1980000
+    },
+    {
+      "po_id": "po_1056",
+      "number": "PO-1056",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3600000
+    },
+    {
+      "po_id": "po_1057",
+      "number": "PO-1057",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-16",
+      "expected_on": "2026-09-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 12960000
+    },
+    {
+      "po_id": "po_1058",
+      "number": "PO-1058",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-25",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 23760000
+    },
+    {
+      "po_id": "po_1059",
+      "number": "PO-1059",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-24",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 11280000
+    },
+    {
+      "po_id": "po_1060",
+      "number": "PO-1060",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-24",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 4410000
+    },
+    {
+      "po_id": "po_1061",
+      "number": "PO-1061",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 3300000
+    },
+    {
+      "po_id": "po_1062",
+      "number": "PO-1062",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-23",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3000000
+    },
+    {
+      "po_id": "po_1063",
+      "number": "PO-1063",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-28",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1064",
+      "number": "PO-1064",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-18",
+      "expected_on": "2026-09-23",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 11880000
+    },
+    {
+      "po_id": "po_1065",
+      "number": "PO-1065",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-28",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 33660000
+    },
+    {
+      "po_id": "po_1066",
+      "number": "PO-1066",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-27",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 39480000
+    },
+    {
+      "po_id": "po_1067",
+      "number": "PO-1067",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-27",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 8190000
+    },
+    {
+      "po_id": "po_1068",
+      "number": "PO-1068",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-25",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 18,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 8580000
+    },
+    {
+      "po_id": "po_1069",
+      "number": "PO-1069",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-26",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3600000
+    },
+    {
+      "po_id": "po_1070",
+      "number": "PO-1070",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-10-01",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 18,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 18,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 18,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 20460000
+    },
+    {
+      "po_id": "po_1071",
+      "number": "PO-1071",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-21",
+      "expected_on": "2026-09-26",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 33480000
+    },
+    {
+      "po_id": "po_1072",
+      "number": "PO-1072",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-30",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 17820000
+    },
+    {
+      "po_id": "po_1073",
+      "number": "PO-1073",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-29",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 5640000
+    },
+    {
+      "po_id": "po_1074",
+      "number": "PO-1074",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-29",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 2520000
+    },
+    {
+      "po_id": "po_1075",
+      "number": "PO-1075",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-27",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 2640000
+    },
+    {
+      "po_id": "po_1076",
+      "number": "PO-1076",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-28",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1200000
+    },
+    {
+      "po_id": "po_1077",
+      "number": "PO-1077",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-10-02",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "description": "Knitted scarf - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-BLU",
+          "description": "Knitted scarf - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-GRY",
+          "description": "Knitted scarf - OS - GRY",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-MRN",
+          "description": "Knitted scarf - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 3360000
+    },
+    {
+      "po_id": "po_1078",
+      "number": "PO-1078",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-23",
+      "expected_on": "2026-09-28",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 4320000
+    },
+    {
+      "po_id": "po_1079",
+      "number": "PO-1079",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-10-02",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 3960000
+    },
+    {
+      "po_id": "po_1080",
+      "number": "PO-1080",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-10-01",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 14100000
+    },
+    {
+      "po_id": "po_1081",
+      "number": "PO-1081",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-10-01",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3780000
+    },
+    {
+      "po_id": "po_1082",
+      "number": "PO-1082",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-09-29",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1320000
+    },
+    {
+      "po_id": "po_1083",
+      "number": "PO-1083",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-09-30",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1800000
+    },
+    {
+      "po_id": "po_1084",
+      "number": "PO-1084",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-10-05",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1085",
+      "number": "PO-1085",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-25",
+      "expected_on": "2026-09-30",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 21600000
+    },
+    {
+      "po_id": "po_1086",
+      "number": "PO-1086",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-05",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 30,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 43560000
+    },
+    {
+      "po_id": "po_1087",
+      "number": "PO-1087",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-04",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 18,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 18,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 39480000
+    },
+    {
+      "po_id": "po_1088",
+      "number": "PO-1088",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-04",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 30,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 10080000
+    },
+    {
+      "po_id": "po_1089",
+      "number": "PO-1089",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-02",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 5280000
+    },
+    {
+      "po_id": "po_1090",
+      "number": "PO-1090",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-03",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3600000
+    },
+    {
+      "po_id": "po_1091",
+      "number": "PO-1091",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 3720000
+    },
+    {
+      "po_id": "po_1092",
+      "number": "PO-1092",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-28",
+      "expected_on": "2026-10-03",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 30240000
+    },
+    {
+      "po_id": "po_1093",
+      "number": "PO-1093",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-07",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 9900000
+    },
+    {
+      "po_id": "po_1094",
+      "number": "PO-1094",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-06",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 8460000
+    },
+    {
+      "po_id": "po_1095",
+      "number": "PO-1095",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-06",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1260000
+    },
+    {
+      "po_id": "po_1096",
+      "number": "PO-1096",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-04",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 2640000
+    },
+    {
+      "po_id": "po_1097",
+      "number": "PO-1097",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-05",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 2400000
+    },
+    {
+      "po_id": "po_1098",
+      "number": "PO-1098",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1099",
+      "number": "PO-1099",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLU",
+          "description": "Knitted scarf - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1100",
+      "number": "PO-1100",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-09-30",
+      "expected_on": "2026-10-05",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 10800000
+    },
+    {
+      "po_id": "po_1101",
+      "number": "PO-1101",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 15840000
+    },
+    {
+      "po_id": "po_1102",
+      "number": "PO-1102",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 8460000
+    },
+    {
+      "po_id": "po_1103",
+      "number": "PO-1103",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-08",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3150000
+    },
+    {
+      "po_id": "po_1104",
+      "number": "PO-1104",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-06",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 4620000
+    },
+    {
+      "po_id": "po_1105",
+      "number": "PO-1105",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-07",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1800000
+    },
+    {
+      "po_id": "po_1106",
+      "number": "PO-1106",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1107",
+      "number": "PO-1107",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "description": "Knitted scarf - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1108",
+      "number": "PO-1108",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-02",
+      "expected_on": "2026-10-07",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 14040000
+    },
+    {
+      "po_id": "po_1109",
+      "number": "PO-1109",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 30,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 30,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 43560000
+    },
+    {
+      "po_id": "po_1110",
+      "number": "PO-1110",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 33840000
+    },
+    {
+      "po_id": "po_1111",
+      "number": "PO-1111",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 24,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 9450000
+    },
+    {
+      "po_id": "po_1112",
+      "number": "PO-1112",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-09",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 3300000
+    },
+    {
+      "po_id": "po_1113",
+      "number": "PO-1113",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 4800000
+    },
+    {
+      "po_id": "po_1114",
+      "number": "PO-1114",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 5580000
+    },
+    {
+      "po_id": "po_1115",
+      "number": "PO-1115",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-MRN",
+          "description": "Knitted scarf - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 840000
+    },
+    {
+      "po_id": "po_1116",
+      "number": "PO-1116",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-05",
+      "expected_on": "2026-10-10",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 24,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 37800000
+    },
+    {
+      "po_id": "po_1117",
+      "number": "PO-1117",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 15840000
+    },
+    {
+      "po_id": "po_1118",
+      "number": "PO-1118",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 5640000
+    },
+    {
+      "po_id": "po_1119",
+      "number": "PO-1119",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 3150000
+    },
+    {
+      "po_id": "po_1120",
+      "number": "PO-1120",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-11",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1320000
+    },
+    {
+      "po_id": "po_1121",
+      "number": "PO-1121",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1800000
+    },
+    {
+      "po_id": "po_1122",
+      "number": "PO-1122",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1123",
+      "number": "PO-1123",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "description": "Knitted scarf - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-MRN",
+          "description": "Knitted scarf - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 840000
+    },
+    {
+      "po_id": "po_1124",
+      "number": "PO-1124",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-07",
+      "expected_on": "2026-10-12",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 12960000
+    },
+    {
+      "po_id": "po_1125",
+      "number": "PO-1125",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-08",
+      "expected_on": "2026-10-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 23760000
+    },
+    {
+      "po_id": "po_1126",
+      "number": "PO-1126",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 19740000
+    },
+    {
+      "po_id": "po_1127",
+      "number": "PO-1127",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-15",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 2520000
+    },
+    {
+      "po_id": "po_1128",
+      "number": "PO-1128",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-13",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 3300000
+    },
+    {
+      "po_id": "po_1129",
+      "number": "PO-1129",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 2400000
+    },
+    {
+      "po_id": "po_1130",
+      "number": "PO-1130",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 3720000
+    },
+    {
+      "po_id": "po_1131",
+      "number": "PO-1131",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-GRY",
+          "description": "Knitted scarf - OS - GRY",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 840000
+    },
+    {
+      "po_id": "po_1132",
+      "number": "PO-1132",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-09",
+      "expected_on": "2026-10-14",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 12960000
+    },
+    {
+      "po_id": "po_1133",
+      "number": "PO-1133",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 21780000
+    },
+    {
+      "po_id": "po_1134",
+      "number": "PO-1134",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 28200000
+    },
+    {
+      "po_id": "po_1135",
+      "number": "PO-1135",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 6930000
+    },
+    {
+      "po_id": "po_1136",
+      "number": "PO-1136",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-16",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 7920000
+    },
+    {
+      "po_id": "po_1137",
+      "number": "PO-1137",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 5400000
+    },
+    {
+      "po_id": "po_1138",
+      "number": "PO-1138",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 12,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 9300000
+    },
+    {
+      "po_id": "po_1139",
+      "number": "PO-1139",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLU",
+          "description": "Knitted scarf - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1140",
+      "number": "PO-1140",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-12",
+      "expected_on": "2026-10-17",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 30,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 33480000
+    },
+    {
+      "po_id": "po_1141",
+      "number": "PO-1141",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 6,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 9900000
+    },
+    {
+      "po_id": "po_1142",
+      "number": "PO-1142",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-PNK",
+          "description": "Stitched two-piece suit - S - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 11280000
+    },
+    {
+      "po_id": "po_1143",
+      "number": "PO-1143",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 5040000
+    },
+    {
+      "po_id": "po_1144",
+      "number": "PO-1144",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-18",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BLK",
+          "description": "Cotton trousers - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1980000
+    },
+    {
+      "po_id": "po_1145",
+      "number": "PO-1145",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 3000000
+    },
+    {
+      "po_id": "po_1146",
+      "number": "PO-1146",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-23",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLK",
+          "description": "Knitted scarf - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 420000
+    },
+    {
+      "po_id": "po_1147",
+      "number": "PO-1147",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-14",
+      "expected_on": "2026-10-19",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 9720000
+    },
+    {
+      "po_id": "po_1148",
+      "number": "PO-1148",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-23",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 23760000
+    },
+    {
+      "po_id": "po_1149",
+      "number": "PO-1149",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 11280000
+    },
+    {
+      "po_id": "po_1150",
+      "number": "PO-1150",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-22",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1260000
+    },
+    {
+      "po_id": "po_1151",
+      "number": "PO-1151",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-20",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 1980000
+    },
+    {
+      "po_id": "po_1152",
+      "number": "PO-1152",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1200000
+    },
+    {
+      "po_id": "po_1153",
+      "number": "PO-1153",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-26",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BEI",
+          "description": "Wool shawl - OS - BEI",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1154",
+      "number": "PO-1154",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-16",
+      "expected_on": "2026-10-21",
+      "status": "received",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLK",
+          "description": "Cotton kurta - L - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 18360000
+    },
+    {
+      "po_id": "po_1155",
+      "number": "PO-1155",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-26",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-BLU",
+          "description": "Unstitched three-piece lawn - OS - BLU",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-GRN",
+          "description": "Unstitched three-piece lawn - OS - GRN",
+          "qty": 24,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-PRP",
+          "description": "Unstitched three-piece lawn - OS - PRP",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-WHT",
+          "description": "Unstitched three-piece lawn - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 18,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 31680000
+    },
+    {
+      "po_id": "po_1156",
+      "number": "PO-1156",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-25",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-L-BEI",
+          "description": "Stitched two-piece suit - L - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-GRN",
+          "description": "Stitched two-piece suit - L - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-L-PNK",
+          "description": "Stitched two-piece suit - L - PNK",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-BEI",
+          "description": "Stitched two-piece suit - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-GRN",
+          "description": "Stitched two-piece suit - M - GRN",
+          "qty": 24,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-M-PNK",
+          "description": "Stitched two-piece suit - M - PNK",
+          "qty": 18,
+          "unit_cost_minor": 470000
+        },
+        {
+          "sku": "STS-S-GRN",
+          "description": "Stitched two-piece suit - S - GRN",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 39480000
+    },
+    {
+      "po_id": "po_1157",
+      "number": "PO-1157",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-25",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-GRN",
+          "description": "Chiffon dupatta - OS - GRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-PNK",
+          "description": "Chiffon dupatta - OS - PNK",
+          "qty": 18,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-WHT",
+          "description": "Chiffon dupatta - OS - WHT",
+          "qty": 12,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 6930000
+    },
+    {
+      "po_id": "po_1158",
+      "number": "PO-1158",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-23",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-BLK",
+          "description": "Cotton trousers - L - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-L-WHT",
+          "description": "Cotton trousers - L - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BEI",
+          "description": "Cotton trousers - M - BEI",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-WHT",
+          "description": "Cotton trousers - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 5940000
+    },
+    {
+      "po_id": "po_1159",
+      "number": "PO-1159",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-24",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-4Y-BLU",
+          "description": "Kids kurta - 4Y - BLU",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-4Y-WHT",
+          "description": "Kids kurta - 4Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-BLU",
+          "description": "Kids kurta - 6Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-BLU",
+          "description": "Kids kurta - 8Y - BLU",
+          "qty": 12,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 4800000
+    },
+    {
+      "po_id": "po_1160",
+      "number": "PO-1160",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-29",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-BLK",
+          "description": "Wool shawl - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        },
+        {
+          "sku": "SHL-OS-MRN",
+          "description": "Wool shawl - OS - MRN",
+          "qty": 12,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 7440000
+    },
+    {
+      "po_id": "po_1161",
+      "number": "PO-1161",
+      "supplier_id": "sup_009",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-28",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SCF-OS-BLU",
+          "description": "Knitted scarf - OS - BLU",
+          "qty": 6,
+          "unit_cost_minor": 70000
+        },
+        {
+          "sku": "SCF-OS-GRY",
+          "description": "Knitted scarf - OS - GRY",
+          "qty": 12,
+          "unit_cost_minor": 70000
+        }
+      ],
+      "total_minor": 1260000
+    },
+    {
+      "po_id": "po_1162",
+      "number": "PO-1162",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-19",
+      "expected_on": "2026-10-24",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-WHT",
+          "description": "Cotton kurta - L - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLK",
+          "description": "Cotton kurta - M - BLK",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-BLU",
+          "description": "Cotton kurta - M - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-MRN",
+          "description": "Cotton kurta - M - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-M-WHT",
+          "description": "Cotton kurta - M - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLK",
+          "description": "Cotton kurta - S - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-BLU",
+          "description": "Cotton kurta - S - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-MRN",
+          "description": "Cotton kurta - S - MRN",
+          "qty": 18,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-MRN",
+          "description": "Cotton kurta - XL - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 23760000
+    },
+    {
+      "po_id": "po_1163",
+      "number": "PO-1163",
+      "supplier_id": "sup_001",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-28",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "UNS-OS-PNK",
+          "description": "Unstitched three-piece lawn - OS - PNK",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        },
+        {
+          "sku": "UNS-OS-YLW",
+          "description": "Unstitched three-piece lawn - OS - YLW",
+          "qty": 12,
+          "unit_cost_minor": 330000
+        }
+      ],
+      "total_minor": 7920000
+    },
+    {
+      "po_id": "po_1164",
+      "number": "PO-1164",
+      "supplier_id": "sup_002",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-27",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "STS-S-BEI",
+          "description": "Stitched two-piece suit - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 470000
+        }
+      ],
+      "total_minor": 2820000
+    },
+    {
+      "po_id": "po_1165",
+      "number": "PO-1165",
+      "supplier_id": "sup_005",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-27",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "DUP-OS-BLK",
+          "description": "Chiffon dupatta - OS - BLK",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        },
+        {
+          "sku": "DUP-OS-MRN",
+          "description": "Chiffon dupatta - OS - MRN",
+          "qty": 6,
+          "unit_cost_minor": 105000
+        }
+      ],
+      "total_minor": 1260000
+    },
+    {
+      "po_id": "po_1166",
+      "number": "PO-1166",
+      "supplier_id": "sup_006",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-25",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "TRS-L-BEI",
+          "description": "Cotton trousers - L - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-M-BLK",
+          "description": "Cotton trousers - M - BLK",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-BEI",
+          "description": "Cotton trousers - S - BEI",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        },
+        {
+          "sku": "TRS-S-WHT",
+          "description": "Cotton trousers - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 110000
+        }
+      ],
+      "total_minor": 2640000
+    },
+    {
+      "po_id": "po_1167",
+      "number": "PO-1167",
+      "supplier_id": "sup_007",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-26",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KKR-6Y-WHT",
+          "description": "Kids kurta - 6Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        },
+        {
+          "sku": "KKR-8Y-WHT",
+          "description": "Kids kurta - 8Y - WHT",
+          "qty": 6,
+          "unit_cost_minor": 100000
+        }
+      ],
+      "total_minor": 1200000
+    },
+    {
+      "po_id": "po_1168",
+      "number": "PO-1168",
+      "supplier_id": "sup_008",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-31",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "SHL-OS-GRY",
+          "description": "Wool shawl - OS - GRY",
+          "qty": 6,
+          "unit_cost_minor": 310000
+        }
+      ],
+      "total_minor": 1860000
+    },
+    {
+      "po_id": "po_1169",
+      "number": "PO-1169",
+      "supplier_id": "sup_017",
+      "ordered_on": "2026-10-21",
+      "expected_on": "2026-10-26",
+      "status": "open",
+      "currency": "PKR",
+      "lines": [
+        {
+          "sku": "KRT-L-BLU",
+          "description": "Cotton kurta - L - BLU",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-L-MRN",
+          "description": "Cotton kurta - L - MRN",
+          "qty": 12,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-S-WHT",
+          "description": "Cotton kurta - S - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLK",
+          "description": "Cotton kurta - XL - BLK",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-BLU",
+          "description": "Cotton kurta - XL - BLU",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        },
+        {
+          "sku": "KRT-XL-WHT",
+          "description": "Cotton kurta - XL - WHT",
+          "qty": 6,
+          "unit_cost_minor": 180000
+        }
+      ],
+      "total_minor": 8640000
+    }
+  ]
+}

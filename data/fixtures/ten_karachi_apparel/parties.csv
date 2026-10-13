@@ -1,0 +1,230 @@
+party_id,kind,code,name,tax_id,tax_id_type,bank_iban,bank_account_changed_at,on_allow_list,payment_terms_days,phone,city
+sup_001,supplier,S-001,Indus Weaving Mills,5945744-0,NTN,PK24SYNB0349937808765007,,true,10,+92-000-000-0001,Faisalabad
+sup_002,supplier,S-002,Lyari Stitching House,2561976-8,NTN,PK87SYND1331844186178407,,true,30,+92-000-000-0002,Karachi
+sup_003,supplier,S-003,Kotri Textile Traders,4092505-7,NTN,PK21SYNB6333477923618852,,true,30,+92-000-000-0003,Hyderabad
+sup_004,supplier,S-004,Saddar Embroidery Works,8889804-0,NTN,PK29SYND0340044727931167,,true,15,+92-000-000-0004,Karachi
+sup_005,supplier,S-005,Hala Dupatta Crafts,1649637-3,NTN,PK96SYNB1941253908622411,,true,15,+92-000-000-0005,Hala
+sup_006,supplier,S-006,Korangi Garments,4648585-4,NTN,PK93SYND3188429112252004,,true,30,+92-000-000-0006,Karachi
+sup_007,supplier,S-007,Gulshan Kidswear,1132881-2,NTN,PK45SYNB5872076931292399,,true,15,+92-000-000-0007,Karachi
+sup_008,supplier,S-008,Swat Wool Works,6979048-7,NTN,PK59SYND0345004627957038,,true,30,+92-000-000-0008,Mingora
+sup_009,supplier,S-009,Murree Knitwear,1606145-7,NTN,PK74SYNB6033235568991472,,true,30,+92-000-000-0009,Murree
+sup_010,supplier,S-010,Clifton Packaging Co.,9135874-1,NTN,PK88SYND7135556501205696,,true,30,+92-000-000-0010,Karachi
+sup_011,supplier,S-011,Bahadurabad Hangers,1379579-0,NTN,PK89SYNB1264641266828048,,true,30,+92-000-000-0011,Karachi
+sup_012,supplier,S-012,Sialkot Buttons and Trims,1289897-6,NTN,PK84SYND7195703786355945,,true,30,+92-000-000-0012,Sialkot
+sup_013,supplier,S-013,Multan Block Prints,8071509-9,NTN,PK48SYNB7641247892433583,,true,30,+92-000-000-0013,Multan
+sup_014,supplier,S-014,Quetta Leather Goods,7044764-9,NTN,PK31SYND4233718012654979,,true,30,+92-000-000-0014,Quetta
+sup_015,supplier,S-015,Hyderabad Bangles House,2758379-1,NTN,PK30SYNB4988933137105487,,true,15,+92-000-000-0015,Hyderabad
+sup_016,supplier,S-016,Peshawar Chappal Makers,4151102-9,NTN,PK13SYND4538690166195012,,true,30,+92-000-000-0016,Peshawar
+sup_017,supplier,S-017,Mehran Garments,3564187-3,NTN,PK30SYNC2758505706204862,2026-10-20T06:30:00Z,true,7,+92-000-000-0017,Karachi
+sup_018,supplier,S-018,Lahore Fashion Imports,5027814-0,NTN,PK08SYND8192766855773132,,false,30,+92-000-000-0018,Lahore
+cus_0001,customer,C-0001,Customer C-0001,,,,,false,0,,Karachi
+cus_0002,customer,C-0002,Customer C-0002,,,,,false,0,,Karachi
+cus_0003,customer,C-0003,Customer C-0003,,,,,false,0,,Karachi
+cus_0004,customer,C-0004,Customer C-0004,,,,,false,0,,Karachi
+cus_0005,customer,C-0005,Customer C-0005,,,,,false,0,,Karachi
+cus_0006,customer,C-0006,Customer C-0006,,,,,false,0,,Karachi
+cus_0007,customer,C-0007,Customer C-0007,,,,,false,0,,Karachi
+cus_0008,customer,C-0008,Customer C-0008,,,,,false,0,,Karachi
+cus_0009,customer,C-0009,Customer C-0009,,,,,false,0,,Karachi
+cus_0010,customer,C-0010,Customer C-0010,,,,,false,0,,Karachi
+cus_0011,customer,C-0011,Customer C-0011,,,,,false,0,,Karachi
+cus_0012,customer,C-0012,Customer C-0012,,,,,false,0,,Karachi
+cus_0013,customer,C-0013,Customer C-0013,,,,,false,0,,Karachi
+cus_0014,customer,C-0014,Customer C-0014,,,,,false,0,,Karachi
+cus_0015,customer,C-0015,Customer C-0015,,,,,false,0,,Karachi
+cus_0016,customer,C-0016,Customer C-0016,,,,,false,0,,Karachi
+cus_0017,customer,C-0017,Customer C-0017,,,,,false,0,,Karachi
+cus_0018,customer,C-0018,Customer C-0018,,,,,false,0,,Karachi
+cus_0019,customer,C-0019,Customer C-0019,,,,,false,0,,Karachi
+cus_0020,customer,C-0020,Customer C-0020,,,,,false,0,,Karachi
+cus_0021,customer,C-0021,Customer C-0021,,,,,false,0,,Karachi
+cus_0022,customer,C-0022,Customer C-0022,,,,,false,0,,Karachi
+cus_0023,customer,C-0023,Customer C-0023,,,,,false,0,,Karachi
+cus_0024,customer,C-0024,Customer C-0024,,,,,false,0,,Karachi
+cus_0025,customer,C-0025,Customer C-0025,,,,,false,0,,Karachi
+cus_0026,customer,C-0026,Customer C-0026,,,,,false,0,,Karachi
+cus_0027,customer,C-0027,Customer C-0027,,,,,false,0,,Karachi
+cus_0028,customer,C-0028,Customer C-0028,,,,,false,0,,Karachi
+cus_0029,customer,C-0029,Customer C-0029,,,,,false,0,,Karachi
+cus_0030,customer,C-0030,Customer C-0030,,,,,false,0,,Karachi
+cus_0031,customer,C-0031,Customer C-0031,,,,,false,0,,Karachi
+cus_0032,customer,C-0032,Customer C-0032,,,,,false,0,,Karachi
+cus_0033,customer,C-0033,Customer C-0033,,,,,false,0,,Karachi
+cus_0034,customer,C-0034,Customer C-0034,,,,,false,0,,Karachi
+cus_0035,customer,C-0035,Customer C-0035,,,,,false,0,,Karachi
+cus_0036,customer,C-0036,Customer C-0036,,,,,false,0,,Karachi
+cus_0037,customer,C-0037,Customer C-0037,,,,,false,0,,Karachi
+cus_0038,customer,C-0038,Customer C-0038,,,,,false,0,,Karachi
+cus_0039,customer,C-0039,Customer C-0039,,,,,false,0,,Karachi
+cus_0040,customer,C-0040,Customer C-0040,,,,,false,0,,Karachi
+cus_0041,customer,C-0041,Customer C-0041,,,,,false,0,,Karachi
+cus_0042,customer,C-0042,Customer C-0042,,,,,false,0,,Karachi
+cus_0043,customer,C-0043,Customer C-0043,,,,,false,0,,Karachi
+cus_0044,customer,C-0044,Customer C-0044,,,,,false,0,,Karachi
+cus_0045,customer,C-0045,Customer C-0045,,,,,false,0,,Karachi
+cus_0046,customer,C-0046,Customer C-0046,,,,,false,0,,Karachi
+cus_0047,customer,C-0047,Customer C-0047,,,,,false,0,,Karachi
+cus_0048,customer,C-0048,Customer C-0048,,,,,false,0,,Karachi
+cus_0049,customer,C-0049,Customer C-0049,,,,,false,0,,Karachi
+cus_0050,customer,C-0050,Customer C-0050,,,,,false,0,,Karachi
+cus_0051,customer,C-0051,Customer C-0051,,,,,false,0,,Karachi
+cus_0052,customer,C-0052,Customer C-0052,,,,,false,0,,Karachi
+cus_0053,customer,C-0053,Customer C-0053,,,,,false,0,,Karachi
+cus_0054,customer,C-0054,Customer C-0054,,,,,false,0,,Karachi
+cus_0055,customer,C-0055,Customer C-0055,,,,,false,0,,Karachi
+cus_0056,customer,C-0056,Customer C-0056,,,,,false,0,,Karachi
+cus_0057,customer,C-0057,Customer C-0057,,,,,false,0,,Karachi
+cus_0058,customer,C-0058,Customer C-0058,,,,,false,0,,Karachi
+cus_0059,customer,C-0059,Customer C-0059,,,,,false,0,,Karachi
+cus_0060,customer,C-0060,Customer C-0060,,,,,false,0,,Karachi
+cus_0061,customer,C-0061,Customer C-0061,,,,,false,0,,Karachi
+cus_0062,customer,C-0062,Customer C-0062,,,,,false,0,,Karachi
+cus_0063,customer,C-0063,Customer C-0063,,,,,false,0,,Karachi
+cus_0064,customer,C-0064,Customer C-0064,,,,,false,0,,Karachi
+cus_0065,customer,C-0065,Customer C-0065,,,,,false,0,,Karachi
+cus_0066,customer,C-0066,Customer C-0066,,,,,false,0,,Karachi
+cus_0067,customer,C-0067,Customer C-0067,,,,,false,0,,Karachi
+cus_0068,customer,C-0068,Customer C-0068,,,,,false,0,,Karachi
+cus_0069,customer,C-0069,Customer C-0069,,,,,false,0,,Karachi
+cus_0070,customer,C-0070,Customer C-0070,,,,,false,0,,Karachi
+cus_0071,customer,C-0071,Customer C-0071,,,,,false,0,,Karachi
+cus_0072,customer,C-0072,Customer C-0072,,,,,false,0,,Karachi
+cus_0073,customer,C-0073,Customer C-0073,,,,,false,0,,Karachi
+cus_0074,customer,C-0074,Customer C-0074,,,,,false,0,,Karachi
+cus_0075,customer,C-0075,Customer C-0075,,,,,false,0,,Karachi
+cus_0076,customer,C-0076,Customer C-0076,,,,,false,0,,Karachi
+cus_0077,customer,C-0077,Customer C-0077,,,,,false,0,,Karachi
+cus_0078,customer,C-0078,Customer C-0078,,,,,false,0,,Karachi
+cus_0079,customer,C-0079,Customer C-0079,,,,,false,0,,Karachi
+cus_0080,customer,C-0080,Customer C-0080,,,,,false,0,,Karachi
+cus_0081,customer,C-0081,Customer C-0081,,,,,false,0,,Karachi
+cus_0082,customer,C-0082,Customer C-0082,,,,,false,0,,Karachi
+cus_0083,customer,C-0083,Customer C-0083,,,,,false,0,,Karachi
+cus_0084,customer,C-0084,Customer C-0084,,,,,false,0,,Karachi
+cus_0085,customer,C-0085,Customer C-0085,,,,,false,0,,Karachi
+cus_0086,customer,C-0086,Customer C-0086,,,,,false,0,,Karachi
+cus_0087,customer,C-0087,Customer C-0087,,,,,false,0,,Karachi
+cus_0088,customer,C-0088,Customer C-0088,,,,,false,0,,Karachi
+cus_0089,customer,C-0089,Customer C-0089,,,,,false,0,,Karachi
+cus_0090,customer,C-0090,Customer C-0090,,,,,false,0,,Karachi
+cus_0091,customer,C-0091,Customer C-0091,,,,,false,0,,Karachi
+cus_0092,customer,C-0092,Customer C-0092,,,,,false,0,,Karachi
+cus_0093,customer,C-0093,Customer C-0093,,,,,false,0,,Karachi
+cus_0094,customer,C-0094,Customer C-0094,,,,,false,0,,Karachi
+cus_0095,customer,C-0095,Customer C-0095,,,,,false,0,,Karachi
+cus_0096,customer,C-0096,Customer C-0096,,,,,false,0,,Karachi
+cus_0097,customer,C-0097,Customer C-0097,,,,,false,0,,Karachi
+cus_0098,customer,C-0098,Customer C-0098,,,,,false,0,,Karachi
+cus_0099,customer,C-0099,Customer C-0099,,,,,false,0,,Karachi
+cus_0100,customer,C-0100,Customer C-0100,,,,,false,0,,Karachi
+cus_0101,customer,C-0101,Customer C-0101,,,,,false,0,,Karachi
+cus_0102,customer,C-0102,Customer C-0102,,,,,false,0,,Karachi
+cus_0103,customer,C-0103,Customer C-0103,,,,,false,0,,Karachi
+cus_0104,customer,C-0104,Customer C-0104,,,,,false,0,,Karachi
+cus_0105,customer,C-0105,Customer C-0105,,,,,false,0,,Karachi
+cus_0106,customer,C-0106,Customer C-0106,,,,,false,0,,Karachi
+cus_0107,customer,C-0107,Customer C-0107,,,,,false,0,,Karachi
+cus_0108,customer,C-0108,Customer C-0108,,,,,false,0,,Karachi
+cus_0109,customer,C-0109,Customer C-0109,,,,,false,0,,Karachi
+cus_0110,customer,C-0110,Customer C-0110,,,,,false,0,,Karachi
+cus_0111,customer,C-0111,Customer C-0111,,,,,false,0,,Karachi
+cus_0112,customer,C-0112,Customer C-0112,,,,,false,0,,Karachi
+cus_0113,customer,C-0113,Customer C-0113,,,,,false,0,,Karachi
+cus_0114,customer,C-0114,Customer C-0114,,,,,false,0,,Karachi
+cus_0115,customer,C-0115,Customer C-0115,,,,,false,0,,Karachi
+cus_0116,customer,C-0116,Customer C-0116,,,,,false,0,,Karachi
+cus_0117,customer,C-0117,Customer C-0117,,,,,false,0,,Karachi
+cus_0118,customer,C-0118,Customer C-0118,,,,,false,0,,Karachi
+cus_0119,customer,C-0119,Customer C-0119,,,,,false,0,,Karachi
+cus_0120,customer,C-0120,Customer C-0120,,,,,false,0,,Karachi
+cus_0121,customer,C-0121,Customer C-0121,,,,,false,0,,Karachi
+cus_0122,customer,C-0122,Customer C-0122,,,,,false,0,,Karachi
+cus_0123,customer,C-0123,Customer C-0123,,,,,false,0,,Karachi
+cus_0124,customer,C-0124,Customer C-0124,,,,,false,0,,Karachi
+cus_0125,customer,C-0125,Customer C-0125,,,,,false,0,,Karachi
+cus_0126,customer,C-0126,Customer C-0126,,,,,false,0,,Karachi
+cus_0127,customer,C-0127,Customer C-0127,,,,,false,0,,Karachi
+cus_0128,customer,C-0128,Customer C-0128,,,,,false,0,,Karachi
+cus_0129,customer,C-0129,Customer C-0129,,,,,false,0,,Karachi
+cus_0130,customer,C-0130,Customer C-0130,,,,,false,0,,Karachi
+cus_0131,customer,C-0131,Customer C-0131,,,,,false,0,,Karachi
+cus_0132,customer,C-0132,Customer C-0132,,,,,false,0,,Karachi
+cus_0133,customer,C-0133,Customer C-0133,,,,,false,0,,Karachi
+cus_0134,customer,C-0134,Customer C-0134,,,,,false,0,,Karachi
+cus_0135,customer,C-0135,Customer C-0135,,,,,false,0,,Karachi
+cus_0136,customer,C-0136,Customer C-0136,,,,,false,0,,Karachi
+cus_0137,customer,C-0137,Customer C-0137,,,,,false,0,,Karachi
+cus_0138,customer,C-0138,Customer C-0138,,,,,false,0,,Karachi
+cus_0139,customer,C-0139,Customer C-0139,,,,,false,0,,Karachi
+cus_0140,customer,C-0140,Customer C-0140,,,,,false,0,,Karachi
+cus_0141,customer,C-0141,Customer C-0141,,,,,false,0,,Karachi
+cus_0142,customer,C-0142,Customer C-0142,,,,,false,0,,Karachi
+cus_0143,customer,C-0143,Customer C-0143,,,,,false,0,,Karachi
+cus_0144,customer,C-0144,Customer C-0144,,,,,false,0,,Karachi
+cus_0145,customer,C-0145,Customer C-0145,,,,,false,0,,Karachi
+cus_0146,customer,C-0146,Customer C-0146,,,,,false,0,,Karachi
+cus_0147,customer,C-0147,Customer C-0147,,,,,false,0,,Karachi
+cus_0148,customer,C-0148,Customer C-0148,,,,,false,0,,Karachi
+cus_0149,customer,C-0149,Customer C-0149,,,,,false,0,,Karachi
+cus_0150,customer,C-0150,Customer C-0150,,,,,false,0,,Karachi
+cus_0151,customer,C-0151,Customer C-0151,,,,,false,0,,Karachi
+cus_0152,customer,C-0152,Customer C-0152,,,,,false,0,,Karachi
+cus_0153,customer,C-0153,Customer C-0153,,,,,false,0,,Karachi
+cus_0154,customer,C-0154,Customer C-0154,,,,,false,0,,Karachi
+cus_0155,customer,C-0155,Customer C-0155,,,,,false,0,,Karachi
+cus_0156,customer,C-0156,Customer C-0156,,,,,false,0,,Karachi
+cus_0157,customer,C-0157,Customer C-0157,,,,,false,0,,Karachi
+cus_0158,customer,C-0158,Customer C-0158,,,,,false,0,,Karachi
+cus_0159,customer,C-0159,Customer C-0159,,,,,false,0,,Karachi
+cus_0160,customer,C-0160,Customer C-0160,,,,,false,0,,Karachi
+cus_0161,customer,C-0161,Customer C-0161,,,,,false,0,,Karachi
+cus_0162,customer,C-0162,Customer C-0162,,,,,false,0,,Karachi
+cus_0163,customer,C-0163,Customer C-0163,,,,,false,0,,Karachi
+cus_0164,customer,C-0164,Customer C-0164,,,,,false,0,,Karachi
+cus_0165,customer,C-0165,Customer C-0165,,,,,false,0,,Karachi
+cus_0166,customer,C-0166,Customer C-0166,,,,,false,0,,Karachi
+cus_0167,customer,C-0167,Customer C-0167,,,,,false,0,,Karachi
+cus_0168,customer,C-0168,Customer C-0168,,,,,false,0,,Karachi
+cus_0169,customer,C-0169,Customer C-0169,,,,,false,0,,Karachi
+cus_0170,customer,C-0170,Customer C-0170,,,,,false,0,,Karachi
+cus_0171,customer,C-0171,Customer C-0171,,,,,false,0,,Karachi
+cus_0172,customer,C-0172,Customer C-0172,,,,,false,0,,Karachi
+cus_0173,customer,C-0173,Customer C-0173,,,,,false,0,,Karachi
+cus_0174,customer,C-0174,Customer C-0174,,,,,false,0,,Karachi
+cus_0175,customer,C-0175,Customer C-0175,,,,,false,0,,Karachi
+cus_0176,customer,C-0176,Customer C-0176,,,,,false,0,,Karachi
+cus_0177,customer,C-0177,Customer C-0177,,,,,false,0,,Karachi
+cus_0178,customer,C-0178,Customer C-0178,,,,,false,0,,Karachi
+cus_0179,customer,C-0179,Customer C-0179,,,,,false,0,,Karachi
+cus_0180,customer,C-0180,Customer C-0180,,,,,false,0,,Karachi
+cus_0181,customer,C-0181,Customer C-0181,,,,,false,0,,Karachi
+cus_0182,customer,C-0182,Customer C-0182,,,,,false,0,,Karachi
+cus_0183,customer,C-0183,Customer C-0183,,,,,false,0,,Karachi
+cus_0184,customer,C-0184,Customer C-0184,,,,,false,0,,Karachi
+cus_0185,customer,C-0185,Customer C-0185,,,,,false,0,,Karachi
+cus_0186,customer,C-0186,Customer C-0186,,,,,false,0,,Karachi
+cus_0187,customer,C-0187,Customer C-0187,,,,,false,0,,Karachi
+cus_0188,customer,C-0188,Customer C-0188,,,,,false,0,,Karachi
+cus_0189,customer,C-0189,Customer C-0189,,,,,false,0,,Karachi
+cus_0190,customer,C-0190,Customer C-0190,,,,,false,0,,Karachi
+cus_0191,customer,C-0191,Customer C-0191,,,,,false,0,,Karachi
+cus_0192,customer,C-0192,Customer C-0192,,,,,false,0,,Karachi
+cus_0193,customer,C-0193,Customer C-0193,,,,,false,0,,Karachi
+cus_0194,customer,C-0194,Customer C-0194,,,,,false,0,,Karachi
+cus_0195,customer,C-0195,Customer C-0195,,,,,false,0,,Karachi
+cus_0196,customer,C-0196,Customer C-0196,,,,,false,0,,Karachi
+cus_0197,customer,C-0197,Customer C-0197,,,,,false,0,,Karachi
+cus_0198,customer,C-0198,Customer C-0198,,,,,false,0,,Karachi
+cus_0199,customer,C-0199,Customer C-0199,,,,,false,0,,Karachi
+cus_0200,customer,C-0200,Customer C-0200,,,,,false,0,,Karachi
+cus_9001,customer,B-9001,Seaview Grammar School (synthetic),5717307-6,NTN,PK89SYNE6009732111948178,,false,30,,Karachi
+cus_9002,customer,B-9002,Harbour Logistics Pvt Ltd (synthetic),1302584-1,NTN,PK29SYNE8320756823694358,,false,30,,Karachi
+cus_9003,customer,B-9003,Saddar Boutique (synthetic),3753124-2,NTN,PK25SYNE7271787398222055,,false,15,,Karachi
+cus_9004,customer,B-9004,Gulshan Corporate Gifts (synthetic),3179041-7,NTN,PK03SYNE9094383513173845,,false,30,,Karachi
+cus_9005,customer,B-9005,Defence Club Staff Store (synthetic),4992832-5,NTN,PK90SYNE9276542613680037,,false,45,,Karachi
+pty_001,landlord,PTY-001,Tariq Road Properties (synthetic),,,PK94SYNF5013902563664107,,true,0,,Karachi
+pty_002,landlord,PTY-002,Clifton Estates (synthetic),,,PK28SYNF3051382544730954,,true,0,,Karachi
+pty_003,utility,PTY-003,Electricity utility (synthetic),,,PK29SYNF0434901625502744,,true,0,,Karachi
+pty_004,utility,PTY-004,Gas utility (synthetic),,,PK02SYNF5117686917495195,,true,0,,Karachi
+pty_005,lender,PTY-005,Synthetic Bank SME Finance,,,PK12SYNF4817622408673568,,true,0,,Karachi
+pty_006,tax_authority,PTY-006,Federal Board of Revenue,,,PK52SYNF5804892402413593,,true,0,,Karachi

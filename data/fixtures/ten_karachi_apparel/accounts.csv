@@ -1,0 +1,21 @@
+code,name,class,neutral_class
+1000,Bank - operating account,asset,cash
+1010,Cash in drawers,asset,cash
+1020,Card and QR settlements in transit,asset,clearing
+1030,Mobile wallet settlements in transit,asset,clearing
+1100,Trade receivables,asset,receivables
+1200,Inventory,asset,inventory
+1300,Input sales tax recoverable,asset,tax_receivable
+2000,Trade payables,liability,payables
+2100,Output sales tax payable,liability,tax_payable
+2200,Bank loan,liability,borrowings
+3000,Owner's equity,equity,equity
+4000,Sales revenue,income,revenue
+4010,Sales returns,income,sales_returns
+5000,Cost of sales,expense,cost_of_sales
+6000,Salaries and wages,expense,payroll
+6100,Rent,expense,occupancy
+6200,Utilities,expense,utilities
+6300,Bank and card charges,expense,bank_charges
+6400,Cash over and short,expense,cash_over_short
+7000,Interest expense,expense,interest
