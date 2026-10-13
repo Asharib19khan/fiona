@@ -10,15 +10,14 @@ T = "ten_karachi_apparel"
 PKR = {"currency": "PKR"}
 
 GETS = [
-    f"/v1/forecast/cash?weeks=13&tenant_id={T}",
-    f"/v1/forecast/findings?tenant_id={T}",
-    f"/v1/inventory/analysis?tenant_id={T}",
+    "/v1/forecast/cash?weeks=13",
+    "/v1/forecast/findings",
+    "/v1/inventory/analysis",
 ]
 POSTS = [
     (
         "/v1/launch-lab/simulate",
         {
-            "tenant_id": T,
             "currency": "PKR",
             "product": {"name": "Winter shawl", "category": "shawl"},
             "unit_cost": {"minor": 240000, **PKR},
@@ -27,14 +26,13 @@ POSTS = [
     ),
     (
         "/v1/decisions/debt-equity",
-        {"tenant_id": T, "amount": {"minor": 200000000, **PKR}, "purpose": "winter stock"},
+        {"amount": {"minor": 200000000, **PKR}, "purpose": "winter stock"},
     ),
-    ("/v1/decisions/dividend", {"tenant_id": T, "proposed_dividend": {"minor": 150000000, **PKR}}),
-    ("/v1/decisions/payment-timing", {"tenant_id": T}),
+    ("/v1/decisions/dividend", {"proposed_dividend": {"minor": 150000000, **PKR}}),
+    ("/v1/decisions/payment-timing", {}),
     (
         "/v1/financing/match",
         {
-            "tenant_id": T,
             "amount": {"minor": 200000000, **PKR},
             "purpose": "working_capital_seasonal",
         },
@@ -63,16 +61,21 @@ def test_post_endpoints_serve_mocks(client, path, body):
 
 
 def test_unknown_tenant_is_404(client):
-    res = client.get("/v1/forecast/cash?tenant_id=ten_nobody")
+    res = client.get("/v1/forecast/cash", headers={"X-Fiona-Tenant": "ten_nobody"})
     assert res.status_code == 404
     assert res.json()["error"]["code"] == "not_found"
 
 
-def test_live_mode_says_not_implemented_with_the_task(monkeypatch):
+def test_live_mode_fails_closed_without_a_verified_tenant(monkeypatch):
     monkeypatch.setenv("FIONA_MODE", "live")
-    res = TestClient(create_app(modules=MODULES)).get(f"/v1/forecast/cash?tenant_id={T}")
-    assert res.status_code == 501
-    assert res.json()["error"]["details"]["task"] == "Y1"
+    res = TestClient(create_app(modules=MODULES)).get("/v1/forecast/cash")
+    assert res.status_code == 401
+
+
+def test_tenant_never_comes_from_the_query_string(client):
+    res = client.get("/v1/forecast/cash", params={"tenant_id": "ten_nobody"})
+    assert res.status_code == 200
+    assert res.json()["tenant_id"] == T
 
 
 @pytest.mark.parametrize(

@@ -30,7 +30,6 @@ OptionKind = Literal[
 
 
 class FinancingMatchRequest(BaseModel):
-    tenant_id: str
     amount: Money
     purpose: Purpose
     preferred_tenor_months: int | None = Field(None, ge=1, le=240)

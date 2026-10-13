@@ -35,7 +35,6 @@ class EquityTerms(BaseModel):
 
 
 class DebtEquityRequest(BaseModel):
-    tenant_id: str
     amount: Money
     purpose: str
     debt: DebtTerms | None = Field(
@@ -47,7 +46,6 @@ class DebtEquityRequest(BaseModel):
 
 
 class DividendRequest(BaseModel):
-    tenant_id: str
     proposed_dividend: Money | None = Field(
         None, description="None: the engine reports the largest safe amount."
     )
@@ -57,7 +55,6 @@ class DividendRequest(BaseModel):
 
 
 class PaymentTimingRequest(BaseModel):
-    tenant_id: str
     bill_ids: list[str] | None = Field(None, description="None: every open supplier bill.")
     cost_of_money_annual_bp: int | None = Field(None, ge=0, le=100_000)
     horizon_weeks: int = Field(13, ge=1, le=26)

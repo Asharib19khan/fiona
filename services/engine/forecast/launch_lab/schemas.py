@@ -95,7 +95,6 @@ _MONEY_FIELDS = (
 
 
 class LaunchLabRequest(BaseModel):
-    tenant_id: str
     currency: str
     product: ProductSpec
 
