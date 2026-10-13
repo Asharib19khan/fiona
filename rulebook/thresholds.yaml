@@ -1,0 +1,621 @@
+# Fiona master threshold register (Part I of the finance brief; shared by B1 and B2)
+#
+# Every number that turns a metric into a judgement lives here, once. Rules in
+# finance_rules.yaml and guardian.yaml point to these IDs; engines read values from here,
+# so a threshold changes without touching Python. Only the Abdullah lane edits this file,
+# and every change names the scenario or evidence that motivated it (see change_log).
+#
+# Classes (what the system may do with a threshold):
+#   hard_control            enforced by deterministic code; no model, agent or persuasive
+#                           reasoning can override it. Only the owner can change the policy
+#                           input behind it, and the change is versioned and audited.
+#   policy_limit            set or approved by the owner (or an authorised governance
+#                           process). Fiona may suggest a default; the owner's value wins.
+#   risk_indicator          crossing it triggers investigation, a finding or escalation,
+#                           never an automatic decision on its own.
+#   advisory_benchmark      informs a recommendation; never decides one alone.
+#   provisional_assumption  a modelling or expert-judgement value awaiting validation; it is
+#                           labelled as provisional wherever it is shown.
+#
+# Validation status: validated | owner_set | contract | provisional.
+# "provisional" means expert judgement that has NOT been calibrated against data. The
+# validation plan at the end says how each provisional value gets tested.
+#
+# Units follow data/fixtures/FORMATS.md: no floats. Rates, shares and ratios are integer basis
+# points with a _bp suffix (2000 = 20%; a coverage of 1.25x = 12500 bp). Money is integer minor
+# units plus a currency (_minor). Days, months and counts are integers. The only plain decimals
+# allowed are elasticities and none other.
+
+schema_version: 1
+register_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+
+classes: [hard_control, policy_limit, risk_indicator, advisory_benchmark, provisional_assumption]
+
+thresholds:
+
+  # ---------------------------------------------------------------- liquidity
+  - id: T-LIQ-BUF-01
+    name: Minimum cash buffer
+    metric_id: liquidity.forecast_min_cash
+    applies_to: [G-08, LIQ-01, DIV-02, CAP-02, LIA-02, INN-02, STG-PRI]
+    value_source: tenant.policies.cash_buffer_minor
+    unit: money_minor
+    direction: risk_below
+    class: policy_limit
+    validation_status: owner_set
+    default_when_unset:
+      formula: "1.0 x average monthly committed outflows over the next 3 forecast months"
+      committed_outflows: [payroll, rent, utilities, scheduled_debt_service, statutory_taxes, insurance]
+      class: provisional_assumption
+      rationale: >
+        One month of unavoidable outflows lets the business absorb a month of zero net
+        receipts without missing payroll, rent, lenders or the tax authority. Expert
+        judgement, not an empirical optimum; seasonal businesses should hold more ahead of
+        their trough.
+    persona_values:
+      ten_karachi_apparel: {value_minor: 200000000, currency: PKR, note: "PKR 2,000,000; synthetic persona setting (Daniyal draft, confirmed in B2). Recheck against the generator's committed monthly outflows when D2 lands: should be within 25% of one month of committed outflows."}
+    business_type: all
+    industry: all
+    jurisdiction: all
+    accounting_framework: any
+    effective_date: "2026-10-14"
+    review_frequency: quarterly, and whenever payroll, rent or debt service changes by more than 10%
+    severity_when_crossed: high
+    system_response: "Forecast finding 'cash dips below your buffer in week N'; G-08 conditions or escalates payments that worsen a below-buffer week; dividends and discretionary spending are not recommended while any forecast week is below it."
+    required_approval: owner sets and changes it; agents cannot
+    not_applicable_when: never; the owner may set it to zero, which is recorded as an explicit choice
+
+  - id: T-LIQ-FLOOR-01
+    name: Forecast cash below zero
+    metric_id: liquidity.forecast_min_cash
+    applies_to: [LIQ-02, HLT-LIQ]
+    value: 0
+    unit: money_minor
+    direction: risk_below
+    class: risk_indicator
+    validation_status: validated
+    source: {type: definition, citation: "A negative forecast balance means obligations cannot be met from cash on hand without new funding."}
+    severity_when_crossed: critical
+    system_response: "Overall health becomes critical; every discretionary decision is deferred; the briefing ranks it first."
+    required_approval: none (informational)
+    effective_date: "2026-10-14"
+    review_frequency: none (definitional)
+
+  - id: T-LIQ-CR-01
+    name: Current ratio bands (generic)
+    metric_id: liquidity.current_ratio
+    applies_to: [HLT-LIQ]
+    bands_bp: {healthy_min: 12000, watch_min: 10000, stressed_min: 8000}
+    unit: ratio
+    direction: risk_below
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Common credit-analysis convention; no authoritative universal threshold exists."}
+    industry_overrides:
+      grocery_and_quick_service: {note: "Negative working capital is normal (cash sales, supplier credit); do not band; rely on forecast cash."}
+      retail_apparel: {healthy_min_bp: 13000, watch_min_bp: 11000, stressed_min_bp: 9000, note: "Inventory-heavy; a high ratio can hide slow stock, so read with inventory days."}
+    not_applicable_when: [financial_institutions, subscription_businesses_with_large_deferred_revenue]
+    severity_when_crossed: medium
+    system_response: "Sets the liquidity dimension band only when forecast cash is unavailable; the cash forecast outranks this ratio."
+    effective_date: "2026-10-14"
+    review_frequency: annually; replace with industry data when the Damodaran or local SME dataset is loaded
+
+  - id: T-LIQ-QR-01
+    name: Quick ratio watch level
+    metric_id: liquidity.quick_ratio
+    applies_to: [HLT-LIQ]
+    bands_bp: {watch_below: 8000}
+    industry_overrides:
+      retail_apparel: {watch_below_bp: 3000}
+    unit: ratio
+    direction: risk_below
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Convention; inventory-heavy retailers run structurally low quick ratios."}
+    severity_when_crossed: low
+    system_response: "Note in the liquidity explanation; never a decision on its own."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-LIQ-RUN-01
+    name: Cash runway bands
+    metric_id: liquidity.cash_runway_months
+    applies_to: [LIQ-03, STG-PRI]
+    bands: {critical_below: 3, stressed_below: 6, watch_below: 12}
+    unit: months
+    direction: risk_below
+    class: risk_indicator
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Start-up finance practice: raising capital typically takes 3 to 6 months, so runway below that leaves no time to fund."}
+    not_applicable_when: ["average monthly net operating cash flow is zero or positive (no burn), in which case runway is shown as 'not burning cash'"]
+    severity_when_crossed: high
+    system_response: "Introduction-stage priority: funding plan and burn reduction before any discretionary spending."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  # ---------------------------------------------------------------- solvency and debt
+  - id: T-SOL-DSCR-01
+    name: Minimum base-case debt-service coverage for new borrowing
+    metric_id: solvency.dscr_forward
+    applies_to: [DE-03, CAP-04, LIA-03, HLT-SOL]
+    value_bp: 12500
+    unit: ratio
+    direction: risk_below
+    class: advisory_benchmark
+    validation_status: provisional
+    source:
+      type: expert_judgment
+      citation: "Lender covenant practice commonly sits between 1.20x and 1.50x for SME term loans. Not a regulatory requirement."
+      supersede_with: "The actual covenant in the proposed loan term sheet (class becomes 'contract')."
+    severity_when_crossed: high
+    system_response: "Debt option is 'not recommended' in the base case; Fiona sizes the maximum debt that keeps coverage at this level."
+    effective_date: "2026-10-14"
+    review_frequency: per decision (replace with lender covenant when known)
+
+  - id: T-SOL-DSCR-02
+    name: Minimum downside debt-service coverage
+    metric_id: solvency.dscr_forward_downside
+    applies_to: [DE-04, CAP-04]
+    value_bp: 10000
+    unit: ratio
+    direction: risk_below
+    class: risk_indicator
+    validation_status: provisional
+    source: {type: definition_plus_judgment, citation: "Below 1.0x the business cannot service debt from operating earnings and must use cash or new funding."}
+    severity_when_crossed: high
+    system_response: "Debt is sized down until downside coverage reaches 1.0x; the rest of the requirement must come from equity, internal funds or a smaller project."
+    effective_date: "2026-10-14"
+    review_frequency: per decision
+
+  - id: T-SOL-ICR-01
+    name: Interest coverage bands
+    metric_id: solvency.interest_coverage
+    applies_to: [HLT-SOL, DE-03]
+    bands_bp: {healthy_min: 30000, watch_min: 15000, stressed_min: 10000}
+    unit: ratio
+    direction: risk_below
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Credit-analysis convention; rating agencies map coverage to grades but publish no SME threshold that applies everywhere."}
+    not_applicable_when: [financial_institutions]
+    severity_when_crossed: medium
+    system_response: "Sets the solvency band; below 1.0x the overall health is critical."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-SOL-NDE-01
+    name: Net debt to EBITDA bands (SME)
+    metric_id: solvency.net_debt_to_ebitda
+    applies_to: [HLT-SOL, DE-03]
+    bands_bp: {watch_above: 25000, stressed_above: 35000, critical_above: 50000}
+    unit: ratio
+    direction: risk_above
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Common leveraged-lending reference points; SMEs usually have less capacity than rated firms."}
+    not_applicable_when: ["EBITDA is zero or negative (the ratio is not meaningful; show net debt and runway instead)", financial_institutions]
+    framework_sensitivity: "Under IFRS 16 lease liabilities are debt and rent leaves EBITDA; under IFRS for SMEs Section 20 and ASC 842 operating leases they are not. Compare on one basis."
+    severity_when_crossed: medium
+    system_response: "Explains leverage in the debt decision; never sole basis."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-SOL-DE-01
+    name: Debt to equity watch levels (generic)
+    metric_id: solvency.debt_to_equity
+    applies_to: [HLT-SOL]
+    bands_bp: {watch_above: 15000, stressed_above: 25000}
+    unit: ratio
+    direction: risk_above
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Highly industry-dependent; replace with industry pack values."}
+    not_applicable_when: ["equity is zero or negative (show 'negative equity' as its own finding)", financial_institutions]
+    severity_when_crossed: low
+    system_response: "Context in the explanation only."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  # ---------------------------------------------------------------- profitability, efficiency, cash
+  - id: T-PRO-GM-01
+    name: Gross margin deterioration
+    metric_id: profit.gross_margin
+    applies_to: [HLT-PRO, STG-PRI]
+    comparison: year_on_year_change_percentage_points
+    bands_bp: {watch_below_change: -300, stressed_below_change: -600}
+    unit: share
+    direction: risk_below
+    class: risk_indicator
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Self-benchmark against the firm's own history; avoids an unfounded industry norm."}
+    severity_when_crossed: medium
+    system_response: "Finding with the items or categories driving the change (markdowns, cost increases)."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-EFF-INV-01
+    name: Inventory days increase versus own history
+    metric_id: efficiency.inventory_days
+    applies_to: [HLT-EFF, LIQ-04]
+    comparison: change_vs_same_period_prior_year
+    bands_bp: {watch_above_change: 2000, stressed_above_change: 3500}
+    unit: share
+    direction: risk_above
+    class: risk_indicator
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Self-benchmark; seasonal businesses must compare like periods."}
+    severity_when_crossed: medium
+    system_response: "Finding naming the slow movers and the cash they tie up (Y3 inventory analysis)."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-CSH-CFONI-01
+    name: Operating cash flow lagging profit
+    metric_id: cash.cfo_to_net_income
+    applies_to: [HLT-CSH, HLT-DIV-01]
+    bands_bp: {watch_below: 5000, stressed_below: 0}
+    unit: ratio
+    direction: risk_below
+    class: risk_indicator
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Earnings-quality convention: persistent CFO well below profit signals working capital absorbing cash."}
+    not_applicable_when: ["net income is zero or negative (ratio sign is meaningless)"]
+    severity_when_crossed: medium
+    system_response: "Profit-versus-cash explanation with the working-capital bridge."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  # ---------------------------------------------------------------- lifecycle stage
+  - id: T-STG-ZERO-01
+    name: Near-zero cash-flow band for sign classification
+    metric_id: stage.cf_pattern
+    applies_to: [STG-01, STG-02]
+    formula: "a flow is 'near zero' when |flow| < value_bp / 10000 x TTM revenue"
+    value_bp: 200
+    unit: share
+    class: provisional_assumption
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Dickinson (2011) uses signs only and does not define a materiality band; a band stops a rounding-sized flow from flipping the stage."}
+    severity_when_crossed: low
+    system_response: "A near-zero component is treated as ambiguous; the classifier reports both candidate stages and lowers confidence."
+    effective_date: "2026-10-14"
+    review_frequency: validate on both personas and on public filings (SEC EDGAR sample) before G4
+
+  - id: T-STG-MIN-01
+    name: Minimum data for a lifecycle classification
+    metric_id: stage.classification
+    applies_to: [STG-00]
+    value: 12
+    unit: months
+    class: hard_control
+    validation_status: validated
+    source: {type: method, citation: "Dickinson (2011) classifies annual cash flows; fewer than 12 months confounds seasonality with lifecycle."}
+    severity_when_crossed: medium
+    system_response: "Stage = not_classifiable; Fiona shows the owner's stated stage, labelled as unverified, and asks for more history."
+    effective_date: "2026-10-14"
+    review_frequency: none
+
+  # ---------------------------------------------------------------- decisions
+  - id: T-DEC-AFF-01
+    name: Affordability gate (cash above buffer)
+    metric_id: decision.peak_funding_need
+    applies_to: [CAP-02, INN-02, DIV-02, LIA-02, DE-02]
+    formula: "option is affordable from internal funds only if peak_funding_need <= min over forecast weeks of (forecast cash - buffer) + committed undrawn financing"
+    unit: money_minor
+    direction: risk_above
+    class: hard_control
+    validation_status: validated
+    source: {type: policy, citation: "Fiona core principle 4.4 (liquidity and survival first); the same buffer the Guardian enforces in G-08."}
+    severity_when_crossed: high
+    system_response: "The internal-funding option is marked infeasible now; Fiona states the shortfall and the date it could become feasible, if any."
+    effective_date: "2026-10-14"
+    review_frequency: none
+
+  - id: T-DEC-HURDLE-01
+    name: Discount (hurdle) rate construction
+    metric_id: decision.hurdle_rate
+    applies_to: [CAP-03, INN-03, DIV-03, DE-05]
+    formula: "hurdle = after-tax WACC + project risk premium; WACC = wd x Kd x (1 - t) + we x Ke; Kd = reference rate + credit spread; Ke = Kd (pre-tax) + equity premium"
+    parameters:
+      credit_spread: {value_bp: 300, class: provisional_assumption, note: "Replace with the term-sheet spread when one exists."}
+      equity_premium_over_kd: {value_bp: 600, class: provisional_assumption, note: "Expert judgement: equity holders of a private SME require a materially higher return than its lenders. Replace with a build-up from Damodaran country and size premia when that dataset is loaded (project doc data plan)."}
+      project_risk_premium_bp: {same_business_expansion: 0, new_product_or_market: 300, unproven_technology: 500, class: provisional_assumption}
+      weights: "target capital structure if the owner states one; otherwise book weights of interest-bearing debt and equity"
+    reference_rate_source: country_pack.market.reference_lending_rate
+    class: provisional_assumption
+    validation_status: provisional
+    owner_overridable: true
+    severity_when_crossed: n/a
+    system_response: "Every NPV states the rate used and shows NPV at hurdle - 3% and + 3%."
+    effective_date: "2026-10-14"
+    review_frequency: monthly for the reference rate; quarterly for premia
+
+  - id: T-DEC-PAYBACK-01
+    name: Maximum payback period default
+    metric_id: decision.payback_months
+    applies_to: [CAP-03, INN-03]
+    values: {general_capex_months: 36, technology_months: 24}
+    unit: months
+    direction: risk_above
+    class: policy_limit
+    validation_status: provisional
+    owner_overridable: true
+    source: {type: expert_judgment, citation: "SME owners typically need capital back within the life of a lease or loan; payback ignores value after the cutoff, so it is a liquidity screen, not a value test."}
+    severity_when_crossed: medium
+    system_response: "Option flagged 'slow payback'; never rejects a positive-NPV project alone."
+    effective_date: "2026-10-14"
+    review_frequency: owner-set
+
+  - id: T-DEC-DOWN-01
+    name: Downside and stress scenario parameters
+    metric_id: decision.scenario
+    applies_to: [DE-04, CAP-04, DIV-02, INN-04, LIA-03]
+    scenarios:
+      downside: {revenue_change_bp: -1500, variable_cost_change_bp: 500, fixed_cost_change_bp: 500, rate_change_bp: 200, delay_months: 2}
+      severe: {revenue_change_bp: -3000, variable_cost_change_bp: 1000, fixed_cost_change_bp: 1000, rate_change_bp: 400, delay_months: 4}
+      upside: {revenue_change_bp: 1000, variable_cost_change_bp: 0, fixed_cost_change_bp: 0, rate_change_bp: -100, delay_months: 0}
+    country_overrides:
+      PK: {downside: {rate_change_bp: 300, fx_change_imported_costs_bp: 1000}, severe: {rate_change_bp: 600, fx_change_imported_costs_bp: 2000}, note: "SBP moved the policy rate from 10.5% to 11.5% within 2026 and 6M KIBOR (12.42% on 12 Oct 2026) sits above the policy rate; wider rate shocks are prudent. Not a forecast."}
+    class: provisional_assumption
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Stress sizes chosen to be severe but plausible for a small retailer; validate against the generator's 24-month volatility (Y7)."}
+    system_response: "Every decision reports base, downside and severe results; recommendations must survive downside liquidity."
+    effective_date: "2026-10-14"
+    review_frequency: quarterly
+
+  - id: T-DEC-DIL-01
+    name: Equity dilution control flag
+    metric_id: decision.dilution
+    applies_to: [DE-06]
+    value_bp: 2500
+    unit: share
+    direction: risk_above
+    class: risk_indicator
+    validation_status: provisional
+    owner_overridable: true
+    source: {type: expert_judgment, citation: "Above roughly a quarter, investors usually seek board seats or veto rights; owner control objectives decide."}
+    severity_when_crossed: medium
+    system_response: "Memo must discuss control terms (board seats, vetoes, liquidation preference) and escalate the choice to the owner."
+    effective_date: "2026-10-14"
+    review_frequency: owner-set
+
+  - id: T-DEC-DIV-01
+    name: Dividend payout guidance by stage (share of TTM free cash flow)
+    metric_id: decision.dividend_capacity
+    applies_to: [DIV-04]
+    values_bp: {introduction: 0, growth: 2500, mature: 7500, shake_out: 0, decline: 5000, not_classifiable: 0}
+    unit: share
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Lifecycle theory of payout (mature firms with few investment opportunities distribute more). Values are illustrative ceilings, not targets."}
+    system_response: "Upper bound of the indicative range, after the liquidity, legal and covenant gates."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-DEC-PREPAY-01
+    name: Debt prepayment minimum spread
+    metric_id: decision.prepayment_spread
+    applies_to: [LIA-04]
+    formula: "after-tax cost of the facility - after-tax return available on surplus cash - annualised prepayment penalty"
+    value_bp: 200
+    unit: rate
+    direction: risk_below
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "A 2-point margin covers estimation error and the option value of keeping cash."}
+    system_response: "Prepayment recommended only above this spread and only if the buffer holds in every forecast week after prepayment."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-DEC-INN-01
+    name: Innovation budget as share of free cash flow after maintenance capex
+    metric_id: decision.innovation_budget
+    applies_to: [INN-02]
+    values_bp: {introduction: 0, growth: 1500, mature: 2000, shake_out: 1000, decline: 500, not_classifiable: 0}
+    note: "Introduction-stage innovation is funded from raised capital, not free cash flow; the share is 0 for budget purposes, not a ban."
+    unit: share
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Illustrative; firms that keep innovation spending within internally generated cash avoid funding experiments with debt."}
+    system_response: "Budget = share x max(0, TTM FCF after maintenance capex), capped by cash above buffer."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-DEC-PILOT-01
+    name: Pilot-first trigger for technology and new-product investments
+    metric_id: decision.pilot_trigger
+    applies_to: [INN-05, CAP-06]
+    triggers:
+      tco_share_of_budget_above_bp: 10000
+      payback_months_above: 24
+      measurable_outcome_missing: true
+      vendor_or_data_readiness_unproven: true
+    class: advisory_benchmark
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Stage-gate practice: commit in tranches when uncertainty is high."}
+    system_response: "Recommend a pilot sized to the budget with explicit success metrics and a scale-up decision date."
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-DEC-EPD-01
+    name: Early-payment discount decision
+    metric_id: treasury.early_payment_discount_apr
+    applies_to: [LIA-06, Y8]
+    formula: "take the discount if implied annual return > after-tax cost of short-term funds AND paying early keeps every forecast week >= buffer"
+    unit: rate
+    class: advisory_benchmark
+    validation_status: validated
+    source: {type: formula, citation: "Implied annual rate = d/(1-d) x 365/(N-n); 2/10 net 30 gives 37.2% (project documentation cites about 37%)."}
+    system_response: "Y8 schedule; the Guardian still applies G-08 to the early payment."
+    effective_date: "2026-10-14"
+    review_frequency: none
+
+  - id: T-DEC-DATA-01
+    name: Data sufficiency for a definitive recommendation
+    metric_id: decision.data_sufficiency
+    applies_to: [DE-00, DIV-00, CAP-00, LIA-00, INN-00]
+    rule: "every mandatory input for the decision is present, no older than its staleness limit, and from a source with confidence >= 'management_prepared' (see finance_rules.yaml onboarding.document_levels)"
+    class: hard_control
+    validation_status: validated
+    source: {type: policy, citation: "Project documentation: 'If the data is too thin to decide, Fiona says what it needs instead of guessing.'"}
+    system_response: "Output status 'insufficient_data' with the exact missing inputs; no option is recommended."
+    effective_date: "2026-10-14"
+    review_frequency: none
+
+  # ---------------------------------------------------------------- Guardian thresholds (B2)
+  - id: T-G01-CAP
+    name: Per-payment cap
+    metric_id: guardian.payment_amount
+    applies_to: [G-01]
+    value_source: mandates[agent].per_payment_cap_minor
+    class: policy_limit
+    validation_status: owner_set
+    default_suggestion: {formula: "5% of the cash buffer, rounded down to a round number", rationale: "Bounds the loss from any single autonomous error to a small share of the reserve."}
+    persona_values:
+      ten_karachi_apparel: {value_minor: 15000000, currency: PKR, note: "PKR 150,000 = 5% of an owner-set buffer of PKR 3,000,000 under the earlier draft; with the PKR 2,000,000 buffer the formula gives PKR 100,000. See B2 decision D-B2-03 for the final persona value."}
+    system_response: escalate
+    effective_date: "2026-10-14"
+    review_frequency: owner-set
+
+  - id: T-G10-DAILY
+    name: Daily cumulative cap
+    metric_id: guardian.payments_today
+    applies_to: [G-10]
+    value_source: mandates[agent].daily_cap_minor
+    class: policy_limit
+    validation_status: owner_set
+    default_suggestion: {formula: "3 x per-payment cap", rationale: "Bounds a day of autonomous errors to roughly 15% of the buffer."}
+    system_response: escalate
+    effective_date: "2026-10-14"
+    review_frequency: owner-set
+
+  - id: T-G03-COOL
+    name: Bank-detail cooling-off period
+    metric_id: guardian.days_since_bank_change
+    applies_to: [G-03]
+    value: 7
+    unit: days
+    class: hard_control
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Business-email-compromise controls rely on out-of-band call-back verification; a waiting period gives the genuine supplier time to notice an unrequested change. The period length is judgement, configurable per tenant (not below 3 days)."}
+    owner_overridable: "tenant may lengthen; minimum 3 days enforced by code"
+    system_response: block
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-G05-AMT
+    name: Duplicate-bill amount tolerance
+    metric_id: guardian.amount_relative_difference
+    applies_to: [G-05]
+    value_bp: 100
+    unit: share
+    class: hard_control
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Covers rounding and small freight or tax re-computations on a re-sent bill; validate false-positive rate on the generator's clean bills (B3, D4)."}
+    system_response: block (with the other G-05 signals)
+    effective_date: "2026-10-14"
+    review_frequency: after each generator version
+
+  - id: T-G05-SIM
+    name: Duplicate-bill invoice-number similarity
+    metric_id: guardian.invoice_number_similarity
+    applies_to: [G-05]
+    value_bp: 9000
+    unit: similarity_bp
+    class: hard_control
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Normalised InDel similarity (RapidFuzz fuzz.ratio / 100) on the normalised number; 0.90 catches suffixes and separators (INV-1001 vs INV1001A) while sequential 7-character numbers (INV1001 vs INV1002 = 0.857) stay below it."}
+    system_response: block (with amount tolerance); see guardian.yaml for the exact decision table
+    effective_date: "2026-10-14"
+    review_frequency: after each generator version
+
+  - id: T-G05-WINDOW
+    name: Duplicate-bill lookback window
+    metric_id: guardian.bill_lookback_days
+    applies_to: [G-05]
+    value: 180
+    unit: days
+    class: provisional_assumption
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Covers re-sent bills across two quarters; exact-hash duplicates are checked against all history."}
+    system_response: defines the comparison set
+    effective_date: "2026-10-14"
+    review_frequency: after each generator version
+
+  - id: T-G06-TOL
+    name: Three-way match price and quantity tolerance
+    metric_id: guardian.three_way_variance
+    applies_to: [G-06]
+    value_bp: 200
+    unit: share
+    class: hard_control
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "Common AP practice uses 1% to 5%; 2% is the blueprint draft."}
+    system_response: escalate
+    effective_date: "2026-10-14"
+    review_frequency: annually
+
+  - id: T-G07-ARITH
+    name: Arithmetic tolerance
+    metric_id: guardian.arithmetic_difference
+    applies_to: [G-07]
+    value_minor: 1
+    unit: minor_units
+    note: "0.01 of the currency unit = 1 minor unit for PKR and CNY. Tax is recomputed with the country pack's rounding rule (round half up per tax line), so honest documents differ by 0."
+    class: hard_control
+    validation_status: validated
+    source: {type: definition, citation: "Integer minor-unit arithmetic is exact; the 1-minor-unit tolerance only absorbs documents that round each line."}
+    system_response: block
+    effective_date: "2026-10-14"
+    review_frequency: none
+
+  - id: T-G12-CONCERN
+    name: Adversarial reviewer escalation level
+    metric_id: guardian.adversarial_concern
+    applies_to: [G-12]
+    value: high
+    scale: [none, low, medium, high]
+    class: hard_control
+    validation_status: provisional
+    source: {type: policy, citation: "Blueprint draft. The reviewer can raise but never lower an outcome."}
+    system_response: escalate
+    effective_date: "2026-10-14"
+    review_frequency: after the B3 evaluation run
+
+  - id: T-G14-STALE
+    name: Maximum age of decision inputs used by the Guardian
+    metric_id: guardian.input_age_hours
+    applies_to: [G-14]
+    values: {forecast_run_hours: 24, bank_balance_hours: 48, party_record_hours: 0}
+    class: hard_control
+    validation_status: provisional
+    source: {type: expert_judgment, citation: "A payment check against a forecast more than a day old can miss a same-day outflow."}
+    system_response: escalate (fail closed)
+    effective_date: "2026-10-14"
+    review_frequency: after G3
+
+validation_plan:
+  - thresholds: [T-STG-ZERO-01]
+    method: "Classify both personas and a 50-company SEC EDGAR sample with and without the band; report how many stages change."
+    owner: Abdullah with Yahya (Y2)
+    by: "2026-10-17"
+  - thresholds: [T-G05-AMT, T-G05-SIM, T-G05-WINDOW, T-G06-TOL]
+    method: "Run G-05 and G-06 on every clean bill in the generator answer key; target zero false blocks and 12 of 12 planted catches."
+    owner: Abdullah with Daniyal (B3, D4)
+    by: "2026-10-17"
+  - thresholds: [T-SOL-DSCR-01, T-SOL-ICR-01, T-SOL-NDE-01, T-LIQ-CR-01]
+    method: "Replace with lender term-sheet covenants where available; otherwise compare with State Bank of Pakistan SME prudential regulations and one lender's published criteria. Keep 'provisional' until a source is cited."
+    owner: Abdullah
+    by: "2026-10-19"
+  - thresholds: [T-DEC-DOWN-01]
+    method: "Back-test downside sizes against the generator's 24-month revenue volatility (Y7)."
+    owner: Abdullah with Yahya
+    by: "2026-10-19"
+
+change_log:
+  - version: "1.0.0"
+    date: "2026-10-13"
+    change: "First register for G1."
+    motivated_by: "B1 and B2 (roadmap), blueprint Guardian draft"
