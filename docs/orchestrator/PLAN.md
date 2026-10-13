@@ -169,6 +169,8 @@ fiona-19 owns the briefing, approvals, mandates and autonomy, council, command b
 | R4 | 13 Oct | G-08 tests the payment's incremental effect against the baseline forecast. |
 | R5 | 13 Oct | The generator models rising purchase costs, a lease, a loan schedule and opening balances; sale-event `cost_minor` is informational. |
 | R6 | 13 Oct | The deadline is Tue 20 Oct, 20:59 PKT (official rules). The scope is ordered by scoring weight into three tiers (§1); Tier 3 is built for the Shenzhen final. |
+| R8 | 13 Oct | Tenancy (R15 from fiona-19): engine endpoints take the tenant only via `engine.app.tenancy.TenantId`, never as a query or body field. Mock mode uses the `X-Fiona-Tenant` header; live mode fails closed with 401. |
+| R9 | 13 Oct | The Verdict check carries its own `outcome`, and the strictest outcome wins. Conditions are machine-readable so the wallet can enforce them. Health is shown as categorical bands, never as a score. G-13 is Tier 1. Karachi Treasurer caps are PKR 150k per payment and 450k per day. |
 | R7 | 13 Oct | Financing-option matching is Tier 1: it is the first phrase of Topic E and was missing from our plan. |
 
 ## 10. Only Asharib (the user) can do these
