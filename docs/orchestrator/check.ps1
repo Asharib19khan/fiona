@@ -32,7 +32,9 @@ foreach ($f in $tracked) { if ($f -match '(?i)(m5|favorita|sales_train_validatio
 
 if ($problems.Count) { "RULE PROBLEMS:"; $problems | ForEach-Object { "  $_" } } else { "rules: clean" }
 
-# Tests, where the scaffolding exists.
+# Tests are opt-in (-Tests): engine tests share the local Postgres server, and an orchestrator sweep
+# must never start, block or interrupt it. Lanes run their own suites; CI runs everything.
+if (-not ($args -contains '-Tests')) { if ($problems.Count) { exit 1 } else { exit 0 } }
 if (Test-Path 'services\engine\pyproject.toml') {
     "--- engine tests"
     uv run --directory services/engine pytest -q -x --no-header -p no:cacheprovider 2>&1 | Select-Object -Last 8

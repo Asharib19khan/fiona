@@ -1,23 +1,19 @@
 # Fiona: Status Board
 
-Maintained by fiona-b7. Updated Tue 13 Oct 2026, 20:15 PKT. Plan: [PLAN.md](PLAN.md).
+Maintained by fiona-b7. Updated Tue 13 Oct 2026, night. Plan: [PLAN.md](PLAN.md).
 
 **Deadline: Tue 20 Oct, 20:59 PKT (registration and submission).** Next gate: G1, Wed 14 at 23:59.
 
-| Lane | Session | Now | Next due | Risk |
+| Lane | Session | Done | Now | Next due | Risk |
 | --- | --- | --- | --- | --- |
-| Asharib | fiona-19 | First commit landed (38cd376); workspace commit next | A2 contracts core, Wed 14 | No API key or accounts yet |
-| Abdullah | fiona-fa | S1 done (deadline found); B1 and B2 | B1 and B2, Wed 14; financing catalogue, Thu 15 | Deliverables load from Sun 18 |
-| Daniyal | fiona-b0 | FORMATS.md done; D1 and real seed-42 files | D1 and D2a, Wed 14 | Critical path |
-| Yahya | fiona-79 | Y5 core done (65 tests); Y0 mocks | Y0, Wed 14; forecast and financing matcher, Fri 16 | None |
+| Asharib | fiona-19 | A1 repository and workspace (9c0aa77): web, engine, agents and guardian skeletons; 11 of 11 checks green | S2 kit, CI | A2 contracts, Wed 14 | No API key or accounts yet |
+| Abdullah | fiona-fa | S1 rules (deadline found); B1 threshold register | B1 rulebook, then B2 | B1 and B2, Wed 14 | The Mandate shape gates A2 |
+| Daniyal | fiona-b0 | D1 schema with forced RLS and 45 isolation tests (e6d6758); FORMATS.md | D2a real files, seed loader | D2a, Wed 14 | Shared local Postgres: start it once, never inside a test run |
+| Yahya | fiona-79 | Y5 core with 119 engine tests passing (15773ee) | Y0 mocks | Y0, Wed 14 | `ruff format` pending on forecast/ |
 
-## Done
-
-- 13 Oct: repository initialised (38cd376); plan re-made for 20 Oct (f76397c); fixture formats ruled on; Launch Lab core maths with 65 tests (uncommitted)
+Rule checks: clean. Status files carried the old dates; each lane has been told to update them.
 
 ## Waiting on Asharib (the user)
 
 - **Register the team** (closes with the submission deadline)
-- Confirm eligibility of all four members, and who can attend in person 20–23 Nov
-- How the submission is uploaded
-- Anthropic API key in `.env.local`; Supabase, Vercel and Fly.io accounts; GitHub repository plus `gh auth login`
+- Anthropic API key in `Y:\Fiona\.env.local`; Supabase, Vercel and Fly.io accounts; GitHub repository plus `gh auth login`
