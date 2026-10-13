@@ -1,0 +1,553 @@
+# Financing catalogue (B14): the options Fiona's financing matcher (Y10, Yahya) can recommend.
+# Schema agreed with fiona-79 on 13 Oct 2026. Human-readable notes: rulebook/docs/B14_Financing_Catalogue.md.
+#
+# Honesty rules for this file
+#   - Every option lists source_ids and an as_of date. `verification` says how good the source is:
+#       primary              read on the issuer's or regulator's own page
+#       secondary            reputable secondary report, not yet checked against the primary
+#       assumption           no public source gives the figure; a labelled expert-judgement range
+#                            (Fiona T-DEC-HURDLE-01) that a term sheet must replace
+#       unverified           placeholder; the matcher must not rank on it
+#   - Field-level `verification` overrides the option-level one.
+#   - A cost no source supports is null. The matcher then reports "insufficient data: need a
+#     quote or term sheet" for that option, never a guess.
+#   - Government and central-bank schemes are real programmes; terms change and participating
+#     banks decide eligibility. Product names of private lenders are never used; any example
+#     product would be labelled `illustrative: true`.
+#   - Units: money in minor units, rates in basis points (FORMATS.md). Ranges are {low, high}.
+#
+# Conditions use the grammar in finance_rules.yaml. `input:` paths the matcher must supply:
+#   request.purpose, request.amount_minor, request.tenor_months, request.is_new_borrower_of_bank,
+#   profile.owner_age_years, profile.legal_form, profile.size_tier, profile.years_operating,
+#   profile.has_b2b_receivables, profile.country.
+
+schema_version: 1
+catalogue_version: "1.0.0"
+as_of: "2026-10-13"
+owner: abdullah (fiona-fa)
+
+market:
+  reference_lending_rate:
+    PK: {name: "6-month KIBOR (offer)", value_bp: 1242, as_of: "2026-10-12", source_id: SRC-SBP-KIBOR-20261012, verification: primary}
+    PK_3M: {name: "3-month KIBOR (offer)", value_bp: 1201, as_of: "2026-10-12", source_id: SRC-SBP-KIBOR-20261012, verification: primary}
+    CN: {name: "1-year Loan Prime Rate", value_bp: 300, as_of: "2026-09-21", source_id: SRC-CN-LPR, verification: secondary, note: "Unchanged since 20 May 2025 per secondary reporting; confirm on pbc.gov.cn before the demo."}
+
+ranking:
+  default_order: [effective_annual_cost_mid, time_to_funds_days_mid, dilution]
+  rule: "Ineligible options (hard rule failed) are listed last with the failed rule. Options with null cost are ranked after costed ones and say what quote is needed. DSCR after borrowing must meet T-SOL-DSCR-01 (base) and T-SOL-DSCR-02 (downside) for any debt option to be 'recommended'; otherwise it is 'possible at a smaller size' with decision.max_debt_at_min_dscr."
+  flexibility_meaning: {high: "draw and repay at will", medium: "fixed schedule with prepayment allowed", low: "fixed schedule, penalties or covenants restrict changes"}
+
+options:
+  # =============================================================== PAKISTAN
+  - option_id: pk_term_loan_bank
+    country: PK
+    type: term_loan
+    name: Bank term loan (KIBOR-linked)
+    illustrative: false
+    purposes: [capex, working_capital_permanent, refinancing]
+    stages_suited: [growth, mature]
+    eligibility:
+      - {id: PK-TL-E1, kind: soft, condition: {input: profile.years_operating, op: ge, value: 2}, explain: "Banks usually want two or more years of trading history and financial statements."}
+      - {id: PK-TL-E2, kind: hard, condition: {metric: solvency.dscr_forward, op: ge, threshold: T-SOL-DSCR-01}, explain: "Coverage after this loan must meet Fiona's minimum (or the lender's covenant)."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 12, max: 60}
+    pricing:
+      rate_type: floating
+      reference: PK
+      spread_bp: {low: 200, high: 500, verification: assumption}
+      fees_bp: {low: 0, high: 100, verification: assumption}
+      fee_basis: upfront
+    repayment: {style: equal_principal, frequency_months: 3, grace_months: {low: 0, high: 6}}
+    collateral: {typical: [property mortgage, equipment hypothecation, hypothecation of stock and receivables], coverage_bp: {low: 12500, high: 15000, verification: assumption}, personal_guarantee: likely}
+    documents_required: [2 to 3 years of financial statements, 12 months of bank statements, NTN and sales-tax registration, CNIC of owners or directors, business registration or incorporation documents, tax returns, collateral documents]
+    time_to_funds_days: {low: 30, high: 60, verification: assumption}
+    dilution: false
+    flexibility: low
+    source_ids: [SRC-SBP-KIBOR-20261012, SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+    notes: "Reference rate is primary; the spread, fees, collateral cover and timing are Fiona assumptions because no public source states SME spreads. Replace with a bank's term sheet."
+
+  - option_id: pk_running_finance
+    country: PK
+    type: running_finance
+    name: Running finance (revolving overdraft, KIBOR-linked)
+    illustrative: false
+    purposes: [working_capital_seasonal]
+    stages_suited: [growth, mature, shake_out]
+    eligibility:
+      - {id: PK-RF-E1, kind: hard, condition: {input: request.purpose, op: eq, value: working_capital_seasonal}, explain: "A revolving line matches seasonal needs; using it for long-lived assets mismatches funding."}
+    amount: {min_minor: null, max_minor: null, max_rule: {of: is.revenue, multiple_bp: 2500, note: "assumption: up to 3 months of sales"}}
+    tenor_months: {min: 12, max: 12}
+    pricing:
+      rate_type: floating
+      reference: PK_3M
+      spread_bp: {low: 250, high: 500, verification: assumption}
+      fees_bp: {low: 0, high: 50, verification: assumption}
+      fee_basis: annual
+    repayment: {style: revolving, frequency_months: 12, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [hypothecation of stock and receivables, property mortgage], coverage_bp: {low: 12500, high: 15000, verification: assumption}, personal_guarantee: likely}
+    documents_required: [financial statements, 12 months of bank statements, stock and receivable statements (monthly), NTN, CNIC]
+    time_to_funds_days: {low: 20, high: 45, verification: assumption}
+    dilution: false
+    flexibility: high
+    source_ids: [SRC-SBP-KIBOR-20261012, SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+    notes: "Usually renewed yearly and not committed beyond the renewal date; Fiona does not count undrawn headroom as committed liquidity past renewal."
+
+  - option_id: pk_sbp_saaf
+    country: PK
+    type: refinance_scheme
+    name: SBP SME Asaan Finance (SAAF) scheme
+    illustrative: false
+    purposes: [capex, working_capital_permanent, working_capital_seasonal]
+    stages_suited: [introduction, growth, mature]
+    eligibility:
+      - {id: PK-SAAF-E1, kind: hard, condition: {input: request.is_new_borrower_of_bank, op: eq, value: true}, explain: "Only SMEs that are new borrowers of the participating bank are eligible."}
+      - {id: PK-SAAF-E2, kind: hard, condition: {input: request.amount_minor, op: le, value: 1000000000}, explain: "Maximum financing to a single SME is PKR 10 million."}
+      - {id: PK-SAAF-E3, kind: hard, condition: {input: profile.size_tier, op: in, value: [micro, small, medium]}, explain: "SMEs only (new and operating businesses)."}
+    amount: {min_minor: null, max_minor: 1000000000, max_rule: null}
+    tenor_months: {min: null, max: null, note: "As per the facility approved by the participating bank"}
+    pricing:
+      rate_type: fixed
+      reference: null
+      fixed_rate_bp: {low: null, high: 900}
+      fees_bp: {low: null, high: null}
+      fee_basis: upfront
+      verification: primary
+      note: "End-user mark-up up to 9% p.a.; SBP refinances banks at 3% (spread up to 6%), with effect from 18 Sep 2023."
+    repayment: {style: equal_principal, frequency_months: 1, grace_months: {low: null, high: null}, note: "Set by the bank"}
+    collateral: {typical: [personal guarantee], personal_guarantee: likely, note: "May be secured against personal guarantees; government first-loss risk cover of 50% (loans up to PKR 4m), 40% (4m to 7m), 30% (7m to 10m) to the bank."}
+    documents_required: [CNIC, NTN, business registration, bank statements, the participating bank's application]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-SBP-SAAF]
+    as_of: "2026-10-13"
+    verification: primary
+    notes: "Terms as displayed on SBP's scheme page on 13 Oct 2026. Availability depends on participating banks; confirm the scheme is open before recommending."
+
+  - option_id: pk_sbp_modernisation_refinance
+    country: PK
+    type: refinance_scheme
+    name: SBP Refinance Facility for Modernization of SMEs
+    illustrative: false
+    purposes: [capex]
+    stages_suited: [growth, mature, shake_out]
+    eligibility:
+      - {id: PK-MOD-E1, kind: hard, condition: {input: request.purpose, op: eq, value: capex}, explain: "Only for new machinery (local or imported) to modernise or set up SME units."}
+      - {id: PK-MOD-E2, kind: hard, condition: {any: [{all: [{input: profile.size_tier, op: eq, value: small}, {input: request.amount_minor, op: le, value: 2500000000}]}, {all: [{input: profile.size_tier, op: eq, value: medium}, {input: request.amount_minor, op: le, value: 20000000000}]}]}, explain: "Limit PKR 25 million for small and PKR 200 million for medium enterprises."}
+    amount: {min_minor: null, max_minor: 20000000000, max_rule: null}
+    tenor_months: {min: null, max: 120}
+    pricing:
+      rate_type: fixed
+      reference: null
+      fixed_rate_bp: {low: null, high: 600}
+      fees_bp: {low: null, high: null}
+      fee_basis: upfront
+      verification: primary
+    repayment: {style: equal_principal, frequency_months: 3, grace_months: {low: 0, high: 6}}
+    collateral: {typical: [the machinery financed, bank's credit policy], personal_guarantee: possible}
+    documents_required: [machinery quotation or import documents, financial statements, NTN, CNIC, project cost breakdown]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: low
+    source_ids: [SRC-SBP-MOD]
+    as_of: "2026-10-13"
+    verification: primary
+    notes: "Mark-up up to 6% p.a.; maximum tenor 10 years including 6 months' grace. A retail fit-out is not machinery, so a second apparel shop does not qualify."
+
+  - option_id: pk_pmybals_t1
+    country: PK
+    type: refinance_scheme
+    name: PM Youth Business & Agriculture Loan Scheme, Tier 1
+    illustrative: false
+    purposes: [capex, working_capital_permanent]
+    stages_suited: [introduction, growth]
+    eligibility:
+      - {id: PK-PMY-E1, kind: hard, condition: {any: [{all: [{input: profile.owner_age_years, op: ge, value: 21}, {input: profile.owner_age_years, op: le, value: 45}]}, {all: [{input: profile.industry, op: in, value: [it, ecommerce]}, {input: profile.owner_age_years, op: ge, value: 18}, {input: profile.owner_age_years, op: le, value: 45}]}]}, explain: "Pakistani CNIC holder aged 21 to 45 (18 to 45 for IT and e-commerce); for companies and partnerships, one owner, partner or director must be in the bracket."}
+      - {id: PK-PMY-T1-E2, kind: hard, condition: {input: request.amount_minor, op: le, value: 50000000}, explain: "Tier 1 loans are up to PKR 0.5 million."}
+    amount: {min_minor: null, max_minor: 50000000, max_rule: null}
+    tenor_months: {min: null, max: 36}
+    pricing: {rate_type: fixed, reference: null, fixed_rate_bp: {low: 0, high: 0}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: primary}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [personal guarantee], personal_guarantee: likely, note: "Clean loan; personal guarantee only. New businesses need 10% equity (90:10); existing businesses need none."}
+    documents_required: [CNIC, business plan, PMYP online application]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-SBP-PMYB]
+    as_of: "2026-10-13"
+    verification: primary
+
+  - option_id: pk_pmybals_t2
+    country: PK
+    type: refinance_scheme
+    name: PM Youth Business & Agriculture Loan Scheme, Tier 2
+    illustrative: false
+    purposes: [capex, working_capital_permanent, working_capital_seasonal]
+    stages_suited: [introduction, growth]
+    eligibility:
+      - {id: PK-PMY-E1, kind: hard, condition: {all: [{input: profile.owner_age_years, op: ge, value: 21}, {input: profile.owner_age_years, op: le, value: 45}]}, explain: "Owner, partner or director aged 21 to 45 (18 for IT and e-commerce)."}
+      - {id: PK-PMY-T2-E2, kind: hard, condition: {all: [{input: request.amount_minor, op: gt, value: 50000000}, {input: request.amount_minor, op: le, value: 150000000}]}, explain: "Tier 2 loans are above PKR 0.5 million and up to PKR 1.5 million."}
+    amount: {min_minor: 50000001, max_minor: 150000000, max_rule: null}
+    tenor_months: {min: null, max: 96, note: "Up to 8 years including up to 1 year grace; working-capital loans up to 5 years"}
+    pricing: {rate_type: fixed, reference: null, fixed_rate_bp: {low: 500, high: 500}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: primary}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 12}}
+    collateral: {typical: [personal guarantee], personal_guarantee: likely, note: "Clean loan. New businesses 80:20 debt to equity; existing businesses none."}
+    documents_required: [CNIC, business plan, PMYP online application, financial statements for existing businesses]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-SBP-PMYB]
+    as_of: "2026-10-13"
+    verification: primary
+
+  - option_id: pk_pmybals_t3
+    country: PK
+    type: refinance_scheme
+    name: PM Youth Business & Agriculture Loan Scheme, Tier 3
+    illustrative: false
+    purposes: [capex, working_capital_permanent, working_capital_seasonal]
+    stages_suited: [introduction, growth, mature]
+    eligibility:
+      - {id: PK-PMY-E1, kind: hard, condition: {all: [{input: profile.owner_age_years, op: ge, value: 21}, {input: profile.owner_age_years, op: le, value: 45}]}, explain: "Owner, partner or director aged 21 to 45 (18 for IT and e-commerce)."}
+      - {id: PK-PMY-T3-E2, kind: hard, condition: {all: [{input: request.amount_minor, op: gt, value: 150000000}, {input: request.amount_minor, op: le, value: 750000000}]}, explain: "Tier 3 loans are above PKR 1.5 million and up to PKR 7.5 million."}
+    amount: {min_minor: 150000001, max_minor: 750000000, max_rule: null}
+    tenor_months: {min: null, max: 96, note: "Up to 8 years including up to 1 year grace; working-capital loans up to 5 years (option of mark-up only in the first 2 years)"}
+    pricing: {rate_type: fixed, reference: null, fixed_rate_bp: {low: 700, high: 700}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: primary}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 12}}
+    collateral: {typical: ["as per the bank's credit policy"], personal_guarantee: possible, note: "New businesses 80:20 debt to equity; existing businesses none. Up to 65% of the limit may fund civil works."}
+    documents_required: [CNIC, business plan, financial statements, collateral documents, PMYP online application]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-SBP-PMYB]
+    as_of: "2026-10-13"
+    verification: primary
+    notes: "Relevant to the Karachi persona only if an owner or director is aged 21 to 45; Fiona must ask, not assume."
+
+  - option_id: pk_invoice_discounting
+    country: PK
+    type: invoice_discounting
+    name: Receivables or invoice discounting (bank or NBFC)
+    illustrative: false
+    purposes: [working_capital_seasonal, working_capital_permanent]
+    stages_suited: [growth, mature]
+    eligibility:
+      - {id: PK-ID-E1, kind: hard, condition: {input: profile.has_b2b_receivables, op: eq, value: true}, explain: "Needs invoices owed by creditworthy business customers; cash and card retail sales cannot be discounted."}
+    amount: {min_minor: null, max_minor: null, max_rule: {of: bs.trade_receivables, multiple_bp: 8000, note: "assumption: advance of up to 80% of eligible invoices"}}
+    tenor_months: {min: 1, max: 6}
+    pricing: {rate_type: floating, reference: PK_3M, spread_bp: {low: 300, high: 600, verification: assumption}, fees_bp: {low: 25, high: 100, verification: assumption}, fee_basis: per_invoice}
+    repayment: {style: bullet, frequency_months: 3, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [assignment of receivables], personal_guarantee: possible}
+    documents_required: [invoice copies, customer contracts or POs, receivable ageing, bank statements]
+    time_to_funds_days: {low: 7, high: 30, verification: assumption}
+    dilution: false
+    flexibility: high
+    source_ids: [SRC-SBP-KIBOR-20261012, SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+
+  - option_id: pk_supplier_credit
+    country: PK
+    type: supplier_credit
+    name: Supplier credit (longer payment terms)
+    illustrative: false
+    purposes: [working_capital_seasonal, working_capital_permanent]
+    stages_suited: [introduction, growth, mature, shake_out, decline]
+    eligibility:
+      - {id: PK-SC-E1, kind: soft, condition: {input: profile.years_operating, op: ge, value: 1}, explain: "Suppliers extend terms to customers with a payment record."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 1, max: 3}
+    pricing:
+      rate_type: discount
+      reference: null
+      note: "No explicit interest. If the supplier offers an early-payment discount, the cost of taking the longer term is the discount's implied annual rate (T-DEC-EPD-01: d/(1-d) x 365/(N-n)); 2/10 net 30 = 37.2% a year. With no discount offered, the explicit cost is zero."
+      verification: primary
+    repayment: {style: bullet, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [], personal_guarantee: no}
+    documents_required: [supplier agreement or written terms]
+    time_to_funds_days: {low: 0, high: 14, verification: assumption}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-FORMULA-EPD]
+    as_of: "2026-10-13"
+    verification: primary
+    notes: "Fiona never recommends paying after agreed terms (LIA-06); this option means negotiating longer terms."
+
+  - option_id: pk_equipment_lease
+    country: PK
+    type: equipment_lease
+    name: Equipment or vehicle lease (leasing company or bank)
+    illustrative: false
+    purposes: [capex]
+    stages_suited: [growth, mature, shake_out]
+    eligibility:
+      - {id: PK-EL-E1, kind: hard, condition: {input: request.purpose, op: eq, value: capex}, explain: "Leases finance identifiable movable assets (machinery, vehicles, equipment), not shop fit-outs or stock."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 24, max: 60}
+    pricing: {rate_type: floating, reference: PK, spread_bp: {low: 300, high: 600, verification: assumption}, fees_bp: {low: 0, high: 100, verification: assumption}, fee_basis: upfront}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [the leased asset, security deposit], coverage_bp: {low: 1000, high: 2000, verification: assumption, note: "security deposit as a share of asset cost"}, personal_guarantee: possible}
+    documents_required: [asset quotation, financial statements, bank statements, NTN, CNIC]
+    time_to_funds_days: {low: 14, high: 30, verification: assumption}
+    dilution: false
+    flexibility: low
+    source_ids: [SRC-SBP-KIBOR-20261012, SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+    notes: "Leasing companies in Pakistan are NBFCs regulated by SECP. Accounting differs by framework (IFRS 16, IFRS for SMEs Section 20, ASC 842); the decision is made on cash (CAP-05)."
+
+  - option_id: pk_microfinance_bank_loan
+    country: PK
+    type: microfinance
+    name: Microfinance bank loan
+    illustrative: false
+    purposes: [working_capital_permanent, working_capital_seasonal, capex]
+    stages_suited: [introduction, growth]
+    eligibility:
+      - {id: PK-MF-E1, kind: hard, condition: {input: profile.size_tier, op: eq, value: micro}, explain: "Microfinance banks serve micro-enterprises and low-income borrowers under SBP's prudential regulations for MFBs."}
+    amount: {min_minor: null, max_minor: null, max_rule: null, note: "Limits are set by SBP's MFB prudential regulations (revised 2022 and 2025); the current micro-enterprise limit is not verified here."}
+    tenor_months: {min: null, max: null}
+    pricing: {rate_type: fixed, reference: null, fixed_rate_bp: {low: null, high: null}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: unverified}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: null, high: null}}
+    collateral: {typical: [group or personal guarantee, gold], personal_guarantee: likely}
+    documents_required: [CNIC, proof of business, bank statements if available]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-SBP-MFB-PR]
+    as_of: "2026-10-13"
+    verification: unverified
+    notes: "Listed so micro-tier tenants see it; cost and limits are null until verified against the current SBP prudential regulations, so the matcher reports insufficient data."
+
+  - option_id: pk_equity_angel
+    country: PK
+    type: equity_angel
+    name: Equity from an angel or strategic investor
+    illustrative: false
+    purposes: [capex, working_capital_permanent]
+    stages_suited: [introduction, growth, shake_out]
+    eligibility:
+      - {id: PK-EQ-E1, kind: hard, condition: {input: profile.legal_form, op: in, value: [private_company, public_company]}, explain: "Selling shares needs a company; a sole proprietor or partnership must incorporate first or take a partner."}
+      - {id: PK-EQ-E2, kind: soft, condition: {metric: decision.dilution, op: le, threshold: T-DEC-DIL-01}, explain: "Above 25% the investor usually seeks board seats or vetoes."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: null, max: null}
+    pricing:
+      rate_type: equity
+      reference: null
+      target_return_bp: {low: 2500, high: 4000, verification: assumption, note: "Investor's required annual return; expert judgement for a private Pakistani SME in PKR with policy rate 11.5% and CPI 10.3%. Replace with the investor's own terms."}
+    repayment: {style: none, frequency_months: null, grace_months: {low: null, high: null}}
+    collateral: {typical: [], personal_guarantee: no}
+    documents_required: [financial statements, business plan, cap table, valuation basis, shareholder agreement draft]
+    time_to_funds_days: {low: 90, high: 180, verification: assumption}
+    dilution: true
+    control_terms: [board seat, reserved matters or vetoes, information rights, pre-emption, tag-along and drag-along, liquidation preference]
+    flexibility: high
+    source_ids: [SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+    notes: "Equity is not free: the cost is the investor's required return plus a permanent share of profits (DE-05, DE-06)."
+
+  - option_id: pk_revenue_based
+    country: PK
+    type: revenue_based
+    name: Revenue-based financing
+    illustrative: false
+    purposes: [working_capital_permanent]
+    stages_suited: [growth]
+    eligibility:
+      - {id: PK-RBF-E1, kind: soft, condition: {input: profile.has_card_or_online_revenue, op: eq, value: true}, explain: "Repaid as a share of card or online receipts, so those receipts must be visible to the provider."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: null, max: null}
+    pricing: {rate_type: share_of_revenue, reference: null, revenue_share_bp: {low: null, high: null}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: unverified}
+    repayment: {style: revenue_share, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [], personal_guarantee: possible}
+    documents_required: [payment processor or marketplace statements, bank statements]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: high
+    source_ids: [SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: unverified
+    notes: "We found no sourced Pakistani pricing; the option is shown as 'ask providers for a quote' and never ranked on cost."
+
+  # =============================================================== CHINA (Shenzhen persona)
+  - option_id: cn_bank_working_capital_loan
+    country: CN
+    type: term_loan
+    name: Bank working-capital or term loan (LPR-linked)
+    illustrative: false
+    purposes: [working_capital_permanent, working_capital_seasonal, capex]
+    stages_suited: [growth, mature]
+    eligibility:
+      - {id: CN-TL-E1, kind: hard, condition: {metric: solvency.dscr_forward, op: ge, threshold: T-SOL-DSCR-01}, explain: "Coverage after the loan must meet Fiona's minimum (or the bank's covenant)."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 12, max: 36}
+    pricing: {rate_type: floating, reference: CN, spread_bp: {low: 0, high: 150, verification: assumption, note: "Context: PBoC reported a 3.2% weighted average rate on new corporate loans in April 2025 (secondary); no current SME spread is published."}, fees_bp: {low: 0, high: 50, verification: assumption}, fee_basis: upfront}
+    repayment: {style: equal_principal, frequency_months: 3, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [property mortgage, guarantee company, receivables pledge], personal_guarantee: likely}
+    documents_required: [business licence with unified social credit code, audited or reviewed financial statements, tax records, bank statements, contracts showing the use of funds]
+    time_to_funds_days: {low: 14, high: 45, verification: assumption}
+    dilution: false
+    flexibility: low
+    source_ids: [SRC-CN-LPR, SRC-CN-CORP-RATE, SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: assumption
+
+  - option_id: cn_inclusive_smallmicro_loan
+    country: CN
+    type: refinance_scheme
+    name: Inclusive small and micro enterprise loan (bank, supported by PBoC relending)
+    illustrative: false
+    purposes: [working_capital_permanent, working_capital_seasonal]
+    stages_suited: [introduction, growth, mature]
+    eligibility:
+      - {id: CN-INC-E1, kind: hard, condition: {input: profile.size_tier, op: in, value: [micro, small]}, explain: "Inclusive (puhui) loans target small and micro enterprises; a 300-person distributor may fall outside 'small' depending on revenue and sector thresholds, which Fiona must check rather than assume."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 6, max: 36}
+    pricing: {rate_type: floating, reference: CN, spread_bp: {low: null, high: null}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: unverified, note: "PBoC lends to banks at 1.25% (one-year relending rate after the 19 Jan 2026 cut, secondary); the end-user rate is set by the bank and is not published as a single figure."}
+    repayment: {style: equal_principal, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [credit-based (unsecured) or guarantee company], personal_guarantee: possible}
+    documents_required: [business licence, tax and invoice (fapiao) records, bank statements]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-CN-RELENDING]
+    as_of: "2026-10-13"
+    verification: unverified
+
+  - option_id: cn_supply_chain_factoring
+    country: CN
+    type: invoice_discounting
+    name: Supply-chain finance or factoring
+    illustrative: false
+    purposes: [working_capital_seasonal, working_capital_permanent]
+    stages_suited: [growth, mature]
+    eligibility:
+      - {id: CN-SCF-E1, kind: hard, condition: {input: profile.has_b2b_receivables, op: eq, value: true}, explain: "Needs receivables from creditworthy buyers (ideally large core enterprises)."}
+    amount: {min_minor: null, max_minor: null, max_rule: {of: bs.trade_receivables, multiple_bp: 8000, note: "assumption"}}
+    tenor_months: {min: 1, max: 6}
+    pricing: {rate_type: floating, reference: CN, spread_bp: {low: null, high: null}, fees_bp: {low: null, high: null}, fee_basis: per_invoice, verification: unverified}
+    repayment: {style: bullet, frequency_months: 3, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [assignment of receivables], personal_guarantee: possible}
+    documents_required: [invoices and fapiao, sales contracts, buyer confirmation]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: high
+    source_ids: [SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: unverified
+
+  - option_id: cn_financial_lease
+    country: CN
+    type: equipment_lease
+    name: Financial lease for equipment or vehicles
+    illustrative: false
+    purposes: [capex]
+    stages_suited: [growth, mature, shake_out]
+    eligibility:
+      - {id: CN-FL-E1, kind: hard, condition: {input: request.purpose, op: eq, value: capex}, explain: "Finances identifiable equipment or vehicles."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 24, max: 60}
+    pricing: {rate_type: floating, reference: CN, spread_bp: {low: null, high: null}, fees_bp: {low: null, high: null}, fee_basis: upfront, verification: unverified}
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [the leased asset, deposit], personal_guarantee: possible}
+    documents_required: [equipment quotation, business licence, financial statements]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: low
+    source_ids: [SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: unverified
+    notes: "Under CAS 21 (revised) a lessee recognises a right-of-use asset and liability, as under IFRS 16."
+
+  - option_id: cn_microcredit_company
+    country: CN
+    type: microfinance
+    name: Licensed microcredit company loan
+    illustrative: false
+    purposes: [working_capital_seasonal]
+    stages_suited: [introduction, growth]
+    eligibility:
+      - {id: CN-MC-E1, kind: soft, condition: {input: profile.size_tier, op: in, value: [micro, small]}, explain: "Usually small, short loans."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 1, max: 12}
+    pricing:
+      rate_type: fixed
+      reference: null
+      fixed_rate_bp: {low: null, high: 2400, verification: secondary, note: "Comprehensive annualised cost of new loans capped at 24% under a December 2025 guideline for small-loan companies, with lenders expected to move within 4x the 1-year LPR (about 12% at an LPR of 3.0%) by the end of 2027 (secondary reporting)."}
+      fees_bp: {low: null, high: null, note: "Included in the 24% comprehensive cost"}
+      fee_basis: upfront
+    repayment: {style: annuity, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [guarantee, property], personal_guarantee: likely}
+    documents_required: [business licence, owner ID, bank statements]
+    time_to_funds_days: {low: null, high: null}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-CN-MICRO-CAP]
+    as_of: "2026-10-13"
+    verification: secondary
+    notes: "An expensive last resort; rank on the 24% cap only as an upper bound."
+
+  - option_id: cn_supplier_credit
+    country: CN
+    type: supplier_credit
+    name: Supplier credit (longer payment terms)
+    illustrative: false
+    purposes: [working_capital_seasonal, working_capital_permanent]
+    stages_suited: [introduction, growth, mature, shake_out, decline]
+    eligibility: []
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: 1, max: 3}
+    pricing: {rate_type: discount, reference: null, note: "Cost = implied annual rate of any early-payment discount forgone (T-DEC-EPD-01); zero if none.", verification: primary}
+    repayment: {style: bullet, frequency_months: 1, grace_months: {low: 0, high: 0}}
+    collateral: {typical: [], personal_guarantee: no}
+    documents_required: [supplier agreement]
+    time_to_funds_days: {low: 0, high: 14, verification: assumption}
+    dilution: false
+    flexibility: medium
+    source_ids: [SRC-FORMULA-EPD]
+    as_of: "2026-10-13"
+    verification: primary
+
+  - option_id: cn_equity_angel
+    country: CN
+    type: equity_angel
+    name: Equity from an angel or strategic investor
+    illustrative: false
+    purposes: [capex, working_capital_permanent]
+    stages_suited: [introduction, growth, shake_out]
+    eligibility:
+      - {id: CN-EQ-E1, kind: soft, condition: {metric: decision.dilution, op: le, threshold: T-DEC-DIL-01}, explain: "Above 25% investors usually seek board seats or vetoes."}
+    amount: {min_minor: null, max_minor: null, max_rule: null}
+    tenor_months: {min: null, max: null}
+    pricing: {rate_type: equity, reference: null, target_return_bp: {low: null, high: null, verification: unverified, note: "No CNY equity premium set; needs a cited source or the investor's terms."}}
+    repayment: {style: none, frequency_months: null, grace_months: {low: null, high: null}}
+    collateral: {typical: [], personal_guarantee: no}
+    documents_required: [financial statements, business plan, cap table, shareholder agreement draft]
+    time_to_funds_days: {low: 90, high: 180, verification: assumption}
+    dilution: true
+    control_terms: [board seat, reserved matters, information rights, anti-dilution, liquidation preference]
+    flexibility: high
+    source_ids: [SRC-FIONA-ASSUMPTION]
+    as_of: "2026-10-13"
+    verification: unverified
+
+sources:
+  - {id: SRC-SBP-KIBOR-20261012, title: "KIBOR rates, 12-Oct-2026 (State Bank of Pakistan; data source Refinitiv)", url: "https://www.sbp.org.pk/assets/document/kibor-rates-12-october-2026.pdf", publisher: State Bank of Pakistan, describes: "12 Oct 2026", accessed: "2026-10-13", verification: primary}
+  - {id: SRC-SBP-SAAF, title: "Incentive Schemes for SMEs: SME Asaan Finance (SAAF) Scheme", url: "https://archive.sbp.org.pk/Incen-others/saaf.asp", publisher: State Bank of Pakistan, describes: "terms with effect from 18 Sep 2023, as displayed on 13 Oct 2026", accessed: "2026-10-13", verification: primary}
+  - {id: SRC-SBP-MOD, title: "Incentive Schemes for SMEs: Refinance Facility for Modernization of SMEs", url: "https://archive.sbp.org.pk/Incen-others/sme-1.asp", publisher: State Bank of Pakistan, describes: "terms as displayed on 13 Oct 2026 (page undated)", accessed: "2026-10-13", verification: primary}
+  - {id: SRC-SBP-PMYB, title: "Incentive Schemes: Prime Minister's Youth Business and Agriculture Loan Scheme (PMYB&ALS)", url: "https://archive.sbp.org.pk/Incen-others/PMYBALS.asp", publisher: State Bank of Pakistan, describes: "terms as displayed on 13 Oct 2026 (page undated)", accessed: "2026-10-13", verification: primary}
+  - {id: SRC-SBP-MFB-PR, title: "SBP circulars on Prudential Regulations for Microfinance Banks (2022 limit revision; ACFID Circular No. 01 of 2025)", url: "https://www.sbp.org.pk/circulars/acfid-circular-no-01-of-2025", publisher: State Bank of Pakistan, describes: "framework only; limits and pricing not verified", accessed: "2026-10-13", verification: unverified}
+  - {id: SRC-CN-LPR, title: "China's one-year LPR held at 3.0% (TrendForce DataTrack, 1 Oct 2026)", url: "https://datatrack.trendforce.com/blog/content/64760/chinas-one-year-lpr-kept-unchanged-for-16-consecutive-months-steady-at-a-record-low-of-30", publisher: TrendForce (secondary; primary is the PBoC/NIFC monthly LPR announcement), describes: "LPR fixing of 21 Sep 2026", accessed: "2026-10-13", verification: secondary}
+  - {id: SRC-CN-CORP-RATE, title: "China's central bank steps up support for small, medium businesses (Xinhua via gov.cn, 5 Jun 2025)", url: "https://english.www.gov.cn/news/202506/05/content_WS68414039c6d0868f4e8f3158.html", publisher: State Council (English), describes: "weighted average rate on new corporate loans, April 2025", accessed: "2026-10-13", verification: secondary}
+  - {id: SRC-CN-RELENDING, title: "China announces first monetary easing of 2026 (Caixin Global, 15 Jan 2026)", url: "https://www.caixinglobal.com/2026-01-15/china-announces-first-monetary-easing-of-2026-102404084.html", publisher: Caixin, describes: "structural tool rates cut 25 bp from 19 Jan 2026; one-year relending 1.25%", accessed: "2026-10-13", verification: secondary}
+  - {id: SRC-CN-MICRO-CAP, title: "China caps borrowing costs charged by micro-loan companies (Caixin Global, 15 Jan 2026)", url: "https://www.caixinglobal.com/2026-01-15/china-caps-borrowing-costs-charged-by-micro-loan-companies-102404055.html", publisher: Caixin, describes: "24% comprehensive cost cap on new small-loan-company loans", accessed: "2026-10-13", verification: secondary}
+  - {id: SRC-FORMULA-EPD, title: "Implied annual rate of an early-payment discount, d/(1-d) x 365/(N-n)", publisher: "Standard trade-credit formula (rulebook T-DEC-EPD-01)", describes: formula, accessed: "2026-10-13", verification: primary}
+  - {id: SRC-FIONA-ASSUMPTION, title: "Fiona rulebook assumption (thresholds.yaml T-DEC-HURDLE-01 and this file)", publisher: Fiona finance rulebook, describes: "expert-judgement ranges where no public source exists; replace with a term sheet or quote", accessed: "2026-10-13", verification: assumption}
+
+change_log:
+  - {version: "1.0.0", date: "2026-10-13", change: "First catalogue: 13 PK and 7 CN options.", motivated_by: "B14; Topic E 'financing-option matching'"}

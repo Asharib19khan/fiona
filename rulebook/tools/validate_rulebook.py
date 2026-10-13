@@ -104,6 +104,18 @@ def main() -> int:
                 if out["outcome"] not in outcomes | {"pass"}:
                     errors.append(f"guardian.yaml: {rule['rule_id']} bad outcome {out['outcome']}")
 
+    financing = docs.get("financing.yaml")
+    if financing:
+        source_ids = {s["id"] for s in financing["sources"]}
+        option_ids = [o["option_id"] for o in financing["options"]]
+        errors += [f"financing.yaml: duplicate option {i}" for i in {i for i in option_ids if option_ids.count(i) > 1}]
+        for option in financing["options"]:
+            for sid in option["source_ids"]:
+                if sid not in source_ids:
+                    errors.append(f"financing.yaml: {option['option_id']} cites unknown source {sid}")
+            if option.get("verification") not in {"primary", "secondary", "assumption", "unverified"}:
+                errors.append(f"financing.yaml: {option['option_id']} has no valid verification level")
+
     if errors:
         print("\n".join(errors))
         return 1
