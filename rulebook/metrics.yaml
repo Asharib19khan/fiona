@@ -659,14 +659,14 @@ metrics:
     category: decision
     formula: "T-DEC-DATA-01"
     unit: label
-  - id: treasury.early_payment_discount_apr
-    name: Implied annual return of an early-payment discount
+  - id: payments.annualised_discount_return
+    name: Discount as an effective annual rate (compounded)
     category: treasury
-    formula: "d / (1 - d) x 365 / (N - n), for terms d/n net N"
+    formula: "(1 / (1 - d))^(365 / (N - n)) - 1, for terms d/n net N"
     unit: bp
     display: {as: percent, decimals: 1}
-    source: "Standard trade-credit formula; 2/10 net 30 = 0.02/0.98 x 365/20 = 37.24%"
-    worked_example: {d_bp: 200, n_days: 10, N_days: 30, result_bp: 3724}
+    source: "Standard trade-credit formula in effective (compounded) form, so it compares like-for-like with effective annual costs of money (financing.effective_annual_cost, cost_of_capital_annual_bp). Agreed with Yahya (fiona-79), 13 Oct 2026."
+    worked_example: {d_bp: 200, n_days: 10, N_days: 30, result_bp: 4459, simple_form_bp: 3724, note: "The project documentation's 'about 37%' is the simple form; Fiona shows the compounded 44.6% and may mention 37.2% simple."}
 
   # =========================================================== Guardian check quantities (shown in verdict details)
   - {id: guardian.payment_amount, name: Payment amount, category: guardian, formula: "proposal.amount", unit: money_minor}

@@ -703,7 +703,7 @@ decisions:
         rule_version: "1.0.0"
         decision_category: liabilities
         threshold: T-DEC-EPD-01
-        logic: "Take an early-payment discount if its implied annual rate exceeds the after-tax cost of short-term funds and G-08 passes. Never recommend paying suppliers after the agreed due date."
+        logic: "Take an early-payment discount if its effective annual rate (payments.annualised_discount_return) exceeds the after-tax cost of short-term funds and G-08 passes. Never recommend paying suppliers after the agreed due date."
     output: "Pay-down order with each facility's after-tax rate, the cash each step frees per month, and the buffer check."
 
   # ------------------------------------------------------------------ 5.5 Innovation and technology

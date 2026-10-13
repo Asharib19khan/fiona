@@ -264,7 +264,7 @@ options:
     pricing:
       rate_type: discount
       reference: null
-      note: "No explicit interest. If the supplier offers an early-payment discount, the cost of taking the longer term is the discount's implied annual rate (T-DEC-EPD-01: d/(1-d) x 365/(N-n)); 2/10 net 30 = 37.2% a year. With no discount offered, the explicit cost is zero."
+      note: "No explicit interest. If the supplier offers an early-payment discount, the cost of taking the longer term is the discount's effective annual rate (T-DEC-EPD-01: (1/(1-d))^(365/(N-n)) - 1); 2/10 net 30 = 44.6% a year compounded (37.2% simple). With no discount offered, the explicit cost is zero."
       verification: primary
     repayment: {style: bullet, frequency_months: 1, grace_months: {low: 0, high: 0}}
     collateral: {typical: [], personal_guarantee: no}
@@ -502,7 +502,7 @@ options:
     eligibility: []
     amount: {min_minor: null, max_minor: null, max_rule: null}
     tenor_months: {min: 1, max: 3}
-    pricing: {rate_type: discount, reference: null, note: "Cost = implied annual rate of any early-payment discount forgone (T-DEC-EPD-01); zero if none.", verification: primary}
+    pricing: {rate_type: discount, reference: null, note: "Cost = effective annual rate of any early-payment discount forgone (T-DEC-EPD-01); zero if none.", verification: primary}
     repayment: {style: bullet, frequency_months: 1, grace_months: {low: 0, high: 0}}
     collateral: {typical: [], personal_guarantee: no}
     documents_required: [supplier agreement]
@@ -546,7 +546,7 @@ sources:
   - {id: SRC-CN-CORP-RATE, title: "China's central bank steps up support for small, medium businesses (Xinhua via gov.cn, 5 Jun 2025)", url: "https://english.www.gov.cn/news/202506/05/content_WS68414039c6d0868f4e8f3158.html", publisher: State Council (English), describes: "weighted average rate on new corporate loans, April 2025", accessed: "2026-10-13", verification: secondary}
   - {id: SRC-CN-RELENDING, title: "China announces first monetary easing of 2026 (Caixin Global, 15 Jan 2026)", url: "https://www.caixinglobal.com/2026-01-15/china-announces-first-monetary-easing-of-2026-102404084.html", publisher: Caixin, describes: "structural tool rates cut 25 bp from 19 Jan 2026; one-year relending 1.25%", accessed: "2026-10-13", verification: secondary}
   - {id: SRC-CN-MICRO-CAP, title: "China caps borrowing costs charged by micro-loan companies (Caixin Global, 15 Jan 2026)", url: "https://www.caixinglobal.com/2026-01-15/china-caps-borrowing-costs-charged-by-micro-loan-companies-102404055.html", publisher: Caixin, describes: "24% comprehensive cost cap on new small-loan-company loans", accessed: "2026-10-13", verification: secondary}
-  - {id: SRC-FORMULA-EPD, title: "Implied annual rate of an early-payment discount, d/(1-d) x 365/(N-n)", publisher: "Standard trade-credit formula (rulebook T-DEC-EPD-01)", describes: formula, accessed: "2026-10-13", verification: primary}
+  - {id: SRC-FORMULA-EPD, title: "Effective annual rate of an early-payment discount, (1/(1-d))^(365/(N-n)) - 1", publisher: "Standard trade-credit formula (rulebook T-DEC-EPD-01)", describes: formula, accessed: "2026-10-13", verification: primary}
   - {id: SRC-FIONA-ASSUMPTION, title: "Fiona rulebook assumption (thresholds.yaml T-DEC-HURDLE-01 and this file)", publisher: Fiona finance rulebook, describes: "expert-judgement ranges where no public source exists; replace with a term sheet or quote", accessed: "2026-10-13", verification: assumption}
 
 change_log:

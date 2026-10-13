@@ -441,13 +441,13 @@ thresholds:
 
   - id: T-DEC-EPD-01
     name: Early-payment discount decision
-    metric_id: treasury.early_payment_discount_apr
+    metric_id: payments.annualised_discount_return
     applies_to: [LIA-06, Y8]
-    formula: "take the discount if implied annual return > after-tax cost of short-term funds AND paying early keeps every forecast week >= buffer"
+    formula: "take the discount if its effective annual rate (compounded) > the effective annual after-tax cost of short-term funds AND paying early passes G-08"
     unit: rate
     class: advisory_benchmark
     validation_status: validated
-    source: {type: formula, citation: "Implied annual rate = d/(1-d) x 365/(N-n); 2/10 net 30 gives 37.2% (project documentation cites about 37%)."}
+    source: {type: formula, citation: "Effective annual rate = (1/(1-d))^(365/(N-n)) - 1; 2/10 net 30 gives 44.6% compounded (37.2% in the simple form the project documentation quotes)."}
     system_response: "Y8 schedule; the Guardian still applies G-08 to the early payment."
     effective_date: "2026-10-14"
     review_frequency: none

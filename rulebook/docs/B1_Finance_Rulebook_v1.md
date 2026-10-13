@@ -105,7 +105,7 @@ Fiona builds incremental after-tax cash flows and tests NPV at the hurdle, IRR (
 
 ### 4.4 Liability reduction
 
-Facilities are ranked by after-tax effective annual cost including fees; ties within 1 point are broken by risk (floating rate, maturity, covenant headroom, personal guarantees). A facility facing a downside covenant breach goes first whatever its rate. Prepayment requires the buffer to hold in every forecast week and a spread of at least 2 points over the return on surplus cash. Fiona also shows cash that working capital can release, and takes an early-payment discount when its implied annual return beats the cost of funds (2/10 net 30 is 37.2% a year). Fiona never recommends paying suppliers late.
+Facilities are ranked by after-tax effective annual cost including fees; ties within 1 point are broken by risk (floating rate, maturity, covenant headroom, personal guarantees). A facility facing a downside covenant breach goes first whatever its rate. Prepayment requires the buffer to hold in every forecast week and a spread of at least 2 points over the return on surplus cash. Fiona also shows cash that working capital can release, and takes an early-payment discount when its implied annual return beats the cost of funds (2/10 net 30 is 44.6% a year compounded, or 37.2% in the simple form). Fiona never recommends paying suppliers late.
 
 ### 4.5 Innovation and technology
 
