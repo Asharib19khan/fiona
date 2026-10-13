@@ -1,0 +1,96 @@
+# Country pack: Pakistan (PK). Market inputs, tax and legal references used by rules and memos.
+# Every value carries its source, the period it describes, when it was published and when we
+# read it. `verification`: primary = read in the issuer's own document; secondary = from a
+# reputable secondary source, not yet checked against the primary; unverified = placeholder.
+# `stale_after_days`: after this many days from `as_of`, the engine must label the value stale
+# and memos must say so.
+
+schema_version: 1
+country: PK
+currency: PKR
+minor_unit_exponent: 2
+timezone: Asia/Karachi
+pack_version: "1.0.0"
+effective_date: "2026-10-14"
+
+market:
+  policy_rate_bp:
+    value: 1150
+    describes: "SBP policy rate, in force after the MPC meeting of 14 Sep 2026 (held unchanged)"
+    as_of: "2026-09-14"
+    source: {title: "SBP Monetary Policy Committee decision, 14 Sep 2026", url: "http://www.sbp.org.pk/assets/documents/press-release/Pr-14-Sep-2026.pdf", accessed: "2026-10-13"}
+    verification: primary
+    stale_after_days: 60
+    context: "Rate was 10.5% after Dec 2025, held Jan and Mar 2026, 11.5% by the 15 Jun 2026 MPC (date of the rise not confirmed), held Jul and Sep 2026."
+  reference_lending_rate_bp:
+    value: 1242
+    describes: "6-month KIBOR offer rate, 12 Oct 2026"
+    as_of: "2026-10-12"
+    source: {title: "KIBOR rates 12-Oct-2026 (SBP; data source Refinitiv)", url: "https://www.sbp.org.pk/assets/document/kibor-rates-12-october-2026.pdf", accessed: "2026-10-13"}
+    verification: primary
+    stale_after_days: 7
+    curve_bp: {kibor_1w_offer: 1188, kibor_1m_offer: 1196, kibor_3m_offer: 1201, kibor_6m_offer: 1242, kibor_9m_offer: 1271, kibor_1y_offer: 1275}
+    reading: "The curve sits above the 11.5% policy rate and slopes upward, consistent with markets pricing some risk of higher rates. Fiona does not forecast rates; it stress-tests them (T-DEC-DOWN-01)."
+  cpi_inflation_yoy_bp:
+    value: 1030
+    describes: "National CPI, September 2026, year on year (10.26% unrounded); core about 8.6%"
+    as_of: "2026-09-30"
+    published: "2026-10-01"
+    source: {title: "Pakistan Bureau of Statistics CPI release, reported by Business Recorder and Profit", url: "https://www.brecorder.com/news/40442263/sept-cpi-inflation-up-103pc-yoy", accessed: "2026-10-13"}
+    verification: secondary
+    stale_after_days: 35
+    note: "Verify on pbs.gov.pk. August 2026 was 11.15%; transport +27.4% YoY drove the rise. SBP medium-term target 5-7%."
+  usd_pkr:
+    value_x10000: 2769618
+    describes: "USD/PKR M2M revaluation rate, 13 Oct 2026 (276.9618)"
+    as_of: "2026-10-13"
+    source: {title: "SBP website economic data panel", url: "http://www.sbp.org.pk/", accessed: "2026-10-13"}
+    verification: primary
+    stale_after_days: 7
+  sbp_fx_reserves_usd_millions:
+    value: 21454
+    describes: "SBP's own reserves, 2 Oct 2026 (USD 21,453.7m; total liquid reserves USD 26,797.4m)"
+    as_of: "2026-10-02"
+    source: {title: "SBP website economic data panel", url: "http://www.sbp.org.pk/", accessed: "2026-10-13"}
+    verification: primary
+    stale_after_days: 14
+
+tax:
+  corporate_tax_rate_bp:
+    value: 2900
+    describes: "Standard rate for companies other than banking companies and small companies (small companies 20%)"
+    as_of: "2026-07-01"
+    source: {title: "PwC worldwide tax summaries and Finance Act 2026 commentary", url: "https://taxsummaries.pwc.com/pakistan/corporate/significant-developments", accessed: "2026-10-13"}
+    verification: secondary
+    caveats: ["Super tax may apply above income thresholds (Finance Act 2026 changes reported, not verified)", "Minimum tax on turnover can exceed the computed charge", "Fiona states tax as an assumption and recommends a tax adviser"]
+  gst_rate_bp:
+    value: 1800
+    describes: "Federal sales tax on goods (generator draft value)"
+    verification: unverified
+    note: "From data/fixtures/FORMATS.md country_pack_draft; verify with FBR before showing as fact."
+  dividend_withholding:
+    value: null
+    verification: unverified
+    note: "Not verified; any memo must say 'withholding tax on dividends applies; rate to be confirmed with a tax adviser'."
+  tax_id_formats:
+    NTN: {pattern: "^[0-9]{7}-[0-9]$", verification: unverified, note: "Generator draft; confirm with FBR documentation. G-11 escalates, never blocks, on format so a wrong pattern cannot stop a payment."}
+
+law:
+  companies_act: "Companies Act 2017 (Act No. XIX of 2017), Gazette of Pakistan, 31 May 2017"
+  dividends:
+    s240_1: "The company in general meeting may declare dividends, but no dividend shall exceed the amount recommended by the board."
+    s240_2: "No dividend out of profits from the sale or disposal of immovable property or capital assets (unless the business deals in them), except after setting off losses on such disposals; none out of unrealised gains on investment property credited to profit and loss."
+    s241: "Any dividend may be paid in cash or in kind only out of profits; dividend in kind only as shares of a listed company held by the distributing company."
+    s242: "Dividends are paid only to registered shareholders; listed companies pay cash dividends electronically."
+    s243: "Directors may not withhold or defer a declared dividend."
+    source: {title: "Companies Act 2017 as published in the Gazette (copy on psx.com.pk)", url: "https://www.psx.com.pk/psx/themes/psx/documents/legal-framework/SECP/act/companies-act-2017/companiesAct2017.pdf", accessed: "2026-10-13"}
+    verification: primary_as_enacted
+    caveat: "Later amendments (2020 onward) not checked; use SECP's consolidated text (updated 18 Aug 2022) before relying on this."
+  reporting_frameworks:
+    summary: "Listed and large companies use IFRS; medium-sized companies IFRS for SMEs; small companies the Revised AFRS for SSEs (IFRS Foundation, Pakistan jurisdiction profile, as cited in the project documentation)."
+    verification: secondary
+
+seasonal_calendar_note: "Ramadan, Eid al-Fitr, Eid al-Adha and the winter wedding season drive apparel demand; dates come from Yahya's seasonal calendar (Y5), not from this pack."
+
+change_log:
+  - {version: "1.0.0", date: "2026-10-13", change: "First PK pack with market inputs read on 13 Oct 2026."}

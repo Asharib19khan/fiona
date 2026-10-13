@@ -1,0 +1,110 @@
+# Launch Lab policy (B1). Read by services/engine/forecast/launch_lab/policy.py (Yahya, Y5).
+#
+# The engine reads only the `launch_lab:` mapping, and an unknown key fails loudly. The other
+# top-level keys (meta, sources, provenance, industry_packs, country_overrides) are for people and
+# for later loader versions; today's loader ignores them.
+#
+# Units follow data/fixtures/FORMATS.md: rates and probabilities are integer basis points (_bp);
+# elasticities are plain decimals because they are dimensionless slopes, not shares.
+#
+# Classes (see thresholds.yaml): unless a key says otherwise, every value here is a
+# provisional_assumption (expert judgement, not yet calibrated). The owner may override the
+# decision thresholds per request (engine OWNER_OVERRIDABLE list).
+
+meta:
+  schema_version: 1
+  rulebook_version: "1.0.0"
+  effective_date: "2026-10-14"
+  owner: abdullah (fiona-fa)
+  decision_labels: [LAUNCH, PILOT_FIRST, REVISE, HOLD, NOT_RECOMMENDED]
+  label_meanings:
+    LAUNCH: "Passes every threshold and the cash check: commit the planned investment."
+    PILOT_FIRST: "Unit economics pass but the probability of breaking even within the horizon is below launch_min_prob_breakeven_bp, or the evidence is weak: order pilot_cover_months of base demand and set a scale-up date."
+    REVISE: "Fails contribution margin or loss-probability at the stated price or cost, but a stated change (price, cost, order size) would pass: show that change."
+    HOLD: "Economics may pass but the cash check fails now (the launch would take a forecast week below the buffer with no safe timing): revisit on a named date."
+    NOT_RECOMMENDED: "Fails on economics with no reasonable revision, or demand evidence contradicts the plan."
+  label_precedence: "HOLD is checked first (liquidity before profit), then NOT_RECOMMENDED, REVISE, PILOT_FIRST, LAUNCH."
+  probability_rule: "Every probability shown must come from the engine's Monte Carlo with its run count, seed and demand-evidence class; a memo may never state a probability the engine did not return."
+
+launch_lab:
+  # ---- Decision thresholds (owner may override)
+  min_contribution_margin_bp: 2000      # 20% of net revenue per unit after all variable costs; below this, small demand misses wipe out profit
+  breakeven_horizon_months: 6           # cash paid back within one season plus a margin; seasonal lines may set their own season length
+  launch_min_prob_breakeven_bp: 7000    # below 70% -> PILOT_FIRST rather than LAUNCH
+  max_loss_probability_bp: 3000         # above a 30% chance of a horizon loss -> fails the risk rule
+
+  # ---- Inventory planning
+  service_level_bp: 9000                # 90%: a small retailer accepts some stock-outs to limit cash tied in stock
+  review_months: 1
+  pilot_cover_months: 1                 # a pilot order covers one month of base demand
+
+  # ---- Demand model
+  launch_ramp_bp: [6000, 8500, 10000]
+  demand_sigma_bp: {own_history: 2000, comparable_history: 3500, user_estimate: 5000}
+  monthly_noise_sigma_bp: 1500
+  elasticity_scenarios: {low_sensitivity: -0.5, medium_sensitivity: -1.2, high_sensitivity: -2.0}
+
+  # ---- Uncertainty and the low, base and high cases
+  cost_shock_bp: [-500, 0, 1000]
+  max_extra_discount_bp: 1000
+  return_rate_spread_bp: 5000
+  low_case_cost_change_bp: 500
+  low_case_extra_discount_bp: 500
+  low_case_return_multiplier_bp: 12500
+  simulation_runs: 5000
+  seed: 42
+
+  # ---- Money and data
+  unsold_recovery_rate_bp: 5000         # half of cost recovered on stock left at the horizon (clearance or return to supplier)
+  cost_of_capital_annual_bp: 2200       # PK new-product hurdle; derivation below. Other countries: see country_overrides
+  market_data_max_age_days: 180
+  sensitivity_swing_bp: 2000
+
+provenance:
+  cost_of_capital_annual_bp:
+    class: provisional_assumption
+    formula: "hurdle = WACC + new-product premium (T-DEC-HURDLE-01)"
+    derivation:
+      reference_rate: "6-month KIBOR offer 12.42% (SBP KIBOR sheet, 12 Oct 2026)"
+      credit_spread: "3.00% (assumption, T-DEC-HURDLE-01; replace with the term-sheet spread)"
+      pre_tax_cost_of_debt: "12.42% + 3.00% = 15.42%"
+      tax_rate: "29% (Pakistan corporate rate for companies other than banks and small companies; secondary source, verify)"
+      after_tax_cost_of_debt: "15.42% x (1 - 0.29) = 10.95%"
+      cost_of_equity: "15.42% + 6.00% equity premium (assumption) = 21.42%"
+      weights: "25% debt / 75% equity (assumption until the tenant's balance sheet gives book weights)"
+      wacc: "0.25 x 10.95% + 0.75 x 21.42% = 18.80%"
+      new_product_premium: "3.00% (T-DEC-HURDLE-01)"
+      hurdle: "18.80% + 3.00% = 21.80%, rounded to 22.00%"
+    sensitivity: "Launch Lab reports NPV at 19% and 25% as well."
+    note: "For a 4- to 6-month seasonal line the discount rate moves NPV by only a few percent; the cash check matters far more."
+  min_contribution_margin_bp: {class: provisional_assumption, basis: "expert judgement"}
+  launch_min_prob_breakeven_bp: {class: provisional_assumption, basis: "expert judgement; validated only by Y7 range coverage"}
+  max_loss_probability_bp: {class: provisional_assumption, basis: "expert judgement"}
+  unsold_recovery_rate_bp: {class: provisional_assumption, basis: "expert judgement; replace with the generator's clearance history when D2 has markdown events"}
+
+country_overrides:
+  # Proposed for a later loader version: per-tenant country values that replace the launch_lab keys.
+  PK:
+    cost_of_capital_annual_bp: 2200
+  CN:
+    cost_of_capital_annual_bp: null
+    note: "Not set: needs a cited CNY reference rate (for example the 1-year Loan Prime Rate) before use. Until then, the engine must report this key as draft_default for CN tenants."
+
+industry_packs:
+  # Proposed for a later loader version: applied after the base values, before owner overrides.
+  apparel:
+    unsold_recovery_rate_bp: 4000     # end-of-season fashion stock clears at deeper markdowns than staples
+    breakeven_horizon_months: 4       # one winter or summer season
+    note: "Provisional; validate against the generator's markdown and clearance events."
+
+sources:
+  - id: SRC-SBP-KIBOR-20261012
+    title: "KIBOR rates, 12-Oct-2026 (State Bank of Pakistan; data source Refinitiv)"
+    url: "https://www.sbp.org.pk/assets/document/kibor-rates-12-october-2026.pdf"
+    accessed: "2026-10-13"
+    values: {kibor_6m_offer: "12.42%", kibor_6m_bid: "12.17%", kibor_3m_offer: "12.01%", kibor_1y_offer: "12.75%"}
+  - id: SRC-PWC-PK-CIT
+    title: "Pakistan corporate tax rate, secondary sources (PwC tax summaries; Finance Act 2026 commentary)"
+    url: "https://taxsummaries.pwc.com/pakistan/corporate/significant-developments"
+    accessed: "2026-10-13"
+    status: secondary_not_verified_against_finance_act

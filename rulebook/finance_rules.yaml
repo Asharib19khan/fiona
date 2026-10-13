@@ -1,0 +1,767 @@
+# Fiona finance rulebook v1 (B1): lifecycle stage, stage priorities, health assessment and the
+# five CFO decisions. Human-readable companion: rulebook/docs/B1_Finance_Rulebook_v1.md.
+#
+# Who reads this file
+#   Y2 Stage Detector and ratio library (services/engine/analysis, Abdullah lane): stage, health
+#   Y4 decision calculators and Y10 financing matcher (Yahya lane): decisions, gates, ranking
+#   CFO Strategist prompt (Asharib lane): explanation templates and refusal rules
+#   B4 rubric and B6 QA: expected behaviour and validation tests
+#
+# Conventions (same as thresholds.yaml and data/fixtures/FORMATS.md)
+#   - Money is integer minor units plus a currency (`*_minor`). Rates, shares and ratios are
+#     integer basis points (`*_bp`; 1.25x coverage = 12500). No floats.
+#   - Metric IDs (`metric:`) are defined in rulebook/metrics.yaml; threshold IDs (`threshold:`)
+#     in rulebook/thresholds.yaml. A rule never restates a threshold value.
+#   - Cash-flow signs: inflow positive, outflow negative, as on a cash-flow statement.
+#   - A metric that cannot be computed is null with a reason; a condition on a null metric is
+#     neither true nor false: it evaluates to "unknown", and the rule's `on_unknown` decides.
+#   - Rules are evaluated in the order listed; `recommendation_logic` blocks are first-match-wins.
+#
+# Condition grammar (implement once, use everywhere)
+#   condition := {all: [condition, ...]}
+#              | {any: [condition, ...]}
+#              | {not: condition}
+#              | predicate
+#   predicate := {metric: <metric_id> | input: <input path>,
+#                 op: lt | le | gt | ge | eq | ne | in | not_in | is_null | not_null,
+#                 value: <literal> | threshold: <threshold id>[.<key>] | rhs_metric: <metric_id>}
+#   Comparisons against a threshold use its `value_bp` / `value_minor` / `value` unless a key
+#   is named (for example `threshold: T-SOL-ICR-01.stressed_min`). Inputs are dotted paths
+#   into the decision request (profile.*, policy.*, request.*, statements.*, forecast.*).
+
+schema_version: 1
+rule_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+jurisdiction_default: any
+accounting_framework_default: any
+status: "v1 for G1. Thresholds marked provisional in thresholds.yaml are expert judgement, not calibrated values."
+
+# ======================================================================================
+# 1. ONBOARDING: what the engine needs before it may recommend anything
+# ======================================================================================
+onboarding:
+  profile_fields:
+    mandatory:
+      - {field: profile.tenant_id, why: "isolation and audit"}
+      - {field: profile.country, why: "country pack: tax, law, market rates"}
+      - {field: profile.reporting_currency, why: "every figure"}
+      - {field: profile.functional_currency, why: "FX exposure; usually equals reporting currency for SMEs"}
+      - {field: profile.industry, why: "industry pack and which ratios are meaningful"}
+      - {field: profile.business_model, why: "e.g. retail store, distributor, services"}
+      - {field: profile.legal_form, values: [sole_proprietor, partnership, private_company, public_company, other], why: "dividends exist only for companies; liability and law differ"}
+      - {field: profile.accounting_framework, values: [IFRS, IFRS_SMES, US_GAAP, CAS, NATIONAL_SME, CASH_OR_TAX_BASIS], why: "rulepack and comparability"}
+      - {field: profile.fiscal_year_start_month, why: "period alignment"}
+      - {field: profile.year_established, why: "supplementary lifecycle evidence"}
+      - {field: profile.employee_count, why: "size tier"}
+      - {field: profile.owner_stated_stage, values: [introduction, growth, mature, shake_out, decline, unsure], why: "compared with the derived stage, never used alone"}
+      - {field: profile.objectives_ranked, why: "ordered list from objectives_catalogue; ties are not allowed"}
+      - {field: policy.cash_buffer_minor, why: "tenant-level owner policy (tenant.policies.cash_buffer_minor); every liquidity test"}
+    optional:
+      - {field: profile.annual_revenue_range}
+      - {field: profile.locations_count}
+      - {field: profile.ownership, why: "external shareholders change dividend and equity decisions"}
+      - {field: profile.primary_revenue_sources}
+      - {field: profile.customer_concentration_top1_bp, why: "share of revenue from the largest customer"}
+      - {field: profile.supplier_concentration_top1_bp}
+      - {field: profile.expansion_plans}
+      - {field: profile.current_difficulties}
+      - {field: profile.access_to_external_capital, values: [none, bank_relationship, investors_in_contact, both]}
+  objectives_catalogue: [preserve_liquidity, improve_profitability, reduce_debt, expand_capacity, enter_new_markets, invest_in_technology, increase_distributions, improve_efficiency, prepare_for_fundraising_or_loan]
+
+  # Decision-specific minimum inputs. "M" = mandatory, "C" = conditional (mandatory when the
+  # condition holds), "O" = optional (improves confidence). Missing M or triggered C inputs ->
+  # the decision returns status insufficient_data with this list (threshold T-DEC-DATA-01).
+  decision_inputs:
+    stage:
+      M: ["cash-flow statement or 12+ months of bank and ledger data covering operating, investing and financing flows", profile.owner_stated_stage]
+      O: [revenue history, operating margin history, capex and depreciation, business age]
+    debt_vs_equity:
+      M: [request.purpose, request.amount_minor, request.timing, "12+ months income statement and balance sheet (or ledger)", "existing debt schedule (lender, principal, rate, fixed or floating, maturity, covenants, security)", 13-week cash forecast, policy.cash_buffer_minor]
+      C: [{when: "a loan is being considered", input: "term sheet or indicative terms: rate, fees, tenor, collateral, covenants"}, {when: "equity is being considered", input: "cap table and indicative valuation or investor terms"}]
+      O: [unencumbered asset list, personal guarantees available, project cash-flow forecast]
+    dividend_vs_reinvest:
+      M: [profile.legal_form, "balance sheet with retained earnings", 13-week cash forecast, existing debt covenants, proposed amount or 'range wanted']
+      C: [{when: "legal_form is private_company or public_company", input: "accountant or company-secretary confirmation of distributable reserves"}]
+      O: [investment pipeline with expected returns, shareholder objectives]
+    asset_investment:
+      M: [asset cost quotation, useful life, incremental revenue or savings estimate with basis, operating and maintenance costs, financing method, 13-week cash forecast]
+      C: [{when: "a lease is offered", input: "lease quotation: payments, term, options, residual"}]
+      O: [capacity utilisation of existing assets, residual value evidence, supplier delivery time]
+    liability_reduction:
+      M: [facility schedule with rate, fees, maturity, prepayment terms, security, covenants, 13-week cash forecast]
+      O: [supplier credit terms and discounts, aged payables]
+    innovation_technology:
+      M: [vendor quotation or build estimate, implementation plan, at least one measurable outcome with baseline and target, 13-week cash forecast]
+      O: [data-quality assessment, staff capability, vendor exit terms, security and compliance requirements]
+
+  # Review levels (Part G of the brief). The level is computed from the evidence on file.
+  document_levels:
+    L1_preliminary:
+      when: "fewer than 12 months of reconciled bank data, or no statements, or only owner estimates"
+      allowed: [health snapshot labelled provisional, stage as 'owner-stated, unverified', what-to-provide-next list]
+      refuse: [any definitive financing, dividend, capex or innovation recommendation]
+    L2_standard:
+      when: "12+ months reconciled bank and ledger data, management statements, debt schedule"
+      allowed: [stage, health, decisions with confidence at most medium]
+      refuse: ["a dividend amount without distributable-reserve confirmation", "a loan recommendation without indicative terms"]
+    L3_major_decision:
+      when: "L2 plus decision-specific documents (term sheet, cap table, quotations), and reviewed or audited statements where they exist"
+      allowed: [decisions with confidence up to high, council mode memo]
+      required_extra: [base, downside and severe scenarios, owner approval, recommendation to consult a qualified accountant, lawyer or tax adviser where the decision has legal or tax effects]
+  source_status_order: [audited, reviewed, management_prepared, owner_estimate, unknown]
+
+# ======================================================================================
+# 2. LIFECYCLE STAGE (Dickinson 2011 sign patterns, with supplementary evidence)
+# ======================================================================================
+stage:
+  method: "Sign pattern of operating (CFO), investing (CFI) and financing (CFF) cash flows over an annual window, after Dickinson, V. (2011), 'Cash Flow Patterns as a Proxy for Firm Life Cycle', The Accounting Review 86(6), 1969-1994."
+  window: "fiscal year if a full one is available; otherwise trailing 12 months (TTM). Never a quarter: seasonality would masquerade as lifecycle."
+  windows_evaluated: [latest_12m, prior_12m]
+  stages: [introduction, growth, mature, shake_out, decline, not_classifiable]
+
+  patterns:
+    # sign: pos = net inflow, neg = net outflow. Shake-out is assigned by exclusion of the others.
+    - {pattern_id: P1, cfo: neg, cfi: neg, cff: pos, stage: introduction, reading: "Operations consume cash, the firm invests, and owners or lenders fund both."}
+    - {pattern_id: P2, cfo: pos, cfi: neg, cff: pos, stage: growth, reading: "Operations generate cash but investment outpaces it, so outside funding still comes in."}
+    - {pattern_id: P3, cfo: pos, cfi: neg, cff: neg, stage: mature, reading: "Operations fund investment and repay or reward capital providers."}
+    - {pattern_id: P4, cfo: neg, cfi: neg, cff: neg, stage: shake_out, reading: "Operations consume cash while the firm still invests and repays, so it is drawing down its cash."}
+    - {pattern_id: P5, cfo: pos, cfi: pos, cff: pos, stage: shake_out, reading: "Cash comes in from every direction, often a sign of restructuring or asset sales alongside new funding."}
+    - {pattern_id: P6, cfo: pos, cfi: pos, cff: neg, stage: shake_out, reading: "Operations and asset sales together repay capital: the firm is shrinking its base."}
+    - {pattern_id: P7, cfo: neg, cfi: pos, cff: pos, stage: decline, reading: "Operations consume cash; asset sales and new funding keep it going."}
+    - {pattern_id: P8, cfo: neg, cfi: pos, cff: neg, stage: decline, reading: "Operations consume cash; asset sales pay down capital."}
+
+  rules:
+    - rule_id: STG-00
+      rule_name: Enough history to classify
+      rule_version: "1.0.0"
+      decision_category: stage
+      required_inputs: [months_of_cash_flow_data]
+      conditions: {metric: stage.months_of_data, op: lt, threshold: T-STG-MIN-01}
+      recommended_outcomes: {stage: not_classifiable, confidence: none}
+      explanation_template: "Fiona needs at least 12 months of cash flows to infer a lifecycle stage; it has {figure:stage.months_of_data} months. Until then it shows your stated stage ({input:profile.owner_stated_stage}), marked as unverified."
+      evidence_requirements: [list of periods used, data source per period]
+      validation_tests:
+        - {id: STG-00-T1, given: {months_of_data: 8}, expect: {stage: not_classifiable}}
+        - {id: STG-00-T2, given: {months_of_data: 12}, expect: {rule_fires: false}}
+
+    - rule_id: STG-01
+      rule_name: Sign of each cash-flow component, with a near-zero band
+      rule_version: "1.0.0"
+      decision_category: stage
+      required_inputs: [cf.cfo, cf.cfi, cf.cff, is.revenue]
+      formula_reference: [stage.cf_pattern]
+      threshold: T-STG-ZERO-01
+      logic: "sign(x) = pos if x >= band; neg if x <= -band; near_zero otherwise, where band = T-STG-ZERO-01.value_bp / 10000 x TTM revenue. Exactly zero counts as near_zero."
+      recommended_outcomes: {signs: "{cfo, cfi, cff} each in pos | neg | near_zero"}
+      validation_tests:
+        - {id: STG-01-T1, given: {revenue_minor: 10000000000, cfo_minor: 150000000, cfi_minor: -500000000, cff_minor: 900000000}, expect: {cfo: near_zero, cfi: neg, cff: pos}, note: "band = 2% x 100,000,000 PKR = 2,000,000 PKR; CFO of 1,500,000 PKR is inside it"}
+
+    - rule_id: STG-02
+      rule_name: Map signs to a stage
+      rule_version: "1.0.0"
+      decision_category: stage
+      logic: "If no component is near_zero, look up the pattern table. If one or more is near_zero, evaluate every sign combination the near_zero components allow (pos and neg each). If all combinations give the same stage, use it; otherwise report the stage from the combination with the larger absolute component values as primary, list the alternatives, and set confidence to low."
+      recommended_outcomes: {stage: "one of stages", pattern_id: "P1..P8", alternatives: "list"}
+      validation_tests:
+        - {id: STG-02-T1, given: {cfo: pos, cfi: neg, cff: pos}, expect: {stage: growth, pattern_id: P2}}
+        - {id: STG-02-T2, given: {cfo: neg, cfi: neg, cff: neg}, expect: {stage: shake_out, pattern_id: P4}}
+        - {id: STG-02-T3, given: {cfo: pos, cfi: neg, cff: near_zero}, expect: {stage: "growth or mature", confidence: low}}
+
+    - rule_id: STG-03
+      rule_name: Consistency across two annual windows
+      rule_version: "1.0.0"
+      decision_category: stage
+      logic: "Classify latest_12m and prior_12m. Same stage: consistency = stable. Different: consistency = transition, and the latest window decides the stage while the explanation names both."
+      recommended_outcomes: {consistency: "stable | transition | single_window"}
+
+    - rule_id: STG-04
+      rule_name: Supplementary evidence check
+      rule_version: "1.0.0"
+      decision_category: stage
+      required_inputs: [growth.revenue_growth, profit.operating_margin, cash.capex_to_depreciation, profile.year_established]
+      logic: "For the derived stage, compare each indicator with the expected direction below. Count contradictions."
+      expected_directions:
+        introduction: {revenue_growth: "any (often high from a small base)", operating_margin: "low or negative", capex_to_depreciation: "> 1", age_years: "usually < 5"}
+        growth: {revenue_growth: "> 0", operating_margin: "positive", capex_to_depreciation: "> 1"}
+        mature: {revenue_growth: "low, near inflation", operating_margin: "stable, positive", capex_to_depreciation: "about 1"}
+        shake_out: {revenue_growth: "slowing or volatile", operating_margin: "falling"}
+        decline: {revenue_growth: "< 0", operating_margin: "falling or negative", capex_to_depreciation: "< 1"}
+      recommended_outcomes: {contradictions: "count and list"}
+      note: "Age is supporting evidence only; a young firm can be in decline and an old one in growth."
+
+    - rule_id: STG-05
+      rule_name: Distortions that make a window unreliable
+      rule_version: "1.0.0"
+      decision_category: stage
+      triggers:
+        - {id: acquisition, test: "a business acquisition is more than 50% of |CFI| in the window", treatment: "reclassify with the acquisition excluded and show both"}
+        - {id: one_off_financing, test: "a single equity injection or loan drawdown is more than 10% of TTM revenue", treatment: "show the stage with and without it"}
+        - {id: one_off_asset_sale, test: "a single disposal is more than 50% of positive CFI", treatment: "show the stage with and without it"}
+        - {id: missing_period, test: "any month in the window lacks bank or ledger data", treatment: "not_classifiable for that window"}
+        - {id: owner_declared_distress, test: "the owner flags a temporary event (flood, closure, fire)", treatment: "keep the classification but label it 'affected by <event>' and lower confidence one step"}
+      parameters: {acquisition_share_bp: 5000, one_off_financing_revenue_share_bp: 1000, one_off_disposal_share_bp: 5000, class: provisional_assumption}
+      recommended_outcomes: {distortions: "list; each lowers confidence one step"}
+
+    - rule_id: STG-06
+      rule_name: Confidence
+      rule_version: "1.0.0"
+      decision_category: stage
+      logic: |
+        start at high if consistency = stable, medium if transition or single_window;
+        lower one step if STG-02 found an ambiguous component (low is the floor for ambiguity);
+        lower one step if STG-04 found 2 or more contradictions;
+        lower one step per distortion in STG-05;
+        confidence never goes below low; not_classifiable is set only by STG-00 or a missing period.
+      recommended_outcomes: {confidence: "high | medium | low"}
+
+    - rule_id: STG-07
+      rule_name: Owner versus cash-flow disagreement
+      rule_version: "1.0.0"
+      decision_category: stage
+      conditions:
+        all:
+          - {input: profile.owner_stated_stage, op: not_in, value: [unsure]}
+          - {input: profile.owner_stated_stage, op: ne, rhs_metric: stage.classification}
+      recommended_outcomes: {disagreement: true}
+      explanation_template: >
+        You described the business as {input:profile.owner_stated_stage}. Its last 12 months of cash
+        flows say {figure:stage.classification}: operating cash flow was {figure:cash.cfo}
+        ({sign:cash.cfo}), investing {figure:cash.cfi} ({sign:cash.cfi}) and financing
+        {figure:cash.cff} ({sign:cash.cff}). A {input:profile.owner_stated_stage} business would
+        normally show {expected_pattern:profile.owner_stated_stage}. The difference comes from
+        {largest_contradicting_component}. Fiona plans with the cash-flow stage and keeps your view
+        on record; if a one-off event explains the gap, tell Fiona and it will show both.
+      evidence_requirements: [cash-flow statement rows or ledger event IDs behind each component]
+      note: "Never silently choose one view. The owner's view is a hypothesis; the cash flows are evidence."
+      validation_tests:
+        - {id: STG-07-T1, given: {owner_stated_stage: growth, derived: shake_out}, expect: {disagreement: true, explanation_names: [cfo, owner_stated_stage]}}
+
+# ======================================================================================
+# 3. STAGE PRIORITIES (what to investigate first; the firm's actual condition overrides)
+# ======================================================================================
+stage_priorities:
+  rule: "These set the order in which the CFO Strategist investigates and the default emphasis of memos. A health dimension at stressed or critical always outranks the stage priority."
+  stages:
+    introduction:
+      first_priority: "Runway: months of cash at the current burn (liquidity.cash_runway_months)"
+      second_priority: "Unit economics: does each sale make a positive contribution?"
+      financing_strategy: "Equity, grants or founder funds for losses; debt only for asset-backed or receivable-backed needs, because there is no operating cash to service it"
+      liquidity_policy: "Hold at least 6 months of runway or a funded plan to reach it (T-LIQ-RUN-01)"
+      investment_approach: "Only investments that shorten the path to positive operating cash flow; pilot everything"
+      debt_management: "Avoid fixed repayment schedules; prefer facilities without personal guarantees"
+      dividend_policy: "None"
+      technology_approach: "Adopt off-the-shelf tools on monthly subscriptions; no custom builds"
+      warning_signals: [runway below 6 months, contribution margin negative, revenue not growing while burn grows]
+      defer_when_risk_elevated: [new fixed-cost commitments, long leases, dividends, debt-funded capex]
+    growth:
+      first_priority: "Working capital: inventory and receivable days as sales grow"
+      second_priority: "Financing mix for capacity: match long-term assets with long-term funding"
+      financing_strategy: "Mix of internal funds, term debt sized to downside coverage, and equity for risky expansion"
+      liquidity_policy: "Buffer plus the working capital the next season needs"
+      investment_approach: "Capacity investments with positive NPV that survive the downside; stage large ones"
+      debt_management: "Keep forward DSCR at or above 1.25x in the base case and 1.0x in the downside"
+      dividend_policy: "Low or none while high-return investments exist (payout guidance T-DEC-DIV-01)"
+      technology_approach: "Systems that remove bottlenecks to scale (inventory, reconciliation, POS); measurable outcomes required"
+      warning_signals: [inventory days rising faster than sales, operating cash flow below profit, coverage falling]
+      defer_when_risk_elevated: [second and third sites at once, equity raised at a distressed valuation]
+    mature:
+      first_priority: "Dividends versus reinvestment: return on invested capital against the cost of capital"
+      second_priority: "Cost of debt and capital structure efficiency"
+      financing_strategy: "Internal funds and lower-cost debt; equity rarely needed"
+      liquidity_policy: "Buffer; surplus above it has an explicit use (distribution, debt reduction or investment)"
+      investment_approach: "Efficiency and replacement capex; growth projects must beat the hurdle"
+      debt_management: "Refinance expensive facilities; prepay when the spread rule passes (T-DEC-PREPAY-01)"
+      dividend_policy: "Regular, covered by free cash flow, subject to legal and covenant checks"
+      technology_approach: "Automation with measured savings; payback within 24 months"
+      warning_signals: [margin erosion, ROIC below cost of capital, rising customer concentration]
+      defer_when_risk_elevated: [large special distributions, diversification away from the core]
+    shake_out:
+      first_priority: "Margins and cost structure: which products, locations and costs destroy cash"
+      second_priority: "Liquidity and working-capital release (slow stock, receivables)"
+      financing_strategy: "Avoid new long-term debt unless it funds a costed turnaround; consider equity from a strategic partner"
+      liquidity_policy: "Buffer strictly enforced; no discretionary outflow that takes a forecast week below it"
+      investment_approach: "Only investments that cut cost or release cash quickly; pilot new lines"
+      debt_management: "Protect covenants; renegotiate before a breach, not after"
+      dividend_policy: "None until operating cash flow is positive over 12 months"
+      technology_approach: "Cheap tools that expose cost and stock problems; no large programmes"
+      warning_signals: [negative operating cash flow with positive profit, buffer breaches, falling gross margin]
+      defer_when_risk_elevated: [expansion, new locations, dividends, large technology programmes]
+    decline:
+      first_priority: "Liquidity and survival: runway and obligations due in the next 13 weeks"
+      second_priority: "Restructuring: asset sales, closure of loss-making units, renegotiation"
+      financing_strategy: "Asset-backed or restructuring finance only; no growth debt"
+      liquidity_policy: "Buffer plus a named contingency (which asset or facility covers a shortfall)"
+      investment_approach: "Only maintenance capex needed to operate safely, and investments with payback inside 12 months"
+      debt_management: "Prioritise secured and covenanted facilities; seek professional advice early"
+      dividend_policy: "None, unless winding down and legally permitted after creditors are covered"
+      technology_approach: "Only what reduces cost within the year"
+      warning_signals: [revenue falling, negative operating cash flow, asset sales funding operations]
+      defer_when_risk_elevated: [everything discretionary]
+    not_classifiable:
+      first_priority: "Collect 12 months of bank and ledger data"
+      second_priority: "Liquidity from the cash forecast"
+      dividend_policy: "No recommendation"
+      defer_when_risk_elevated: [all definitive recommendations]
+
+# ======================================================================================
+# 4. HEALTH ASSESSMENT (bands per dimension; no composite score in v1)
+# ======================================================================================
+health:
+  bands: [healthy, watch, stressed, critical, not_computable]
+  composite_score: "Not in v1. A numeric score needs weights calibrated and validated against outcomes (for example defaults or distress), which we do not have. The overall status below is a transparent rule, not a weighted score."
+  dimensions:
+    liquidity:
+      primary: liquidity.forecast_min_cash
+      rules:
+        - {band: critical, when: {metric: liquidity.forecast_min_cash, op: lt, threshold: T-LIQ-FLOOR-01}}
+        - {band: stressed, when: {metric: liquidity.buffer_headroom_min, op: lt, value: 0}}
+        - {band: watch, when: {metric: liquidity.current_ratio, op: lt, threshold: T-LIQ-CR-01.healthy_min}}
+        - {band: healthy, when: "otherwise"}
+      fallback_when_no_forecast: "Use current ratio bands (T-LIQ-CR-01, industry override) and runway; label 'no forecast'."
+      context_metrics: [liquidity.current_ratio, liquidity.quick_ratio, liquidity.cash_ratio, liquidity.working_capital, liquidity.cash_runway_months, liquidity.first_week_below_buffer]
+    profitability:
+      primary: profit.operating_margin
+      rules:
+        - {band: critical, when: {all: [{metric: profit.operating_margin, op: lt, value: 0}, {metric: profit.operating_margin_prior, op: lt, value: 0}]}}
+        - {band: stressed, when: {any: [{metric: profit.operating_margin, op: lt, value: 0}, {metric: profit.gross_margin_change, op: lt, threshold: T-PRO-GM-01.stressed_below_change}]}}
+        - {band: watch, when: {any: [{metric: profit.gross_margin_change, op: lt, threshold: T-PRO-GM-01.watch_below_change}, {metric: profit.roic_minus_hurdle, op: lt, value: 0}]}}
+        - {band: healthy, when: "otherwise"}
+      context_metrics: [profit.gross_margin, profit.ebitda_margin, profit.net_margin, profit.roa, profit.roe, profit.roic]
+    solvency:
+      primary: solvency.interest_coverage
+      rules:
+        - {band: critical, when: {any: [{metric: solvency.interest_coverage, op: lt, threshold: T-SOL-ICR-01.stressed_min}, {metric: solvency.dscr, op: lt, threshold: T-SOL-DSCR-02}]}}
+        - {band: stressed, when: {any: [{metric: solvency.interest_coverage, op: lt, threshold: T-SOL-ICR-01.watch_min}, {metric: solvency.net_debt_to_ebitda, op: gt, threshold: T-SOL-NDE-01.stressed_above}]}}
+        - {band: watch, when: {any: [{metric: solvency.interest_coverage, op: lt, threshold: T-SOL-ICR-01.healthy_min}, {metric: solvency.net_debt_to_ebitda, op: gt, threshold: T-SOL-NDE-01.watch_above}, {metric: solvency.debt_to_equity, op: gt, threshold: T-SOL-DE-01.watch_above}]}}
+        - {band: healthy, when: "otherwise, including no interest-bearing debt"}
+      context_metrics: [solvency.debt_to_equity, solvency.debt_to_assets, solvency.dscr, solvency.net_debt]
+    efficiency:
+      primary: efficiency.cash_conversion_cycle
+      rules:
+        - {band: stressed, when: {metric: efficiency.inventory_days_change, op: gt, threshold: T-EFF-INV-01.stressed_above_change}}
+        - {band: watch, when: {metric: efficiency.inventory_days_change, op: gt, threshold: T-EFF-INV-01.watch_above_change}}
+        - {band: healthy, when: "otherwise"}
+      context_metrics: [efficiency.inventory_days, efficiency.receivable_days, efficiency.payable_days, efficiency.asset_turnover]
+    cash_generation:
+      primary: cash.cfo
+      rules:
+        - {band: critical, when: {all: [{metric: cash.cfo, op: lt, value: 0}, {metric: cash.cfo_prior, op: lt, value: 0}]}}
+        - {band: stressed, when: {any: [{metric: cash.cfo, op: lt, value: 0}, {metric: cash.cfo_to_net_income, op: lt, threshold: T-CSH-CFONI-01.stressed_below}]}}
+        - {band: watch, when: {any: [{metric: cash.cfo_to_net_income, op: lt, threshold: T-CSH-CFONI-01.watch_below}, {metric: cash.fcf, op: lt, value: 0}]}}
+        - {band: healthy, when: "otherwise"}
+      context_metrics: [cash.fcf, cash.capex_coverage, liquidity.buffer_headroom_min]
+  overall:
+    logic: |
+      critical if liquidity = critical or solvency = critical;
+      stressed if liquidity = stressed or solvency = stressed or cash_generation = critical;
+      watch if any dimension is watch or stressed;
+      healthy otherwise;
+      not_computable if liquidity and solvency are both not_computable.
+    note: "Liquidity and solvency dominate because they decide survival (principle 4.4)."
+  divergence_explanations:
+    - id: HLT-DIV-01
+      name: Profitable but cash-negative
+      when: {all: [{metric: is.net_income, op: gt, value: 0}, {metric: cash.cfo, op: lt, value: 0}]}
+      explanation_template: "The business made a profit of {figure:is.net_income} but operations used {figure:cash.cfo} of cash. The gap is working capital: inventory changed by {figure:wc.inventory_change}, receivables by {figure:wc.receivables_change} and payables by {figure:wc.payables_change}. Profit is not cash until stock is sold and customers pay."
+    - id: HLT-DIV-02
+      name: Cash-rich but unprofitable
+      when: {all: [{metric: liquidity.buffer_headroom_min, op: gt, value: 0}, {metric: profit.operating_margin, op: lt, value: 0}]}
+      explanation_template: "Cash is comfortably above your buffer today, but operations lose money ({figure:profit.operating_margin} operating margin). At the current rate the surplus above the buffer lasts {figure:liquidity.months_of_surplus} months; the cash buys time, not a fix."
+
+# ======================================================================================
+# 5. THE FIVE CFO DECISIONS
+# ======================================================================================
+# Every decision returns: status (recommended | insufficient_data | refused_out_of_scope),
+# ranked options with their numbers (each a Figure), the recommended option, conditions,
+# confidence (high | medium | low), the thresholds used, and what evidence would change it.
+
+decisions:
+
+  # ------------------------------------------------------------------ 5.1 Debt or equity
+  - decision_id: DEC-DE
+    name: "Financing choice: debt, equity, internal funds, a mix, or defer"
+    question: "How should the business fund {request.purpose} of {request.amount_minor}?"
+    options:
+      A_debt: "Borrow (term loan, running finance or another product from rulebook/financing.yaml)"
+      B_equity: "Sell shares to an investor"
+      C_internal: "Use cash above the buffer and retained earnings"
+      D_mixed: "Debt sized to downside coverage, the rest from equity or internal funds"
+      E_defer: "Delay, reduce or stage the investment"
+    applicable_business_stages: [introduction, growth, mature, shake_out, decline]
+    links: {financing_catalogue: rulebook/financing.yaml, matcher: "Y10 (Yahya)", calculator: "POST /v1/decisions/debt-equity (Y4)"}
+    rules:
+      - rule_id: DE-00
+        rule_name: Data sufficiency
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: "onboarding.decision_inputs.debt_vs_equity.M and triggered C"
+        threshold: T-DEC-DATA-01
+        severity: blocking
+        recommended_outcomes: {status: insufficient_data, output: "missing inputs, each with why it matters and an example document"}
+        explanation_template: "Fiona cannot compare financing options yet. It needs: {missing_inputs}."
+        validation_tests:
+          - {id: DE-00-T1, given: {debt_schedule: null}, expect: {status: insufficient_data, missing_includes: "existing debt schedule"}}
+
+      - rule_id: DE-01
+        rule_name: Purpose screen
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [request.purpose]
+        logic: "Classify the purpose as working_capital_seasonal, working_capital_permanent, capex, refinancing or funding_operating_losses."
+        conditions: {input: request.purpose, op: eq, value: funding_operating_losses}
+        recommended_outcomes: {flag: debt_to_fund_losses, effect: "Option A is not_recommended unless a costed turnaround plan shows positive operating cash flow within the loan's grace period."}
+        escalation_conditions: ["purpose is funding_operating_losses and the amount exceeds 3 months of operating outflows"]
+        explanation_template: "Borrowing to cover losses adds a fixed repayment to a business that is already short of cash. Fiona will compare it only against a plan that turns operating cash flow positive."
+        note: "Matching principle: seasonal working capital suits revolving facilities; long-lived assets suit term funding."
+
+      - rule_id: DE-02
+        rule_name: Internal funding feasibility
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [forecast.weekly_closing_cash_minor, policy.cash_buffer_minor, request.amount_minor, request.timing]
+        metric_dependencies: [liquidity.buffer_headroom_min, decision.peak_funding_need]
+        threshold: T-DEC-AFF-01
+        logic: "internal_capacity = max(0, min over forecast weeks from the funding date of (closing cash - buffer)). C is feasible if amount <= internal_capacity; partially feasible otherwise, with internal_capacity as its maximum."
+        recommended_outcomes: {option_C: "feasible | partial(internal_capacity) | infeasible"}
+        validation_tests:
+          - {id: DE-02-T1, given: {min_closing_cash_minor: 258000000, buffer_minor: 200000000, amount_minor: 100000000}, expect: {option_C: "partial", internal_capacity_minor: 58000000}}
+
+      - rule_id: DE-03
+        rule_name: Base-case debt-service coverage after borrowing
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [forecast EBITDA for the next 12 months, existing scheduled debt service, new facility terms]
+        metric_dependencies: [solvency.dscr_forward, decision.max_debt_at_min_dscr]
+        threshold: T-SOL-DSCR-01
+        conditions: {metric: solvency.dscr_forward, op: lt, threshold: T-SOL-DSCR-01}
+        recommended_outcomes: {option_A: not_recommended_at_requested_size, output: "decision.max_debt_at_min_dscr: the largest principal that keeps forward DSCR >= threshold under the facility's terms"}
+        on_unknown: "If forward EBITDA is unavailable, use TTM EBITDA and lower confidence one step."
+        explanation_template: "With the new loan, next year's debt service would be {figure:solvency.debt_service_forward}, covered {figure:solvency.dscr_forward} times by forecast EBITDA. Fiona's minimum for new borrowing is {threshold:T-SOL-DSCR-01} (a lender may set its own). The most this business can borrow on these terms while staying at that level is {figure:decision.max_debt_at_min_dscr}."
+        validation_tests:
+          - {id: DE-03-T1, given: {ebitda_next12_minor: 710000000, existing_service_minor: 261612000, new_service_minor: 361284000}, expect: {dscr_forward_bp: 11398, option_A: not_recommended_at_requested_size}, note: "710,000,000 / 622,896,000 = 1.13984x -> 11398 bp (round half up). Hand-made example, not persona data."}
+
+      - rule_id: DE-04
+        rule_name: Downside coverage after borrowing
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        metric_dependencies: [solvency.dscr_forward_downside]
+        threshold: T-SOL-DSCR-02
+        scenario: T-DEC-DOWN-01.downside
+        conditions: {metric: solvency.dscr_forward_downside, op: lt, threshold: T-SOL-DSCR-02}
+        recommended_outcomes: {option_A: "size down to the principal where downside DSCR = 1.0x", option_D: "debt = that principal; remainder from equity or internal funds"}
+        explanation_template: "In the downside case (revenue {threshold:T-DEC-DOWN-01.downside.revenue_change_bp}, rates {threshold:T-DEC-DOWN-01.downside.rate_change_bp} bp higher), coverage falls to {figure:solvency.dscr_forward_downside}. Debt above {figure:decision.max_debt_downside} would have to be paid from cash or new money in a bad year."
+
+      - rule_id: DE-05
+        rule_name: Return versus cost of each source
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        metric_dependencies: [decision.project_irr, decision.after_tax_cost_of_debt, decision.cost_of_equity, decision.hurdle_rate]
+        threshold: T-DEC-HURDLE-01
+        logic: "If the funded project's IRR (or expected return) is below the after-tax cost of the cheapest available external source, no external financing is recommended: option E. If it is below the hurdle but above the cost of debt, debt-heavy funding magnifies a thin margin; flag 'thin spread'."
+        conditions: {metric: decision.project_irr, op: lt, rhs_metric: decision.after_tax_cost_of_debt}
+        recommended_outcomes: {recommended_option: E_defer, reason: return_below_cost_of_capital}
+        on_unknown: "If the project return cannot be estimated (no incremental cash-flow forecast), say so and compare options on liquidity and cost only, confidence at most low."
+        note: "Equity is not free: its cost is the return investors require, plus dilution of every future profit. Debt is not automatically worse: it is cheaper after tax but adds fixed repayments."
+
+      - rule_id: DE-06
+        rule_name: Dilution and control
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [pre_money_valuation_minor or investor terms, request.amount_minor, profile.ownership]
+        metric_dependencies: [decision.dilution]
+        threshold: T-DEC-DIL-01
+        logic: "dilution = amount / (pre_money + amount). Valuation must come from investor terms or a stated method (e.g. EBITDA multiple range); a single point estimate without a source is not allowed."
+        conditions: {metric: decision.dilution, op: gt, threshold: T-DEC-DIL-01}
+        recommended_outcomes: {option_B: "requires owner decision on control terms", escalation: owner}
+        escalation_conditions: ["dilution above threshold", "investor asks for veto rights, board control or a liquidation preference above 1x"]
+        explanation_template: "Raising {figure:request.amount} at a pre-money value of {figure:decision.pre_money_valuation} gives the investor {figure:decision.dilution} of the company and of every future profit. At this size investors usually ask for a board seat or vetoes."
+
+      - rule_id: DE-07
+        rule_name: Stage fit
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [stage.classification]
+        logic: "Apply stage_priorities[stage].financing_strategy as a soft preference. If stage = introduction and CFO < 0: A is not_recommended except asset- or receivable-backed short-term facilities. If stage = decline: A only for restructuring with a lender-agreed plan. If stage = shake_out: new long-term debt only to fund a costed turnaround."
+        recommended_outcomes: {preference_adjustments: "per option: preferred | neutral | discouraged"}
+
+      - rule_id: DE-08
+        rule_name: Collateral and covenant feasibility
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        required_inputs: [term sheet collateral requirement, unencumbered assets, covenant definitions]
+        logic: "A is infeasible if required collateral exceeds unencumbered assets plus guarantees the owner is willing to give. Test each covenant in base and downside; a projected breach in the downside is a flag, in the base case it makes A not_recommended."
+        recommended_outcomes: {option_A: "feasible | infeasible_collateral | not_recommended_covenant_breach"}
+
+      - rule_id: DE-09
+        rule_name: Floating-rate exposure
+        rule_version: "1.0.0"
+        decision_category: debt_vs_equity
+        logic: "For floating-rate facilities, recompute DSCR with the reference rate + T-DEC-DOWN-01 country rate shock (PK: +300 bp downside, +600 bp severe). Report the result; a fall below T-SOL-DSCR-02 is a flag."
+        recommended_outcomes: {flag: floating_rate_risk}
+        note: "Fiona does not forecast interest rates; it tests sensitivity to them."
+
+    recommendation_logic:
+      - {if: "DE-00 fired", then: {status: insufficient_data}}
+      - {if: "liquidity health = critical and purpose is not a liquidity rescue", then: {recommended: E_defer, reason: "fix liquidity first", confidence_cap: medium}}
+      - {if: "DE-05 fired", then: {recommended: E_defer, reason: "project return below the cost of funding"}}
+      - {if: "DE-02 option_C = feasible and the stage is growth, mature or shake_out", then: {recommended: C_internal, note: "keep the buffer"}}
+      - {if: "A passes DE-03, DE-04 and DE-08 and the stage is growth or mature", then: {recommended: A_debt}}
+      - {if: "A passes DE-03 but fails DE-04", then: {recommended: D_mixed, debt: decision.max_debt_downside, remainder: "equity (B) or internal (C)"}}
+      - {if: "A fails DE-03 and B is available (DE-06 terms known)", then: {recommended: B_equity, condition: "owner accepts the dilution and control terms"}}
+      - {if: "otherwise", then: {recommended: E_defer, reason: "no source passes the coverage and affordability tests at this size"}}
+    confidence:
+      high: "Data level L3, stage confidence high, and every deciding metric at least 10% away from its threshold"
+      medium: "Level L2, or one deciding metric within 10% of its threshold"
+      low: "Otherwise"
+    output_must_include: [each option's coverage, runway after funding and after-tax cost, the dilution for B, the downside result, the evidence that would change the recommendation]
+
+  # ------------------------------------------------------------------ 5.2 Dividend or reinvest
+  - decision_id: DEC-DIV
+    name: Dividend (or owner drawings) versus reinvestment
+    options:
+      no_distribution: "Retain everything"
+      reduced: "Pay less than requested"
+      conditional: "Approve in principle, pay only when stated conditions are met"
+      full_subject_to_checks: "Pay the requested amount after legal and liquidity checks"
+      retain_for_use: "Retain for working capital, debt reduction or a named investment"
+    applicable_business_stages: [growth, mature, shake_out, decline]
+    rules:
+      - rule_id: DIV-00
+        rule_name: Data sufficiency
+        rule_version: "1.0.0"
+        decision_category: dividend
+        required_inputs: "onboarding.decision_inputs.dividend_vs_reinvest"
+        threshold: T-DEC-DATA-01
+        recommended_outcomes: {status: insufficient_data}
+      - rule_id: DIV-01
+        rule_name: Legal form
+        rule_version: "1.0.0"
+        decision_category: dividend
+        conditions: {input: profile.legal_form, op: in, value: [sole_proprietor, partnership]}
+        recommended_outcomes: {reframe: owner_drawings, effect: "legal distributability tests do not apply; liquidity and covenant tests do"}
+      - rule_id: DIV-02
+        rule_name: Liquidity gate
+        rule_version: "1.0.0"
+        decision_category: dividend
+        class: hard_control
+        required_inputs: [forecast.weekly_closing_cash_minor, policy.cash_buffer_minor, request.amount_minor, request.pay_date]
+        metric_dependencies: [decision.dividend_liquidity_capacity]
+        threshold: T-LIQ-BUF-01
+        logic: "liquidity_capacity = max(0, min over forecast weeks from the pay date of (closing cash - buffer)). If capacity = 0: no distribution now. If amount > capacity: at most capacity."
+        recommended_outcomes: {cap_minor: decision.dividend_liquidity_capacity}
+        explanation_template: "Paying {figure:request.amount} on {input:request.pay_date} would take cash to {figure:decision.min_cash_after_dividend} in week {figure:decision.week_of_min_after_dividend}, below your buffer of {figure:policy.cash_buffer}. The most that keeps every forecast week above the buffer is {figure:decision.dividend_liquidity_capacity}."
+        note: "The Guardian applies the same test (G-08) if a dividend payment is ever proposed; the owner remains the decision-maker."
+      - rule_id: DIV-03
+        rule_name: Legal distributability
+        rule_version: "1.0.0"
+        decision_category: dividend
+        jurisdiction: PK
+        legal_basis:
+          - "Companies Act 2017 (Pakistan), s.241: a dividend may be paid in cash or in kind 'only out of its profits' (as enacted, Gazette of Pakistan, 31 May 2017)."
+          - "s.240(2): no dividend out of profits from the sale or disposal of immovable property or capital assets (unless that is the business), and none out of unrealised gains on investment property credited to profit and loss."
+          - "s.240(1): the general meeting may declare dividends, but no dividend may exceed the amount the board recommends."
+          - "Amendments after 2017 (Companies (Amendment) Act 2020 and later) must be checked against the SECP consolidated text before use."
+        logic: "Fiona separates accounting profit, available cash, retained earnings and legally distributable reserves and never assumes one equals another. It cannot certify distributability: the output is 'requires confirmation by the company's accountant or company secretary' unless that confirmation is on file."
+        recommended_outcomes: {legal_status: "confirmed | requires_confirmation | not_applicable"}
+        exclusions: ["jurisdictions without a country pack legal basis: legal_status = requires_confirmation, always"]
+      - rule_id: DIV-04
+        rule_name: Covenant gate
+        rule_version: "1.0.0"
+        decision_category: dividend
+        logic: "If any facility restricts distributions (consent, DSCR or leverage condition), test it after the dividend. A breach makes the option not_recommended; missing covenant data makes it conditional."
+      - rule_id: DIV-05
+        rule_name: Reinvestment comparison
+        rule_version: "1.0.0"
+        decision_category: dividend
+        metric_dependencies: [profit.roic, decision.hurdle_rate, decision.pipeline_best_npv]
+        logic: "Retention is favoured when a named investment with positive NPV at the hurdle needs the cash within 12 months, or when working capital is above target (efficiency band watch or worse). Distribution is favoured when ROIC is below the hurdle and no positive-NPV use exists, because retaining cash then earns less than owners require."
+        note: "A low ROIC caused by excess inventory is a reason to release that inventory, not a reason to invest more in the same assets."
+      - rule_id: DIV-06
+        rule_name: Indicative range
+        rule_version: "1.0.0"
+        decision_category: dividend
+        threshold: T-DEC-DIV-01
+        logic: "upper = min(liquidity capacity (DIV-02), payout guidance for the stage x TTM free cash flow (0 if FCF < 0), distributable reserves if confirmed, covenant cap). lower = 0. Range shown only if every mandatory input is present; otherwise the formula is shown with the missing inputs."
+        recommended_outcomes: {range_minor: "[0, upper]"}
+    recommendation_logic:
+      - {if: "DIV-00 fired", then: {status: insufficient_data}}
+      - {if: "DIV-02 capacity = 0", then: {recommended: no_distribution, reason: "liquidity", revisit: "first forecast week when cash minus buffer exceeds the request"}}
+      - {if: "DIV-04 breach", then: {recommended: no_distribution, reason: "covenant"}}
+      - {if: "TTM operating cash flow < 0", then: {recommended: retain_for_use, reason: "operations are consuming cash"}}
+      - {if: "DIV-03 = requires_confirmation", then: {recommended: conditional, condition: "accountant confirms distributable reserves"}}
+      - {if: "request > DIV-06 upper", then: {recommended: reduced, amount: "DIV-06 upper"}}
+      - {if: "DIV-05 favours retention", then: {recommended: retain_for_use}}
+      - {if: "otherwise", then: {recommended: full_subject_to_checks}}
+
+  # ------------------------------------------------------------------ 5.3 Asset investment
+  - decision_id: DEC-CAP
+    name: Capital expenditure and asset investment (including lease versus buy)
+    options: [buy_now, lease, buy_in_stages, pilot, postpone, reject]
+    applicable_business_stages: [introduction, growth, mature, shake_out, decline]
+    rules:
+      - rule_id: CAP-00
+        rule_name: Data sufficiency
+        rule_version: "1.0.0"
+        decision_category: capex
+        required_inputs: "onboarding.decision_inputs.asset_investment"
+        threshold: T-DEC-DATA-01
+        recommended_outcomes: {status: insufficient_data}
+      - rule_id: CAP-01
+        rule_name: Incremental after-tax cash flows
+        rule_version: "1.0.0"
+        decision_category: capex
+        logic: "Cash flows per period = incremental revenue x contribution margin + cost savings - incremental fixed costs - maintenance - tax on incremental operating profit + tax saving on depreciation (country pack rules) - change in working capital; period 0 = purchase, installation, training and any deposit; final period adds residual value and working-capital recovery. Sunk costs and allocated overheads that do not change are excluded."
+        formula_reference: [decision.npv, decision.irr, decision.payback_months, decision.discounted_payback_months]
+      - rule_id: CAP-02
+        rule_name: Affordability
+        rule_version: "1.0.0"
+        decision_category: capex
+        class: hard_control
+        threshold: T-DEC-AFF-01
+        logic: "Peak funding need (cumulative negative cash before the project turns positive) against cash above buffer plus committed financing. If unaffordable: buy_now is not available; lease, stages or postpone are compared."
+        explanation_template: "The project needs {figure:decision.peak_funding_need} before it pays for itself; the most the business can spend without breaching the buffer is {figure:liquidity.buffer_headroom_min}. A positive NPV does not help if the business cannot get through the first months."
+      - rule_id: CAP-03
+        rule_name: Value tests
+        rule_version: "1.0.0"
+        decision_category: capex
+        thresholds: [T-DEC-HURDLE-01, T-DEC-PAYBACK-01]
+        logic: "Pass if NPV at the hurdle >= 0. IRR is shown only when the cash flows change sign once (otherwise 'IRR not meaningful'). Payback above the owner's limit is a flag, not a rejection."
+      - rule_id: CAP-04
+        rule_name: Downside and sensitivity
+        rule_version: "1.0.0"
+        decision_category: capex
+        threshold: T-DEC-DOWN-01
+        logic: "Recompute NPV, peak funding need and (if debt-funded) DSCR under downside and severe. Show NPV sensitivity to demand -20%, costs +10%, a delay of 3 months and rates +300 bp. If downside makes the buffer fail, buy_now is not recommended."
+      - rule_id: CAP-05
+        rule_name: Lease versus buy
+        rule_version: "1.0.0"
+        decision_category: capex
+        metric_dependencies: [decision.lease_vs_buy_npv_advantage, decision.after_tax_cost_of_debt]
+        logic: "Compare the present value of after-tax costs of owning (price - PV of depreciation tax savings + PV of after-tax maintenance - PV of residual) with leasing (PV of after-tax lease payments and lessee-borne costs), both discounted at the after-tax cost of secured debt, because a lease is a financing substitute. Lease wins if its PV cost is lower or if buying fails the affordability gate."
+        note: "Accounting treatment changes reported EBITDA and leverage (IFRS 16 versus IFRS for SMEs Section 20 versus ASC 842; see B5), not cash. Fiona decides on cash and shows the reporting effect separately."
+      - rule_id: CAP-06
+        rule_name: Need challenge and staging
+        rule_version: "1.0.0"
+        decision_category: capex
+        parameters: {capacity_utilisation_challenge_below_bp: 7500, class: provisional_assumption}
+        logic: "If current capacity utilisation is below the parameter, ask why new capacity is needed before evaluating. If the asset can be bought in units or the project piloted, evaluate the first stage on its own with a scale-up trigger."
+    recommendation_logic:
+      - {if: "CAP-00 fired", then: {status: insufficient_data}}
+      - {if: "NPV < 0 in the base case", then: {recommended: reject_or_postpone}}
+      - {if: "CAP-02 fails and lease passes affordability", then: {recommended: lease}}
+      - {if: "CAP-02 fails and staging passes", then: {recommended: buy_in_stages}}
+      - {if: "CAP-02 fails", then: {recommended: postpone, revisit: "date the buffer headroom covers the peak need"}}
+      - {if: "downside breaks the buffer", then: {recommended: "pilot or buy_in_stages"}}
+      - {if: "CAP-05 lease cheaper", then: {recommended: lease}}
+      - {if: "otherwise", then: {recommended: buy_now}}
+
+  # ------------------------------------------------------------------ 5.4 Liability reduction
+  - decision_id: DEC-LIA
+    name: Liability reduction and pay-down order
+    options: [prepay_facility, keep_and_hold_buffer, release_working_capital, take_early_payment_discounts, refinance]
+    rules:
+      - rule_id: LIA-00
+        rule_name: Data sufficiency
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        required_inputs: "onboarding.decision_inputs.liability_reduction"
+        threshold: T-DEC-DATA-01
+        recommended_outcomes: {status: insufficient_data}
+      - rule_id: LIA-01
+        rule_name: Rank by effective after-tax cost, then risk
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        metric_dependencies: [decision.effective_annual_rate, decision.after_tax_cost_of_debt]
+        logic: "Effective annual rate includes fees and compounding. Sort descending by after-tax effective rate. Ties within 100 bp are broken by risk: floating rate, nearer maturity, tighter covenant headroom, personal guarantees, foreign-currency exposure."
+      - rule_id: LIA-02
+        rule_name: Liquidity gate for any prepayment
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        class: hard_control
+        threshold: T-LIQ-BUF-01
+        logic: "A prepayment is allowed only if every forecast week after it stays at or above the buffer. Never recommend using all available cash to repay debt."
+      - rule_id: LIA-03
+        rule_name: Covenant risk first
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        logic: "A facility whose covenant would be breached in the downside moves to the top of the list for reduction or renegotiation, whatever its rate."
+      - rule_id: LIA-04
+        rule_name: Prepayment spread
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        threshold: T-DEC-PREPAY-01
+        logic: "Prepay only if after-tax facility cost minus the after-tax return on surplus cash minus the annualised prepayment penalty is at least the threshold."
+      - rule_id: LIA-05
+        rule_name: Working capital that can be released
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        metric_dependencies: [efficiency.inventory_days, efficiency.receivable_days]
+        logic: "cash_freed = (current days - target days) x daily cost of sales (inventory) or daily revenue (receivables). Target = the firm's own best 12-month level, or the industry pack value if set. Show cash freed per month on a stated release plan."
+      - rule_id: LIA-06
+        rule_name: Supplier terms
+        rule_version: "1.0.0"
+        decision_category: liabilities
+        threshold: T-DEC-EPD-01
+        logic: "Take an early-payment discount if its implied annual rate exceeds the after-tax cost of short-term funds and G-08 passes. Never recommend paying suppliers after the agreed due date."
+    output: "Pay-down order with each facility's after-tax rate, the cash each step frees per month, and the buffer check."
+
+  # ------------------------------------------------------------------ 5.5 Innovation and technology
+  - decision_id: DEC-INN
+    name: Innovation and technology investment
+    options: [adopt_existing, build_custom, pilot, expand_existing, delay, reject]
+    rules:
+      - rule_id: INN-00
+        rule_name: Data sufficiency
+        rule_version: "1.0.0"
+        decision_category: innovation
+        required_inputs: "onboarding.decision_inputs.innovation_technology"
+        threshold: T-DEC-DATA-01
+        recommended_outcomes: {status: insufficient_data}
+      - rule_id: INN-01
+        rule_name: Total cost of ownership over 3 years
+        rule_version: "1.0.0"
+        decision_category: innovation
+        metric_dependencies: [decision.tco_3y]
+        logic: "TCO = licences or purchase + implementation + integration + data migration + training + internal staff time + maintenance and subscriptions + security and compliance + vendor exit cost, over 36 months, undiscounted and discounted."
+      - rule_id: INN-02
+        rule_name: Innovation budget
+        rule_version: "1.0.0"
+        decision_category: innovation
+        thresholds: [T-DEC-INN-01, T-DEC-AFF-01]
+        logic: "budget = stage share x max(0, TTM FCF - maintenance capex), capped by cash above the buffer."
+      - rule_id: INN-03
+        rule_name: Value
+        rule_version: "1.0.0"
+        decision_category: innovation
+        thresholds: [T-DEC-HURDLE-01, T-DEC-PAYBACK-01]
+        logic: "NPV at the hurdle including the unproven-technology premium when the vendor has no comparable deployments; payback against the technology limit."
+      - rule_id: INN-04
+        rule_name: Measurable outcomes
+        rule_version: "1.0.0"
+        decision_category: innovation
+        logic: "At least one outcome with a baseline, a target and a measurement method (hours saved, error rate, processing cost, revenue, fraud losses, decision time). Without one, only a pilot design is offered."
+      - rule_id: INN-05
+        rule_name: Pilot trigger
+        rule_version: "1.0.0"
+        decision_category: innovation
+        threshold: T-DEC-PILOT-01
+        logic: "If TCO exceeds the budget, payback exceeds 24 months, an outcome is missing, or vendor or data readiness is unproven: recommend a pilot sized within the budget, with success metrics and a scale-up date."
+      - rule_id: INN-06
+        rule_name: Build versus adopt
+        rule_version: "1.0.0"
+        decision_category: innovation
+        logic: "Build custom only if no available product meets the must-have requirements, the business has the capability to maintain it, and its TCO is lower; otherwise adopt. Record vendor dependence (exit cost, data export) either way."
+    recommendation_logic:
+      - {if: "INN-00 fired", then: {status: insufficient_data}}
+      - {if: "budget = 0 and stage is shake_out or decline", then: {recommended: delay}}
+      - {if: "INN-04 fails", then: {recommended: pilot, note: "define the outcome first"}}
+      - {if: "INN-05 fires", then: {recommended: pilot}}
+      - {if: "NPV < 0", then: {recommended: reject}}
+      - {if: "otherwise", then: {recommended: "adopt_existing or build_custom per INN-06"}}
+
+change_log:
+  - version: "1.0.0"
+    date: "2026-10-13"
+    change: "First rulebook for G1."
+    motivated_by: "B1; project documentation sections 1 and 2; blueprint moments 1 and 4"

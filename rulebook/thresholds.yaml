@@ -469,12 +469,12 @@ thresholds:
     name: Per-payment cap
     metric_id: guardian.payment_amount
     applies_to: [G-01]
-    value_source: mandates[agent].per_payment_cap_minor
+    value_source: mandates.<agent>.per_payment_cap_minor
     class: policy_limit
     validation_status: owner_set
     default_suggestion: {formula: "5% of the cash buffer, rounded down to a round number", rationale: "Bounds the loss from any single autonomous error to a small share of the reserve."}
     persona_values:
-      ten_karachi_apparel: {value_minor: 15000000, currency: PKR, note: "PKR 150,000 = 5% of an owner-set buffer of PKR 3,000,000 under the earlier draft; with the PKR 2,000,000 buffer the formula gives PKR 100,000. See B2 decision D-B2-03 for the final persona value."}
+      ten_karachi_apparel: {value_minor: 15000000, currency: PKR, note: "PKR 150,000 (7.5% of the PKR 2,000,000 buffer). The default formula would give PKR 100,000; the persona owner chose a higher cap so routine supplier bills clear while the blueprint's PKR 184,500 payment still escalates (B2 decision D-B2-03). Synthetic persona setting."}
     system_response: escalate
     effective_date: "2026-10-14"
     review_frequency: owner-set
@@ -483,10 +483,12 @@ thresholds:
     name: Daily cumulative cap
     metric_id: guardian.payments_today
     applies_to: [G-10]
-    value_source: mandates[agent].daily_cap_minor
+    value_source: mandates.<agent>.daily_cap_minor
     class: policy_limit
     validation_status: owner_set
     default_suggestion: {formula: "3 x per-payment cap", rationale: "Bounds a day of autonomous errors to roughly 15% of the buffer."}
+    persona_values:
+      ten_karachi_apparel: {value_minor: 45000000, currency: PKR, note: "PKR 450,000 = 3 x per-payment cap (D-B2-03). Synthetic persona setting."}
     system_response: escalate
     effective_date: "2026-10-14"
     review_frequency: owner-set

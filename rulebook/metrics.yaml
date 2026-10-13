@@ -1,0 +1,688 @@
+# Fiona metric dictionary (B1, grows into B1b). Every number Fiona shows is a Figure whose
+# `metric_id` is defined here: name, formula, inputs, unit, period, rounding, interpretation and
+# limits. The explain-any-number drawer renders these fields; Y2 (ratio library) implements them;
+# B6 recomputes them independently.
+#
+# Conventions
+#   - Money: integer minor units + currency. Ratios, rates and shares: integer basis points (bp).
+#     Days and months: integer x 10 (one decimal) where noted as `days_x10`/`months_x10`,
+#     otherwise integers. Compute unrounded; round once at the boundary, half away from zero.
+#   - Averages: (opening + closing) / 2 for the period. If the opening balance is missing, use the
+#     closing balance and set figure.basis = "closing_only" (shown in the drawer).
+#   - Division by zero or a missing input: value = null, status = not_computable, reason given.
+#     Never infinity, never 0 as a stand-in.
+#   - Periods: `point` (balance at a date), `ttm` (trailing 12 months), `fy` (fiscal year),
+#     `forecast_13w`, `forecast_12m`, `project` (life of a project), `event` (one proposal).
+#   - Signs: cash inflows positive, outflows negative.
+#   - `concepts` are inputs (statement lines, policy values, request fields). They can be shown as
+#     Figures too, with their source rows. `metrics` are computed from concepts and other metrics.
+
+schema_version: 1
+dictionary_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+
+concept_mapping_note: >
+  Statement concepts are built from ledger accounts by `neutral_class` (data/fixtures/FORMATS.md
+  section 3.3). The mapping below is v1; account classes not listed are reported as unmapped and
+  block any metric that needs them. Open question for Daniyal: whether `clearing` (card and wallet
+  settlements in transit) is a cash equivalent; v1 treats it as other receivables, which is the
+  conservative choice for cash and quick ratios.
+
+concepts:
+  # ---- income statement (period: the window being measured)
+  - {id: is.revenue, name: Revenue, from_neutral_classes: [revenue, sales_returns], sign: "credit-normal; returns reduce it", unit: money_minor}
+  - {id: is.cogs, name: Cost of sales, from_neutral_classes: [cost_of_sales], unit: money_minor}
+  - {id: is.gross_profit, name: Gross profit, formula: "is.revenue - is.cogs", unit: money_minor}
+  - {id: is.operating_expenses, name: Operating expenses excluding depreciation and amortisation, from_neutral_classes: [payroll, occupancy, utilities, bank_charges, cash_over_short, marketing, other_opex], unit: money_minor}
+  - {id: is.depreciation_amortisation, name: Depreciation and amortisation, from_neutral_classes: [depreciation, amortisation], unit: money_minor}
+  - {id: is.ebit, name: Operating profit (EBIT), formula: "is.gross_profit - is.operating_expenses - is.depreciation_amortisation", unit: money_minor, framework_sensitivity: "IFRS 18 (from 1 Jan 2027 for full IFRS reporters) defines an 'operating profit' subtotal; Fiona's EBIT excludes finance costs and income tax in every framework."}
+  - {id: is.interest_expense, name: Interest expense, from_neutral_classes: [interest], unit: money_minor}
+  - {id: is.tax_expense, name: Income tax expense, from_neutral_classes: [income_tax], unit: money_minor}
+  - {id: is.net_income, name: Net profit, formula: "is.ebit - is.interest_expense + other income - is.tax_expense", unit: money_minor}
+  # ---- balance sheet (period: point)
+  - {id: bs.cash, name: Cash and cash equivalents, from_neutral_classes: [cash], unit: money_minor}
+  - {id: bs.trade_receivables, name: Trade and other receivables, from_neutral_classes: [receivables, clearing], unit: money_minor}
+  - {id: bs.inventory, name: Inventory, from_neutral_classes: [inventory], unit: money_minor, framework_sensitivity: "Cost formula and write-down reversal differ by framework (B5)."}
+  - {id: bs.other_current_assets, name: Other current assets, from_neutral_classes: [tax_receivable, prepayments], unit: money_minor}
+  - {id: bs.current_assets, name: Current assets, formula: "bs.cash + bs.trade_receivables + bs.inventory + bs.other_current_assets", unit: money_minor}
+  - {id: bs.total_assets, name: Total assets, unit: money_minor}
+  - {id: bs.trade_payables, name: Trade payables, from_neutral_classes: [payables], unit: money_minor}
+  - {id: bs.borrowings_current, name: Borrowings due within 12 months, source: "debt schedule split of `borrowings`", unit: money_minor}
+  - {id: bs.borrowings_noncurrent, name: Borrowings due after 12 months, source: "debt schedule split of `borrowings`", unit: money_minor}
+  - {id: bs.lease_liabilities, name: Lease liabilities, unit: money_minor, framework_sensitivity: "Recognised for most leases under IFRS 16 and ASC 842 (both operating and finance), only for finance leases under IFRS for SMEs Section 20."}
+  - {id: bs.current_liabilities, name: Current liabilities, unit: money_minor}
+  - {id: bs.total_liabilities, name: Total liabilities, unit: money_minor}
+  - {id: bs.equity, name: Equity, formula: "bs.total_assets - bs.total_liabilities", unit: money_minor}
+  - {id: bs.retained_earnings, name: Retained earnings, unit: money_minor, note: "Accounting figure. Not the same as legally distributable reserves (DIV-03)."}
+  # ---- cash flows (period: window)
+  - {id: cf.cfo, name: Net cash from operating activities, unit: money_minor, source: "cash-flow statement if supplied; otherwise derived from ledger events by the direct method", framework_sensitivity: "Interest paid may sit in operating or financing (IAS 7 policy choice until IFRS 18 removes it for most entities from 2027; Section 7 of IFRS for SMEs keeps a choice; ASC 230 puts interest paid in operating). Lease principal is financing under IFRS 16."}
+  - {id: cf.cfi, name: Net cash from investing activities, unit: money_minor}
+  - {id: cf.cff, name: Net cash from financing activities, unit: money_minor}
+  - {id: cf.capex, name: Purchases of property, plant, equipment and intangibles, unit: money_minor, sign: negative}
+  - {id: cf.dividends_paid, name: Dividends paid, unit: money_minor, sign: negative}
+  # ---- debt, forecast, policy, request, market
+  - {id: debt.facilities, name: Debt schedule, fields: [lender, facility_type, principal_minor, rate_type, rate_bp, reference_rate, spread_bp, fees_minor, maturity, repayment_schedule, prepayment_terms, security, covenants]}
+  - {id: debt.principal_due_next_12m, name: Scheduled principal repayments in the next 12 months, unit: money_minor}
+  - {id: debt.interest_due_next_12m, name: Interest due in the next 12 months, unit: money_minor}
+  - {id: forecast.weekly_closing_cash, name: Forecast closing cash by week, unit: money_minor, source: "Y1 forecast run (forecast_runs.id)"}
+  - {id: forecast.ebitda_next_12m, name: Forecast EBITDA for the next 12 months, unit: money_minor, source: "Y1/Y4 projection or owner budget; label which"}
+  - {id: policy.cash_buffer, name: Your cash buffer, unit: money_minor, source: "tenant.policies.cash_buffer_minor (owner-set)"}
+  - {id: request.amount, name: Amount requested, unit: money_minor}
+  - {id: market.reference_lending_rate, name: Reference lending rate, unit: bp, source: "rulebook/country_packs/<country>.yaml"}
+  - {id: market.corporate_tax_rate, name: Corporate income tax rate, unit: bp, source: "rulebook/country_packs/<country>.yaml"}
+
+metrics:
+  # =========================================================== stage
+  - id: stage.months_of_data
+    name: Months of cash-flow history
+    category: stage
+    formula: "count of complete calendar months with reconciled bank or ledger data"
+    unit: count
+    period: point
+  - id: stage.cf_pattern
+    name: Cash-flow sign pattern
+    category: stage
+    formula: "signs of (cash.cfo, cash.cfi, cash.cff) with the near-zero band T-STG-ZERO-01"
+    inputs: [cash.cfo, cash.cfi, cash.cff, is.revenue]
+    unit: label
+    period: ttm
+    source: "Dickinson (2011), The Accounting Review 86(6)"
+  - id: stage.classification
+    name: Lifecycle stage
+    category: stage
+    formula: "finance_rules.yaml stage.rules STG-00 to STG-06"
+    inputs: [stage.cf_pattern, growth.revenue_growth, profit.operating_margin]
+    unit: label
+    period: ttm
+    interpretation: "Where the business is in its lifecycle, inferred from where its cash comes from and goes. It sets which decisions Fiona looks at first."
+    limitations: "A single unusual year (an acquisition, a one-off loan) can change the pattern; Fiona flags these. Lifecycle is evidence for priorities, not a verdict on the business."
+
+  # =========================================================== liquidity
+  - id: liquidity.current_ratio
+    name: Current ratio
+    category: liquidity
+    formula: "bs.current_assets / bs.current_liabilities"
+    inputs: [bs.current_assets, bs.current_liabilities]
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: point
+    null_when: ["bs.current_liabilities = 0"]
+    interpretation: "Short-term assets per unit of short-term obligations."
+    limitations: "Counts slow stock at full value; says nothing about timing. The cash forecast is the better liquidity test."
+    not_meaningful_for: [financial_institutions]
+    thresholds: [T-LIQ-CR-01]
+    source: "Standard ratio definition"
+  - id: liquidity.quick_ratio
+    name: Quick ratio
+    category: liquidity
+    formula: "(bs.cash + bs.trade_receivables) / bs.current_liabilities"
+    inputs: [bs.cash, bs.trade_receivables, bs.current_liabilities]
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: point
+    null_when: ["bs.current_liabilities = 0"]
+    interpretation: "Ability to meet short-term obligations without selling stock."
+    limitations: "Structurally low for inventory-heavy retailers."
+    thresholds: [T-LIQ-QR-01]
+  - id: liquidity.cash_ratio
+    name: Cash ratio
+    category: liquidity
+    formula: "bs.cash / bs.current_liabilities"
+    inputs: [bs.cash, bs.current_liabilities]
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: point
+    null_when: ["bs.current_liabilities = 0"]
+  - id: liquidity.working_capital
+    name: Working capital
+    category: liquidity
+    formula: "bs.current_assets - bs.current_liabilities"
+    inputs: [bs.current_assets, bs.current_liabilities]
+    unit: money_minor
+    period: point
+  - id: liquidity.forecast_min_cash
+    name: Lowest forecast cash balance
+    category: liquidity
+    formula: "min over forecast weeks of forecast.weekly_closing_cash"
+    inputs: [forecast.weekly_closing_cash]
+    unit: money_minor
+    period: forecast_13w
+    interpretation: "The tightest point in the next 13 weeks."
+    thresholds: [T-LIQ-BUF-01, T-LIQ-FLOOR-01]
+  - id: liquidity.buffer_headroom_min
+    name: Smallest headroom above your buffer
+    category: liquidity
+    formula: "liquidity.forecast_min_cash - policy.cash_buffer"
+    inputs: [liquidity.forecast_min_cash, policy.cash_buffer]
+    unit: money_minor
+    period: forecast_13w
+    interpretation: "Negative means at least one week below the buffer. Also the most that can be spent now without breaching it (T-DEC-AFF-01)."
+  - id: liquidity.first_week_below_buffer
+    name: First week below your buffer
+    category: liquidity
+    formula: "smallest week number w (1..13) with forecast.weekly_closing_cash[w] < policy.cash_buffer; null if none"
+    inputs: [forecast.weekly_closing_cash, policy.cash_buffer]
+    unit: week_number
+    period: forecast_13w
+  - id: liquidity.cash_runway_months
+    name: Cash runway
+    category: liquidity
+    formula: "bs.cash / average monthly net operating cash outflow over the last 3 months"
+    inputs: [bs.cash, cash.cfo]
+    unit: months_x10
+    period: ttm
+    null_when: ["average monthly net operating cash flow >= 0 (shown as 'not burning cash')"]
+    thresholds: [T-LIQ-RUN-01]
+    limitations: "Backward-looking burn; the forecast is better when available."
+  - id: liquidity.months_of_surplus
+    name: Months the surplus above the buffer lasts
+    category: liquidity
+    formula: "(bs.cash - policy.cash_buffer) / average monthly net operating cash outflow"
+    inputs: [bs.cash, policy.cash_buffer, cash.cfo]
+    unit: months_x10
+    period: ttm
+    null_when: ["no operating cash outflow", "cash at or below the buffer"]
+
+  # =========================================================== profitability
+  - id: profit.gross_margin
+    name: Gross margin
+    category: profitability
+    formula: "is.gross_profit / is.revenue"
+    inputs: [is.gross_profit, is.revenue]
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["is.revenue <= 0"]
+    framework_sensitivity: "Inventory cost formula (FIFO, weighted average, LIFO under US GAAP) changes cost of sales when purchase prices move."
+  - id: profit.gross_margin_change
+    name: Change in gross margin versus a year earlier
+    category: profitability
+    formula: "profit.gross_margin (latest 12m) - profit.gross_margin (prior 12m)"
+    unit: bp
+    display: {as: percentage_points, decimals: 1}
+    period: ttm
+    thresholds: [T-PRO-GM-01]
+  - id: profit.operating_margin
+    name: Operating margin
+    category: profitability
+    formula: "is.ebit / is.revenue"
+    inputs: [is.ebit, is.revenue]
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["is.revenue <= 0"]
+  - id: profit.operating_margin_prior
+    name: Operating margin, prior 12 months
+    category: profitability
+    formula: "profit.operating_margin over the prior 12-month window"
+    unit: bp
+    period: ttm
+  - id: profit.ebitda
+    name: EBITDA
+    category: profitability
+    formula: "is.ebit + is.depreciation_amortisation"
+    inputs: [is.ebit, is.depreciation_amortisation]
+    unit: money_minor
+    period: ttm
+    framework_sensitivity: "Under IFRS 16 rent on capitalised leases becomes depreciation and interest, raising EBITDA; under IFRS for SMEs operating leases and ASC 842 operating leases rent stays in operating costs. Compare businesses on one basis."
+  - id: profit.ebitda_margin
+    name: EBITDA margin
+    category: profitability
+    formula: "profit.ebitda / is.revenue"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["is.revenue <= 0"]
+  - id: profit.net_margin
+    name: Net profit margin
+    category: profitability
+    formula: "is.net_income / is.revenue"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["is.revenue <= 0"]
+  - id: profit.roa
+    name: Return on assets
+    category: profitability
+    formula: "is.net_income / average bs.total_assets"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+  - id: profit.roe
+    name: Return on equity
+    category: profitability
+    formula: "is.net_income / average bs.equity"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["average equity <= 0 (shown as 'negative equity')"]
+  - id: profit.nopat
+    name: Net operating profit after tax
+    category: profitability
+    formula: "is.ebit x (1 - market.corporate_tax_rate)"
+    unit: money_minor
+    period: ttm
+    limitations: "Uses the statutory rate, not the firm's effective rate, so that financing does not change it. Pakistan's minimum and turnover taxes can make the real charge differ."
+  - id: profit.invested_capital
+    name: Invested capital
+    category: profitability
+    formula: "bs.equity + interest-bearing debt (borrowings + lease liabilities if recognised) - bs.cash"
+    unit: money_minor
+    period: point
+  - id: profit.roic
+    name: Return on invested capital
+    category: profitability
+    formula: "profit.nopat / average profit.invested_capital"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["average invested capital <= 0"]
+    interpretation: "What the business earns on the money tied up in it. Compare with the hurdle rate."
+  - id: profit.roic_minus_hurdle
+    name: Return on invested capital minus hurdle rate
+    category: profitability
+    formula: "profit.roic - decision.hurdle_rate"
+    unit: bp
+    display: {as: percentage_points, decimals: 1}
+    period: ttm
+
+  # =========================================================== solvency
+  - id: solvency.interest_bearing_debt
+    name: Interest-bearing debt
+    category: solvency
+    formula: "bs.borrowings_current + bs.borrowings_noncurrent + bs.lease_liabilities (if recognised under the framework)"
+    unit: money_minor
+    period: point
+  - id: solvency.debt_to_equity
+    name: Debt to equity
+    category: solvency
+    formula: "solvency.interest_bearing_debt / bs.equity"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: point
+    null_when: ["bs.equity <= 0"]
+    thresholds: [T-SOL-DE-01]
+  - id: solvency.debt_to_assets
+    name: Debt to assets
+    category: solvency
+    formula: "solvency.interest_bearing_debt / bs.total_assets"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: point
+  - id: solvency.net_debt
+    name: Net debt
+    category: solvency
+    formula: "solvency.interest_bearing_debt - bs.cash"
+    unit: money_minor
+    period: point
+  - id: solvency.net_debt_to_ebitda
+    name: Net debt to EBITDA
+    category: solvency
+    formula: "solvency.net_debt / profit.ebitda"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["profit.ebitda <= 0"]
+    thresholds: [T-SOL-NDE-01]
+  - id: solvency.interest_coverage
+    name: Interest coverage
+    category: solvency
+    formula: "is.ebit / is.interest_expense"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["is.interest_expense = 0 (shown as 'no interest-bearing debt')"]
+    thresholds: [T-SOL-ICR-01]
+  - id: solvency.debt_service
+    name: Debt service, last 12 months
+    category: solvency
+    formula: "is.interest_expense + scheduled principal repaid in the window (borrowings and lease liabilities if recognised)"
+    unit: money_minor
+    period: ttm
+  - id: solvency.dscr
+    name: Debt-service coverage
+    category: solvency
+    formula: "profit.ebitda / solvency.debt_service"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["solvency.debt_service = 0"]
+    interpretation: "Times the cash earnings cover interest plus scheduled repayments. Below 1.0 the business cannot pay its lenders from operations."
+    limitations: "Lenders define it differently (some deduct tax and maintenance capex). When a term sheet defines it, the term-sheet definition is used and named."
+    thresholds: [T-SOL-DSCR-02]
+    source: "Project documentation glossary: 'Cash available for debt payments divided by the payments due'"
+  - id: solvency.debt_service_forward
+    name: Debt service, next 12 months
+    category: solvency
+    formula: "debt.interest_due_next_12m + debt.principal_due_next_12m (+ the new facility's interest and principal when evaluating a loan)"
+    unit: money_minor
+    period: forecast_12m
+  - id: solvency.dscr_forward
+    name: Debt-service coverage, next 12 months
+    category: solvency
+    formula: "forecast.ebitda_next_12m / solvency.debt_service_forward"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: forecast_12m
+    null_when: ["solvency.debt_service_forward = 0"]
+    thresholds: [T-SOL-DSCR-01]
+  - id: solvency.dscr_forward_downside
+    name: Debt-service coverage, next 12 months, downside case
+    category: solvency
+    formula: "solvency.dscr_forward with T-DEC-DOWN-01.downside applied to EBITDA and floating rates"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: forecast_12m
+    thresholds: [T-SOL-DSCR-02]
+
+  # =========================================================== efficiency
+  - id: efficiency.inventory_days
+    name: Inventory days
+    category: efficiency
+    formula: "average bs.inventory / is.cogs x days in window"
+    unit: days_x10
+    period: ttm
+    null_when: ["is.cogs = 0"]
+    limitations: "Seasonal stock-builds distort a year-end figure; Fiona uses average inventory and compares like periods."
+  - id: efficiency.inventory_days_change
+    name: Change in inventory days versus a year earlier
+    category: efficiency
+    formula: "(inventory_days latest - inventory_days prior) / inventory_days prior"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    thresholds: [T-EFF-INV-01]
+  - id: efficiency.receivable_days
+    name: Receivable days
+    category: efficiency
+    formula: "average bs.trade_receivables / is.revenue x days in window"
+    unit: days_x10
+    period: ttm
+    limitations: "Use credit sales only when cash and credit sales can be separated; for a cash-heavy retailer total revenue understates the days for credit customers."
+  - id: efficiency.payable_days
+    name: Payable days
+    category: efficiency
+    formula: "average bs.trade_payables / is.cogs x days in window"
+    unit: days_x10
+    period: ttm
+    limitations: "Purchases would be the precise denominator; cost of sales is used when purchases are not separable."
+  - id: efficiency.cash_conversion_cycle
+    name: Cash conversion cycle
+    category: efficiency
+    formula: "efficiency.inventory_days + efficiency.receivable_days - efficiency.payable_days"
+    unit: days_x10
+    period: ttm
+  - id: efficiency.asset_turnover
+    name: Asset turnover
+    category: efficiency
+    formula: "is.revenue / average bs.total_assets"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+
+  # =========================================================== cash generation and working capital
+  - id: cash.cfo
+    name: Operating cash flow
+    category: cash
+    formula: "cf.cfo for the window"
+    unit: money_minor
+    period: ttm
+  - id: cash.cfo_prior
+    name: Operating cash flow, prior 12 months
+    category: cash
+    formula: "cf.cfo for the prior 12-month window"
+    unit: money_minor
+    period: ttm
+  - id: cash.cfi
+    name: Investing cash flow
+    category: cash
+    formula: "cf.cfi for the window"
+    unit: money_minor
+    period: ttm
+  - id: cash.cff
+    name: Financing cash flow
+    category: cash
+    formula: "cf.cff for the window"
+    unit: money_minor
+    period: ttm
+  - id: cash.fcf
+    name: Free cash flow
+    category: cash
+    formula: "cash.cfo + cf.capex (capex is negative)"
+    unit: money_minor
+    period: ttm
+  - id: cash.cfo_to_net_income
+    name: Operating cash flow to net profit
+    category: cash
+    formula: "cash.cfo / is.net_income"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["is.net_income <= 0"]
+    thresholds: [T-CSH-CFONI-01]
+  - id: cash.capex_coverage
+    name: Capital expenditure coverage
+    category: cash
+    formula: "cash.cfo / |cf.capex|"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["cf.capex = 0"]
+  - id: cash.capex_to_depreciation
+    name: Capex to depreciation
+    category: cash
+    formula: "|cf.capex| / is.depreciation_amortisation"
+    unit: bp
+    display: {as: multiple, decimals: 2}
+    period: ttm
+    null_when: ["is.depreciation_amortisation = 0"]
+  - id: wc.inventory_change
+    name: Cash absorbed by inventory
+    category: cash
+    formula: "-(closing bs.inventory - opening bs.inventory)"
+    unit: money_minor
+    period: ttm
+  - id: wc.receivables_change
+    name: Cash absorbed by receivables
+    category: cash
+    formula: "-(closing bs.trade_receivables - opening bs.trade_receivables)"
+    unit: money_minor
+    period: ttm
+  - id: wc.payables_change
+    name: Cash provided by payables
+    category: cash
+    formula: "closing bs.trade_payables - opening bs.trade_payables"
+    unit: money_minor
+    period: ttm
+  - id: growth.revenue_growth
+    name: Revenue growth
+    category: growth
+    formula: "is.revenue (latest 12m) / is.revenue (prior 12m) - 1"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: ttm
+    null_when: ["prior revenue <= 0"]
+    limitations: "Nominal. With CPI at 10.3% (Pakistan, Sep 2026) nominal growth below inflation is a real decline."
+
+  # =========================================================== decisions
+  - id: decision.hurdle_rate
+    name: Hurdle (discount) rate
+    category: decision
+    formula: "T-DEC-HURDLE-01: after-tax WACC + project risk premium"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: point
+  - id: decision.after_tax_cost_of_debt
+    name: After-tax cost of debt
+    category: decision
+    formula: "decision.effective_annual_rate x (1 - market.corporate_tax_rate)"
+    unit: bp
+    display: {as: percent, decimals: 2}
+    limitations: "Tax saving assumes the business pays tax at that rate; for a loss-making firm the after-tax cost equals the pre-tax cost."
+  - id: decision.cost_of_equity
+    name: Cost of equity
+    category: decision
+    formula: "pre-tax cost of debt + equity premium (T-DEC-HURDLE-01), or the investor's stated target return"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    limitations: "A judgement, labelled provisional; an investor's own target return replaces it when known."
+  - id: decision.effective_annual_rate
+    name: Effective annual rate
+    category: decision
+    formula: "rate r such that PV at r of all payments to the lender (interest, principal, fees) equals the net amount received; annualised with compounding"
+    unit: bp
+    display: {as: percent, decimals: 2}
+  - id: decision.npv
+    name: Net present value
+    category: decision
+    formula: "sum over t of CF_t / (1 + hurdle)^t, CF_0 undiscounted"
+    unit: money_minor
+    period: project
+    source: "services/engine/decisions/tvm.py npv()"
+  - id: decision.irr
+    name: Internal rate of return
+    category: decision
+    formula: "rate where NPV = 0; shown only when cash flows change sign exactly once"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    period: project
+    null_when: ["no sign change", "multiple sign changes"]
+  - id: decision.project_irr
+    name: Expected return of the funded project
+    category: decision
+    formula: "decision.irr of the project's incremental cash flows"
+    unit: bp
+    period: project
+  - id: decision.payback_months
+    name: Payback period
+    category: decision
+    formula: "first month in which cumulative undiscounted cash flow >= 0, with linear interpolation within the month"
+    unit: months_x10
+    period: project
+    null_when: ["never pays back within the horizon"]
+  - id: decision.discounted_payback_months
+    name: Discounted payback period
+    category: decision
+    formula: "as payback, on cash flows discounted at the hurdle"
+    unit: months_x10
+    period: project
+  - id: decision.peak_funding_need
+    name: Peak funding need
+    category: decision
+    formula: "-(minimum cumulative project cash flow), i.e. the most cash the project needs before it turns positive"
+    unit: money_minor
+    period: project
+  - id: decision.max_debt_at_min_dscr
+    name: Largest loan that keeps base coverage at the minimum
+    category: decision
+    formula: "principal P such that forecast.ebitda_next_12m / (existing service + service(P, terms)) = T-SOL-DSCR-01; solved numerically on the facility's schedule"
+    unit: money_minor
+  - id: decision.max_debt_downside
+    name: Largest loan serviceable in the downside
+    category: decision
+    formula: "as decision.max_debt_at_min_dscr with downside EBITDA and T-SOL-DSCR-02"
+    unit: money_minor
+  - id: decision.dilution
+    name: Ownership given to the investor
+    category: decision
+    formula: "request.amount / (decision.pre_money_valuation + request.amount)"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    thresholds: [T-DEC-DIL-01]
+  - id: decision.pre_money_valuation
+    name: Pre-money valuation
+    category: decision
+    formula: "from investor terms; else a stated method (EV/EBITDA range minus net debt) shown as a range"
+    unit: money_minor
+    limitations: "A private SME has no market price. Fiona never states a single valuation without a source."
+  - id: decision.dividend_liquidity_capacity
+    name: Most that can be distributed without breaching the buffer
+    category: decision
+    formula: "max(0, min over forecast weeks from the pay date of (forecast.weekly_closing_cash - policy.cash_buffer))"
+    unit: money_minor
+    period: forecast_13w
+  - id: decision.min_cash_after_dividend
+    name: Lowest forecast cash after the dividend
+    category: decision
+    formula: "min over weeks from the pay date of (forecast.weekly_closing_cash - request.amount)"
+    unit: money_minor
+    period: forecast_13w
+  - id: decision.week_of_min_after_dividend
+    name: Week of the lowest forecast cash after the dividend
+    category: decision
+    formula: "week number of decision.min_cash_after_dividend"
+    unit: week_number
+  - id: decision.dividend_capacity
+    name: Indicative dividend range, upper end
+    category: decision
+    formula: "DIV-06: min(liquidity capacity, stage payout x TTM FCF, confirmed distributable reserves, covenant cap)"
+    unit: money_minor
+  - id: decision.pipeline_best_npv
+    name: Best available reinvestment NPV
+    category: decision
+    formula: "max decision.npv over named investment proposals needing cash within 12 months; null if none"
+    unit: money_minor
+  - id: decision.lease_vs_buy_npv_advantage
+    name: Lease versus buy advantage
+    category: decision
+    formula: "PV cost of buying - PV cost of leasing, both after tax at the after-tax cost of secured debt (positive favours leasing)"
+    unit: money_minor
+  - id: decision.prepayment_spread
+    name: Prepayment spread
+    category: decision
+    formula: "after-tax facility cost - after-tax return on surplus cash - annualised prepayment penalty"
+    unit: bp
+    thresholds: [T-DEC-PREPAY-01]
+  - id: decision.innovation_budget
+    name: Innovation budget
+    category: decision
+    formula: "INN-02: stage share x max(0, cash.fcf - maintenance capex), capped by liquidity.buffer_headroom_min"
+    unit: money_minor
+  - id: decision.tco_3y
+    name: Total cost of ownership, 3 years
+    category: decision
+    formula: "INN-01 components summed over 36 months"
+    unit: money_minor
+  - id: decision.pilot_trigger
+    name: Pilot-first trigger
+    category: decision
+    formula: "T-DEC-PILOT-01 triggers"
+    unit: label
+  - id: decision.scenario
+    name: Scenario parameters
+    category: decision
+    formula: "T-DEC-DOWN-01"
+    unit: label
+  - id: decision.data_sufficiency
+    name: Data sufficiency status
+    category: decision
+    formula: "T-DEC-DATA-01"
+    unit: label
+  - id: treasury.early_payment_discount_apr
+    name: Implied annual return of an early-payment discount
+    category: treasury
+    formula: "d / (1 - d) x 365 / (N - n), for terms d/n net N"
+    unit: bp
+    display: {as: percent, decimals: 1}
+    source: "Standard trade-credit formula; 2/10 net 30 = 0.02/0.98 x 365/20 = 37.24%"
+    worked_example: {d_bp: 200, n_days: 10, N_days: 30, result_bp: 3724}
+
+  # =========================================================== Guardian check quantities (shown in verdict details)
+  - {id: guardian.payment_amount, name: Payment amount, category: guardian, formula: "proposal.amount", unit: money_minor}
+  - {id: guardian.payments_today, name: Payments today including this one, category: guardian, formula: "sum of executed and cleared-pending payments by the same agent on the tenant's local business date + proposal.amount", unit: money_minor}
+  - {id: guardian.days_since_bank_change, name: Days since the payee's bank account changed, category: guardian, formula: "(now - parties.bank_account_changed_at) in whole days, rounded down", unit: days}
+  - {id: guardian.amount_relative_difference, name: Amount difference to a prior bill, category: guardian, formula: "|a - b| / max(a, b)", unit: bp}
+  - {id: guardian.invoice_number_similarity, name: Invoice-number similarity, category: guardian, formula: "RapidFuzz fuzz.ratio(normalise(a), normalise(b)) x 100 (InDel similarity), where normalise = (1) uppercase, (2) strip leading zeros of each digit run in the original string, (3) drop every non-alphanumeric character", unit: bp}
+  - {id: guardian.bill_lookback_days, name: Duplicate lookback window, category: guardian, formula: "T-G05-WINDOW", unit: days}
+  - {id: guardian.three_way_variance, name: Three-way match variance, category: guardian, formula: "per line, max(|bill qty - received qty| / received qty, |bill unit price - PO unit price| / PO unit price)", unit: bp}
+  - {id: guardian.arithmetic_difference, name: Arithmetic difference, category: guardian, formula: "max(|sum(lines) - subtotal|, |subtotal + taxes - total|, max over tax lines |recomputed tax - stated tax|)", unit: money_minor}
+  - {id: guardian.adversarial_concern, name: Reviewer's concern level, category: guardian, formula: "reviewer output on scale none | low | medium | high", unit: label}
+  - {id: guardian.input_age_hours, name: Age of the inputs the check used, category: guardian, formula: "now - created_at of the forecast run, bank balance or party record", unit: hours}
+
+input_figures_allowed_in_templates: [is.net_income, policy.cash_buffer, request.amount]
+
+change_log:
+  - version: "1.0.0"
+    date: "2026-10-13"
+    change: "Metrics referenced by finance_rules.yaml, thresholds.yaml and guardian.yaml. B1b adds industry-pack measures (sell-through, markdown rate, GMROI, food-cost %, utilisation) and Yahya's Y0 metric IDs."
