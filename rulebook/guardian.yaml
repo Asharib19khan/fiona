@@ -6,6 +6,7 @@
 # and Asharib (adversarial review and verdict combiner, services/guardian, A6).
 # Thresholds are referenced by ID from rulebook/thresholds.yaml; values are never restated here.
 # Changes from the blueprint draft are listed in `changes_from_draft` with their reason.
+# Scenario IDs in `tests` are defined in rulebook/scenarios.yaml, which is authoritative.
 
 schema_version: 1
 policy_version: "1.0.0"
@@ -76,7 +77,7 @@ rules:
     audit_fields: [amount_minor, cap_minor, mandate_id, mandate_version]
     detail_template: "Payment of {amount} is above the {agent}'s cap of {cap} per payment."
     tests:
-      positive: {scenario: S-03, given: {amount_minor: 18450000, cap_minor: 15000000}, expect: escalate}
+      positive: {scenario: S-01, given: {amount_minor: 18450000, cap_minor: 15000000}, expect: escalate}
       negative: {given: {amount_minor: 14999900, cap_minor: 15000000}, expect: pass}
 
   - rule_id: G-02
@@ -94,7 +95,7 @@ rules:
     exceptions: none
     audit_fields: [payee_id, on_allow_list, allow_list_changed_at]
     tests:
-      positive: {scenario: S-04, given: {on_allow_list: false}, expect: escalate}
+      positive: {scenario: S-02, given: {on_allow_list: false}, expect: escalate}
       negative: {given: {on_allow_list: true}, expect: pass}
 
   - rule_id: G-03
@@ -120,8 +121,9 @@ rules:
     audit_fields: [party_id, old_iban_masked, new_iban_masked, changed_at, confirmed_via, confirmed_by, days_since_change]
     detail_template: "{party}'s bank account changed {days} days ago and has not been confirmed by phone."
     tests:
-      positive: {scenario: DEMO-1, given: {days_since_change: 2, confirmed_via: email}, expect: block}
-      negative: {given: {days_since_change: 40, confirmed_via: phone}, expect: pass}
+      positive: {scenario: S-03, given: {days_since_change: 12, confirmed_via: email}, expect: block}
+      demo: {scenario: DEMO-1, given: {days_since_change: 2, confirmed_via: email}, expect: block}
+      negative: {scenario: C-03, given: {days_since_change: 40, confirmed_via: phone}, expect: pass}
 
   - rule_id: G-04
     name: The same actor proposes and approves
@@ -138,7 +140,7 @@ rules:
     exceptions: "Single-person businesses: the owner may approve agent proposals (the agent is the maker), but an owner-entered bill paid on the owner's own approval is recorded with a 'single-person business' flag in the audit log and the daily digest."
     audit_fields: [proposer, approver, bill_entered_by]
     tests:
-      positive: {scenario: S-05, given: {proposer: usr_finance_01, approver: usr_finance_01}, expect: block}
+      positive: {scenario: S-04, given: {proposer: usr_finance_01, approver: usr_finance_01}, expect: block}
       negative: {given: {proposer: treasurer, approver: usr_owner}, expect: pass}
 
   - rule_id: G-05
@@ -163,8 +165,8 @@ rules:
     audit_fields: [bill_id, matched_bill_id, match_signal, similarity_bp, amount_difference_bp, hashes_equal]
     detail_template: "Bill {number} matches {matched_number} from {matched_date} ({signal})."
     tests:
-      positive: {scenario: S-01, given: {number: "INV 2231", prior_number: "INV-2231", amount_difference_bp: 0}, expect: block}
-      negative: {scenario: S-13-clean, given: {number: "RNT-2026-10", prior_number: "RNT-2026-09", amount_difference_bp: 0}, expect: pass, note: "RNT-2026-10 vs RNT-2026-09 -> RNT202610 vs RNT20269 = 8235 bp, below 9000; recurring rent passes"}
+      positive: {scenario: S-05b, given: {number: "INV 2231", prior_number: "INV-2231", amount_difference_bp: 0}, expect: block}
+      negative: {scenario: C-02, given: {number: "RNT-2026-10", prior_number: "RNT-2026-09", amount_difference_bp: 0}, expect: pass, note: "RNT-2026-10 vs RNT-2026-09 -> RNT202610 vs RNT20269 = 8235 bp, below 9000; recurring rent passes"}
 
   - rule_id: G-06
     name: Bill fails the three-way match
@@ -342,7 +344,7 @@ rules:
     severity: critical
     audit_fields: [agent, type, category, mandate_id, mandate_version]
     tests:
-      positive: {given: {agent: cfo_strategist, type: payment}, expect: block}
+      positive: {scenario: S-13, given: {agent: cfo_strategist, type: payment}, expect: block}
       negative: {given: {agent: treasurer, type: payment, category: inventory_supplier}, expect: pass}
 
   - rule_id: G-14

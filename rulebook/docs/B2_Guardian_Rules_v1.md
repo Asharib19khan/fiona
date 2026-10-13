@@ -29,11 +29,11 @@ The Guardian may block but never executes anything, never approves as a user, an
 
 | ID | Rule | Check | Outcome when it fires | Threshold (class) | Planted scenario |
 | --- | --- | --- | --- | --- | --- |
-| G-01 | Payment above the agent's per-payment cap | Policy | Escalate | Mandate cap (owner policy) | S-03 |
-| G-02 | Payee not on the allow-list | Policy | Escalate | — | S-04 |
-| G-03 | Payee's bank account changed within 7 days, never confirmed out of band, or a bill printing a different account | Policy | **Block** until the owner confirms by phone on the number on file | 7 days (hard; tenant may lengthen, minimum 3) | DEMO-1 |
-| G-04 | Same actor proposes and approves | Policy | **Block** | — | S-05 |
-| G-05 | Duplicate bill (same file; same normalised number and amount within 1%; or number similarity ≥ 0.90 and amount within 1%) | Policy | **Block**; escalate for distinct-GRN or different-amount cases | 1%, 0.90, 180 days (hard, provisional) | S-01, DEMO-1 |
+| G-01 | Payment above the agent's per-payment cap | Policy | Escalate | Mandate cap (owner policy) | S-01 |
+| G-02 | Payee not on the allow-list | Policy | Escalate | — | S-02 |
+| G-03 | Payee's bank account changed within 7 days, never confirmed out of band, or a bill printing a different account | Policy | **Block** until the owner confirms by phone on the number on file | 7 days (hard; tenant may lengthen, minimum 3) | S-03, DEMO-1 |
+| G-04 | Same actor proposes and approves | Policy | **Block** | — | S-04 |
+| G-05 | Duplicate bill (same file; same normalised number and amount within 1%; or number similarity ≥ 0.90 and amount within 1%) | Policy | **Block**; escalate for distinct-GRN or different-amount cases | 1%, 0.90, 180 days (hard, provisional) | S-05, S-05b, DEMO-1 |
 | G-06 | Three-way match fails (no PO, no GRN, or a line off by more than 2%) | Policy | Escalate | 2% (hard, provisional) | S-06 |
 | G-07 | Lines and tax don't add up; journal debits ≠ credits; payment ≠ outstanding balance | Arithmetic | **Block** | 1 minor unit (hard) | S-07 |
 | G-08 | Payment creates or deepens a week below the buffer | Policy | Approve with conditions (latest safe date ≤ due date); escalate if none | Buffer (owner policy) | S-08a/b/c |
@@ -41,11 +41,11 @@ The Guardian may block but never executes anything, never approves as a user, an
 | G-10 | Payments today would exceed the daily cap | Policy | Escalate | Mandate daily cap (owner policy) | S-10 |
 | G-11 | Supplier tax ID missing, malformed or different from file | Policy | Escalate | Country pack pattern (unverified) | S-11 |
 | G-12 | Adversarial reviewer's concern is high, or the reviewer fails | Adversarial | Escalate | "high" | S-12, DEMO-1 |
-| G-13 (final, Tier 1) | Action type outside the mandate or a material decision; category or window outside | Policy | **Block** / escalate | — | — |
+| G-13 (final, Tier 1) | Action type outside the mandate or a material decision; category or window outside | Policy | **Block** / escalate | — | S-13 |
 | G-14 *(proposed, Tier 2)* | Forecast or balance stale; low-confidence extraction; sources conflict | Evidence | Escalate | 24 h forecast, 48 h balance | — |
 | G-15 *(proposed, Tier 2)* | Payee account belongs to an employee, user or related party | Policy | Escalate | — | — |
 
-The S-numbers are the IDs in Daniyal's answer key (`data/fixtures/FORMATS.md` §3.14); B3 finalises them with him.
+The S-numbers are defined in [scenarios.yaml](../scenarios.yaml) (B3, authoritative) and used in Daniyal's answer key.
 
 ## Three rules worth explaining
 
