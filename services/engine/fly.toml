@@ -1,0 +1,26 @@
+# Fly.io app for the engine. Deploy from the repo root:
+#   fly deploy --config services/engine/fly.toml --dockerfile services/engine/Dockerfile .
+app = "fiona-engine"
+primary_region = "sin"
+
+[env]
+  FIONA_MODE = "mock"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0   # A8 sets this to 1 for demo day
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/healthz"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

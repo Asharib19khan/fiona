@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Placeholder tokens for A1. The real design system (tokens, themes, screen kit) lands in A3. */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", "Noto Sans Arabic",
+    "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --color-surface: #f6f5f1;
+  --color-ink: #1b1b18;
+  --color-ink-muted: #5f5e57;
+  --color-rule: #dcdad2;
+  --color-accent: #1f5f4a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #121210;
+    --color-ink: #ecebe5;
+    --color-ink-muted: #a3a197;
+    --color-rule: #2c2b27;
+    --color-accent: #7cc4a8;
+  }
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}

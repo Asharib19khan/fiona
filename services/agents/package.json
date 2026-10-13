@@ -1,0 +1,11 @@
+{
+  "name": "@fiona/agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turborepo shim for the Python agents service (FastAPI, uv).",
+  "scripts": {
+    "dev": "uv run uvicorn fiona_agents.main:app --reload --reload-dir fiona_agents --port 8100",
+    "lint": "uv run ruff check . && uv run ruff format --check .",
+    "test": "uv run pytest -q"
+  }
+}

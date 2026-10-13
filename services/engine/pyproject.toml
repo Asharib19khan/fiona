@@ -1,0 +1,33 @@
+[project]
+name = "fiona-engine"
+version = "0.1.0"
+description = "Fiona engine: one FastAPI app that mounts the ledger, guardian_checks, forecast, decisions and other modules."
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.143.0",
+  "uvicorn[standard]>=0.54.0",
+  "pydantic>=2.14.1",
+  "psycopg[binary]>=3.2",
+  "rapidfuzz>=3.10",
+  "numpy>=2.5.4",
+  "pyyaml>=6.0.3",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=9.1.1",
+  "hypothesis>=6.140",
+  "httpx>=0.28.1",
+  "ruff>=0.17.0",
+]
+
+[tool.uv]
+# The engine is not installed as a distribution: it runs as the `engine` package from
+# services/ (uvicorn --app-dir .., pytest pythonpath ..). See D-010.
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = [".."]
+addopts = "--import-mode=importlib"
+testpaths = ["."]
+norecursedirs = [".venv", "__pycache__", ".*"]

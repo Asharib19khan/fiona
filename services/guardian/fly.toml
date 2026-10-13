@@ -1,0 +1,23 @@
+# Fly.io app for the Guardian. Deploy from the repo root:
+#   fly deploy --config services/guardian/fly.toml --dockerfile services/guardian/Dockerfile .
+app = "fiona-guardian"
+primary_region = "sin"
+
+[http_service]
+  internal_port = 8200
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0   # A8 sets this to 1 for demo day
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/healthz"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

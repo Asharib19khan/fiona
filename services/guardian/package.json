@@ -1,0 +1,11 @@
+{
+  "name": "@fiona/guardian",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Turborepo shim for the Python Guardian service (FastAPI, uv).",
+  "scripts": {
+    "dev": "uv run uvicorn fiona_guardian.main:app --reload --reload-dir fiona_guardian --port 8200",
+    "lint": "uv run ruff check . && uv run ruff format --check .",
+    "test": "uv run pytest -q"
+  }
+}

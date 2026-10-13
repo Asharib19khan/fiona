@@ -1,0 +1,23 @@
+# Fly.io app for the agents service. Deploy from the repo root:
+#   fly deploy --config services/agents/fly.toml --dockerfile services/agents/Dockerfile .
+app = "fiona-agents"
+primary_region = "sin"
+
+[http_service]
+  internal_port = 8100
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0   # A8 sets this to 1 for demo day
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/healthz"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"

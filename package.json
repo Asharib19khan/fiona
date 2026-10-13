@@ -1,0 +1,33 @@
+{
+  "name": "fiona",
+  "private": true,
+  "description": "Fiona: an AI finance team for small and medium businesses, checked by the Guardian before it acts.",
+  "packageManager": "pnpm@10.34.6",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "gen": "turbo run gen",
+    "doctor": "node scripts/doctor.mjs",
+    "check:env": "node scripts/check-env.mjs",
+    "check:env-coverage": "node scripts/check-env-coverage.mjs",
+    "check:boundaries": "uv run --no-project --python 3.12 python scripts/check-boundaries.py",
+    "test:boundaries": "uv run --no-project --python 3.12 python scripts/check-boundaries.py --self-test",
+    "test:gitleaks": "node scripts/test-gitleaks.mjs",
+    "smoke:keys": "node scripts/smoke-keys.mjs",
+    "mock:api": "node scripts/not-yet.mjs mock:api A2",
+    "db:reset": "node scripts/engine-py.mjs engine.ledger.db reset",
+    "demo-data": "node scripts/engine-py.mjs engine.ledger.db demo-data",
+    "demo:data": "node scripts/engine-py.mjs engine.ledger.db demo-data",
+    "verify:a1": "node scripts/verify-a1.mjs",
+    "prepare": "node scripts/setup-hooks.mjs"
+  },
+  "devDependencies": {
+    "turbo": "2.11.7"
+  }
+}

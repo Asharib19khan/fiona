@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+  # Python services join the workspace only through a tiny package.json shim,
+  # so Turborepo can run their dev, lint and test scripts.
+  - services/*
+
+# pnpm 10 blocks dependency install scripts unless they are listed here.
+onlyBuiltDependencies:
+  - "@tailwindcss/oxide"
+  - esbuild
+  - sharp
+  - unrs-resolver

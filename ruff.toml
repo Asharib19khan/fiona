@@ -1,0 +1,27 @@
+# One Ruff config for every Python folder (services, data/generator, rulebook tools).
+# A folder may override it only with its own ruff.toml, agreed with fiona-19.
+line-length = 100
+target-version = "py312"
+extend-exclude = [".venv", "**/generated/**"]
+# First-party package roots: `engine` lives in services/, the others in their service folders.
+src = ["services", "services/agents", "services/guardian", "packages/contracts/generated/py"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S"]
+ignore = [
+  "E501",   # the formatter owns line length
+  "SIM117", # nested `with pytest.raises(...)` reads better than one combined `with`
+  "S603",   # flags every subprocess call; shell=True is still caught by S602
+  "RUF001", # Urdu and Chinese text in strings is intentional
+  "RUF002",
+  "RUF003",
+]
+
+[lint.per-file-ignores]
+# Tests may assert, use fixed fake secrets and run subprocesses.
+"**/tests/**" = ["B011", "S101", "S105", "S106", "S108", "S311", "S607", "S608"]
+"**/test_*.py" = ["S101", "S105", "S106", "S108", "S311", "S607", "S608"]
+"**/conftest.py" = ["S101"]
+
+[format]
+quote-style = "double"
