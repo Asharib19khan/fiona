@@ -1,0 +1,388 @@
+# Guardian rules v1 (B2). Finalises the twelve draft rules in the Build Blueprint ("Guardian rules
+# v1", G-01 to G-12) and adds three proposed rules (G-13 to G-15) for control gaps the draft left
+# open. Human-readable companion and control matrix: rulebook/docs/B2_Guardian_Rules_v1.md.
+#
+# Implemented by: Daniyal (deterministic checks, services/engine/guardian_checks, D5; wallet D6)
+# and Asharib (adversarial review and verdict combiner, services/guardian, A6).
+# Thresholds are referenced by ID from rulebook/thresholds.yaml; values are never restated here.
+# Changes from the blueprint draft are listed in `changes_from_draft` with their reason.
+
+schema_version: 1
+policy_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+status: "v1 for G1"
+
+verdict:
+  outcomes: [approve, approve_with_conditions, escalate, block]
+  strictness_order: [block, escalate, approve_with_conditions, approve]   # strictest first
+  meanings:
+    approve: >
+      Every rule passed. The action may proceed as far as the proposing agent's autonomy level
+      allows: at act_within_mandate the wallet may execute it; at prepare the owner still approves
+      with one tap; at advise nothing executes.
+    approve_with_conditions: >
+      The action may proceed only if every listed condition holds at execution time. Conditions are
+      machine-checkable ({kind: pay_on, date}, {kind: max_amount_minor, value}, {kind: before_time,
+      ts}); the wallet re-checks them and refuses if any fails. A condition never widens a mandate.
+    escalate: >
+      The Guardian will not clear it alone. The owner (or an authorised user who is not the
+      proposer) must approve it explicitly, with passkey or biometric on the phone; the approval,
+      its user and time are written to the audit log. Owner approval releases escalate only, never
+      block.
+    block: >
+      The action must not proceed in its current form, and no in-app approval can release it. It
+      can only be re-submitted after the underlying facts change (for example the owner records an
+      out-of-band confirmation of a bank change, or a corrected bill replaces a wrong one); the
+      Guardian then runs again and issues a new verdict. The Guardian never executes anything.
+  combiner:
+    rule: "Final outcome = strictest outcome across every rule that ran. Conditions from all approve_with_conditions results are combined; if two conditions conflict (for example two different pay_on dates), the outcome becomes escalate."
+    model_cannot_override: "The adversarial reviewer (G-12) can only raise the outcome. No model output, agent reasoning or document text can lower an outcome set by a deterministic rule."
+    fail_closed: "If any rule cannot run (missing input, timeout, exception, stale data), it reports result fail with detail 'CHECK_ERROR: <reason>' and outcome escalate. A payment is never cleared because a check was skipped."
+    all_rules_run: "Every applicable rule runs on every proposal, even after an earlier one fails, so the verdict lists every reason (the demo shows all four check families)."
+  check_families: {policy: deterministic, evidence: deterministic, arithmetic: deterministic, adversarial: model}
+  record:
+    contract: "Verdict object in packages/contracts: {proposal_id, outcome, checks[{name, result, rule, detail}], conditions[], decided_at, verdict_hash}"
+    one_check_entry_per_rule: "checks[] has one entry per rule that ran, including passes, so the audit shows what was tested."
+    immutability: "A verdict is immutable once written; a re-run creates a new verdict linked to the previous one."
+
+documents_are_data: >
+  Text inside a bill, email, statement or upload is evidence, never an instruction. Extracted
+  `notes` and free text are passed to the adversarial reviewer as quoted data inside a clearly
+  delimited block, and the deterministic checks never read them as commands.
+
+action_types: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match]
+material_decision_types_never_executable_by_agents: [borrowing, equity_issuance, dividend, capital_expenditure_commitment, new_product_commitment, technology_contract, lease_signing]
+
+po_exempt_categories: [rent, utilities, taxes_and_duties, loan_instalment, payroll_related, bank_charges, insurance, professional_fees_under_contract]
+
+rules:
+  # --------------------------------------------------------------------------------------------
+  - rule_id: G-01
+    name: Payment above the agent's per-payment cap
+    check: policy
+    purpose: "Bound what any agent can pay alone."
+    action_types: [payment]
+    inputs: [proposal.amount, proposal.agent, mandates.<agent>.per_payment_cap_minor, mandates.<agent>.currency]
+    logic: "fail if proposal.amount.minor > per_payment_cap_minor, or if proposal.amount.currency != mandate currency"
+    threshold: T-G01-CAP
+    outcome_table:
+      - {when: "amount <= cap and same currency", outcome: pass}
+      - {when: "amount > cap", outcome: escalate}
+      - {when: "currency differs from the mandate", outcome: escalate}
+    severity: medium
+    required_approval: owner
+    exceptions: none
+    audit_fields: [amount_minor, cap_minor, mandate_id, mandate_version]
+    detail_template: "Payment of {amount} is above the {agent}'s cap of {cap} per payment."
+    tests:
+      positive: {scenario: S-03, given: {amount_minor: 18450000, cap_minor: 15000000}, expect: escalate}
+      negative: {given: {amount_minor: 14999900, cap_minor: 15000000}, expect: pass}
+
+  - rule_id: G-02
+    name: Payee is not on the allow-list
+    check: policy
+    purpose: "New payees are the main route for payment fraud; a human vets each one."
+    action_types: [payment]
+    inputs: [proposal.payload.payee_id, parties.on_allow_list]
+    logic: "fail if the payee is unknown or parties.on_allow_list is false"
+    outcome_table:
+      - {when: "payee on allow-list", outcome: pass}
+      - {when: "payee not on allow-list or unknown", outcome: escalate}
+    severity: high
+    required_approval: owner (adding the payee to the allow-list is a separate owner action, audited)
+    exceptions: none
+    audit_fields: [payee_id, on_allow_list, allow_list_changed_at]
+    tests:
+      positive: {scenario: S-04, given: {on_allow_list: false}, expect: escalate}
+      negative: {given: {on_allow_list: true}, expect: pass}
+
+  - rule_id: G-03
+    name: Payee bank account changed within the cooling-off period or not confirmed out of band
+    check: policy
+    purpose: "Stop payments redirected by a fraudulent bank-detail change (business email compromise)."
+    action_types: [payment]
+    inputs: [parties.bank_account_changed_at, "latest bank_detail_change event (confirmed_via, confirmed_by)", proposal.payload.to_iban, parties.bank_iban, bill.supplier.bank_iban]
+    logic: |
+      fail if ANY of:
+        (a) now - bank_account_changed_at < cooling-off days AND the change has no owner confirmation with confirmed_via = phone;
+        (b) the latest change was never confirmed out of band (confirmed_via in [email, none]), whatever its age;
+        (c) the account the payment would go to differs from parties.bank_iban (the account on file), or the bill prints a different account than the one on file.
+      Out-of-band means a call-back by the owner to a phone number already on file, never a number from the change request or the bill.
+    threshold: T-G03-COOL
+    outcome_table:
+      - {when: "no change in the period and accounts agree", outcome: pass}
+      - {when: "any of (a), (b), (c)", outcome: block}
+    release_path: "Owner calls the supplier on the number on file, records a confirmation (bank_detail_change.confirmed_via = phone, confirmed_by = owner user id), and the proposal is re-submitted. A printed account that differs from the one on file always blocks until the party record is updated through that same confirmed change."
+    severity: critical
+    required_approval: owner confirmation of the change (not approval of the payment)
+    exceptions: none
+    audit_fields: [party_id, old_iban_masked, new_iban_masked, changed_at, confirmed_via, confirmed_by, days_since_change]
+    detail_template: "{party}'s bank account changed {days} days ago and has not been confirmed by phone."
+    tests:
+      positive: {scenario: DEMO-1, given: {days_since_change: 2, confirmed_via: email}, expect: block}
+      negative: {given: {days_since_change: 40, confirmed_via: phone}, expect: pass}
+
+  - rule_id: G-04
+    name: The same actor proposes and approves
+    check: policy
+    purpose: "Segregation of duties (maker-checker): no person or agent approves its own action."
+    action_types: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match]
+    inputs: [proposal.agent, proposal.created_by_user, approval.user_id, bill.created_by, bill.approved_by]
+    logic: "fail if the approver is the proposer, or the user who entered or extracted the underlying bill is the one approving its payment, or an agent appears as an approver, or the Guardian appears as an approver"
+    outcome_table:
+      - {when: "approver independent of proposer", outcome: pass}
+      - {when: "same actor", outcome: block}
+    severity: critical
+    required_approval: a different authorised user
+    exceptions: "Single-person businesses: the owner may approve agent proposals (the agent is the maker), but an owner-entered bill paid on the owner's own approval is recorded with a 'single-person business' flag in the audit log and the daily digest."
+    audit_fields: [proposer, approver, bill_entered_by]
+    tests:
+      positive: {scenario: S-05, given: {proposer: usr_finance_01, approver: usr_finance_01}, expect: block}
+      negative: {given: {proposer: treasurer, approver: usr_owner}, expect: pass}
+
+  - rule_id: G-05
+    name: Duplicate bill
+    check: policy
+    purpose: "Stop paying the same bill twice."
+    action_types: [bill_approval, payment]
+    inputs: [bill.supplier_id, bill.number, bill.total_minor, bill.document_sha256, bill.issue_date, prior bills of the same supplier within the lookback window (paid or unpaid), PO and GRN references]
+    normalisation: "number_norm, in this order: (1) uppercase; (2) strip leading zeros from each maximal digit run in the original string; (3) remove every non-alphanumeric character. INV-0001001 -> INV1001; KAC-2026-0010 -> KAC202610. Stripping before removing separators keeps sequential numbers apart (KAC-2026-0010 vs KAC-2026-0011 = 8889 bp, below 9000)."
+    logic: "Compare the bill with every prior bill from the same supplier in the window (and with every prior bill of any supplier for an identical document hash), then apply the first matching row of the outcome table."
+    thresholds: [T-G05-AMT, T-G05-SIM, T-G05-WINDOW]
+    outcome_table:
+      - {when: "identical document_sha256 to any prior bill (any age, any supplier)", outcome: block}
+      - {when: "same supplier, number_norm identical, amount difference <= T-G05-AMT", outcome: block}
+      - {when: "same supplier, number similarity >= T-G05-SIM, amount difference <= T-G05-AMT, and the two bills do not cite different GRNs", outcome: block}
+      - {when: "same supplier, number similarity >= T-G05-SIM, amount difference <= T-G05-AMT, but each bill cites its own distinct GRN", outcome: escalate}
+      - {when: "same supplier, number_norm identical, amount difference > T-G05-AMT (possible revised bill or credit note)", outcome: escalate}
+      - {when: "otherwise", outcome: pass}
+    not_a_duplicate: "Recurring bills (rent, retainers) from the same supplier for the same amount with different, dissimilar numbers pass. Same amount alone never fires this rule."
+    severity: critical
+    required_approval: none for block (facts must change); owner for escalate
+    audit_fields: [bill_id, matched_bill_id, match_signal, similarity_bp, amount_difference_bp, hashes_equal]
+    detail_template: "Bill {number} matches {matched_number} from {matched_date} ({signal})."
+    tests:
+      positive: {scenario: S-01, given: {number: "INV 2231", prior_number: "INV-2231", amount_difference_bp: 0}, expect: block}
+      negative: {scenario: S-13-clean, given: {number: "RNT-2026-10", prior_number: "RNT-2026-09", amount_difference_bp: 0}, expect: pass, note: "RNT-2026-10 vs RNT-2026-09 -> RNT202610 vs RNT20269 = 8235 bp, below 9000; recurring rent passes"}
+
+  - rule_id: G-06
+    name: Bill fails the three-way match
+    check: policy
+    purpose: "Pay only for goods that were ordered and received, at the ordered price."
+    action_types: [bill_approval, payment]
+    inputs: [bill.po_number, purchase_orders, goods_received, bill.lines, bill category]
+    logic: |
+      If the bill's category is in po_exempt_categories, require a contract or recurring-schedule reference instead (two-way match); missing it -> fail.
+      Otherwise fail if there is no matching PO, no GRN for that PO, or any line's quantity or unit-price variance exceeds the tolerance (quantity against received, price against ordered).
+    threshold: T-G06-TOL
+    outcome_table:
+      - {when: "PO and GRN found and every line within tolerance", outcome: pass}
+      - {when: "no PO, no GRN, or a line outside tolerance", outcome: escalate}
+    severity: high
+    required_approval: owner
+    exceptions: "po_exempt_categories use the two-way contract match"
+    audit_fields: [po_id, grn_id, worst_line_variance_bp, missing_documents]
+    tests:
+      positive: {scenario: S-06, given: {po: present, grn: missing}, expect: escalate}
+      negative: {given: {po: present, grn: present, max_variance_bp: 150}, expect: pass}
+
+  - rule_id: G-07
+    name: Lines and tax do not add up (bills); debits and credits do not balance (journals)
+    check: arithmetic
+    purpose: "The engine recomputes every figure; a document or entry that does not add up is not processed."
+    action_types: [bill_approval, payment, journal_adjustment, send_document]
+    inputs: [lines, subtotal_minor, tax lines with rate_bp, total_minor, country pack rounding rule]
+    logic: |
+      Bills and invoices: fail if |sum(line_total) - subtotal| > tolerance, or |subtotal + sum(tax) - total| > tolerance, or any tax line differs from round_half_up(base x rate_bp / 10000) by more than tolerance, or any line_total != qty x unit_price - discount.
+      Journals: fail if sum(debit_minor) != sum(credit_minor) exactly, or any line has both or neither.
+      Payments: fail if the payment amount differs from the bill's outstanding balance (partial payments must say so in the payload).
+    threshold: T-G07-ARITH
+    outcome_table:
+      - {when: "all sums within tolerance", outcome: pass}
+      - {when: "any difference above tolerance", outcome: block}
+    severity: critical
+    required_approval: none (a corrected document or entry must be submitted)
+    audit_fields: [recomputed_subtotal, recomputed_tax, recomputed_total, stated_total, difference_minor]
+    tests:
+      positive: {scenario: S-07, given: {subtotal_minor: 15635593, tax_rate_bp: 1800, stated_tax_minor: 2914407}, expect: block, note: "correct tax is round_half_up(15635593 x 0.18) = 2814407"}
+      negative: {given: {subtotal_minor: 15635593, tax_rate_bp: 1800, stated_tax_minor: 2814407, total_minor: 18450000}, expect: pass}
+
+  - rule_id: G-08
+    name: The payment would take cash below the owner's buffer
+    check: policy
+    purpose: "Liquidity first: no payment may create or deepen a week below the buffer when a safer date exists."
+    action_types: [payment]
+    inputs: ["latest forecast run (weekly closing cash, as-of)", tenant.policies.cash_buffer_minor, proposal.amount, proposal.payload.pay_on, bill.due_date (if any), whether the bill is already in the forecast baseline]
+    threshold: T-LIQ-BUF-01
+    logic: |
+      Incremental test (approved by fiona-b7, 13 Oct). Let base[w] be the baseline forecast closing cash, which already
+      includes every open bill paid on its due date. Build scen[w] by removing this bill's baseline outflow (if present)
+      and inserting the payment on pay_on.
+        violation(pay_on) = any week w with scen[w] < buffer AND scen[w] < base[w]
+      i.e. the payment creates a below-buffer week or deepens one, compared with paying as planned.
+      1. No violation -> pass. If the baseline already has below-buffer weeks, the detail says so ("pre-existing dip in week N, not caused by this payment").
+      2. Violation -> search dates d from pay_on to the latest permitted date (the bill's due date; for a payment with no
+         due date, the end of the forecast horizon), latest first, for the latest d with no violation. Found -> approve_with_conditions with {kind: pay_on, date: d}.
+         (Paying later within terms is never worse, so the due date itself is tried first.)
+      3. No such date -> escalate.
+      Payments are never scheduled after the due date by this rule.
+    outcome_table:
+      - {when: "no violation", outcome: pass}
+      - {when: "violation, and a safe date exists on or before the due date", outcome: approve_with_conditions}
+      - {when: "violation, no safe date", outcome: escalate}
+    demo_cases:
+      - {case: "routine payment on its due date (already in the baseline)", expect: pass, scenario: S-08a}
+      - {case: "early payment that lands in the week-7 dip", expect: "approve_with_conditions, pay on the due date (latest safe date)", scenario: S-08b}
+      - {case: "unplanned payment (not in the baseline) that creates a below-buffer week whenever it is paid", expect: escalate, scenario: S-08c}
+    severity: high
+    required_approval: owner for escalate
+    exceptions: "Statutory payments (tax, payroll) are never delayed past their due date by a condition; if one causes a violation the result is escalate, so the owner arranges funding."
+    audit_fields: [forecast_run_id, forecast_as_of, buffer_minor, min_scen_minor, min_base_minor, week_of_min, safe_date]
+    tests:
+      positive: {scenario: S-08b, expect: approve_with_conditions}
+      negative: {scenario: S-08a, expect: pass}
+
+  - rule_id: G-09
+    name: A claim in the proposal has no evidence reference
+    check: evidence
+    purpose: "Every action is traceable to rows and documents; nothing rests on an agent's say-so."
+    action_types: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match]
+    inputs: [proposal.evidence, proposal.payload, proposal.reasoning]
+    required_evidence_by_type:
+      payment: [ledger_row for the bill or obligation, document for the bill]
+      bill_approval: [document, purchase_order or contract reference, goods_received (unless po_exempt)]
+      journal_adjustment: [source event ids or documents for every line]
+      send_document: [the document, the source events it is built from]
+      purchase_order: [inventory analysis run or owner request]
+      reconciliation_match: [bank_line id, event ids]
+    logic: |
+      fail (block) if any required evidence kind is missing, or any evidence ref does not resolve to a record of this tenant, or the evidenced record contradicts the payload (payee, bill id, amount or currency differ).
+      Numbers and dates in `reasoning` that match no cited record -> escalate (free text is parsed conservatively; a mismatch is a question, not proof of fraud).
+    outcome_table:
+      - {when: "all required evidence present, resolvable and consistent", outcome: pass}
+      - {when: "required evidence missing, unresolvable or contradicting the payload", outcome: block}
+      - {when: "a figure in the reasoning has no matching cited value", outcome: escalate}
+    severity: high
+    audit_fields: [missing_kinds, unresolved_refs, contradictions, unmatched_reasoning_values]
+    tests:
+      positive: {scenario: S-09, given: {evidence: []}, expect: block}
+      negative: {given: {evidence: [{kind: ledger_row, ref: bill_2231}, {kind: document, ref: doc_88}]}, expect: pass}
+
+  - rule_id: G-10
+    name: Payments today would exceed the daily cap
+    check: policy
+    purpose: "Bound a day of autonomous payments, including many small ones (structuring)."
+    action_types: [payment]
+    inputs: [mandates.<agent>.daily_cap_minor, executed and cleared-pending payments by the agent on the tenant's local business date]
+    logic: "fail if payments_today (including this one) > daily_cap"
+    threshold: T-G10-DAILY
+    outcome_table:
+      - {when: "within cap", outcome: pass}
+      - {when: "above cap", outcome: escalate}
+    severity: medium
+    audit_fields: [payments_today_minor, daily_cap_minor, business_date]
+    tests:
+      positive: {scenario: S-10, given: {paid_today_minor: 40000000, amount_minor: 9000000, daily_cap_minor: 45000000}, expect: escalate}
+      negative: {given: {paid_today_minor: 30000000, amount_minor: 9000000, daily_cap_minor: 45000000}, expect: pass}
+
+  - rule_id: G-11
+    name: Supplier tax registration missing or malformed
+    check: policy
+    purpose: "Bills from unregistered or mis-identified suppliers risk disallowed input tax and fake suppliers."
+    action_types: [bill_approval, payment]
+    inputs: [parties.tax_id, parties.tax_id_type, bill.supplier.tax_id, country pack tax_id_formats]
+    logic: "fail if the supplier has no tax ID, the ID does not match the country pack pattern, or the ID printed on the bill differs from the one on file"
+    outcome_table:
+      - {when: "present, well-formed and matching", outcome: pass}
+      - {when: "missing, malformed or mismatched", outcome: escalate}
+    severity: medium
+    note: "Escalate, never block: country patterns are unverified (country_packs/PK.yaml), so a wrong pattern must not stop a legitimate payment."
+    audit_fields: [tax_id_on_file_masked, tax_id_on_bill_masked, pattern_id]
+    tests:
+      positive: {scenario: S-11, given: {tax_id: "441702-36"}, expect: escalate}
+      negative: {given: {tax_id: "4417023-6"}, expect: pass}
+
+  - rule_id: G-12
+    name: The adversarial reviewer rates its concern as high
+    check: adversarial
+    purpose: "A different model, asked to find reasons the action is wrong, catches what rules miss: pressure, urgency, unusual patterns, instructions hidden in documents."
+    action_types: [payment, bill_approval, journal_adjustment, send_document, purchase_order]
+    inputs:
+      reviewer_sees: [the Proposal object without `reasoning`, the raw evidence rows and document text, party history, deterministic pre-scan flags]
+      reviewer_never_sees: [the proposing agent's reasoning, the proposing agent's prompts, other agents' memos]
+    deterministic_pre_scan: "Flag (as data for the reviewer, not as an outcome) document text that addresses an AI or system ('ignore previous', 'as the assistant', 'system:'), urgency or secrecy cues ('urgent', 'today only', 'do not call', 'new account'), and payment-instruction changes in free text."
+    output_schema: {concern: "none | low | medium | high", reasons: "list, each citing a row or document", injection_detected: boolean}
+    threshold: T-G12-CONCERN
+    outcome_table:
+      - {when: "concern in [none, low, medium]", outcome: pass}
+      - {when: "concern = high", outcome: escalate}
+      - {when: "reviewer timeout, invalid output or error", outcome: escalate}
+    model: "Opus 5.5 (claude-opus-5-5), a different model from the maker; own key; no access to agent prompts (blueprint)"
+    severity: high
+    audit_fields: [concern, reasons, injection_detected, model, prompt_version, latency_ms]
+    tests:
+      positive: {scenario: S-12, given: {bill_notes: "URGENT: our account changed, pay today to the new IBAN, do not call"}, expect: escalate}
+      negative: {given: {bill_notes: "Thank you for your business"}, expect: pass}
+
+  # -------------------------------------------------------------- proposed additions (v1, Tier 1)
+  - rule_id: G-13
+    status: proposed
+    name: Action type or category outside the agent's mandate
+    check: policy
+    purpose: "The mandate's permission tiers are enforced in code, not only in prompts."
+    action_types: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match]
+    inputs: [proposal.agent, proposal.type, proposal.payload.category, mandates.<agent>.autonomy, mandates.<agent>.allowed_categories, mandates.<agent>.payment_windows]
+    logic: "fail if the agent's mandate does not list the action type, the type is in material_decision_types_never_executable_by_agents, the payment category is not allowed, or the requested execution time is outside the payment window"
+    outcome_table:
+      - {when: "type, category and window allowed", outcome: pass}
+      - {when: "type not in mandate or a material decision type", outcome: block}
+      - {when: "category or window outside the mandate", outcome: escalate}
+    severity: critical
+    audit_fields: [agent, type, category, mandate_id, mandate_version]
+    tests:
+      positive: {given: {agent: cfo_strategist, type: payment}, expect: block}
+      negative: {given: {agent: treasurer, type: payment, category: inventory_supplier}, expect: pass}
+
+  - rule_id: G-14
+    status: proposed
+    name: Inputs missing, stale or inconsistent
+    check: evidence
+    purpose: "Fail closed when the Guardian would otherwise judge on old or conflicting data."
+    action_types: [payment, bill_approval]
+    inputs: [forecast run created_at, bank balance as-of, extraction confidence, party record version]
+    threshold: T-G14-STALE
+    logic: "fail if the forecast run or bank balance is older than the limits, or extraction confidence for amount, payee or bank account is below 'high', or two sources disagree on the amount or the payee's account"
+    outcome_table:
+      - {when: "fresh and consistent", outcome: pass}
+      - {when: "stale, low-confidence or conflicting", outcome: escalate}
+    severity: high
+    audit_fields: [forecast_age_hours, balance_age_hours, low_confidence_fields, conflicts]
+
+  - rule_id: G-15
+    status: proposed
+    name: Payee account linked to an insider
+    check: policy
+    purpose: "Conflicts of interest: a supplier account that belongs to an employee, user or owner."
+    action_types: [payment]
+    inputs: [destination IBAN, employee and user bank accounts (payroll), related-party list]
+    logic: "fail if the destination account matches any employee, user or declared related-party account"
+    outcome_table:
+      - {when: "no match", outcome: pass}
+      - {when: "match", outcome: escalate}
+    severity: high
+    audit_fields: [matched_party_kind]
+
+changes_from_draft:
+  - {rule: G-03, change: "Also blocks a change never confirmed out of band, whatever its age, and a bill printing an account different from the one on file.", reason: "Project documentation security table: 'out-of-band confirmation for new accounts'. The 7-day period alone would let an unconfirmed change through on day 8."}
+  - {rule: G-05, change: "Exact decision table; adds escalate for near-identical numbers backed by distinct GRNs and for identical numbers with different amounts.", reason: "Avoid false blocks on recurring and sequential bills (B3 clean-bill scenario), while still blocking re-sent bills."}
+  - {rule: G-07, change: "Extended to journals (debits = credits) and to payment amount versus outstanding balance.", reason: "Control area 'arithmetic and accounting' in the brief; the ledger's own property test covers postings, this covers proposals."}
+  - {rule: G-08, change: "Incremental test against the baseline forecast; never schedules after the due date; statutory payments escalate instead of being delayed.", reason: "With a planted week-7 dip, the draft would escalate every routine payment. Approved by fiona-b7 on 13 Oct."}
+  - {rule: G-09, change: "Evidence required by type; unresolvable refs and payload contradictions block; unmatched numbers in free-text reasoning escalate.", reason: "Make 'claim' testable without a model."}
+  - {rule: G-12, change: "Errors and timeouts escalate; deterministic pre-scan feeds the reviewer.", reason: "Fail closed; prompt-injection test (PLAN.md engineering rule 3)."}
+  - {rule: "G-13 to G-15", change: "Proposed additions.", reason: "Mandate action types, stale data and conflicts of interest are required control areas with no draft rule. Marked proposed so D5's 'twelve rules' scope is unchanged; Tier 1 needs G-13 because the permission tiers are scored."}
+
+decisions_for_review:
+  - {id: D-B2-01, decision: "Outcome strings are the contract's lowercase values (approve, approve_with_conditions, escalate, block). 'ESCALATE_TO_OWNER' in the finance brief is `escalate`."}
+  - {id: D-B2-02, decision: "Check errors are reported as result fail with detail 'CHECK_ERROR: ...' so the Verdict contract needs no new result value."}
+  - {id: D-B2-03, decision: "Karachi persona caps: per payment PKR 150,000, daily PKR 450,000, buffer PKR 2,000,000 (see mandates.yaml). Replaces Daniyal's placeholders of 200,000 and 600,000 so the blueprint's PKR 184,500 payment escalates to the phone (demo moment 6)."}

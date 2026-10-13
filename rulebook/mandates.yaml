@@ -1,0 +1,137 @@
+# Default mandates per agent (B2). A mandate is the owner's written delegation to one agent:
+# which action types it may take, at which autonomy level, with which limits. The Guardian
+# enforces it (G-01, G-10, G-13) and the wallet refuses anything outside it (D6).
+# Contract shape: `mandate_shape` below, proposed for packages/contracts (A2, freeze Wed 14).
+# The cash buffer is NOT a mandate field: it is the tenant-level owner policy
+# tenant.policies.cash_buffer_minor (fiona-b7 ruling, 13 Oct).
+
+schema_version: 1
+mandates_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+
+autonomy_levels:
+  advise: "The agent recommends; the owner acts. Nothing is prepared for execution."
+  prepare: "The agent drafts the action (payment, entry, document) as a Proposal; the Guardian checks it; the owner approves with one tap. Nothing executes without that approval."
+  act_within_mandate: "The agent's Proposal executes after the Guardian clears it (approve, or approve_with_conditions with conditions met), inside the caps, categories, payees and windows below. Anything else escalates to the owner. The owner gets a daily digest."
+  level_order: [advise, prepare, act_within_mandate]
+
+principles:
+  start_at_advise: "Every agent starts at advise for a new tenant (project documentation: 'Every agent starts at Advise. Trust is earned action by action')."
+  owner_only_changes: "Only the owner (role owner) can raise or lower a level, a cap, a category, a window or an allow-list entry. Each change creates a new mandate version and a hash-chained audit record (mandate_change). Agents and the Guardian cannot change mandates."
+  no_ratchet: "No agent gains authority automatically. Accepted recommendations, approved proposals or time without incidents never raise a level or a cap. Fiona may suggest a change to the owner; the owner decides."
+  instant_downgrade: "The owner can lower any agent to advise at any time, effective immediately; pending proposals from that agent re-run the Guardian against the new mandate."
+  ceilings: "A system ceiling per agent and action type cannot be exceeded by any owner setting (e.g. the CFO Strategist can never execute a payment)."
+  material_decisions: "Borrowing, equity issuance, dividends, capital-expenditure commitments, new-product commitments, technology contracts and lease signings are never executable by any agent at any level. Agents advise; the owner or an authorised decision-maker decides (G-13)."
+
+agents:
+  cfo_strategist:
+    role: "Capital decisions and business health"
+    ceiling: {decision_memo: advise}
+    default: {decision_memo: advise}
+    may_propose: ["decision memos (not Proposals) on financing choice, debt versus equity, dividend, asset investment, liability pay-down and innovation budget"]
+    may_prepare: []
+    may_execute: []
+    never: [payments, journal entries, sending documents, changing mandates, contacting lenders or investors]
+    escalation_mandatory: ["every memo goes to the owner", "any recommendation at confidence low is labelled and cannot be turned into a Proposal by another agent without the owner"]
+  treasurer:
+    role: "Cash and payments"
+    ceiling: {payment: act_within_mandate}
+    default: {payment: advise}
+    may_propose: [payment, payment schedules, early-payment discount use]
+    may_prepare: [payment]
+    may_execute: ["payment, only at act_within_mandate, only to allow-listed payees, within caps, categories and windows, after Guardian clearance"]
+    never: [payments to new or changed payees without owner confirmation, payroll, taxes, dividends, loan drawdowns, transfers between own accounts above the cap]
+    escalation_mandatory: [G-01, G-02, G-03 release, G-08 escalate, G-10, any Guardian escalate]
+    default_limits_when_promoted:
+      per_payment_cap: "T-G01-CAP default suggestion: 5% of the cash buffer"
+      daily_cap: "T-G10-DAILY default suggestion: 3 x per-payment cap"
+      allowed_categories: [inventory_supplier, utilities, rent, logistics]
+      payment_windows: {days: [mon, tue, wed, thu, fri, sat], local_start: "09:00", local_end: "17:00", exclude_public_holidays: true}
+  controller:
+    role: "Books and controls"
+    ceiling: {bill_approval: prepare, journal_adjustment: prepare, send_document: prepare, reconciliation_match: prepare}
+    default: {bill_approval: advise, journal_adjustment: advise, send_document: advise, reconciliation_match: advise}
+    may_propose: [bill_approval, journal_adjustment, "send_document (customer invoices, reminders)", reconciliation_match]
+    may_prepare: [bill_approval, journal_adjustment, send_document, reconciliation_match]
+    may_execute: []
+    never: [payments, approving its own drafts, posting entries without approval, changing party bank details]
+    escalation_mandatory: [every journal_adjustment, any bill failing G-05, G-06, G-07 or G-11]
+  growth_analyst:
+    role: "Products and inventory"
+    ceiling: {purchase_order: prepare, decision_memo: advise}
+    default: {purchase_order: advise, decision_memo: advise}
+    may_propose: [launch memos, reorder suggestions, draft purchase orders]
+    may_prepare: [purchase_order]
+    may_execute: []
+    never: [payments, committing to a product launch, supplier contracts]
+    escalation_mandatory: ["every purchase_order goes to the owner", "every launch memo goes to the owner"]
+  guardian:
+    role: "Independent check"
+    ceiling: {}
+    default: {}
+    may_propose: []
+    may_prepare: []
+    may_execute: []
+    may: [run checks, "issue verdicts (approve, approve_with_conditions, escalate, block)", record reasons]
+    never: [execute anything, approve as a user, edit proposals, see the proposing agent's reasoning or prompts, change mandates]
+  guide:
+    role: "Help with the product"
+    ceiling: {}
+    default: {}
+    may: [explain screens and numbers, run guided tours]
+    never: [give financial advice, create proposals, call finance tools, access money]
+
+persona_mandates:
+  ten_karachi_apparel:
+    note: "Synthetic demo persona. The owner has promoted the Treasurer to act_within_mandate for payments and the Controller to prepare; everyone else stays at advise."
+    tenant_policies: {cash_buffer_minor: 200000000, currency: PKR}
+    mandates:
+      - id: mnd_treasurer_v1
+        agent: treasurer
+        version: 1
+        currency: PKR
+        autonomy: {payment: act_within_mandate}
+        per_payment_cap_minor: 15000000
+        daily_cap_minor: 45000000
+        allowed_action_types: [payment]
+        allowed_categories: [inventory_supplier, utilities, rent, logistics]
+        payee_scope: allow_list_only
+        payment_windows: {days: [mon, tue, wed, thu, fri, sat], local_start: "09:00", local_end: "17:00", timezone: Asia/Karachi, exclude_public_holidays: true}
+        effective_from: "2026-08-01"
+        approved_by: usr_owner
+      - id: mnd_controller_v1
+        agent: controller
+        version: 1
+        currency: PKR
+        autonomy: {bill_approval: prepare, journal_adjustment: prepare, send_document: prepare, reconciliation_match: prepare}
+        per_payment_cap_minor: 0
+        daily_cap_minor: 0
+        allowed_action_types: [bill_approval, journal_adjustment, send_document, reconciliation_match]
+        effective_from: "2026-08-01"
+        approved_by: usr_owner
+      - {id: mnd_cfo_strategist_v1, agent: cfo_strategist, version: 1, currency: PKR, autonomy: {decision_memo: advise}, per_payment_cap_minor: 0, daily_cap_minor: 0, allowed_action_types: [], effective_from: "2026-08-01", approved_by: usr_owner}
+      - {id: mnd_growth_analyst_v1, agent: growth_analyst, version: 1, currency: PKR, autonomy: {purchase_order: advise, decision_memo: advise}, per_payment_cap_minor: 0, daily_cap_minor: 0, allowed_action_types: [], effective_from: "2026-08-01", approved_by: usr_owner}
+
+mandate_shape:
+  status: "Proposed to fiona-19 and fiona-b7 for A2 (contracts core freeze Wed 14). Additive to the blueprint's mandates table."
+  fields:
+    id: {type: string, example: mnd_treasurer_v1}
+    tenant_id: {type: string}
+    agent: {type: enum, values: [cfo_strategist, treasurer, controller, growth_analyst, guardian, guide]}
+    version: {type: integer, note: "monotonic per (tenant, agent); a change writes a new row"}
+    status: {type: enum, values: [active, superseded]}
+    currency: {type: string, iso4217: true}
+    autonomy: {type: "map action_type -> level", levels: [advise, prepare, act_within_mandate], note: "absent action type = not permitted (G-13)"}
+    allowed_action_types: {type: "list of action_type", note: "derived from autonomy keys; kept for the blueprint table"}
+    per_payment_cap_minor: {type: integer}
+    daily_cap_minor: {type: integer}
+    allowed_categories: {type: "list of string", optional: true}
+    payee_scope: {type: enum, values: [allow_list_only], optional: true}
+    payment_windows: {type: "object {days[], local_start, local_end, timezone, exclude_public_holidays}", optional: true}
+    effective_from: {type: date}
+    effective_to: {type: date, optional: true}
+    approved_by: {type: string, note: "owner user id; required"}
+    created_at: {type: timestamp}
+  not_in_mandate: {cash_buffer_minor: "tenant.policies.cash_buffer_minor"}
+  system_ceilings: "agents.<agent>.ceiling in this file; enforced in code, not editable in the UI"
