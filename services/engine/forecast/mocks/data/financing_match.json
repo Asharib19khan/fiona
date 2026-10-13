@@ -1,0 +1,769 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "run_id": "fin_QRHY1AR4QKSNBA1KEJ54Q8BAHM",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "amount": {
+    "minor": 200000000,
+    "currency": "PKR"
+  },
+  "purpose": "working_capital_seasonal",
+  "catalogue": {
+    "source": "rulebook/financing.yaml",
+    "version": "stub-0",
+    "as_of": "2026-10-12"
+  },
+  "business_figures": [
+    {
+      "money": {
+        "minor": 960000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "business.ebitda_next_12m",
+      "label": "Operating profit before interest, next 12 months",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": {
+            "minor": 960000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "ebitda_next_12m",
+          "origin": "stub",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 17778,
+      "unit": "bp",
+      "metric_id": "solvency.dscr_forward",
+      "label": "Debt-service cover today",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": {
+            "minor": 960000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "ebitda_next_12m",
+          "origin": "stub",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 175388100,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "cash.shortfall_vs_buffer",
+      "label": "Cash shortfall against your buffer (week 7)",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 1242,
+      "unit": "bp",
+      "metric_id": "market.reference_lending_rate",
+      "label": "6-month KIBOR (stub)",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "options": [
+    {
+      "option_id": "pk_running_finance",
+      "name": "Running finance (overdraft line)",
+      "kind": "running_finance",
+      "provider_label": null,
+      "illustrative": true,
+      "source_ref": "stub:pk_running_finance (illustrative until rulebook/financing.yaml)",
+      "eligible": true,
+      "eligibility": [
+        {
+          "rule_id": "RF-01",
+          "description": "Trading for at least two years",
+          "metric_id": "business.months_trading",
+          "threshold": {
+            "money": null,
+            "value": 24,
+            "unit": "months",
+            "name": "min_years_trading",
+            "origin": "stub",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        },
+        {
+          "rule_id": "T-SOL-DSCR-01",
+          "description": "Debt-service cover stays at or above the minimum",
+          "metric_id": "financing.dscr_after",
+          "threshold": {
+            "money": null,
+            "value": 12500,
+            "unit": "bp",
+            "name": "min_dscr",
+            "origin": "rulebook",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "verification": "indicative_range",
+      "figures": [
+        {
+          "money": null,
+          "value": 1777,
+          "unit": "bp",
+          "metric_id": "financing.effective_annual_cost",
+          "label": "Effective annual cost (fees included)",
+          "status": "ok",
+          "formula": "annualise(IRR of borrower cash flows)",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [
+            "stub:pk_running_finance"
+          ],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 2653333,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.instalment",
+          "label": "Monthly payment",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 32840000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.total_cost",
+          "label": "Total cost over the term",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 16788,
+          "unit": "bp",
+          "metric_id": "financing.dscr_after",
+          "label": "Debt-service cover after borrowing",
+          "status": "ok",
+          "formula": "ebitda_next_12m / (existing + new debt service, next 12 months)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 960000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "ebitda_next_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": "engine.analysis.coverage"
+            },
+            {
+              "money": {
+                "minor": 540000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "existing_debt_service_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [
+            {
+              "money": null,
+              "value": 12500,
+              "unit": "bp",
+              "name": "min_dscr",
+              "origin": "rulebook",
+              "comparison": ">=",
+              "passed": true
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "bp",
+          "metric_id": "financing.dilution",
+          "label": "Share of the business given up",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rank": 1,
+      "rank_reasons": [
+        "lowest_effective_cost",
+        "matches_seasonal_need"
+      ]
+    },
+    {
+      "option_id": "pk_term_loan_sme",
+      "name": "SME term loan",
+      "kind": "term_loan",
+      "provider_label": null,
+      "illustrative": true,
+      "source_ref": "stub:pk_term_loan_sme (illustrative until rulebook/financing.yaml)",
+      "eligible": true,
+      "eligibility": [
+        {
+          "rule_id": "TL-01",
+          "description": "Trading for at least two years",
+          "metric_id": "business.months_trading",
+          "threshold": {
+            "money": null,
+            "value": 24,
+            "unit": "months",
+            "name": "min_years_trading",
+            "origin": "stub",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        },
+        {
+          "rule_id": "T-SOL-DSCR-01",
+          "description": "Debt-service cover stays at or above the minimum",
+          "metric_id": "financing.dscr_after",
+          "threshold": {
+            "money": null,
+            "value": 12500,
+            "unit": "bp",
+            "name": "min_dscr",
+            "origin": "rulebook",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "verification": "indicative_range",
+      "figures": [
+        {
+          "money": null,
+          "value": 1914,
+          "unit": "bp",
+          "metric_id": "financing.effective_annual_cost",
+          "label": "Effective annual cost (fees included)",
+          "status": "ok",
+          "formula": "annualise(IRR of borrower cash flows)",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [
+            "stub:pk_term_loan_sme"
+          ],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 7122585,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.instalment",
+          "label": "Monthly payment",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 58413064,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.total_cost",
+          "label": "Total cost over the term",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 15348,
+          "unit": "bp",
+          "metric_id": "financing.dscr_after",
+          "label": "Debt-service cover after borrowing",
+          "status": "ok",
+          "formula": "ebitda_next_12m / (existing + new debt service, next 12 months)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 960000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "ebitda_next_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": "engine.analysis.coverage"
+            },
+            {
+              "money": {
+                "minor": 540000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "existing_debt_service_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [
+            {
+              "money": null,
+              "value": 12500,
+              "unit": "bp",
+              "name": "min_dscr",
+              "origin": "rulebook",
+              "comparison": ">=",
+              "passed": true
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "bp",
+          "metric_id": "financing.dilution",
+          "label": "Share of the business given up",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rank": 2,
+      "rank_reasons": []
+    },
+    {
+      "option_id": "pk_supplier_credit",
+      "name": "Extended supplier credit (60 days)",
+      "kind": "supplier_credit",
+      "provider_label": null,
+      "illustrative": true,
+      "source_ref": "stub:pk_supplier_credit (illustrative until rulebook/financing.yaml)",
+      "eligible": null,
+      "eligibility": [
+        {
+          "rule_id": "SC-01",
+          "description": "Supplier offers extended terms",
+          "metric_id": "supplier.terms_available",
+          "threshold": {
+            "money": null,
+            "value": 1,
+            "unit": "count",
+            "name": "supplier_terms_confirmed",
+            "origin": "stub",
+            "comparison": ">=",
+            "passed": null
+          },
+          "passed": null,
+          "hard": true
+        },
+        {
+          "rule_id": "T-SOL-DSCR-01",
+          "description": "Debt-service cover stays at or above the minimum",
+          "metric_id": "financing.dscr_after",
+          "threshold": {
+            "money": null,
+            "value": 12500,
+            "unit": "bp",
+            "name": "min_dscr",
+            "origin": "rulebook",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "verification": "indicative_range",
+      "figures": [
+        {
+          "money": null,
+          "value": 1289,
+          "unit": "bp",
+          "metric_id": "financing.effective_annual_cost",
+          "label": "Effective annual cost (fees included)",
+          "status": "ok",
+          "formula": "annualise(IRR of borrower cash flows)",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [
+            "stub:pk_supplier_credit"
+          ],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.instalment",
+          "label": "Monthly payment",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 4000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.total_cost",
+          "label": "Total cost over the term",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 17778,
+          "unit": "bp",
+          "metric_id": "financing.dscr_after",
+          "label": "Debt-service cover after borrowing",
+          "status": "ok",
+          "formula": "ebitda_next_12m / (existing + new debt service, next 12 months)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 960000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "ebitda_next_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": "engine.analysis.coverage"
+            },
+            {
+              "money": {
+                "minor": 540000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "existing_debt_service_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [
+            {
+              "money": null,
+              "value": 12500,
+              "unit": "bp",
+              "name": "min_dscr",
+              "origin": "rulebook",
+              "comparison": ">=",
+              "passed": true
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "bp",
+          "metric_id": "financing.dilution",
+          "label": "Share of the business given up",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rank": null,
+      "rank_reasons": []
+    },
+    {
+      "option_id": "pk_angel_equity",
+      "name": "Angel investment",
+      "kind": "equity_angel",
+      "provider_label": null,
+      "illustrative": true,
+      "source_ref": "stub:pk_angel_equity (illustrative until rulebook/financing.yaml)",
+      "eligible": false,
+      "eligibility": [
+        {
+          "rule_id": "EQ-01",
+          "description": "Ticket size at least Rs 10M",
+          "metric_id": "request.amount",
+          "threshold": {
+            "money": {
+              "minor": 1000000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "min_ticket",
+            "origin": "stub",
+            "comparison": ">=",
+            "passed": false
+          },
+          "passed": false,
+          "hard": true
+        },
+        {
+          "rule_id": "T-SOL-DSCR-01",
+          "description": "Debt-service cover stays at or above the minimum",
+          "metric_id": "financing.dscr_after",
+          "threshold": {
+            "money": null,
+            "value": 12500,
+            "unit": "bp",
+            "name": "min_dscr",
+            "origin": "rulebook",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "verification": "indicative_range",
+      "figures": [
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "financing.effective_annual_cost",
+          "label": "Effective annual cost",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "equity has no interest cost: the cost is dilution and the investor's target return"
+        },
+        {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.instalment",
+          "label": "Monthly payment",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "financing.total_cost",
+          "label": "Total cost over the term",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 17778,
+          "unit": "bp",
+          "metric_id": "financing.dscr_after",
+          "label": "Debt-service cover after borrowing",
+          "status": "ok",
+          "formula": "ebitda_next_12m / (existing + new debt service, next 12 months)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 960000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "ebitda_next_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": "engine.analysis.coverage"
+            },
+            {
+              "money": {
+                "minor": 540000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "existing_debt_service_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [
+            {
+              "money": null,
+              "value": 12500,
+              "unit": "bp",
+              "name": "min_dscr",
+              "origin": "rulebook",
+              "comparison": ">=",
+              "passed": true
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 1000,
+          "unit": "bp",
+          "metric_id": "financing.dilution",
+          "label": "Share of the business given up",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rank": null,
+      "rank_reasons": []
+    }
+  ],
+  "insufficient_data": [
+    {
+      "need": "Supplier confirmation of 60-day terms",
+      "why": "Supplier credit eligibility depends on it.",
+      "blocking": false,
+      "metric_ids": [
+        "supplier.terms_available"
+      ]
+    }
+  ]
+}

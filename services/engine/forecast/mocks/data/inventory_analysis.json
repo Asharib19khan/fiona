@@ -1,0 +1,914 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "run_id": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "window": {
+    "start": "2026-07-25",
+    "end": "2026-10-22"
+  },
+  "parameters": [
+    {
+      "money": null,
+      "value": 8000,
+      "unit": "bp",
+      "name": "abc_a_cumulative_share",
+      "origin": "draft_default",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 9500,
+      "unit": "bp",
+      "name": "abc_b_cumulative_share",
+      "origin": "draft_default",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 5000,
+      "unit": "bp",
+      "name": "xyz_x_max_cv",
+      "origin": "draft_default",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 10000,
+      "unit": "bp",
+      "name": "xyz_y_max_cv",
+      "origin": "draft_default",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 90,
+      "unit": "days",
+      "name": "dead_after_days_without_sale",
+      "origin": "draft_default",
+      "comparison": ">=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 180,
+      "unit": "days",
+      "name": "slow_above_days_of_cover",
+      "origin": "draft_default",
+      "comparison": ">",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 9000,
+      "unit": "bp",
+      "name": "service_level",
+      "origin": "draft_default",
+      "comparison": ">=",
+      "passed": null
+    }
+  ],
+  "summary": [
+    {
+      "money": {
+        "minor": 105530000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "inventory.stock_value",
+      "label": "Stock at cost",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 8280000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "inventory.dead_stock_value",
+      "label": "Dead stock at cost",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 53300000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "inventory.slow_stock_value",
+      "label": "Slow stock above 60 days' cover",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 10,
+      "unit": "count",
+      "metric_id": "inventory.sku_count",
+      "label": "SKUs",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 39864,
+      "unit": "bp",
+      "metric_id": "inventory.gmroi",
+      "label": "Gross margin return on inventory (annualised)",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "items": [
+    {
+      "sku": "KRT-M-BLU",
+      "name": "Cotton kurta - M - Blue",
+      "category": "kurta",
+      "style": "KRT",
+      "size": "M",
+      "colour": "BLU",
+      "season": "all",
+      "on_hand": 40,
+      "unit_cost": {
+        "minor": 180000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 300000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 7200000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 210,
+      "revenue_window": {
+        "minor": 63000000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 25200000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4000,
+      "abc": "A",
+      "xyz": "X",
+      "demand_cv_bp": 3100,
+      "movement": "fast",
+      "days_of_cover": 17,
+      "last_sold_on": "2026-10-22",
+      "lead_time_days": 7,
+      "safety_stock": 13,
+      "reorder_point": 29,
+      "suggested_order_qty": 59,
+      "turnover_bp": 212917,
+      "gmroi_bp": 141944,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:KRT-M-BLU"
+      ]
+    },
+    {
+      "sku": "KRT-L-BLU",
+      "name": "Cotton kurta - L - Blue",
+      "category": "kurta",
+      "style": "KRT",
+      "size": "L",
+      "colour": "BLU",
+      "season": "all",
+      "on_hand": 34,
+      "unit_cost": {
+        "minor": 180000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 300000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 6120000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 165,
+      "revenue_window": {
+        "minor": 49500000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 19800000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4000,
+      "abc": "A",
+      "xyz": "X",
+      "demand_cv_bp": 3600,
+      "movement": "fast",
+      "days_of_cover": 19,
+      "last_sold_on": "2026-10-21",
+      "lead_time_days": 7,
+      "safety_stock": 12,
+      "reorder_point": 25,
+      "suggested_order_qty": 46,
+      "turnover_bp": 196814,
+      "gmroi_bp": 131209,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:KRT-L-BLU"
+      ]
+    },
+    {
+      "sku": "KRT-M-WHT",
+      "name": "Cotton kurta - M - White",
+      "category": "kurta",
+      "style": "KRT",
+      "size": "M",
+      "colour": "WHT",
+      "season": "all",
+      "on_hand": 52,
+      "unit_cost": {
+        "minor": 180000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 300000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 9360000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 240,
+      "revenue_window": {
+        "minor": 72000000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 28800000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4000,
+      "abc": "A",
+      "xyz": "X",
+      "demand_cv_bp": 2800,
+      "movement": "fast",
+      "days_of_cover": 20,
+      "last_sold_on": "2026-10-22",
+      "lead_time_days": 7,
+      "safety_stock": 14,
+      "reorder_point": 33,
+      "suggested_order_qty": 61,
+      "turnover_bp": 187179,
+      "gmroi_bp": 124786,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:KRT-M-WHT"
+      ]
+    },
+    {
+      "sku": "KRT-XL-ORG",
+      "name": "Cotton kurta - XL - Orange",
+      "category": "kurta",
+      "style": "KRT",
+      "size": "XL",
+      "colour": "ORG",
+      "season": "all",
+      "on_hand": 46,
+      "unit_cost": {
+        "minor": 180000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 300000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 8280000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 0,
+      "revenue_window": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": null,
+      "abc": "C",
+      "xyz": null,
+      "demand_cv_bp": null,
+      "movement": "dead",
+      "days_of_cover": null,
+      "last_sold_on": "2026-06-13",
+      "lead_time_days": 7,
+      "safety_stock": 0,
+      "reorder_point": 0,
+      "suggested_order_qty": 0,
+      "turnover_bp": 0,
+      "gmroi_bp": 0,
+      "cash_tied_up": {
+        "minor": 8280000,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:KRT-XL-ORG"
+      ]
+    },
+    {
+      "sku": "LWN-M-PNK",
+      "name": "Printed lawn suit - M - Pink",
+      "category": "lawn",
+      "style": "LWN",
+      "size": "M",
+      "colour": "PNK",
+      "season": "summer",
+      "on_hand": 120,
+      "unit_cost": {
+        "minor": 260000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 450000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 31200000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 9,
+      "revenue_window": {
+        "minor": 4050000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 1710000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4222,
+      "abc": "C",
+      "xyz": "Z",
+      "demand_cv_bp": 14200,
+      "movement": "slow",
+      "days_of_cover": 1200,
+      "last_sold_on": "2026-09-14",
+      "lead_time_days": 21,
+      "safety_stock": 5,
+      "reorder_point": 7,
+      "suggested_order_qty": 0,
+      "turnover_bp": 3042,
+      "gmroi_bp": 2223,
+      "cash_tied_up": {
+        "minor": 29640000,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:LWN-M-PNK"
+      ]
+    },
+    {
+      "sku": "LWN-L-PNK",
+      "name": "Printed lawn suit - L - Pink",
+      "category": "lawn",
+      "style": "LWN",
+      "size": "L",
+      "colour": "PNK",
+      "season": "summer",
+      "on_hand": 95,
+      "unit_cost": {
+        "minor": 260000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 450000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 24700000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 6,
+      "revenue_window": {
+        "minor": 2700000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 1140000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4222,
+      "abc": "C",
+      "xyz": "Z",
+      "demand_cv_bp": 15500,
+      "movement": "slow",
+      "days_of_cover": 1425,
+      "last_sold_on": "2026-09-08",
+      "lead_time_days": 21,
+      "safety_stock": 3,
+      "reorder_point": 4,
+      "suggested_order_qty": 0,
+      "turnover_bp": 2561,
+      "gmroi_bp": 1872,
+      "cash_tied_up": {
+        "minor": 23660000,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:LWN-L-PNK"
+      ]
+    },
+    {
+      "sku": "SHL-WOL-GRY",
+      "name": "Wool shawl - Grey",
+      "category": "shawl",
+      "style": "SHL",
+      "size": null,
+      "colour": "GRY",
+      "season": "winter",
+      "on_hand": 25,
+      "unit_cost": {
+        "minor": 190000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 350000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 4750000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 48,
+      "revenue_window": {
+        "minor": 16800000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 7680000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4571,
+      "abc": "B",
+      "xyz": "Y",
+      "demand_cv_bp": 7400,
+      "movement": "normal",
+      "days_of_cover": 47,
+      "last_sold_on": "2026-10-20",
+      "lead_time_days": 45,
+      "safety_stock": 19,
+      "reorder_point": 43,
+      "suggested_order_qty": 34,
+      "turnover_bp": 77867,
+      "gmroi_bp": 65572,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:SHL-WOL-GRY"
+      ]
+    },
+    {
+      "sku": "SHL-WOL-BRN",
+      "name": "Wool shawl - Brown",
+      "category": "shawl",
+      "style": "SHL",
+      "size": null,
+      "colour": "BRN",
+      "season": "winter",
+      "on_hand": 18,
+      "unit_cost": {
+        "minor": 190000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 350000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 3420000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 41,
+      "revenue_window": {
+        "minor": 14350000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 6560000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4571,
+      "abc": "B",
+      "xyz": "Y",
+      "demand_cv_bp": 8100,
+      "movement": "normal",
+      "days_of_cover": 40,
+      "last_sold_on": "2026-10-19",
+      "lead_time_days": 45,
+      "safety_stock": 17,
+      "reorder_point": 37,
+      "suggested_order_qty": 33,
+      "turnover_bp": 92377,
+      "gmroi_bp": 77791,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:SHL-WOL-BRN"
+      ]
+    },
+    {
+      "sku": "SWT-M-NVY",
+      "name": "Knit sweater - M - Navy",
+      "category": "sweater",
+      "style": "SWT",
+      "size": "M",
+      "colour": "NVY",
+      "season": "winter",
+      "on_hand": 30,
+      "unit_cost": {
+        "minor": 220000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 390000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 6600000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 27,
+      "revenue_window": {
+        "minor": 10530000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 4590000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4359,
+      "abc": "B",
+      "xyz": "Y",
+      "demand_cv_bp": 6600,
+      "movement": "normal",
+      "days_of_cover": 100,
+      "last_sold_on": "2026-10-17",
+      "lead_time_days": 30,
+      "safety_stock": 8,
+      "reorder_point": 17,
+      "suggested_order_qty": 0,
+      "turnover_bp": 36500,
+      "gmroi_bp": 28205,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:SWT-M-NVY"
+      ]
+    },
+    {
+      "sku": "DUP-CHF-BLK",
+      "name": "Chiffon dupatta - Black",
+      "category": "dupatta",
+      "style": "DUP",
+      "size": null,
+      "colour": "BLK",
+      "season": "all",
+      "on_hand": 60,
+      "unit_cost": {
+        "minor": 65000,
+        "currency": "PKR"
+      },
+      "price": {
+        "minor": 120000,
+        "currency": "PKR"
+      },
+      "stock_value": {
+        "minor": 3900000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 150,
+      "revenue_window": {
+        "minor": 18000000,
+        "currency": "PKR"
+      },
+      "gross_margin_window": {
+        "minor": 8250000,
+        "currency": "PKR"
+      },
+      "gross_margin_bp": 4583,
+      "abc": "A",
+      "xyz": "X",
+      "demand_cv_bp": 4000,
+      "movement": "normal",
+      "days_of_cover": 36,
+      "last_sold_on": "2026-10-22",
+      "lead_time_days": 14,
+      "safety_stock": 18,
+      "reorder_point": 41,
+      "suggested_order_qty": 31,
+      "turnover_bp": 101389,
+      "gmroi_bp": 85791,
+      "cash_tied_up": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "source_refs": [
+        "items.csv",
+        "events.jsonl#sale:DUP-CHF-BLK"
+      ]
+    }
+  ],
+  "styles": [
+    {
+      "style": "KRT",
+      "name": "Cotton kurta",
+      "skus": [
+        "KRT-M-BLU",
+        "KRT-L-BLU",
+        "KRT-M-WHT",
+        "KRT-XL-ORG"
+      ],
+      "on_hand": 172,
+      "stock_value": {
+        "minor": 30960000,
+        "currency": "PKR"
+      },
+      "units_sold_window": 615,
+      "size_curve": [
+        {
+          "size": "L",
+          "share_bp": 2683
+        },
+        {
+          "size": "M",
+          "share_bp": 7317
+        },
+        {
+          "size": "XL",
+          "share_bp": 0
+        }
+      ],
+      "strongest_sku": "KRT-M-WHT",
+      "weakest_sku": "KRT-XL-ORG"
+    }
+  ],
+  "bundles": [
+    {
+      "skus": [
+        "DUP-CHF-BLK",
+        "KRT-XL-ORG"
+      ],
+      "baskets_together": 0,
+      "lift_bp": 0,
+      "reason_code": "pair_dead_stock_with_fast_mover"
+    }
+  ],
+  "draft_purchase_orders": [
+    {
+      "draft_id": "dpo_Q31B6YJWR565WN525DGS1H5ZJG",
+      "supplier_id": "sup_031",
+      "order_by": "2026-10-23",
+      "expected_on": "2026-12-07",
+      "lines": [
+        {
+          "sku": "SHL-WOL-GRY",
+          "qty": 34,
+          "unit_cost": {
+            "minor": 190000,
+            "currency": "PKR"
+          },
+          "line_total": {
+            "minor": 6460000,
+            "currency": "PKR"
+          }
+        },
+        {
+          "sku": "SHL-WOL-BRN",
+          "qty": 33,
+          "unit_cost": {
+            "minor": 190000,
+            "currency": "PKR"
+          },
+          "line_total": {
+            "minor": 6270000,
+            "currency": "PKR"
+          }
+        }
+      ],
+      "total": {
+        "minor": 12730000,
+        "currency": "PKR"
+      },
+      "reason_code": "below_reorder_point_before_peak_season",
+      "refs": [
+        "SHL-WOL-GRY",
+        "SHL-WOL-BRN"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "fnd_QNNAPJJ0N2HWKG4KK42S7RXZ4G",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Rs 82,800 is tied up in a kurta colour that hasn't sold for 131 days",
+      "money_at_stake": {
+        "minor": 8280000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "item",
+          "ref": "KRT-XL-ORG"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open inventory",
+          "route": "/inventory?filter=dead"
+        }
+      ],
+      "type": "dead_stock",
+      "detail": null,
+      "period": {
+        "start": "2026-07-25",
+        "end": "2026-10-22"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "dead_stock:KRT-XL-ORG",
+      "figures": [
+        {
+          "money": {
+            "minor": 8280000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "inventory.dead_stock_value",
+          "label": "Dead stock at cost",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "fnd_7471F0SNN0WC36RNNZMKYAEMDA",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Summer lawn suits cover more than a year of sales",
+      "money_at_stake": {
+        "minor": 53300000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "item",
+          "ref": "LWN-M-PNK"
+        },
+        {
+          "kind": "item",
+          "ref": "LWN-L-PNK"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open inventory",
+          "route": "/inventory?filter=slow"
+        }
+      ],
+      "type": "slow_stock",
+      "detail": null,
+      "period": {
+        "start": "2026-07-25",
+        "end": "2026-10-22"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "slow_stock:LWN",
+      "figures": [
+        {
+          "money": {
+            "minor": 53300000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "inventory.slow_stock_value",
+          "label": "Slow stock above 60 days' cover",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "fnd_GQ80JX0C2WASS7MXAHAAXYG0TW",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Wool shawls will run out before the next delivery can arrive",
+      "money_at_stake": {
+        "minor": 12730000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "draft_po",
+          "ref": "dpo_Q31B6YJWR565WN525DGS1H5ZJG"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Review draft order",
+          "route": "/inventory?tab=orders"
+        }
+      ],
+      "type": "stockout_risk",
+      "detail": null,
+      "period": null,
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "stockout_risk:SHL",
+      "figures": []
+    }
+  ],
+  "insufficient_data": []
+}

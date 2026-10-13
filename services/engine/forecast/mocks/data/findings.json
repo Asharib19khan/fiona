@@ -1,0 +1,346 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "ranked_by": "money_at_stake",
+  "findings": [
+    {
+      "id": "fnd_SXHQ73H2K8P77BZ1YE718JT2K5",
+      "source": "forecast",
+      "severity": "high",
+      "title": "Cash dips below your buffer in week 7",
+      "money_at_stake": {
+        "minor": 175388100,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "forecast_run",
+          "ref": "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+        },
+        {
+          "kind": "purchase_order",
+          "ref": "po_1066"
+        },
+        {
+          "kind": "purchase_order",
+          "ref": "po_1067"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open forecast",
+          "route": "/forecast"
+        },
+        {
+          "label": "Optimise payment timing",
+          "route": "/decisions/payment-timing"
+        },
+        {
+          "label": "Compare financing",
+          "route": "/financing"
+        }
+      ],
+      "type": "cash_below_buffer",
+      "detail": "Winter stock bills in weeks 5 to 7 overlap payroll, rent and the loan instalment.",
+      "period": {
+        "start": "2026-12-04",
+        "end": "2026-12-10"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "cash_below_buffer:2026-12-04",
+      "figures": [
+        {
+          "money": {
+            "minor": 24611900,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.lowest_closing",
+          "label": "Lowest forecast balance (week 7)",
+          "status": "ok",
+          "formula": "min over weeks of (opening + inflows - outflows)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 804112300,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.opening_balance",
+              "origin": "figure",
+              "metric_id": "cash.opening_balance",
+              "ref": "cash.opening_balance"
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [
+            "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+          ],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 200000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.buffer",
+          "label": "Your minimum cash buffer",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash_buffer",
+              "origin": "tenant_policy",
+              "metric_id": null,
+              "ref": "tenant.policies.cash_buffer_minor"
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 175388100,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.shortfall_vs_buffer",
+          "label": "Shortfall against your buffer",
+          "status": "ok",
+          "formula": "max(0, buffer - lowest_closing)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.buffer",
+              "origin": "figure",
+              "metric_id": "cash.buffer",
+              "ref": "cash.buffer"
+            },
+            {
+              "money": {
+                "minor": 24611900,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.lowest_closing",
+              "origin": "figure",
+              "metric_id": "cash.lowest_closing",
+              "ref": "cash.lowest_closing"
+            }
+          ],
+          "thresholds": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash_buffer",
+              "origin": "tenant_policy",
+              "comparison": ">=",
+              "passed": false
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "fnd_7471F0SNN0WC36RNNZMKYAEMDA",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Summer lawn suits cover more than a year of sales",
+      "money_at_stake": {
+        "minor": 53300000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "item",
+          "ref": "LWN-M-PNK"
+        },
+        {
+          "kind": "item",
+          "ref": "LWN-L-PNK"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open inventory",
+          "route": "/inventory?filter=slow"
+        }
+      ],
+      "type": "slow_stock",
+      "detail": null,
+      "period": {
+        "start": "2026-07-25",
+        "end": "2026-10-22"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "slow_stock:LWN",
+      "figures": [
+        {
+          "money": {
+            "minor": 53300000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "inventory.slow_stock_value",
+          "label": "Slow stock above 60 days' cover",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "fnd_GQ80JX0C2WASS7MXAHAAXYG0TW",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Wool shawls will run out before the next delivery can arrive",
+      "money_at_stake": {
+        "minor": 12730000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "draft_po",
+          "ref": "dpo_Q31B6YJWR565WN525DGS1H5ZJG"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Review draft order",
+          "route": "/inventory?tab=orders"
+        }
+      ],
+      "type": "stockout_risk",
+      "detail": null,
+      "period": null,
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "stockout_risk:SHL",
+      "figures": []
+    },
+    {
+      "id": "fnd_QNNAPJJ0N2HWKG4KK42S7RXZ4G",
+      "source": "inventory",
+      "severity": "medium",
+      "title": "Rs 82,800 is tied up in a kurta colour that hasn't sold for 131 days",
+      "money_at_stake": {
+        "minor": 8280000,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "inventory_run",
+          "ref": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM"
+        },
+        {
+          "kind": "item",
+          "ref": "KRT-XL-ORG"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open inventory",
+          "route": "/inventory?filter=dead"
+        }
+      ],
+      "type": "dead_stock",
+      "detail": null,
+      "period": {
+        "start": "2026-07-25",
+        "end": "2026-10-22"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "dead_stock:KRT-XL-ORG",
+      "figures": [
+        {
+          "money": {
+            "minor": 8280000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "inventory.dead_stock_value",
+          "label": "Dead stock at cost",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "source": "forecast",
+      "status": "ok",
+      "run_id": "fc_XT149381PX6M8ZKS3GXZ3GMGSN",
+      "generated_at": "2026-10-22T04:00:00Z",
+      "note": null
+    },
+    {
+      "source": "inventory",
+      "status": "ok",
+      "run_id": "inv_QRHY1AR4QKSNBA1KEJ54Q8BAHM",
+      "generated_at": "2026-10-22T04:00:00Z",
+      "note": null
+    },
+    {
+      "source": "launch_lab",
+      "status": "ok",
+      "run_id": "fc_b4b45ab18a7c7dfbfa02",
+      "generated_at": "2026-10-22T04:00:00Z",
+      "note": null
+    },
+    {
+      "source": "financing",
+      "status": "unavailable",
+      "run_id": null,
+      "generated_at": null,
+      "note": "Y10 publishes findings from Fri 16 Oct."
+    }
+  ]
+}

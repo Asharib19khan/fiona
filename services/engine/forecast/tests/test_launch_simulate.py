@@ -165,3 +165,21 @@ def test_cash_settles_to_profit(econ, planned, initial, lead, moq, demand):
     assert abs(r.cash_flow.sum() - r.profit[0]) <= 1e-9 * scale
     assert (r.sold <= r.demand + 1e-9).all()
     assert r.peak_cash[0] >= 0
+
+
+def test_no_moq_reorder_into_the_off_season():
+    """A big MOQ arriving after the peak would mostly be written off, so the planner skips it."""
+    econ = Economics(price=4500, unit_cost=2400, unsold_recovery_rate=0.4)
+    planned = np.array([60.0, 110.0, 130.0, 70.0, 15.0, 4.0])
+    plan = OrderPlan(initial_order=330, lead_months=2, moq=300, safety_z=0.0)
+    r = simulate(econ, plan, planned, Shocks.fixed(6, demand=1.6))
+    assert r.purchases[0, 1:].sum() == 0
+
+
+def test_reorders_size_to_demand_after_arrival():
+    """An order can only serve months from its arrival, so it is not sized for earlier ones."""
+    planned = np.array([100.0, 100.0, 100.0, 0.0, 0.0, 0.0])
+    plan = OrderPlan(initial_order=100, lead_months=1, safety_z=0.0)
+    r = simulate(SIMPLE, plan, planned, Shocks.neutral(6))
+    assert r.purchases[0, 1] == pytest.approx(100)  # covers month 3 only
+    assert r.ending_units[0] == pytest.approx(0)

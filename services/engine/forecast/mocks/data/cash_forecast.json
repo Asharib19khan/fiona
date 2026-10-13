@@ -1,0 +1,1447 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "run_id": "fc_XT149381PX6M8ZKS3GXZ3GMGSN",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "horizon_weeks": 13,
+  "method": {
+    "name": "mock_fixture",
+    "description": "Mock data in the contract's shape. Live mode replaces it with Y1.",
+    "history": {
+      "start": "2026-08-23",
+      "end": "2026-10-22"
+    },
+    "band": "closing +/- 1.2816 x weekly sigma x sqrt(week) (p10 to p90)",
+    "backtest": []
+  },
+  "opening_balance": {
+    "money": {
+      "minor": 804112300,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.opening_balance",
+    "label": "Cash in the bank today",
+    "status": "ok",
+    "formula": null,
+    "inputs": [
+      {
+        "money": {
+          "minor": 804112300,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "bank_balance",
+        "origin": "ledger_derived",
+        "metric_id": null,
+        "ref": "bank_statement.csv"
+      }
+    ],
+    "thresholds": [],
+    "source_refs": [
+      "bank_statement.csv#last_line"
+    ],
+    "missing": [],
+    "note": null
+  },
+  "buffer": {
+    "money": {
+      "minor": 200000000,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.buffer",
+    "label": "Your minimum cash buffer",
+    "status": "ok",
+    "formula": null,
+    "inputs": [
+      {
+        "money": {
+          "minor": 200000000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash_buffer",
+        "origin": "tenant_policy",
+        "metric_id": null,
+        "ref": "tenant.policies.cash_buffer_minor"
+      }
+    ],
+    "thresholds": [],
+    "source_refs": [],
+    "missing": [],
+    "note": null
+  },
+  "lowest_closing": {
+    "money": {
+      "minor": 24611900,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.lowest_closing",
+    "label": "Lowest forecast balance (week 7)",
+    "status": "ok",
+    "formula": "min over weeks of (opening + inflows - outflows)",
+    "inputs": [
+      {
+        "money": {
+          "minor": 804112300,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash.opening_balance",
+        "origin": "figure",
+        "metric_id": "cash.opening_balance",
+        "ref": "cash.opening_balance"
+      }
+    ],
+    "thresholds": [],
+    "source_refs": [
+      "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+    ],
+    "missing": [],
+    "note": null
+  },
+  "first_week_below_buffer": 7,
+  "shortfall": {
+    "money": {
+      "minor": 175388100,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.shortfall_vs_buffer",
+    "label": "Shortfall against your buffer",
+    "status": "ok",
+    "formula": "max(0, buffer - lowest_closing)",
+    "inputs": [
+      {
+        "money": {
+          "minor": 200000000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash.buffer",
+        "origin": "figure",
+        "metric_id": "cash.buffer",
+        "ref": "cash.buffer"
+      },
+      {
+        "money": {
+          "minor": 24611900,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash.lowest_closing",
+        "origin": "figure",
+        "metric_id": "cash.lowest_closing",
+        "ref": "cash.lowest_closing"
+      }
+    ],
+    "thresholds": [
+      {
+        "money": {
+          "minor": 200000000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash_buffer",
+        "origin": "tenant_policy",
+        "comparison": ">=",
+        "passed": false
+      }
+    ],
+    "source_refs": [],
+    "missing": [],
+    "note": null
+  },
+  "open_receivables": {
+    "money": {
+      "minor": 569999600,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.open_receivables",
+    "label": "Invoices customers still owe",
+    "status": "ok",
+    "formula": null,
+    "inputs": [],
+    "thresholds": [],
+    "source_refs": [
+      "inv_0007",
+      "inv_0011"
+    ],
+    "missing": [],
+    "note": "customer_invoices.json minus matched customer receipts (answer key) until D4 runs"
+  },
+  "open_payables": {
+    "money": {
+      "minor": 184500000,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.open_payables",
+    "label": "Supplier bills not yet paid",
+    "status": "ok",
+    "formula": null,
+    "inputs": [],
+    "thresholds": [],
+    "source_refs": [
+      "bill_2231"
+    ],
+    "missing": [],
+    "note": null
+  },
+  "weeks": [
+    {
+      "week": 1,
+      "start": "2026-10-23",
+      "end": "2026-10-29",
+      "opening": {
+        "minor": 804112300,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 300000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 364500000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -64500000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 739612300,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 681940300,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 797284300,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 300000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 184500000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "bill_2231"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "start": "2026-10-30",
+      "end": "2026-11-05",
+      "opening": {
+        "minor": 739612300,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 669999600,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 555000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 114999600,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 854611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 773051375,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 936172425,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 310000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "payroll",
+          "direction": "out",
+          "money": {
+            "minor": 240000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_salary_bulk"
+          ]
+        },
+        {
+          "category": "rent",
+          "direction": "out",
+          "money": {
+            "minor": 90000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_rent_br01"
+          ]
+        },
+        {
+          "category": "customer_receipts",
+          "direction": "in",
+          "money": {
+            "minor": 359999600,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "inv_0007"
+          ]
+        },
+        {
+          "category": "loan_repayment",
+          "direction": "out",
+          "money": {
+            "minor": 45000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_loan_instalment"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "start": "2026-11-06",
+      "end": "2026-11-12",
+      "opening": {
+        "minor": 854611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 310000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 130000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 984611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 884721066,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 1084502734,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 310000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "start": "2026-11-13",
+      "end": "2026-11-19",
+      "opening": {
+        "minor": 984611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 320000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 335000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -15000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 969611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 854267900,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 1084955900,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 320000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "tax",
+          "direction": "out",
+          "money": {
+            "minor": 120000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_fbr_sales_tax"
+          ]
+        },
+        {
+          "category": "utilities",
+          "direction": "out",
+          "money": {
+            "minor": 35000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_electricity",
+            "pattern_gas"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "start": "2026-11-20",
+      "end": "2026-11-26",
+      "opening": {
+        "minor": 969611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 330000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 520000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -190000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 779611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 650653388,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 908570412,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 330000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 340000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "po_1061"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "start": "2026-11-27",
+      "end": "2026-12-03",
+      "opening": {
+        "minor": 779611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 350000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 920000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -570000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 209611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 68344928,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 350878872,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 350000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "payroll",
+          "direction": "out",
+          "money": {
+            "minor": 240000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_salary_bulk"
+          ]
+        },
+        {
+          "category": "rent",
+          "direction": "out",
+          "money": {
+            "minor": 90000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_rent_br01"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 410000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "po_1064"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "start": "2026-12-04",
+      "end": "2026-12-10",
+      "opening": {
+        "minor": 209611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 340000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 525000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -185000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": -127973870,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 177197670,
+        "currency": "PKR"
+      },
+      "below_buffer": true,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 340000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "loan_repayment",
+          "direction": "out",
+          "money": {
+            "minor": 45000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_loan_instalment"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 300000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "po_1066",
+            "po_1067"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "start": "2026-12-11",
+      "end": "2026-12-17",
+      "opening": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 380000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 357000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 23000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 47611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": -115509149,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 210732949,
+        "currency": "PKR"
+      },
+      "below_buffer": true,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 380000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "tax",
+          "direction": "out",
+          "money": {
+            "minor": 135000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_fbr_sales_tax"
+          ]
+        },
+        {
+          "category": "utilities",
+          "direction": "out",
+          "money": {
+            "minor": 42000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_electricity",
+            "pattern_gas"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "start": "2026-12-18",
+      "end": "2026-12-24",
+      "opening": {
+        "minor": 47611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 610000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 430000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 477611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 304595900,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 650627900,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 400000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "customer_receipts",
+          "direction": "in",
+          "money": {
+            "minor": 210000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "inv_0011"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "start": "2026-12-25",
+      "end": "2026-12-31",
+      "opening": {
+        "minor": 477611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 410000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 420000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -10000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 467611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 285237023,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 649986777,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 410000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "payroll",
+          "direction": "out",
+          "money": {
+            "minor": 240000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_salary_bulk"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "start": "2027-01-01",
+      "end": "2027-01-07",
+      "opening": {
+        "minor": 467611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 390000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 315000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 75000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 542611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 351335515,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 733888285,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 390000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "rent",
+          "direction": "out",
+          "money": {
+            "minor": 90000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_rent_br01"
+          ]
+        },
+        {
+          "category": "loan_repayment",
+          "direction": "out",
+          "money": {
+            "minor": 45000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_loan_instalment"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "start": "2027-01-08",
+      "end": "2027-01-14",
+      "opening": {
+        "minor": 542611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 360000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 722611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 522830232,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 922393568,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 360000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        }
+      ]
+    },
+    {
+      "week": 13,
+      "start": "2027-01-15",
+      "end": "2027-01-21",
+      "opening": {
+        "minor": 722611900,
+        "currency": "PKR"
+      },
+      "inflows": {
+        "minor": 350000000,
+        "currency": "PKR"
+      },
+      "outflows": {
+        "minor": 375000000,
+        "currency": "PKR"
+      },
+      "net": {
+        "minor": -25000000,
+        "currency": "PKR"
+      },
+      "closing": {
+        "minor": 697611900,
+        "currency": "PKR"
+      },
+      "closing_low": {
+        "minor": 489672547,
+        "currency": "PKR"
+      },
+      "closing_high": {
+        "minor": 905551253,
+        "currency": "PKR"
+      },
+      "below_buffer": false,
+      "lines": [
+        {
+          "category": "pos_sales",
+          "direction": "in",
+          "money": {
+            "minor": 350000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_pos_settlements"
+          ]
+        },
+        {
+          "category": "supplier_bills",
+          "direction": "out",
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "basis": "forecast",
+          "refs": [
+            "pattern_routine_purchases"
+          ]
+        },
+        {
+          "category": "tax",
+          "direction": "out",
+          "money": {
+            "minor": 150000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_fbr_sales_tax"
+          ]
+        },
+        {
+          "category": "utilities",
+          "direction": "out",
+          "money": {
+            "minor": 45000000,
+            "currency": "PKR"
+          },
+          "basis": "scheduled",
+          "refs": [
+            "pattern_electricity",
+            "pattern_gas"
+          ]
+        }
+      ]
+    }
+  ],
+  "assumptions": [
+    {
+      "money": {
+        "minor": 45000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "weekly_net_sigma",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null
+    },
+    {
+      "money": null,
+      "value": 12816,
+      "unit": "bp",
+      "name": "band_z_p10_p90",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null
+    }
+  ],
+  "insufficient_data": [
+    {
+      "need": "24 months of POS history (generator v1)",
+      "why": "Seasonal weekly patterns need at least a year of history.",
+      "blocking": false,
+      "metric_ids": [
+        "cash.closing"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "fnd_SXHQ73H2K8P77BZ1YE718JT2K5",
+      "source": "forecast",
+      "severity": "high",
+      "title": "Cash dips below your buffer in week 7",
+      "money_at_stake": {
+        "minor": 175388100,
+        "currency": "PKR"
+      },
+      "evidence": [
+        {
+          "kind": "forecast_run",
+          "ref": "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+        },
+        {
+          "kind": "purchase_order",
+          "ref": "po_1066"
+        },
+        {
+          "kind": "purchase_order",
+          "ref": "po_1067"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open forecast",
+          "route": "/forecast"
+        },
+        {
+          "label": "Optimise payment timing",
+          "route": "/decisions/payment-timing"
+        },
+        {
+          "label": "Compare financing",
+          "route": "/financing"
+        }
+      ],
+      "type": "cash_below_buffer",
+      "detail": "Winter stock bills in weeks 5 to 7 overlap payroll, rent and the loan instalment.",
+      "period": {
+        "start": "2026-12-04",
+        "end": "2026-12-10"
+      },
+      "created_at": "2026-10-22T04:00:00Z",
+      "dedupe_key": "cash_below_buffer:2026-12-04",
+      "figures": [
+        {
+          "money": {
+            "minor": 24611900,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.lowest_closing",
+          "label": "Lowest forecast balance (week 7)",
+          "status": "ok",
+          "formula": "min over weeks of (opening + inflows - outflows)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 804112300,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.opening_balance",
+              "origin": "figure",
+              "metric_id": "cash.opening_balance",
+              "ref": "cash.opening_balance"
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [
+            "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+          ],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 200000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.buffer",
+          "label": "Your minimum cash buffer",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash_buffer",
+              "origin": "tenant_policy",
+              "metric_id": null,
+              "ref": "tenant.policies.cash_buffer_minor"
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 175388100,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "cash.shortfall_vs_buffer",
+          "label": "Shortfall against your buffer",
+          "status": "ok",
+          "formula": "max(0, buffer - lowest_closing)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.buffer",
+              "origin": "figure",
+              "metric_id": "cash.buffer",
+              "ref": "cash.buffer"
+            },
+            {
+              "money": {
+                "minor": 24611900,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash.lowest_closing",
+              "origin": "figure",
+              "metric_id": "cash.lowest_closing",
+              "ref": "cash.lowest_closing"
+            }
+          ],
+          "thresholds": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "cash_buffer",
+              "origin": "tenant_policy",
+              "comparison": ">=",
+              "passed": false
+            }
+          ],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    }
+  ]
+}

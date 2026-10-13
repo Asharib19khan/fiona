@@ -1,15 +1,18 @@
 # Yahya lane status (fiona-79)
 
+Queue per docs/orchestrator/PLAN.md §4 (deadline Tue 20 Oct, 20:59 PKT).
+
 | ID | Task | Status | Due | Updated | Note |
 | --- | --- | --- | --- | --- | --- |
-| Y5-core | Launch Lab core: unit economics, demand profile, month-by-month inventory/cash simulation, Monte Carlo sampling, TVM (NPV, IRR, payback), policy loader | done | (pulled forward) | Tue 13 | 65 pytest + Hypothesis tests pass (`uv run --no-project --with pytest --with hypothesis --with numpy --with pydantic --with pyyaml python -m pytest --import-mode=importlib services/engine/forecast services/engine/decisions`). Not committed yet (no git) |
-| Y0 | Schemas + fixture-backed mocks for every Yahya endpoint | doing | Wed 14 | Tue 13 | Shapes follow `data/fixtures/FORMATS.md` (money `_minor`, rates `_bp`); waiting on A2 for the shared Figure/Money/Finding models |
-| Y1 | 13-week cash forecast, first week below `tenant.policies.cash_buffer_minor` | todo | Sun 18 | Tue 13 | |
-| Y3 | Inventory: ABC-XYZ, fast/slow/dead, reorder points + draft POs, margin, GMROI, variants, bundles | todo | Thu 22 | Tue 13 | |
-| Y4 | Five decisions: debt/equity, dividend/reinvest, asset investment (NPV/IRR/payback, lease vs buy), liability pay-down, innovation budget + pilot size | todo | Fri 23 | Tue 13 | TVM primitives already in `decisions/tvm.py` |
-| Y8 | Payment-timing optimiser (early-payment discounts vs cost of money) | todo | Fri 23 | Tue 13 | |
-| Y6 | Findings feed ranked by money at stake | todo | Fri 23 | Tue 13 | |
-| Y5 | Launch Lab complete: demand signals, seasonal calendars, analogue curves + Chronos-2, Monte Carlo, break-even, payback, NPV, cannibalisation, affordability via Y1, decision rules, levers, findings | todo | Tue 27 | Tue 13 | Core done (Y5-core) |
-| Y9 | MCP server over the engine (read tools + proposal submission) | todo | Wed 28 | Tue 13 | |
-| Y7 | Evaluation: cash-forecast backtest vs naive baseline, M5/Favorita, Launch Lab range coverage | todo | Wed 28 | Tue 13 | |
-| W-Y | Screens: forecast, inventory, decisions, launch-lab | todo | from W3 | Tue 13 | Built with fiona-19's screen kit |
+| Y5-core | Launch Lab core: unit economics, demand profile, inventory/cash simulation, Monte Carlo, TVM, policy loader | done | (pulled forward) | Tue 13 | 15773ee. Reorder planner fixed in Y0 commit (orders sized from arrival; MOQ rounding only when margin beats write-down) |
+| Y0 | Schemas + fixture-backed mocks for every Yahya endpoint (cash, findings, inventory, launch-lab, debt-equity, dividend, payment-timing, financing) | done | Wed 14 (G1) | Tue 13 | 8 mocks in `forecast/mocks/data/`, rebuilt by `python -m engine.forecast.mocks`; drift, no-float and API tests; 165 engine tests pass |
+| Y1 | 13-week cash forecast, first week below `tenant.policies.cash_buffer_minor`, alert findings | todo | Fri 16 (G2) | Tue 13 | |
+| Y10 | Financing-option matcher over `rulebook/financing.yaml`, DSCR from `engine.analysis.coverage` | todo | Fri 16 (G2) | Tue 13 | Schema agreed with fiona-fa |
+| Y4 | Debt vs equity (Tier 1); dividend vs reinvest (Tier 2) | todo | Sat 17 | Tue 13 | |
+| Y6 | Findings feed ranked by money at stake | todo | Sat 17 | Tue 13 | Ranking + dedupe done (`forecast/feed/rank.py`) |
+| Y8 | Payment-timing optimiser | todo | Sun 18 | Tue 13 | |
+| W-Y | Screens: forecast, financing | todo | Sun 18 | Tue 13 | |
+| Y3 | Inventory analytics + screen | todo | Mon 19 (Tier 2) | Tue 13 | |
+| Y5 | Launch Lab API live (resolver from ledger + market data) + screen | todo | Mon 19 (Tier 2) | Tue 13 | Analysis service done (`launch_lab/service.py`); resolver remaining |
+| Y7 | Evaluation: forecast backtest vs naive baseline (synthetic + UCI Online Retail II) | todo | Mon 19 | Tue 13 | |
+| T3 | Tier 3: other three decisions, Chronos-2, MCP server (Y9) | todo | Shenzhen final | Tue 13 | |

@@ -1,0 +1,1079 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "decision": "debt_equity",
+  "run_id": "dec_9F3B605QE764JAKNS5KDGHXXM9",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "inputs": [
+    {
+      "money": {
+        "minor": 200000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "amount",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null
+    },
+    {
+      "money": null,
+      "value": 2900,
+      "unit": "bp",
+      "name": "tax_rate",
+      "origin": "rulebook",
+      "metric_id": null,
+      "ref": null
+    }
+  ],
+  "figures": [
+    {
+      "money": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "cash.lowest_closing",
+      "label": "Lowest forecast balance (week 7)",
+      "status": "ok",
+      "formula": "min over weeks of (opening + inflows - outflows)",
+      "inputs": [
+        {
+          "money": {
+            "minor": 804112300,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "cash.opening_balance",
+          "origin": "figure",
+          "metric_id": "cash.opening_balance",
+          "ref": "cash.opening_balance"
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [
+        "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+      ],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 200000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "cash.buffer",
+      "label": "Your minimum cash buffer",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": {
+            "minor": 200000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "cash_buffer",
+          "origin": "tenant_policy",
+          "metric_id": null,
+          "ref": "tenant.policies.cash_buffer_minor"
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 17778,
+      "unit": "bp",
+      "metric_id": "solvency.dscr_forward",
+      "label": "Debt-service cover today",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": {
+            "minor": 960000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "ebitda_next_12m",
+          "origin": "stub",
+          "metric_id": null,
+          "ref": "engine.analysis.coverage"
+        },
+        {
+          "money": {
+            "minor": 540000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "existing_debt_service_12m",
+          "origin": "stub",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "options": [
+    {
+      "option_id": "debt",
+      "label": "Borrow Rs 2.0M over 24 months",
+      "eligible": true,
+      "figures": [
+        {
+          "money": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.instalment",
+          "label": "Monthly instalment",
+          "status": "ok",
+          "formula": "P x i / (1 - (1 + i)^-n)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 200000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "principal",
+              "origin": "user_provided",
+              "metric_id": null,
+              "ref": null
+            },
+            {
+              "money": null,
+              "value": 1900,
+              "unit": "bp",
+              "name": "annual_rate",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 41961363,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.total_interest",
+          "label": "Total interest",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 14524,
+          "unit": "bp",
+          "metric_id": "decision.dscr_after_debt",
+          "label": "Debt-service cover after the loan",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": {
+                "minor": 960000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "ebitda_next_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": "engine.analysis.coverage"
+            },
+            {
+              "money": {
+                "minor": 540000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "existing_debt_service_12m",
+              "origin": "stub",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 214530177,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.cash_low_point_with_debt",
+          "label": "Lowest weekly cash with the loan",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "T-SOL-DSCR-01",
+          "description": "Debt-service cover after the loan stays at or above the minimum",
+          "metric_id": "decision.dscr_after_debt",
+          "threshold": {
+            "money": null,
+            "value": 12500,
+            "unit": "bp",
+            "name": "min_dscr",
+            "origin": "rulebook",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        },
+        {
+          "rule_id": "DE-02",
+          "description": "Cash stays above the buffer in every forecast week",
+          "metric_id": "decision.cash_low_point_with_debt",
+          "threshold": {
+            "money": {
+              "minor": 200000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "cash_buffer",
+            "origin": "tenant_policy",
+            "comparison": ">=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "amortisation": [
+        {
+          "month": 1,
+          "due_on": "2026-11-22",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 3166667,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 6915057,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 193084943,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 2,
+          "due_on": "2026-12-22",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 3057178,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7024545,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 186060398,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 3,
+          "due_on": "2027-01-21",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2945956,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7135767,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 178924631,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 4,
+          "due_on": "2027-02-20",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2832973,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7248750,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 171675881,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 5,
+          "due_on": "2027-03-22",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2718201,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7363522,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 164312359,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 6,
+          "due_on": "2027-04-21",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2601612,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7480111,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 156832248,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 7,
+          "due_on": "2027-05-21",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2483177,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7598546,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 149233702,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 8,
+          "due_on": "2027-06-20",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2362867,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7718857,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 141514845,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 9,
+          "due_on": "2027-07-20",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2240652,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7841072,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 133673773,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 10,
+          "due_on": "2027-08-19",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 2116501,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 7965222,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 125708551,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 11,
+          "due_on": "2027-09-18",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1990385,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8091338,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 117617213,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 12,
+          "due_on": "2027-10-18",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1862273,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8219451,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 109397762,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 13,
+          "due_on": "2027-11-17",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1732131,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8349592,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 101048170,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 14,
+          "due_on": "2027-12-17",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1599929,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8481794,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 92566376,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 15,
+          "due_on": "2028-01-16",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1465634,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8616089,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 83950287,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 16,
+          "due_on": "2028-02-15",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1329213,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8752511,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 75197776,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 17,
+          "due_on": "2028-03-16",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1190631,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 8891092,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 66306684,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 18,
+          "due_on": "2028-04-15",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 1049856,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9031868,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 57274817,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 19,
+          "due_on": "2028-05-15",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 906851,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9174872,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 48099945,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 20,
+          "due_on": "2028-06-14",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 761582,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9320141,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 38779804,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 21,
+          "due_on": "2028-07-14",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 614014,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9467710,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 29312094,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 22,
+          "due_on": "2028-08-13",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 464108,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9617615,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 19694478,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 23,
+          "due_on": "2028-09-12",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 311829,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9769894,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 9924584,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": 24,
+          "due_on": "2028-10-12",
+          "payment": {
+            "minor": 10081723,
+            "currency": "PKR"
+          },
+          "interest": {
+            "minor": 157139,
+            "currency": "PKR"
+          },
+          "principal": {
+            "minor": 9924584,
+            "currency": "PKR"
+          },
+          "balance": {
+            "minor": 0,
+            "currency": "PKR"
+          }
+        }
+      ],
+      "cash_path": [
+        {
+          "week": 1,
+          "closing_with": {
+            "minor": 939612300,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 739612300,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 2,
+          "closing_with": {
+            "minor": 1054611900,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 854611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 3,
+          "closing_with": {
+            "minor": 1184611900,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 984611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 4,
+          "closing_with": {
+            "minor": 1169611900,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 969611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 5,
+          "closing_with": {
+            "minor": 969530177,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 779611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 6,
+          "closing_with": {
+            "minor": 399530177,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 209611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 7,
+          "closing_with": {
+            "minor": 214530177,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 24611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 8,
+          "closing_with": {
+            "minor": 237530177,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 47611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 9,
+          "closing_with": {
+            "minor": 657448453,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 477611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 10,
+          "closing_with": {
+            "minor": 647448453,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 467611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 11,
+          "closing_with": {
+            "minor": 722448453,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 542611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 12,
+          "closing_with": {
+            "minor": 902448453,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 722611900,
+            "currency": "PKR"
+          }
+        },
+        {
+          "week": 13,
+          "closing_with": {
+            "minor": 867366730,
+            "currency": "PKR"
+          },
+          "closing_without": {
+            "minor": 697611900,
+            "currency": "PKR"
+          }
+        }
+      ]
+    },
+    {
+      "option_id": "equity",
+      "label": "Sell 6.25% to an investor for Rs 2.0M",
+      "eligible": true,
+      "figures": [
+        {
+          "money": null,
+          "value": 625,
+          "unit": "bp",
+          "metric_id": "decision.dilution",
+          "label": "Share of the business given up",
+          "status": "ok",
+          "formula": "amount / (pre_money + amount)",
+          "inputs": [
+            {
+              "money": {
+                "minor": 3000000000,
+                "currency": "PKR"
+              },
+              "value": null,
+              "unit": "minor",
+              "name": "pre_money_valuation",
+              "origin": "user_provided",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 3000,
+          "unit": "bp",
+          "metric_id": "decision.cost_of_equity",
+          "label": "Return the investor expects",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 3000,
+              "unit": "bp",
+              "name": "target_return",
+              "origin": "assumption_unverified",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 224611900,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.cash_low_point_with_equity",
+          "label": "Lowest weekly cash with the investment",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "DE-03",
+          "description": "Owner keeps control (stake given up below 25%)",
+          "metric_id": "decision.dilution",
+          "threshold": {
+            "money": null,
+            "value": 2500,
+            "unit": "bp",
+            "name": "max_dilution",
+            "origin": "draft_default",
+            "comparison": "<=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "amortisation": null,
+      "cash_path": null
+    }
+  ],
+  "recommendation": {
+    "outcome": "recommend",
+    "option_id": "debt",
+    "rule_trace": [
+      {
+        "rule_id": "T-SOL-DSCR-01",
+        "description": "Debt-service cover after the loan stays at or above the minimum",
+        "metric_id": "decision.dscr_after_debt",
+        "threshold": {
+          "money": null,
+          "value": 12500,
+          "unit": "bp",
+          "name": "min_dscr",
+          "origin": "rulebook",
+          "comparison": ">=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "DE-02",
+        "description": "Cash stays above the buffer in every forecast week",
+        "metric_id": "decision.cash_low_point_with_debt",
+        "threshold": {
+          "money": {
+            "minor": 200000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "cash_buffer",
+          "origin": "tenant_policy",
+          "comparison": ">=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "DE-04",
+        "description": "After-tax cost of debt is below the cost of equity",
+        "metric_id": "decision.after_tax_cost_of_debt",
+        "threshold": {
+          "money": null,
+          "value": 3000,
+          "unit": "bp",
+          "name": "cost_of_equity",
+          "origin": "assumption_unverified",
+          "comparison": "<",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      }
+    ],
+    "reason_codes": [
+      "debt_cheaper_after_tax",
+      "cover_stays_above_minimum",
+      "keeps_full_ownership"
+    ]
+  },
+  "insufficient_data": []
+}

@@ -1,0 +1,549 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "run_id": "pt_QRHY1AR4QKSNBA1KEJ54Q8BAHM",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "cost_of_money": {
+    "money": null,
+    "value": 2200,
+    "unit": "bp",
+    "metric_id": "payments.cost_of_money",
+    "label": "Your cost of money",
+    "status": "ok",
+    "formula": null,
+    "inputs": [
+      {
+        "money": null,
+        "value": 2200,
+        "unit": "bp",
+        "name": "cost_of_capital_annual",
+        "origin": "rulebook",
+        "metric_id": null,
+        "ref": null
+      }
+    ],
+    "thresholds": [],
+    "source_refs": [],
+    "missing": [],
+    "note": null
+  },
+  "buffer": {
+    "money": {
+      "minor": 200000000,
+      "currency": "PKR"
+    },
+    "value": null,
+    "unit": "minor",
+    "metric_id": "cash.buffer",
+    "label": "Your minimum cash buffer",
+    "status": "ok",
+    "formula": null,
+    "inputs": [
+      {
+        "money": {
+          "minor": 200000000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "name": "cash_buffer",
+        "origin": "tenant_policy",
+        "metric_id": null,
+        "ref": "tenant.policies.cash_buffer_minor"
+      }
+    ],
+    "thresholds": [],
+    "source_refs": [],
+    "missing": [],
+    "note": null
+  },
+  "bills": [
+    {
+      "bill_id": "bill_2231",
+      "supplier_id": "sup_017",
+      "supplier_name": "Mehran Garments",
+      "amount": {
+        "minor": 184500000,
+        "currency": "PKR"
+      },
+      "issue_date": "2026-10-17",
+      "due_date": "2026-10-24",
+      "terms": null,
+      "action": "pay_on_due",
+      "pay_on": "2026-10-24",
+      "figures": [],
+      "rule_checks": []
+    },
+    {
+      "bill_id": "bill_2244",
+      "supplier_id": "sup_031",
+      "supplier_name": "Northern Wool Traders",
+      "amount": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "issue_date": "2026-11-26",
+      "due_date": "2026-12-26",
+      "terms": {
+        "discount_bp": 200,
+        "within_days": 10,
+        "net_days": 30,
+        "origin": "bill_text"
+      },
+      "action": "pay_on_due",
+      "pay_on": "2026-12-26",
+      "figures": [
+        {
+          "money": null,
+          "value": 4459,
+          "unit": "bp",
+          "metric_id": "payments.annualised_discount_return",
+          "label": "Discount as an annual return",
+          "status": "ok",
+          "formula": "(1 / (1 - discount))^(365 / (net_days - discount_days)) - 1",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 3600000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "payments.saving_if_early",
+          "label": "Saving if paid early",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -151788100,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "payments.closing_if_paid_early",
+          "label": "Cash at the end of week 7 if paid early",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "PT-01",
+          "description": "The discount earns more than the cost of money",
+          "metric_id": "payments.annualised_discount_return",
+          "threshold": {
+            "money": null,
+            "value": 2200,
+            "unit": "bp",
+            "name": "cost_of_money",
+            "origin": "rulebook",
+            "comparison": ">",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        },
+        {
+          "rule_id": "PT-02",
+          "description": "Paying early keeps cash above the buffer that week",
+          "metric_id": "payments.closing_if_paid_early",
+          "threshold": {
+            "money": {
+              "minor": 200000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "cash_buffer",
+            "origin": "tenant_policy",
+            "comparison": ">=",
+            "passed": false
+          },
+          "passed": false,
+          "hard": true
+        }
+      ]
+    },
+    {
+      "bill_id": "bill_2245",
+      "supplier_id": "sup_031",
+      "supplier_name": "Northern Wool Traders",
+      "amount": {
+        "minor": 120000000,
+        "currency": "PKR"
+      },
+      "issue_date": "2026-11-26",
+      "due_date": "2027-01-10",
+      "terms": {
+        "discount_bp": 100,
+        "within_days": 10,
+        "net_days": 45,
+        "origin": "bill_text"
+      },
+      "action": "pay_on_due",
+      "pay_on": "2027-01-10",
+      "figures": [
+        {
+          "money": null,
+          "value": 1105,
+          "unit": "bp",
+          "metric_id": "payments.annualised_discount_return",
+          "label": "Discount as an annual return",
+          "status": "ok",
+          "formula": "(1 / (1 - discount))^(365 / (net_days - discount_days)) - 1",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 1200000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "payments.saving_if_early",
+          "label": "Saving if paid early",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -94188100,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "payments.closing_if_paid_early",
+          "label": "Cash at the end of week 7 if paid early",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "PT-01",
+          "description": "The discount earns more than the cost of money",
+          "metric_id": "payments.annualised_discount_return",
+          "threshold": {
+            "money": null,
+            "value": 2200,
+            "unit": "bp",
+            "name": "cost_of_money",
+            "origin": "rulebook",
+            "comparison": ">",
+            "passed": false
+          },
+          "passed": false,
+          "hard": true
+        },
+        {
+          "rule_id": "PT-02",
+          "description": "Paying early keeps cash above the buffer that week",
+          "metric_id": "payments.closing_if_paid_early",
+          "threshold": {
+            "money": {
+              "minor": 200000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "cash_buffer",
+            "origin": "tenant_policy",
+            "comparison": ">=",
+            "passed": false
+          },
+          "passed": false,
+          "hard": true
+        }
+      ]
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "start": "2026-10-23",
+      "end": "2026-10-29",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 739612300,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 739612300,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 2,
+      "start": "2026-10-30",
+      "end": "2026-11-05",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 854611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 854611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 3,
+      "start": "2026-11-06",
+      "end": "2026-11-12",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 984611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 984611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 4,
+      "start": "2026-11-13",
+      "end": "2026-11-19",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 969611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 969611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 5,
+      "start": "2026-11-20",
+      "end": "2026-11-26",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 779611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 779611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 6,
+      "start": "2026-11-27",
+      "end": "2026-12-03",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 209611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 209611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 7,
+      "start": "2026-12-04",
+      "end": "2026-12-10",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "below_buffer": true
+    },
+    {
+      "week": 8,
+      "start": "2026-12-11",
+      "end": "2026-12-17",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 47611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 47611900,
+        "currency": "PKR"
+      },
+      "below_buffer": true
+    },
+    {
+      "week": 9,
+      "start": "2026-12-18",
+      "end": "2026-12-24",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 477611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 477611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 10,
+      "start": "2026-12-25",
+      "end": "2026-12-31",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 467611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 467611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 11,
+      "start": "2027-01-01",
+      "end": "2027-01-07",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 542611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 542611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 12,
+      "start": "2027-01-08",
+      "end": "2027-01-14",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 722611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 722611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    },
+    {
+      "week": 13,
+      "start": "2027-01-15",
+      "end": "2027-01-21",
+      "payments": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "closing_before": {
+        "minor": 697611900,
+        "currency": "PKR"
+      },
+      "closing_after": {
+        "minor": 697611900,
+        "currency": "PKR"
+      },
+      "below_buffer": false
+    }
+  ],
+  "totals": [
+    {
+      "money": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "payments.total_saving",
+      "label": "Discounts captured",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "insufficient_data": []
+}

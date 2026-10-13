@@ -1,0 +1,4859 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "run_id": "fc_b4b45ab18a7c7dfbfa02",
+  "inputs_hash": "b4b45ab18a7c7dfbfa022e56d975419ab0bac21b8d03302ef881da6960e0415c",
+  "engine_version": "launch_lab/0.1.0",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "product": {
+    "name": "Pashmina-blend winter shawl",
+    "category": "shawl",
+    "description": "Mid-price pashmina-blend shawl in four colours for the winter wedding season.",
+    "target_customers": "Women 25-45 shopping for winter weddings",
+    "target_market": "Karachi, in store and Instagram",
+    "region": "PK-KHI",
+    "sales_channels": [
+      "store",
+      "instagram"
+    ],
+    "comparable_skus": [
+      "SHL-WOL-GRY",
+      "SHL-WOL-BRN"
+    ]
+  },
+  "recommendation": {
+    "label": "PILOT_FIRST",
+    "plan": "pilot",
+    "rule_trace": [
+      {
+        "rule_id": "LL-01",
+        "description": "Each unit sold earns a positive contribution",
+        "metric_id": "launch.contribution_per_unit",
+        "threshold": {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "contribution_per_unit",
+          "origin": "draft_default",
+          "comparison": ">",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-02",
+        "description": "Contribution margin meets the minimum",
+        "metric_id": "launch.contribution_margin",
+        "threshold": {
+          "money": null,
+          "value": 2000,
+          "unit": "bp",
+          "name": "min_contribution_margin",
+          "origin": "rulebook",
+          "comparison": ">=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-03",
+        "description": "Cash is paid back within the owner's horizon (base case)",
+        "metric_id": "launch.payback_month",
+        "threshold": {
+          "money": null,
+          "value": 6,
+          "unit": "months",
+          "name": "breakeven_horizon_months",
+          "origin": "rulebook",
+          "comparison": "<=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-04",
+        "description": "Chance of a loss over the horizon is within the limit",
+        "metric_id": "launch.p_loss",
+        "threshold": {
+          "money": null,
+          "value": 3000,
+          "unit": "bp",
+          "name": "max_loss_probability",
+          "origin": "rulebook",
+          "comparison": "<=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-05",
+        "description": "Monthly break-even volume is within plausible demand (p90 peak month)",
+        "metric_id": "launch.monthly_break_even_units",
+        "threshold": {
+          "money": null,
+          "value": 213,
+          "unit": "units",
+          "name": "p90_peak_month_demand",
+          "origin": "engine_estimate",
+          "comparison": "<=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-06",
+        "description": "Peak cash need fits the capital set aside",
+        "metric_id": "launch.peak_cash",
+        "threshold": {
+          "money": {
+            "minor": 180000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "available_capital",
+          "origin": "user_provided",
+          "comparison": "<=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": true
+      },
+      {
+        "rule_id": "LL-08",
+        "description": "Chance of paying back within the horizon supports a full launch",
+        "metric_id": "launch.p_payback_within_horizon",
+        "threshold": {
+          "money": null,
+          "value": 7000,
+          "unit": "bp",
+          "name": "launch_min_prob_breakeven",
+          "origin": "rulebook",
+          "comparison": ">=",
+          "passed": true
+        },
+        "passed": true,
+        "hard": false
+      },
+      {
+        "rule_id": "LL-09",
+        "description": "Demand evidence comes from the product's own sales history",
+        "metric_id": "launch.demand_evidence",
+        "threshold": {
+          "money": null,
+          "value": 1,
+          "unit": "count",
+          "name": "evidence_class_is_own_history",
+          "origin": "draft_default",
+          "comparison": ">=",
+          "passed": false
+        },
+        "passed": false,
+        "hard": false
+      }
+    ],
+    "reason_codes": [
+      "soft_rule_failed:LL-09"
+    ],
+    "levers_that_fix": []
+  },
+  "headline": [
+    {
+      "money": {
+        "minor": 153129,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.contribution_per_unit",
+      "label": "Contribution per unit sold",
+      "status": "ok",
+      "formula": "net_price x (1 - return_rate) - variable_cost_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 3693,
+      "unit": "bp",
+      "metric_id": "launch.contribution_margin",
+      "label": "Contribution margin",
+      "status": "ok",
+      "formula": "contribution_per_unit / revenue_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 26,
+      "unit": "units",
+      "metric_id": "launch.monthly_break_even_units",
+      "label": "Units a month to cover fixed and marketing costs",
+      "status": "ok",
+      "formula": "(monthly_fixed + marketing_monthly) / contribution_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 17045284,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.horizon_profit",
+      "label": "Profit from the product over the horizon",
+      "status": "ok",
+      "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 77590813,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.peak_cash",
+      "label": "Most cash tied up at any point",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 3,
+      "unit": "months",
+      "metric_id": "launch.payback_month",
+      "label": "Month the cash invested is paid back",
+      "status": "ok",
+      "formula": "month after cumulative cash is last below zero",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 7195,
+      "unit": "bp",
+      "metric_id": "launch.p_payback_within_horizon",
+      "label": "Chance of paying back within 6 months (model-based)",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": null,
+          "value": 2000,
+          "unit": "count",
+          "name": "runs",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null
+        },
+        {
+          "money": null,
+          "value": 42,
+          "unit": "count",
+          "name": "seed",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 2805,
+      "unit": "bp",
+      "metric_id": "launch.p_loss",
+      "label": "Chance of a loss over the horizon (model-based)",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": null,
+          "value": 2000,
+          "unit": "count",
+          "name": "runs",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null
+        },
+        {
+          "money": null,
+          "value": 42,
+          "unit": "count",
+          "name": "seed",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "inputs": [
+    {
+      "money": {
+        "minor": 240000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "unit_cost",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Supplier quotation from sup_031 for 300+ units.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 450000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "price",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Owner's proposed shelf price, GST included.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 12000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "freight_per_unit",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Courier rate quoted by the supplier.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 6000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "packaging_per_unit",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Gift box and tissue.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 10000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "launch_costs",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Photoshoot, window display and first social campaign.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 4000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "marketing_monthly",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Planned monthly social ads.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 1500,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "storage_cost_per_unit_month",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Share of back-room rent; verify.",
+      "as_of": null,
+      "needs_verification": true
+    },
+    {
+      "money": null,
+      "value": 58,
+      "unit": "units",
+      "name": "demand_level_units_per_month",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Average monthly units of comparable wool shawls over the last 24 months.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 350000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "demand_reference_price",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Average selling price of the comparable shawls.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 31034,
+      "unit": "bp",
+      "name": "seasonality_peak_index",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "January index of comparable shawl sales; Nov-Feb carry 85% of the year.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": -12000,
+      "unit": "bp",
+      "name": "price_elasticity_medium",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null,
+      "basis": "No price experiments in the ledger; medium-sensitivity scenario from the rulebook.",
+      "as_of": null,
+      "needs_verification": true
+    },
+    {
+      "money": null,
+      "value": 500,
+      "unit": "bp",
+      "name": "discount_rate",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Average discount on shawls last winter.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 150,
+      "unit": "bp",
+      "name": "payment_fee_rate",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Card and QR settlement fees as a share of shawl takings.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 300,
+      "unit": "bp",
+      "name": "return_rate",
+      "origin": "ledger_derived",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Refunded share of comparable shawl sales.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 3000,
+      "unit": "bp",
+      "name": "return_loss_rate",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Share of returned shawls that cannot be resold; verify.",
+      "as_of": null,
+      "needs_verification": true
+    },
+    {
+      "money": null,
+      "value": 100,
+      "unit": "bp",
+      "name": "wastage_rate",
+      "origin": "assumption_unverified",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Transit damage allowance.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 4000,
+      "unit": "bp",
+      "name": "unsold_recovery_rate",
+      "origin": "rulebook",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Apparel industry pack: unsold seasonal stock clears at 40% of cost.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 300,
+      "unit": "units",
+      "name": "moq",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Supplier minimum order.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": null,
+      "value": 45,
+      "unit": "days",
+      "name": "lead_time_days",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Supplier lead time.",
+      "as_of": null,
+      "needs_verification": false
+    },
+    {
+      "money": {
+        "minor": 180000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "available_capital",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null,
+      "basis": "Cash the owner has set aside for this product.",
+      "as_of": null,
+      "needs_verification": false
+    }
+  ],
+  "data_gaps": [
+    {
+      "field": "storage_cost_per_unit_month",
+      "blocking": false,
+      "impact": "Small: under 1% of contribution in the base case.",
+      "question": "Roughly how much of your back-room rent should a box of shawls carry each month?"
+    }
+  ],
+  "policy": [
+    {
+      "money": null,
+      "value": 2000,
+      "unit": "bp",
+      "name": "min_contribution_margin",
+      "origin": "rulebook",
+      "comparison": ">=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 6,
+      "unit": "months",
+      "name": "breakeven_horizon_months",
+      "origin": "rulebook",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 7000,
+      "unit": "bp",
+      "name": "launch_min_prob_breakeven",
+      "origin": "rulebook",
+      "comparison": ">=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 3000,
+      "unit": "bp",
+      "name": "max_loss_probability",
+      "origin": "rulebook",
+      "comparison": "<=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 2200,
+      "unit": "bp",
+      "name": "cost_of_capital_annual",
+      "origin": "rulebook",
+      "comparison": ">=",
+      "passed": null
+    },
+    {
+      "money": null,
+      "value": 4000,
+      "unit": "bp",
+      "name": "unsold_recovery_rate",
+      "origin": "rulebook",
+      "comparison": ">=",
+      "passed": null
+    }
+  ],
+  "unit_economics": [
+    {
+      "money": {
+        "minor": 427500,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.net_price",
+      "label": "Price after average discount",
+      "status": "ok",
+      "formula": "price x (1 - discount_rate)",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 258000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.landed_cost",
+      "label": "Landed cost per unit",
+      "status": "ok",
+      "formula": "unit_cost x (1 + duty + non-recoverable tax) + freight + packaging",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 261546,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.variable_cost_per_unit",
+      "label": "Variable cost per unit sold",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 153129,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.contribution_per_unit",
+      "label": "Contribution per unit sold",
+      "status": "ok",
+      "formula": "net_price x (1 - return_rate) - variable_cost_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 3693,
+      "unit": "bp",
+      "metric_id": "launch.contribution_margin",
+      "label": "Contribution margin",
+      "status": "ok",
+      "formula": "contribution_per_unit / revenue_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 3847,
+      "unit": "bp",
+      "metric_id": "launch.gross_margin",
+      "label": "Gross margin",
+      "status": "ok",
+      "formula": null,
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": null,
+      "value": 26,
+      "unit": "units",
+      "metric_id": "launch.monthly_break_even_units",
+      "label": "Units a month to cover fixed and marketing costs",
+      "status": "ok",
+      "formula": "(monthly_fixed + marketing_monthly) / contribution_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "cost_lines": [
+    {
+      "money": {
+        "minor": 240000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.purchase_cost",
+      "label": "Purchase cost",
+      "status": "ok",
+      "formula": "unit_cost",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.duty_and_non_recoverable_tax",
+      "label": "Duty and non recoverable tax",
+      "status": "ok",
+      "formula": "unit_cost x (duty_rate + non_recoverable_tax_rate)",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 12000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.freight",
+      "label": "Freight",
+      "status": "ok",
+      "formula": "freight_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 6000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.packaging",
+      "label": "Packaging",
+      "status": "ok",
+      "formula": "packaging_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 2606,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.wastage_allowance",
+      "label": "Wastage allowance",
+      "status": "ok",
+      "formula": "landed_cost / (1 - wastage_rate) - landed_cost",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": -5473,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.returns_restocked_credit",
+      "label": "Returns restocked credit",
+      "status": "ok",
+      "formula": "-landed_cost_per_sellable x return_rate x (1 - return_loss_rate)",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 6413,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.channel_fees",
+      "label": "Channel fees",
+      "status": "ok",
+      "formula": "net_price x (payment_fee_rate + marketplace_fee_rate + commission_rate)",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 0,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.cost_line.variable_labour_and_other",
+      "label": "Variable labour and other",
+      "status": "ok",
+      "formula": "variable_labour_per_unit + other_variable_per_unit",
+      "inputs": [],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "low",
+      "assumptions": [
+        {
+          "money": null,
+          "value": 6385,
+          "unit": "bp",
+          "name": "demand_multiplier",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null,
+          "basis": "10th percentile of a log-normal demand level with sigma 0.35 (comparable_history).",
+          "as_of": null,
+          "needs_verification": false
+        },
+        {
+          "money": null,
+          "value": 500,
+          "unit": "bp",
+          "name": "unit_cost_change",
+          "origin": "rulebook",
+          "metric_id": null,
+          "ref": null,
+          "basis": "Supplier cost rises.",
+          "as_of": null,
+          "needs_verification": false
+        },
+        {
+          "money": null,
+          "value": 500,
+          "unit": "bp",
+          "name": "extra_discount",
+          "origin": "rulebook",
+          "metric_id": null,
+          "ref": null,
+          "basis": "Deeper discounting to move stock.",
+          "as_of": null,
+          "needs_verification": false
+        },
+        {
+          "money": null,
+          "value": 12500,
+          "unit": "bp",
+          "name": "return_multiplier",
+          "origin": "rulebook",
+          "metric_id": null,
+          "ref": null,
+          "basis": "More returns than planned.",
+          "as_of": null,
+          "needs_verification": false
+        }
+      ],
+      "figures": [
+        {
+          "money": null,
+          "value": 244,
+          "unit": "units",
+          "metric_id": "launch.units_sold",
+          "label": "Units sold",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 95276462,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.revenue",
+          "label": "Revenue (net of discounts and refunds)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 30367315,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.gross_profit",
+          "label": "Gross profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 3245501,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.operating_contribution",
+          "label": "Operating contribution before launch costs",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -22241011,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.horizon_profit",
+          "label": "Profit from the product over the horizon",
+          "status": "ok",
+          "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -22241011,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.profit_after_overhead",
+          "label": "Profit after allocated shared overhead",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 91055346,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.peak_cash",
+          "label": "Most cash tied up at any point",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "months",
+          "metric_id": "launch.payback_month",
+          "label": "Month the cash invested is paid back",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "not paid back within the horizon"
+        },
+        {
+          "money": {
+            "minor": -24399941,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.npv",
+          "label": "Net present value",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 2200,
+              "unit": "bp",
+              "name": "cost_of_capital_annual",
+              "origin": "rulebook",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "launch.irr_annual",
+          "label": "Internal rate of return (annualised)",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "IRR not meaningful: multiple_sign_changes"
+        },
+        {
+          "money": null,
+          "value": 95,
+          "unit": "units",
+          "metric_id": "launch.ending_units",
+          "label": "Units left at the end of the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 15486512,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.unsold_writedown",
+          "label": "Cost written off on unsold stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.lost_units",
+          "label": "Sales missed for lack of stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "months": [
+        {
+          "month": "2026-11",
+          "demand_units": 37,
+          "sold_units": 37,
+          "lost_units": 0,
+          "purchased_units": 336,
+          "ending_stock_units": 297,
+          "revenue": {
+            "minor": 14360510,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 9783408,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 4577103,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -118753,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -91055346,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -91055346,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2026-12",
+          "demand_units": 68,
+          "sold_units": 68,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 230,
+          "revenue": {
+            "minor": 26603766,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 18124390,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 8479376,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 3669463,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 21793852,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -69261493,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-01",
+          "demand_units": 85,
+          "sold_units": 85,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 148,
+          "revenue": {
+            "minor": 33139639,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 22577094,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 10562544,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 5762702,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 28339797,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -40921697,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-02",
+          "demand_units": 43,
+          "sold_units": 43,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 106,
+          "revenue": {
+            "minor": 16569819,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 11288547,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 5281272,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 832792,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 12121339,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -28800358,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-03",
+          "demand_units": 9,
+          "sold_units": 9,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 97,
+          "revenue": {
+            "minor": 3682182,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 2508566,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 1173616,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3036076,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -527510,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -29327868,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-04",
+          "demand_units": 2,
+          "sold_units": 2,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 95,
+          "revenue": {
+            "minor": 920546,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 627142,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 293404,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3864626,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 7086856,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -22241011,
+            "currency": "PKR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "base",
+      "assumptions": [
+        {
+          "money": null,
+          "value": 10000,
+          "unit": "bp",
+          "name": "demand_multiplier",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null,
+          "basis": "Median of the demand distribution: the most defensible estimate.",
+          "as_of": null,
+          "needs_verification": false
+        }
+      ],
+      "figures": [
+        {
+          "money": null,
+          "value": 340,
+          "unit": "units",
+          "metric_id": "launch.units_sold",
+          "label": "Units sold",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 140896153,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.revenue",
+          "label": "Revenue (net of discounts and refunds)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 54208252,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.gross_profit",
+          "label": "Gross profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 27045344,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.operating_contribution",
+          "label": "Operating contribution before launch costs",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17045284,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.horizon_profit",
+          "label": "Profit from the product over the horizon",
+          "status": "ok",
+          "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17045284,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.profit_after_overhead",
+          "label": "Profit after allocated shared overhead",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 77590813,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.peak_cash",
+          "label": "Most cash tied up at any point",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 3,
+          "unit": "months",
+          "metric_id": "launch.payback_month",
+          "label": "Month the cash invested is paid back",
+          "status": "ok",
+          "formula": "month after cumulative cash is last below zero",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 14288811,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.npv",
+          "label": "Net present value",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 2200,
+              "unit": "bp",
+              "name": "cost_of_capital_annual",
+              "origin": "rulebook",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "launch.irr_annual",
+          "label": "Internal rate of return (annualised)",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "IRR not meaningful: multiple_sign_changes"
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.ending_units",
+          "label": "Units left at the end of the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 60,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.unsold_writedown",
+          "label": "Cost written off on unsold stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 43,
+          "unit": "units",
+          "metric_id": "launch.lost_units",
+          "label": "Sales missed for lack of stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "months": [
+        {
+          "month": "2026-11",
+          "demand_units": 58,
+          "sold_units": 58,
+          "lost_units": 0,
+          "purchased_units": 336,
+          "ending_stock_units": 276,
+          "revenue": {
+            "minor": 23923741,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 14719344,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 9204397,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 4377844,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -77590813,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -77590813,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2026-12",
+          "demand_units": 107,
+          "sold_units": 107,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 172,
+          "revenue": {
+            "minor": 44320264,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 27268528,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 17051736,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 12030610,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 39299137,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -38291676,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-01",
+          "demand_units": 133,
+          "sold_units": 133,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 41,
+          "revenue": {
+            "minor": 55208633,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 33967716,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 21240917,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 16227646,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 50195362,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 11903686,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-02",
+          "demand_units": 67,
+          "sold_units": 41,
+          "lost_units": 25,
+          "purchased_units": 0,
+          "ending_stock_units": 1,
+          "revenue": {
+            "minor": 17077359,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 10507032,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 6570327,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 2274709,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 12781741,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 24685427,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-03",
+          "demand_units": 15,
+          "sold_units": 1,
+          "lost_units": 14,
+          "purchased_units": 0,
+          "ending_stock_units": 0,
+          "revenue": {
+            "minor": 358625,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 220648,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 137977,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3868231,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -3647583,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 21037843,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-04",
+          "demand_units": 4,
+          "sold_units": 0,
+          "lost_units": 4,
+          "purchased_units": 0,
+          "ending_stock_units": 0,
+          "revenue": {
+            "minor": 7531,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 4634,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 2898,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3997233,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -3992559,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 17045284,
+            "currency": "PKR"
+          }
+        }
+      ]
+    },
+    {
+      "name": "high",
+      "assumptions": [
+        {
+          "money": null,
+          "value": 15661,
+          "unit": "bp",
+          "name": "demand_multiplier",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null,
+          "basis": "90th percentile of a log-normal demand level with sigma 0.35.",
+          "as_of": null,
+          "needs_verification": false
+        }
+      ],
+      "figures": [
+        {
+          "money": null,
+          "value": 340,
+          "unit": "units",
+          "metric_id": "launch.units_sold",
+          "label": "Units sold",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 140896308,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.revenue",
+          "label": "Revenue (net of discounts and refunds)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 54208312,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.gross_profit",
+          "label": "Gross profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 27290673,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.operating_contribution",
+          "label": "Operating contribution before launch costs",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17290671,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.horizon_profit",
+          "label": "Profit from the product over the horizon",
+          "status": "ok",
+          "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17290671,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.profit_after_overhead",
+          "label": "Profit after allocated shared overhead",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 64234085,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.peak_cash",
+          "label": "Most cash tied up at any point",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 3,
+          "unit": "months",
+          "metric_id": "launch.payback_month",
+          "label": "Month the cash invested is paid back",
+          "status": "ok",
+          "formula": "month after cumulative cash is last below zero",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 15607200,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.npv",
+          "label": "Net present value",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 2200,
+              "unit": "bp",
+              "name": "cost_of_capital_annual",
+              "origin": "rulebook",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "launch.irr_annual",
+          "label": "Internal rate of return (annualised)",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "IRR not meaningful: multiple_sign_changes"
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.ending_units",
+          "label": "Units left at the end of the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 2,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.unsold_writedown",
+          "label": "Cost written off on unsold stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 260,
+          "unit": "units",
+          "metric_id": "launch.lost_units",
+          "label": "Sales missed for lack of stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "months": [
+        {
+          "month": "2026-11",
+          "demand_units": 90,
+          "sold_units": 90,
+          "lost_units": 0,
+          "purchased_units": 336,
+          "ending_stock_units": 244,
+          "revenue": {
+            "minor": 37465905,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 23051308,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 14414597,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 9402607,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -64234085,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -64234085,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2026-12",
+          "demand_units": 167,
+          "sold_units": 167,
+          "lost_units": 0,
+          "purchased_units": 0,
+          "ending_stock_units": 80,
+          "revenue": {
+            "minor": 69407990,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 42704026,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 26703964,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 21387262,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 64091288,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": -142797,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-01",
+          "demand_units": 209,
+          "sold_units": 80,
+          "lost_units": 128,
+          "purchased_units": 0,
+          "ending_stock_units": 2,
+          "revenue": {
+            "minor": 33307949,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 20493080,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 12814869,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": 8238290,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": 28731370,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 28588573,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-02",
+          "demand_units": 104,
+          "sold_units": 2,
+          "lost_units": 103,
+          "purchased_units": 0,
+          "ending_stock_units": 0,
+          "revenue": {
+            "minor": 699467,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 430355,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 269112,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3742996,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -3312641,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 25275932,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-03",
+          "demand_units": 23,
+          "sold_units": 0,
+          "lost_units": 23,
+          "purchased_units": 0,
+          "ending_stock_units": 0,
+          "revenue": {
+            "minor": 14689,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 9037,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 5651,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3994603,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -3985565,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 21290366,
+            "currency": "PKR"
+          }
+        },
+        {
+          "month": "2027-04",
+          "demand_units": 6,
+          "sold_units": 0,
+          "lost_units": 6,
+          "purchased_units": 0,
+          "ending_stock_units": 0,
+          "revenue": {
+            "minor": 308,
+            "currency": "PKR"
+          },
+          "cogs": {
+            "minor": 190,
+            "currency": "PKR"
+          },
+          "gross_profit": {
+            "minor": 119,
+            "currency": "PKR"
+          },
+          "contribution": {
+            "minor": -3999887,
+            "currency": "PKR"
+          },
+          "cash_flow": {
+            "minor": -3999695,
+            "currency": "PKR"
+          },
+          "cumulative_cash": {
+            "minor": 17290671,
+            "currency": "PKR"
+          }
+        }
+      ]
+    }
+  ],
+  "simulation": {
+    "runs": 2000,
+    "seed": 42,
+    "demand_evidence": "comparable_history",
+    "interpretation": "model_based_not_calibrated",
+    "figures": [
+      {
+        "money": null,
+        "value": 2805,
+        "unit": "bp",
+        "metric_id": "launch.p_loss",
+        "label": "Chance of a loss over the horizon (model-based)",
+        "status": "ok",
+        "formula": null,
+        "inputs": [
+          {
+            "money": null,
+            "value": 2000,
+            "unit": "count",
+            "name": "runs",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          },
+          {
+            "money": null,
+            "value": 42,
+            "unit": "count",
+            "name": "seed",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          }
+        ],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": null,
+        "value": 7195,
+        "unit": "bp",
+        "metric_id": "launch.p_payback_within_horizon",
+        "label": "Chance of paying back within 6 months (model-based)",
+        "status": "ok",
+        "formula": null,
+        "inputs": [
+          {
+            "money": null,
+            "value": 2000,
+            "unit": "count",
+            "name": "runs",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          },
+          {
+            "money": null,
+            "value": 42,
+            "unit": "count",
+            "name": "seed",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          }
+        ],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 2550534,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.expected_profit",
+        "label": "Average profit across simulated outcomes",
+        "status": "ok",
+        "formula": null,
+        "inputs": [
+          {
+            "money": null,
+            "value": 2000,
+            "unit": "count",
+            "name": "runs",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          },
+          {
+            "money": null,
+            "value": 42,
+            "unit": "count",
+            "name": "seed",
+            "origin": "engine_estimate",
+            "metric_id": null,
+            "ref": null
+          }
+        ],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": -20484624,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.profit_p10",
+        "label": "Profit, pessimistic (10th percentile)",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 7913538,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.profit_p50",
+        "label": "Profit, median",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 15320532,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.profit_p90",
+        "label": "Profit, optimistic (90th percentile)",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 89987477,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.peak_cash_p90",
+        "label": "Peak cash need, 90th percentile",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      }
+    ],
+    "profit_histogram": [
+      {
+        "lower": {
+          "minor": -55906126,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -49492873,
+          "currency": "PKR"
+        },
+        "count": 6
+      },
+      {
+        "lower": {
+          "minor": -49492873,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -43079620,
+          "currency": "PKR"
+        },
+        "count": 20
+      },
+      {
+        "lower": {
+          "minor": -43079620,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -36666367,
+          "currency": "PKR"
+        },
+        "count": 21
+      },
+      {
+        "lower": {
+          "minor": -36666367,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -30253113,
+          "currency": "PKR"
+        },
+        "count": 39
+      },
+      {
+        "lower": {
+          "minor": -30253113,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -23839860,
+          "currency": "PKR"
+        },
+        "count": 68
+      },
+      {
+        "lower": {
+          "minor": -23839860,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -17426607,
+          "currency": "PKR"
+        },
+        "count": 84
+      },
+      {
+        "lower": {
+          "minor": -17426607,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -11013354,
+          "currency": "PKR"
+        },
+        "count": 108
+      },
+      {
+        "lower": {
+          "minor": -11013354,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": -4600101,
+          "currency": "PKR"
+        },
+        "count": 124
+      },
+      {
+        "lower": {
+          "minor": -4600101,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": 1813152,
+          "currency": "PKR"
+        },
+        "count": 149
+      },
+      {
+        "lower": {
+          "minor": 1813152,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": 8226405,
+          "currency": "PKR"
+        },
+        "count": 418
+      },
+      {
+        "lower": {
+          "minor": 8226405,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": 14639658,
+          "currency": "PKR"
+        },
+        "count": 700
+      },
+      {
+        "lower": {
+          "minor": 14639658,
+          "currency": "PKR"
+        },
+        "upper": {
+          "minor": 21052911,
+          "currency": "PKR"
+        },
+        "count": 263
+      }
+    ]
+  },
+  "sensitivity": [
+    {
+      "driver": "selling_price",
+      "swing_bp": 2000,
+      "profit_low": {
+        "minor": -10698185,
+        "currency": "PKR"
+      },
+      "profit_high": {
+        "minor": 44788753,
+        "currency": "PKR"
+      },
+      "spread": {
+        "minor": 55486939,
+        "currency": "PKR"
+      },
+      "rank": 1
+    },
+    {
+      "driver": "unit_cost",
+      "swing_bp": 2000,
+      "profit_low": {
+        "minor": 33173277,
+        "currency": "PKR"
+      },
+      "profit_high": {
+        "minor": 917291,
+        "currency": "PKR"
+      },
+      "spread": {
+        "minor": 32255985,
+        "currency": "PKR"
+      },
+      "rank": 2
+    },
+    {
+      "driver": "demand",
+      "swing_bp": 2000,
+      "profit_low": {
+        "minor": 6468382,
+        "currency": "PKR"
+      },
+      "profit_high": {
+        "minor": 17169290,
+        "currency": "PKR"
+      },
+      "spread": {
+        "minor": 10700908,
+        "currency": "PKR"
+      },
+      "rank": 3
+    },
+    {
+      "driver": "marketing",
+      "swing_bp": 2000,
+      "profit_low": {
+        "minor": 21845284,
+        "currency": "PKR"
+      },
+      "profit_high": {
+        "minor": 12245284,
+        "currency": "PKR"
+      },
+      "spread": {
+        "minor": 9600000,
+        "currency": "PKR"
+      },
+      "rank": 4
+    },
+    {
+      "driver": "return_rate",
+      "swing_bp": 2000,
+      "profit_low": {
+        "minor": 17324153,
+        "currency": "PKR"
+      },
+      "profit_high": {
+        "minor": 16763992,
+        "currency": "PKR"
+      },
+      "spread": {
+        "minor": 560161,
+        "currency": "PKR"
+      },
+      "rank": 5
+    }
+  ],
+  "unviable_thresholds": [
+    {
+      "driver": "demand",
+      "current": {
+        "money": null,
+        "value": 10000,
+        "unit": "bp",
+        "metric_id": "launch.demand_multiplier",
+        "label": "Demand as planned",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "threshold": {
+        "money": null,
+        "value": 7458,
+        "unit": "bp",
+        "metric_id": "launch.break_even_demand_multiplier",
+        "label": "Demand multiplier at which horizon profit is zero",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "headroom_bp": 2542
+    },
+    {
+      "driver": "unit_cost",
+      "current": {
+        "money": {
+          "minor": 240000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.unit_cost",
+        "label": "Unit cost",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "threshold": {
+        "money": {
+          "minor": 290730,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.break_even_unit_cost",
+        "label": "Value at which horizon profit is zero",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "headroom_bp": 2114
+    },
+    {
+      "driver": "selling_price",
+      "current": {
+        "money": {
+          "minor": 450000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.price",
+        "label": "Selling price",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "threshold": {
+        "money": {
+          "minor": 394705,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.break_even_selling_price",
+        "label": "Value at which horizon profit is zero",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      "headroom_bp": 1229
+    }
+  ],
+  "pricing": {
+    "figures": [
+      {
+        "money": {
+          "minor": 450000,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.price",
+        "label": "Proposed selling price",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 281216,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.break_even_price",
+        "label": "Price at which each unit just breaks even",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": {
+          "minor": 352906,
+          "currency": "PKR"
+        },
+        "value": null,
+        "unit": "minor",
+        "metric_id": "launch.price_for_min_margin",
+        "label": "Price that reaches your minimum margin",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      }
+    ],
+    "competitor_range": {
+      "low": {
+        "minor": 399000,
+        "currency": "PKR"
+      },
+      "high": {
+        "minor": 550000,
+        "currency": "PKR"
+      },
+      "median": {
+        "minor": 499000,
+        "currency": "PKR"
+      },
+      "count": 3,
+      "origin": "user_provided"
+    },
+    "recommended_range": {
+      "low": {
+        "minor": 540000,
+        "currency": "PKR"
+      },
+      "high": {
+        "minor": 540000,
+        "currency": "PKR"
+      }
+    },
+    "elasticity_origin": "assumption_unverified",
+    "grid": [
+      {
+        "price": {
+          "minor": 360000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 2155,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 453,
+            "profit": {
+              "minor": -2931110,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 444,
+            "profit": {
+              "minor": -3554681,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 435,
+            "profit": {
+              "minor": -4180648,
+              "currency": "PKR"
+            }
+          }
+        ]
+      },
+      {
+        "price": {
+          "minor": 405000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 3009,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 427,
+            "profit": {
+              "minor": 12688894,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 385,
+            "profit": {
+              "minor": 8152803,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 343,
+            "profit": {
+              "minor": 3506066,
+              "currency": "PKR"
+            }
+          }
+        ]
+      },
+      {
+        "price": {
+          "minor": 450000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 3693,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 406,
+            "profit": {
+              "minor": 26919257,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 340,
+            "profit": {
+              "minor": 17045284,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 303,
+            "profit": {
+              "minor": 11511286,
+              "currency": "PKR"
+            }
+          }
+        ]
+      },
+      {
+        "price": {
+          "minor": 495000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 4252,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 386,
+            "profit": {
+              "minor": 39804428,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 303,
+            "profit": {
+              "minor": 23960903,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 259,
+            "profit": {
+              "minor": 8117191,
+              "currency": "PKR"
+            }
+          }
+        ]
+      },
+      {
+        "price": {
+          "minor": 540000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 4718,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 370,
+            "profit": {
+              "minor": 51822820,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 303,
+            "profit": {
+              "minor": 36262347,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 217,
+            "profit": {
+              "minor": 2421316,
+              "currency": "PKR"
+            }
+          }
+        ]
+      },
+      {
+        "price": {
+          "minor": 585000,
+          "currency": "PKR"
+        },
+        "contribution_margin_bp": 5113,
+        "outcomes": [
+          {
+            "elasticity_scenario": "low_sensitivity",
+            "units": 356,
+            "profit": {
+              "minor": 63071448,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "medium_sensitivity",
+            "units": 279,
+            "profit": {
+              "minor": 38215750,
+              "currency": "PKR"
+            }
+          },
+          {
+            "elasticity_scenario": "high_sensitivity",
+            "units": 185,
+            "profit": {
+              "minor": -2669036,
+              "currency": "PKR"
+            }
+          }
+        ]
+      }
+    ],
+    "note_codes": [
+      "elasticity_from_scenarios_not_estimated"
+    ]
+  },
+  "inventory_plan": {
+    "figures": [
+      {
+        "money": null,
+        "value": 336,
+        "unit": "units",
+        "metric_id": "launch.initial_order_standard",
+        "label": "Initial order to last until the first reorder arrives",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": null,
+        "value": 300,
+        "unit": "units",
+        "metric_id": "launch.initial_order_pilot",
+        "label": "Pilot order (1 month of base demand)",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": null,
+        "value": 2,
+        "unit": "months",
+        "metric_id": "launch.lead_months",
+        "label": "Supplier lead time",
+        "status": "ok",
+        "formula": null,
+        "inputs": [
+          {
+            "money": null,
+            "value": 45,
+            "unit": "days",
+            "name": "lead_time_days",
+            "origin": "user_provided",
+            "metric_id": null,
+            "ref": null
+          }
+        ],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": null,
+        "value": 300,
+        "unit": "units",
+        "metric_id": "launch.moq",
+        "label": "Minimum order quantity",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      },
+      {
+        "money": null,
+        "value": 697,
+        "unit": "units",
+        "metric_id": "launch.capital_cap_units",
+        "label": "Units the capital set aside can buy",
+        "status": "ok",
+        "formula": null,
+        "inputs": [],
+        "thresholds": [],
+        "source_refs": [],
+        "missing": [],
+        "note": null
+      }
+    ],
+    "flags": []
+  },
+  "plans": [
+    {
+      "plan": "proposed",
+      "initial_order_units": 336,
+      "figures": [
+        {
+          "money": null,
+          "value": 340,
+          "unit": "units",
+          "metric_id": "launch.units_sold",
+          "label": "Units sold",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 140896153,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.revenue",
+          "label": "Revenue (net of discounts and refunds)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 54208252,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.gross_profit",
+          "label": "Gross profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 27045344,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.operating_contribution",
+          "label": "Operating contribution before launch costs",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17045284,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.horizon_profit",
+          "label": "Profit from the product over the horizon",
+          "status": "ok",
+          "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 17045284,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.profit_after_overhead",
+          "label": "Profit after allocated shared overhead",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 77590813,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.peak_cash",
+          "label": "Most cash tied up at any point",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 3,
+          "unit": "months",
+          "metric_id": "launch.payback_month",
+          "label": "Month the cash invested is paid back",
+          "status": "ok",
+          "formula": "month after cumulative cash is last below zero",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 14288811,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.npv",
+          "label": "Net present value",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 2200,
+              "unit": "bp",
+              "name": "cost_of_capital_annual",
+              "origin": "rulebook",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "launch.irr_annual",
+          "label": "Internal rate of return (annualised)",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "IRR not meaningful: multiple_sign_changes"
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.ending_units",
+          "label": "Units left at the end of the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 60,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.unsold_writedown",
+          "label": "Cost written off on unsold stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 43,
+          "unit": "units",
+          "metric_id": "launch.lost_units",
+          "label": "Sales missed for lack of stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    },
+    {
+      "plan": "pilot",
+      "initial_order_units": 300,
+      "figures": [
+        {
+          "money": null,
+          "value": 303,
+          "unit": "units",
+          "metric_id": "launch.pilot.units_sold",
+          "label": "Units sold",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 125800259,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.revenue",
+          "label": "Revenue (net of discounts and refunds)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 48400273,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.gross_profit",
+          "label": "Gross profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 21659062,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.operating_contribution",
+          "label": "Operating contribution before launch costs",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 11659054,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.horizon_profit",
+          "label": "Profit from the product over the horizon",
+          "status": "ok",
+          "formula": "sum(contribution) - launch_costs - write-down of unsold stock",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 11659054,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.profit_after_overhead",
+          "label": "Profit after allocated shared overhead",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 68249353,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.peak_cash",
+          "label": "Most cash tied up at any point",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 3,
+          "unit": "months",
+          "metric_id": "launch.pilot.payback_month",
+          "label": "Month the cash invested is paid back",
+          "status": "ok",
+          "formula": "month after cumulative cash is last below zero",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 9701024,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.npv",
+          "label": "Net present value",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 2200,
+              "unit": "bp",
+              "name": "cost_of_capital_annual",
+              "origin": "rulebook",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": null,
+          "unit": "bp",
+          "metric_id": "launch.pilot.irr_annual",
+          "label": "Internal rate of return (annualised)",
+          "status": "not_applicable",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": "IRR not meaningful: multiple_sign_changes"
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.pilot.ending_units",
+          "label": "Units left at the end of the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 8,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.pilot.unsold_writedown",
+          "label": "Cost written off on unsold stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 79,
+          "unit": "units",
+          "metric_id": "launch.pilot.lost_units",
+          "label": "Sales missed for lack of stock",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ]
+    }
+  ],
+  "levers": [
+    {
+      "lever_id": "negotiate_supplier_10pct",
+      "change": {
+        "money": null,
+        "value": -1000,
+        "unit": "bp",
+        "name": "unit_cost_change",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "medium",
+      "urgency": "before_order",
+      "figures": [
+        {
+          "money": {
+            "minor": 8063996,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -8064000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -800,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -4,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 1
+    },
+    {
+      "lever_id": "price_up_10pct",
+      "change": {
+        "money": null,
+        "value": 1000,
+        "unit": "bp",
+        "name": "price_change",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "medium",
+      "urgency": "before_launch",
+      "figures": [
+        {
+          "money": {
+            "minor": 6915619,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -8892151,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -740,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -5,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 2
+    },
+    {
+      "lever_id": "negotiate_supplier_5pct",
+      "change": {
+        "money": null,
+        "value": -500,
+        "unit": "bp",
+        "name": "unit_cost_change",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "medium",
+      "urgency": "before_order",
+      "figures": [
+        {
+          "money": {
+            "minor": 4031998,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -4032000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -540,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -2,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 3
+    },
+    {
+      "lever_id": "price_up_5pct",
+      "change": {
+        "money": null,
+        "value": 500,
+        "unit": "bp",
+        "name": "price_change",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "medium",
+      "urgency": "before_launch",
+      "figures": [
+        {
+          "money": {
+            "minor": 3656924,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -4699085,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -530,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -3,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 4
+    },
+    {
+      "lever_id": "cut_freight_packaging_20pct",
+      "change": {
+        "money": null,
+        "value": -2000,
+        "unit": "bp",
+        "name": "freight_packaging_change",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "medium",
+      "urgency": "before_order",
+      "figures": [
+        {
+          "money": {
+            "minor": 1209599,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -1209600,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -210,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -1,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 5
+    },
+    {
+      "lever_id": "pilot_order_first",
+      "change": {
+        "money": null,
+        "value": 300,
+        "unit": "units",
+        "name": "initial_order_units",
+        "origin": "engine_estimate",
+        "metric_id": null,
+        "ref": null
+      },
+      "feasibility": "high",
+      "urgency": "before_order",
+      "figures": [
+        {
+          "money": {
+            "minor": -5386230,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_profit",
+          "label": "Change in horizon profit",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -9341460,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.lever.delta_peak_cash",
+          "label": "Change in peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": -240,
+          "unit": "bp",
+          "metric_id": "launch.lever.delta_p_loss",
+          "label": "Change in chance of a loss",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 0,
+          "unit": "units",
+          "metric_id": "launch.lever.delta_break_even_units",
+          "label": "Change in monthly break-even units",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "fixes_label": true,
+      "rank": 6
+    }
+  ],
+  "what_ifs": [
+    {
+      "what_if": {
+        "name": "Supplier cost +10%",
+        "unit_cost_change_bp": 1000,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 8981288,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -8063996,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 85654813,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 5070,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Demand 25% below plan",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": -2500,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 501199,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -16544085,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 83489850,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 5750,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Competitor cuts price 10% and we match",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": -1000,
+        "apply_elasticity": false,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 3173549,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -13871735,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 79946191,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 8210,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Marketing doubles",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 20000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": -6954716,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -24000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 81590813,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 10000,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "15% of stock never sells",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 1500,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 1685345,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -15359939,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 77515969,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 8680,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Delivery 30 days late",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 30,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 12704059,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -4341225,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 100688000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 4250,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Customers pay 60 days late",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": 60,
+        "return_rate_bp": null,
+        "initial_order_units": null
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": 17045284,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 105480361,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 2800,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    },
+    {
+      "what_if": {
+        "name": "Buy 1,000 units up front",
+        "unit_cost_change_bp": 0,
+        "demand_change_bp": 0,
+        "price_change_bp": 0,
+        "apply_elasticity": true,
+        "marketing_multiplier_bp": 10000,
+        "extra_discount_bp": 0,
+        "unsold_share_bp": 0,
+        "delivery_delay_days": 0,
+        "fx_change_bp": 0,
+        "receivable_days": null,
+        "return_rate_bp": null,
+        "initial_order_units": 1000
+      },
+      "figures": [
+        {
+          "money": {
+            "minor": -78366322,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.horizon_profit",
+          "label": "Profit over the horizon",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": -95411606,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.delta_profit",
+          "label": "Change against the base case",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": {
+            "minor": 249888853,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "launch.whatif.peak_cash",
+          "label": "Peak cash need",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        },
+        {
+          "money": null,
+          "value": 9420,
+          "unit": "bp",
+          "metric_id": "launch.whatif.p_loss",
+          "label": "Chance of a loss (model-based)",
+          "status": "ok",
+          "formula": null,
+          "inputs": [
+            {
+              "money": null,
+              "value": 1000,
+              "unit": "count",
+              "name": "runs",
+              "origin": "engine_estimate",
+              "metric_id": null,
+              "ref": null
+            }
+          ],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "label": null
+    }
+  ],
+  "explain": {
+    "strongest_evidence": [
+      "unit_cost",
+      "price",
+      "freight_per_unit",
+      "packaging_per_unit",
+      "launch_costs"
+    ],
+    "main_risks": [
+      "selling_price",
+      "unit_cost",
+      "demand"
+    ],
+    "safest_test": "pilot",
+    "best_lever": "negotiate_supplier_10pct",
+    "max_amount_at_risk": {
+      "money": {
+        "minor": 14467754,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "launch.max_amount_at_risk",
+      "label": "Most you could lose in a bad case (pilot, 10th percentile)",
+      "status": "ok",
+      "formula": "max(0, -p10 of pilot profit)",
+      "inputs": [
+        {
+          "money": null,
+          "value": 2000,
+          "unit": "count",
+          "name": "runs",
+          "origin": "engine_estimate",
+          "metric_id": null,
+          "ref": null
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  },
+  "findings": [],
+  "limitations": [
+    "This product has no sales history of its own; demand is modelled from comparable products and stated assumptions, not trained on the product's own data.",
+    "Probabilities come from a simulation of the stated assumptions. They are not calibrated real-world probabilities.",
+    "Demand response to marketing spend is not modelled; use a what-if with a demand change to explore it.",
+    "Price elasticity could not be estimated from the ledger, so pricing uses three explicit elasticity scenarios."
+  ]
+}

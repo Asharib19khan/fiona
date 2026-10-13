@@ -246,6 +246,12 @@ def simulate(
     net_price = econ.price * (1.0 - np.clip(econ.discount_rate + shocks.extra_discount, 0.0, 0.95))
     r = np.clip(econ.return_rate * shocks.return_multiplier, 0.0, 0.95)
     other_var = econ.variable_labour_per_unit + econ.other_variable_per_unit
+    unit_margin = (
+        net_price * (1.0 - r - econ.fee_rate)
+        - other_var
+        - landed_s * (1.0 - r * (1.0 - econ.return_loss_rate))
+    )
+    unit_loss = landed_s * (1.0 - econ.unsold_recovery_rate)
 
     demand = realized_base[None, :] * shocks.demand_multiplier[:, None] * shocks.monthly_noise
     sold = np.zeros((N, H))
@@ -298,17 +304,23 @@ def simulate(
             observed = demand[:, :m].sum(axis=1)
             expected = cumulative_planned[m - 1]
             adapt = np.clip(observed / expected, 0.5, 2.0) if expected > 0 else np.ones(N)
-            window = planned[m : min(H, arrival + plan.review_months - 1)]
-            target = adapt * (
-                window.sum()
-                + plan.safety_z * plan.noise_sigma * math.sqrt(float((window**2).sum()))
-            )
+            # This order can only serve demand from its arrival onward: project the stock
+            # left when it lands, then cover the months until the next order could land.
+            before = planned[m : arrival - 1]
+            cover = planned[arrival - 1 : min(H, arrival - 1 + plan.review_months)]
+            protected = np.concatenate([before, cover])
+            safety = plan.safety_z * plan.noise_sigma * math.sqrt(float((protected**2).sum()))
             position = stock + arrivals[:, m + 1 :].sum(axis=1) * (1.0 - w)
-            need = target - position
+            at_arrival = np.maximum(0.0, position - adapt * before.sum())
+            need = adapt * (cover.sum() + safety) - at_arrival
             if plan.storage_capacity is not None:
                 need = np.minimum(need, plan.storage_capacity - position)
             qty = np.where(need > 1e-9, np.ceil(need / (1.0 - w) - 1e-9), 0.0)
-            qty = np.where(qty > 0, np.maximum(qty, plan.moq), 0.0)
+            # Rounding a need up to the MOQ is worth it only if the margin on the units we
+            # expect to sell beats the write-down on the excess.
+            expected_use = adapt * cover.sum()
+            worth_moq = expected_use * unit_margin >= (plan.moq - expected_use) * unit_loss
+            qty = np.where(qty >= plan.moq, qty, np.where((qty > 0) & worth_moq, plan.moq, 0.0))
             if plan.storage_capacity is not None:
                 qty = np.where(position + qty * (1.0 - w) <= plan.storage_capacity + 1e-9, qty, 0.0)
             purchases[:, m] = qty

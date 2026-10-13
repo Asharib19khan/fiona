@@ -1,0 +1,223 @@
+{
+  "api_version": "v1",
+  "mode": "mock",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "decision": "dividend",
+  "run_id": "dec_KY6TTGM3W4TMK4M9WXSHQK7PCD",
+  "currency": "PKR",
+  "as_of": "2026-10-22",
+  "inputs": [
+    {
+      "money": {
+        "minor": 150000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "name": "proposed_dividend",
+      "origin": "user_provided",
+      "metric_id": null,
+      "ref": null
+    }
+  ],
+  "figures": [
+    {
+      "money": {
+        "minor": 24611900,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "cash.lowest_closing",
+      "label": "Lowest forecast balance (week 7)",
+      "status": "ok",
+      "formula": "min over weeks of (opening + inflows - outflows)",
+      "inputs": [
+        {
+          "money": {
+            "minor": 804112300,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "cash.opening_balance",
+          "origin": "figure",
+          "metric_id": "cash.opening_balance",
+          "ref": "cash.opening_balance"
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [
+        "fc_XT149381PX6M8ZKS3GXZ3GMGSN"
+      ],
+      "missing": [],
+      "note": null
+    },
+    {
+      "money": {
+        "minor": 200000000,
+        "currency": "PKR"
+      },
+      "value": null,
+      "unit": "minor",
+      "metric_id": "cash.buffer",
+      "label": "Your minimum cash buffer",
+      "status": "ok",
+      "formula": null,
+      "inputs": [
+        {
+          "money": {
+            "minor": 200000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "cash_buffer",
+          "origin": "tenant_policy",
+          "metric_id": null,
+          "ref": "tenant.policies.cash_buffer_minor"
+        }
+      ],
+      "thresholds": [],
+      "source_refs": [],
+      "missing": [],
+      "note": null
+    }
+  ],
+  "options": [
+    {
+      "option_id": "pay_now",
+      "label": "Pay Rs 1.5M now",
+      "eligible": false,
+      "figures": [
+        {
+          "money": {
+            "minor": 0,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.max_safe_dividend_now",
+          "label": "Largest dividend that keeps cash above the buffer",
+          "status": "ok",
+          "formula": "max(0, lowest forecast closing - buffer)",
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "DV-01",
+          "description": "Cash stays above the buffer after the dividend",
+          "metric_id": "decision.max_safe_dividend_now",
+          "threshold": {
+            "money": {
+              "minor": 150000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "proposed_dividend",
+            "origin": "user_provided",
+            "comparison": "<=",
+            "passed": false
+          },
+          "passed": false,
+          "hard": true
+        }
+      ],
+      "amortisation": null,
+      "cash_path": null
+    },
+    {
+      "option_id": "pay_after_week_9",
+      "label": "Pay Rs 1.5M after the winter stock is paid for",
+      "eligible": true,
+      "figures": [
+        {
+          "money": {
+            "minor": 267611900,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "metric_id": "decision.max_safe_dividend_after_week_9",
+          "label": "Largest safe dividend from week 9",
+          "status": "ok",
+          "formula": null,
+          "inputs": [],
+          "thresholds": [],
+          "source_refs": [],
+          "missing": [],
+          "note": null
+        }
+      ],
+      "rule_checks": [
+        {
+          "rule_id": "DV-01",
+          "description": "Cash stays above the buffer after the dividend",
+          "metric_id": "decision.max_safe_dividend_after_week_9",
+          "threshold": {
+            "money": {
+              "minor": 150000000,
+              "currency": "PKR"
+            },
+            "value": null,
+            "unit": "minor",
+            "name": "proposed_dividend",
+            "origin": "user_provided",
+            "comparison": "<=",
+            "passed": true
+          },
+          "passed": true,
+          "hard": true
+        }
+      ],
+      "amortisation": null,
+      "cash_path": null
+    }
+  ],
+  "recommendation": {
+    "outcome": "recommend",
+    "option_id": "pay_after_week_9",
+    "rule_trace": [
+      {
+        "rule_id": "DV-01",
+        "description": "Cash stays above the buffer after the dividend",
+        "metric_id": "decision.max_safe_dividend_now",
+        "threshold": {
+          "money": {
+            "minor": 150000000,
+            "currency": "PKR"
+          },
+          "value": null,
+          "unit": "minor",
+          "name": "proposed_dividend",
+          "origin": "user_provided",
+          "comparison": "<=",
+          "passed": false
+        },
+        "passed": false,
+        "hard": true
+      }
+    ],
+    "reason_codes": [
+      "dividend_now_breaches_buffer",
+      "safe_after_winter_stock_paid"
+    ]
+  },
+  "insufficient_data": [
+    {
+      "need": "Reinvestment return for the winter range",
+      "why": "Needed to compare paying out with reinvesting.",
+      "blocking": false,
+      "metric_ids": [
+        "decision.reinvestment_return"
+      ]
+    }
+  ]
+}
