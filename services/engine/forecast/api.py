@@ -74,10 +74,20 @@ def findings(request: Request, tenant_id: TenantId) -> FindingsResponse:
 
 @router.get("/v1/inventory/analysis", response_model=InventoryAnalysisResponse)
 def inventory_analysis(request: Request, tenant_id: TenantId) -> InventoryAnalysisResponse:
-    if mode(request) != "mock":
-        raise not_live_yet("Y3", "Mon 19 Oct")
-    require_mock_tenant(tenant_id)
-    return load("inventory_analysis")
+    try:
+        from engine.forecast.inventory.engine import analyse_inventory
+        from engine.forecast.inventory.loader import load_inventory_fixture
+
+        data = load_inventory_fixture(tenant_id)
+    except TenantDataMissing:
+        require_mock_tenant(tenant_id)
+        return load("inventory_analysis")
+    return analyse_inventory(
+        data,
+        as_of=data.as_of,
+        mode=mode(request),
+        generated_at=datetime.now(UTC),
+    )
 
 
 @router.post("/v1/launch-lab/simulate", response_model=LaunchLabResponse)
