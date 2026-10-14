@@ -12,6 +12,7 @@ code,name,class,neutral_class
 1500,"Property, plant and equipment",asset,ppe
 1510,Accumulated depreciation,asset,ppe
 1550,Capital work in progress,asset,ppe
+1990,Bank suspense (unexplained lines),asset,suspense
 2000,Trade payables,liability,payables
 2100,Output sales tax payable,liability,tax_payable
 2150,Withholding tax payable,liability,tax_payable

@@ -90,6 +90,7 @@ class Simulation:
         self.nrv_allowance: dict[str, int] = {}
         self.nrv_events: list[str] = []
         self.nrv_records: list[dict] = []
+        self.nrv_unit_shortfall: dict[str, int] = {}
         self.loan = finance.loan_schedule(config["loan"], self.cal)
         self.loan["currency"] = self.currency
         self._weights_cache: dict[date, tuple[dict[str, int], int]] = {}
@@ -925,41 +926,59 @@ class Simulation:
                         "shortfall_minor": gap,
                     }
                 )
-            change = needed - self.nrv_allowance.get(assessment["category"], 0)
-            self.nrv_allowance[assessment["category"]] = needed
-            if change == 0:
-                continue
-            lines = (
-                [
+            category = assessment["category"]
+            previous = self.nrv_allowance.get(category, 0)
+            # Allowance still attached to the units on hand; the rest was used up by units sold since.
+            carried = sum(
+                self.nrv_unit_shortfall.get(d["item"], 0) * d["qty_on_hand"] for d in details
+            )
+            consumed = previous - carried
+            change = (
+                needed - carried
+            )  # > 0 further write-down, < 0 reversal (recovery) on units on hand
+            self.nrv_allowance[category] = needed
+            for d in details:
+                self.nrv_unit_shortfall[d["item"]] = d["shortfall_minor"] // max(
+                    d["qty_on_hand"], 1
+                )
+            lines = []
+            if consumed:
+                lines += [
+                    {"account": "1290", "debit_minor": consumed, "credit_minor": 0},
+                    {"account": "5000", "debit_minor": 0, "credit_minor": consumed},
+                ]
+            if change > 0:
+                lines += [
                     {"account": "5100", "debit_minor": change, "credit_minor": 0},
                     {"account": "1290", "debit_minor": 0, "credit_minor": change},
                 ]
-                if change > 0
-                else [
+            elif change < 0:
+                lines += [
                     {"account": "1290", "debit_minor": -change, "credit_minor": 0},
                     {"account": "5100", "debit_minor": 0, "credit_minor": -change},
                 ]
-            )
+            if not lines:
+                continue
+            reason = "nrv_writedown" if change > 0 else "nrv_writedown_reversal"
             event = self._event(
                 "journal_adjustment",
                 core.local_time(day, 18 * 60, 0, self.offset),
                 day,
                 "manual",
-                f"nrv:{assessment['category']}:{day.isoformat()}",
-                {
-                    "lines": lines,
-                    "reason": "nrv_writedown" if change > 0 else "nrv_writedown_reversal",
-                    "approver": "usr_owner",
-                },
+                f"nrv:{category}:{day.isoformat()}",
+                {"lines": lines, "reason": reason, "approver": "usr_owner"},
             )
             self.nrv_events.append(event["id"])
             self.nrv_records.append(
                 {
                     "event_id": event["id"],
-                    "category": assessment["category"],
+                    "category": category,
                     "assessment_date": day.isoformat(),
-                    "allowance_minor": needed,
-                    "change_minor": change,
+                    "allowance_before_minor": previous,
+                    "used_by_sales_minor": consumed,
+                    "allowance_after_minor": needed,
+                    "writedown_minor": max(change, 0),
+                    "reversal_minor": max(-change, 0),
                     "items": details,
                 }
             )

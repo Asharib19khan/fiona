@@ -13,6 +13,9 @@ python -m data.generator --seed 42 --persona karachi_apparel --months 24 --out d
 ```
 
 The same seed, persona, months and generator version always produce byte-identical files.
+**These files are reproducible byte for byte from the seed** by running the command above (the test suite
+checks it). They are committed so every lane can read them without running the generator; regenerate only for a
+calibration or scenario fix, batched, and never rewrite git history.
 `manifest.json` lists the SHA-256 of every file so you can check this.
 
 ---
@@ -94,7 +97,7 @@ The generator writes `data/fixtures/<tenant_id>/`:
 | `fixed_assets.json` | asset register (cost, date, useful life, straight-line depreciation) | statements, Stage Detector |
 | `payroll.json` | monthly payroll summary (headcount, gross, withholding, net paid) | statements, forecast |
 | `opening_balances.json` | opening trial balance at the period start (also an `opening_balances` event) | statements |
-| `nrv_assessments.json` | NRV assessments of dead stock (estimated selling price per item), linked to their journal events | frameworks write-down lens |
+| `nrv_assessments.json` | NRV assessments of dead stock: per item qty, cost, estimated selling price and NRV; allowance before and after, the part used by units sold, the write-down and the (partial) reversal; linked to their journal events | frameworks write-down lens |
 
 **Held-out truth** lives apart, in `data/fixtures/holdout/<tenant_id>/` (`cash_weekly.json`, `demand_weekly.csv`,
 own manifest): the 13 weeks after `as_of`, for backtests and the dip check only. Never train or tune on it.

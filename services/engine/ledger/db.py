@@ -5,6 +5,7 @@ CLI (run from services/engine):
     python -m engine.ledger.db reset [--database NAME]            drop, recreate and migrate a database
     python -m engine.ledger.db migrate [--database NAME]          apply pending migrations
     python -m engine.ledger.db seed [--database NAME]             load fixture reference data
+    python -m engine.ledger.db demo-data [--database NAME]        reset, then load and post the full dataset
 
 Without DATABASE_URL, the portable server from ``ledger.pg_local`` is used and started on
 demand. With DATABASE_URL, every command targets that server. The database name in the URL
@@ -17,6 +18,7 @@ Tenant isolation: all tenant work runs inside ``tenant_session``. It switches to
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -174,7 +176,8 @@ def _main(argv: list[str] | None = None) -> int:
         prog="python -m engine.ledger.db", description=__doc__.splitlines()[0]
     )
     parser.add_argument(
-        "command", choices=["start", "stop", "status", "url", "reset", "migrate", "seed"]
+        "command",
+        choices=["start", "stop", "status", "url", "reset", "migrate", "seed", "demo-data"],
     )
     parser.add_argument(
         "--database",
@@ -208,6 +211,16 @@ def _main(argv: list[str] | None = None) -> int:
         with connect(args.database, autocommit=True) as conn:
             versions = apply_migrations(conn)
         print(f"applied {len(versions)} migrations: {', '.join(versions) or 'none pending'}")
+    elif args.command == "demo-data":
+        from engine.ledger import demo
+
+        fixtures = Path(args.fixtures) if args.fixtures else None
+        target = args.database or default_database()
+        reset(target)
+        with connect(target, autocommit=True) as conn:
+            reports = demo.load_all(conn, fixtures) if fixtures else demo.load_all(conn)
+        for report in reports:
+            print(json.dumps(report))
     elif args.command == "seed":
         from engine.ledger import seed
 
