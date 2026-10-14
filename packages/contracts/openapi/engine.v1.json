@@ -133,6 +133,50 @@
         "title": "AnalysisRequest",
         "type": "object"
       },
+      "AuditResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "chain_length": {
+            "title": "Chain Length",
+            "type": "integer"
+          },
+          "first_bad_seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Bad Seq"
+          },
+          "records": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "verified": {
+            "title": "Verified",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "verified",
+          "chain_length",
+          "first_bad_seq",
+          "records"
+        ],
+        "title": "AuditResponse",
+        "type": "object"
+      },
       "BalanceSheet": {
         "properties": {
           "as_of": {
@@ -294,6 +338,33 @@
           "rule_checks"
         ],
         "title": "BillTiming",
+        "type": "object"
+      },
+      "BillsImport": {
+        "properties": {
+          "bills": {
+            "description": "Extracted bills (FORMATS.md 3.7)",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Bills",
+            "type": "array"
+          },
+          "documents": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "document_path -> base64 bytes; the SHA-256 is checked",
+            "title": "Documents",
+            "type": "object"
+          }
+        },
+        "required": [
+          "bills",
+          "documents"
+        ],
+        "title": "BillsImport",
         "type": "object"
       },
       "BundleCandidate": {
@@ -1470,6 +1541,40 @@
         "title": "EquityTerms",
         "type": "object"
       },
+      "EventsResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          }
+        },
+        "required": [
+          "events",
+          "next_offset"
+        ],
+        "title": "EventsResponse",
+        "type": "object"
+      },
       "Evidence": {
         "properties": {
           "kind": {
@@ -2252,6 +2357,38 @@
           "count"
         ],
         "title": "HistogramBin",
+        "type": "object"
+      },
+      "ImportResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "errors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "inserted": {
+            "title": "Inserted",
+            "type": "integer"
+          },
+          "skipped": {
+            "title": "Skipped",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "inserted",
+          "skipped",
+          "errors"
+        ],
+        "title": "ImportResponse",
         "type": "object"
       },
       "IncomeStatement": {
@@ -3646,6 +3783,116 @@
           }
         },
         "title": "OwnerConstraints",
+        "type": "object"
+      },
+      "PayRequest": {
+        "properties": {
+          "amount_minor": {
+            "minimum": 1.0,
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "pay_on": {
+            "format": "date",
+            "title": "Pay On",
+            "type": "string"
+          },
+          "payee_id": {
+            "title": "Payee Id",
+            "type": "string"
+          },
+          "proposal_id": {
+            "pattern": "^prop_[A-Za-z0-9_]+$",
+            "title": "Proposal Id",
+            "type": "string"
+          },
+          "verdict_id": {
+            "pattern": "^vrd_[A-Za-z0-9_]+$",
+            "title": "Verdict Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "proposal_id",
+          "verdict_id",
+          "payee_id",
+          "amount_minor",
+          "currency",
+          "pay_on"
+        ],
+        "title": "PayRequest",
+        "type": "object"
+      },
+      "PayResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          },
+          "label": {
+            "default": "SIMULATED",
+            "title": "Label",
+            "type": "string"
+          },
+          "payment_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "wallet_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wallet Ref"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "PayResponse",
         "type": "object"
       },
       "PaymentTimingRequest": {
@@ -5853,6 +6100,56 @@
         ]
       }
     },
+    "/v1/audit": {
+      "get": {
+        "description": "The tenant's hash chain is always verified in full; `proposal_id` only filters the records shown.",
+        "operationId": "audit_v1_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "proposal_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Audit",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/decisions/debt-equity": {
       "post": {
         "operationId": "debt_equity_v1_decisions_debt_equity_post",
@@ -6094,6 +6391,133 @@
         ]
       }
     },
+    "/v1/import/bank": {
+      "post": {
+        "operationId": "import_bank_v1_import_bank_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "file_name",
+            "required": false,
+            "schema": {
+              "default": "bank_statement.csv",
+              "title": "File Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Bank",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/import/bills": {
+      "post": {
+        "operationId": "import_bills_v1_import_bills_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BillsImport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Bills",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/import/pos": {
+      "post": {
+        "operationId": "import_pos_v1_import_pos_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "file_name",
+            "required": false,
+            "schema": {
+              "default": "pos_sales.csv",
+              "title": "File Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Pos",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/inventory/analysis": {
       "get": {
         "operationId": "inventory_analysis_v1_inventory_analysis_get",
@@ -6167,6 +6591,112 @@
         ]
       }
     },
+    "/v1/ledger/events": {
+      "get": {
+        "operationId": "ledger_events_v1_ledger_events_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 1000,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ledger Events",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/stage": {
       "get": {
         "operationId": "get_stage_v1_stage_get",
@@ -6195,6 +6725,48 @@
         "summary": "Get Stage",
         "tags": [
           "analysis"
+        ]
+      }
+    },
+    "/v1/wallet/pay": {
+      "post": {
+        "description": "Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.",
+        "operationId": "wallet_pay_v1_wallet_pay_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Wallet Pay",
+        "tags": [
+          "ledger"
         ]
       }
     }

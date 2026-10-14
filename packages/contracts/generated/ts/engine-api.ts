@@ -71,6 +71,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Audit
+         * @description The tenant's hash chain is always verified in full; `proposal_id` only filters the records shown.
+         */
+        get: operations["audit_v1_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/decisions/debt-equity": {
         parameters: {
             query?: never;
@@ -176,6 +196,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/import/bank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Bank */
+        post: operations["import_bank_v1_import_bank_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/import/bills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Bills */
+        post: operations["import_bills_v1_import_bills_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/import/pos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Pos */
+        post: operations["import_pos_v1_import_pos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/inventory/analysis": {
         parameters: {
             query?: never;
@@ -213,6 +284,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ledger/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ledger Events */
+        get: operations["ledger_events_v1_ledger_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/stage": {
         parameters: {
             query?: never;
@@ -224,6 +312,26 @@ export interface paths {
         get: operations["get_stage_v1_stage_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wallet/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Wallet Pay
+         * @description Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.
+         */
+        post: operations["wallet_pay_v1_wallet_pay_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -274,6 +382,24 @@ export interface components {
             /** Owner Stated Stage */
             owner_stated_stage?: string | null;
             prior?: components["schemas"]["Window"] | null;
+        };
+        /** AuditResponse */
+        AuditResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Chain Length */
+            chain_length: number;
+            /** First Bad Seq */
+            first_bad_seq: number | null;
+            /** Records */
+            records: {
+                [key: string]: unknown;
+            }[];
+            /** Verified */
+            verified: boolean;
         };
         /** BalanceSheet */
         BalanceSheet: {
@@ -336,6 +462,23 @@ export interface components {
              * @default 0
              */
             trade_receivables: number;
+        };
+        /** BillsImport */
+        BillsImport: {
+            /**
+             * Bills
+             * @description Extracted bills (FORMATS.md 3.7)
+             */
+            bills: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Documents
+             * @description document_path -> base64 bytes; the SHA-256 is checked
+             */
+            documents: {
+                [key: string]: string;
+            };
         };
         /** BillTiming */
         BillTiming: {
@@ -973,6 +1116,20 @@ export interface components {
             /** Stake Offered Bp */
             stake_offered_bp?: number | null;
         };
+        /** EventsResponse */
+        EventsResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Events */
+            events: {
+                [key: string]: unknown;
+            }[];
+            /** Next Offset */
+            next_offset: number | null;
+        };
         /** Evidence */
         Evidence: {
             /** Kind */
@@ -1303,6 +1460,22 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** ImportResponse */
+        ImportResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Errors */
+            errors: {
+                [key: string]: unknown;
+            }[];
+            /** Inserted */
+            inserted: number;
+            /** Skipped */
+            skipped: number;
         };
         /** IncomeStatement */
         IncomeStatement: {
@@ -1783,6 +1956,47 @@ export interface components {
             totals: components["schemas"]["engine__forecast___contracts__Figure"][];
             /** Weeks */
             weeks: components["schemas"]["TimingWeek"][];
+        };
+        /** PayRequest */
+        PayRequest: {
+            /** Amount Minor */
+            amount_minor: number;
+            /** Currency */
+            currency: string;
+            /**
+             * Pay On
+             * Format: date
+             */
+            pay_on: string;
+            /** Payee Id */
+            payee_id: string;
+            /** Proposal Id */
+            proposal_id: string;
+            /** Verdict Id */
+            verdict_id: string;
+        };
+        /** PayResponse */
+        PayResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Event Id */
+            event_id?: string | null;
+            /**
+             * Label
+             * @default SIMULATED
+             */
+            label: string;
+            /** Payment Id */
+            payment_id?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Status */
+            status: string;
+            /** Wallet Ref */
+            wallet_ref?: string | null;
         };
         /** Period */
         Period: {
@@ -2464,6 +2678,37 @@ export interface operations {
             };
         };
     };
+    audit_v1_audit_get: {
+        parameters: {
+            query?: {
+                proposal_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     debt_equity_v1_decisions_debt_equity_post: {
         parameters: {
             query?: never;
@@ -2656,6 +2901,101 @@ export interface operations {
             };
         };
     };
+    import_bank_v1_import_bank_post: {
+        parameters: {
+            query?: {
+                file_name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_bills_v1_import_bills_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BillsImport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_pos_v1_import_pos_post: {
+        parameters: {
+            query?: {
+                file_name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     inventory_analysis_v1_inventory_analysis_get: {
         parameters: {
             query?: never;
@@ -2718,6 +3058,41 @@ export interface operations {
             };
         };
     };
+    ledger_events_v1_ledger_events_get: {
+        parameters: {
+            query?: {
+                date_from?: string | null;
+                date_to?: string | null;
+                limit?: number;
+                offset?: number;
+                type?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_stage_v1_stage_get: {
         parameters: {
             query?: never;
@@ -2734,6 +3109,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    wallet_pay_v1_wallet_pay_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayResponse"];
                 };
             };
             /** @description Validation Error */
