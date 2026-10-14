@@ -1,9 +1,9 @@
-> **HANDOFF (held Wed 14 Oct, fiona-b0, by orchestrator order)**
-> 1. Done: D1, D2a; A2 contracts signed off (condition met in 5a4295f, rc.2); mandates.json now has status + created_at and validates as contract Mandate (4978762).
-> 2. Half-done: D2. The v1 persona config is parked at `data/generator/wip/karachi_apparel_v1.toml.wip` (24 months from 1 Jul 2024, B3 plants with Abdullah's IDs, proposals, loan, leases, payroll, assets, stock builds, NRV, POS anomalies). `build.py` is still v0; no v1 code is written yet.
-> 3. Next step: write build.py v1 for that config (calendar and holidays, cost and price factors, plants, proposals as contract ProposalDraft with Evidence kinds bill/document and created_by Actor, finance schedules, a holdout through as_of+91 days, ~20 PDFs). Move the .wip file back to personas/, then tune: FY26 CFO < -2% of revenue (raise stock builds, payroll ~2.9M/month, drawings), FY25 growth, week-7 dip (weeks from as_of+1) below 200,000,000 with weeks 1-6 above, 85-90% of bills within the cap. Then D3.
-> 4. Files: data/generator/{build.py, core.py, render.py, write.py, __init__.py, tests/}, data/fixtures/FORMATS.md.
-> 5. Open: 4 B3 totals are unreachable with 18% half-up tax, so plants come out 1 minor unit higher (fiona-fa told); clearing = receivable (fiona-fa told).
+> **HANDOFF (paused after D3, Wed 14 Oct, fiona-b0)**
+> 1. Done: D1, D2a, D2 (4551520), D5 review (955692f), D6 review (b2097b3), D3 (0214d94), /v1 import, ledger, wallet and audit endpoints (3875d65, 3e1645a), OpenAPI regenerated (f302342).
+> 2. Half-done: nothing uncommitted. The wallet doesn't yet post its payment journal (Dr 2000 / Cr 1000). Add `posting.post_unposted` for that event inside the wallet transaction, or post on read.
+> 3. Next step: D4 reconciliation (passes 1-3, pass-4 intake, duplicate detector, findings) against answer_key.matches; then D9 POS reconciliation (refund-spike R4/CSH-07, cash shortage R3/CSH-05).
+> 4. Files: services/engine/ledger/{importers,posting,demo,api}.py; new module services/engine/ledger/reconcile.py (planned).
+> 5. Open: posting simplifications (cost of sales at item cost, no depreciation or monthly input/output tax offset; frameworks engine B5 owns those). customer_receipt events from D4 must not post (the bank line already posts Dr 1000 / Cr 1100). Fixtures: regenerate at most once more (orchestrator ruling).
 
 # Daniyal lane status (fiona-b0)
 
