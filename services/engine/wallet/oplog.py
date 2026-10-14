@@ -121,25 +121,26 @@ def export_operation_log(
                 }
             )
 
-        # Approvals
+        # Owner decisions
         cur.execute(
             """
-            SELECT id, proposal_id, user_id, decision, notes, created_at
-              FROM public.approvals
+            SELECT id, proposal_id, decided_by, decision, note, decided_at, verdict_id
+              FROM public.decisions
              WHERE tenant_id = %s
-             ORDER BY created_at ASC
+             ORDER BY decided_at ASC
             """,
             (tenant_id,),
         )
         for r in cur.fetchall():
             operations.append(
                 {
-                    "type": "approval",
+                    "type": "decision",
                     "id": r[0],
                     "proposal_id": r[1],
-                    "user_id": r[2],
+                    "decided_by": r[2],
                     "decision": r[3],
-                    "notes": r[4],
+                    "note": r[4],
+                    "verdict_id": r[6],
                     "timestamp": r[5].isoformat() if hasattr(r[5], "isoformat") else str(r[5]),
                 }
             )

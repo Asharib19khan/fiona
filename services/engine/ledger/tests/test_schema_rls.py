@@ -34,8 +34,10 @@ LEDGER_TABLES = [
     "proposals",
     "verdicts",
     "audit_log",
+    "decisions",
+    "wallet_accounts",
 ]
-APPEND_ONLY = ["events", "bank_lines", "proposals", "verdicts", "audit_log"]
+APPEND_ONLY = ["events", "bank_lines", "proposals", "verdicts", "audit_log", "decisions"]
 HASH = "sha256:" + "ab" * 32
 GENESIS = "sha256:" + "00" * 32
 
@@ -145,9 +147,19 @@ def seed_tenant(conn: psycopg.Connection, tenant: str) -> None:
             ),
         )
         x(
-            "insert into verdicts (tenant_id, proposal_id, outcome, checks, decided_at, verdict_hash)"
-            " values (%s, 'prop_01JC8Q2R7X', 'block', '[]', %s, %s)",
+            "insert into verdicts (tenant_id, id, proposal_id, outcome, checks, decided_at, verdict_hash)"
+            " values (%s, 'vrd_01JC8Q2R7X', 'prop_01JC8Q2R7X', 'block', '[]', %s, %s)",
             (tenant, T0, HASH),
+        )
+        x(
+            "insert into decisions (tenant_id, id, proposal_id, verdict_id, decision, decided_by, decided_at)"
+            " values (%s, 'dec_1', 'prop_01JC8Q2R7X', 'vrd_01JC8Q2R7X', 'reject', 'usr_owner', %s)",
+            (tenant, T0),
+        )
+        x(
+            "insert into wallet_accounts (tenant_id, id, iban, currency, balance_minor, created_at, updated_at)"
+            " values (%s, 'wal_1', 'PK00SYNW0000000000000001', 'PKR', 1000, %s, %s)",
+            (tenant, T0, T0),
         )
         x(
             "insert into audit_log (tenant_id, seq, prev_hash, record, hash, proposal_id, recorded_at)"

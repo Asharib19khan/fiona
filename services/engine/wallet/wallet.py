@@ -1,460 +1,378 @@
-"""Autonomous sandbox wallet implementation (D6).
+"""SIMULATED agent wallet (D6). Only this code moves (simulated) money, and only with a cleared verdict.
 
-Executes payments for cleared agent proposals or refuses with audited reasons:
-- Recomputes verdict_hash and enforces outcome rules
-- Enforces condition validity (pay_on, before_time, max_amount)
-- Enforces maker-checker owner approval on escalated proposals
-- Defense-in-depth re-checks: per-payment cap, daily cap, allow-list, bank cooling-off
-- Ensures balance cannot go negative
-- Records supplier_payment event, proposal status update, and hash-chained audit log
+`execute_payment` loads everything it trusts from the database (never from the caller): the
+stored proposal, the stored verdict and the recorded owner decisions. It pays only if all of
+these hold, and otherwise refuses with a reason. Every attempt, paid or refused, is appended to
+the tenant's hash-chained audit log.
+
+1. The verdict exists, belongs to this proposal and is unmodified (verdict_hash recomputed from
+   the stored body), and its outcome is approve, approve_with_conditions with every condition
+   met now, or escalate with an owner decision by a user who is not the proposer.
+2. The requested payee, amount and date match the stored proposal exactly.
+3. Defence in depth, from the mandate and the rulebook: per-payment and daily caps (unless the
+   owner released an escalation), payee on the allow-list, and no unconfirmed bank change.
+4. The simulated balance never goes negative.
+
+A payment writes the supplier_payment event, the balance update and the audit record in one
+transaction. The event's source key is the proposal ID, so a retry can never pay twice.
 """
 
 from __future__ import annotations
 
-import contextlib
+import hashlib
 import json
-import secrets
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import psycopg
 
+from engine.guardian_checks.rules import get_threshold
+from engine.ledger import db
+from engine.ledger.ids import encode_ulid
 from engine.wallet.audit import append
 from fiona_contracts.hashing import verdict_hash
-from fiona_contracts.models import Verdict
 
-CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
-
-
-def _encode_ulid(timestamp_ms: int, randomness: bytes) -> str:
-    value = (timestamp_ms << 80) | int.from_bytes(randomness, "big")
-    chars = []
-    for _ in range(26):
-        chars.append(CROCKFORD[value & 31])
-        value >>= 5
-    return "".join(reversed(chars))
+SIMULATED = "SIMULATED"
 
 
-def generate_ulid(prefix: str, now_dt: datetime) -> str:
-    ms = int(now_dt.timestamp() * 1000)
-    rand_bytes = secrets.token_bytes(10)
-    return f"{prefix}_{_encode_ulid(ms, rand_bytes)}"
+@dataclass(frozen=True)
+class PaymentRequest:
+    """What the caller asks to pay. It must match the stored proposal exactly."""
+
+    proposal_id: str
+    verdict_id: str
+    payee_id: str
+    amount_minor: int
+    currency: str
+    pay_on: str  # YYYY-MM-DD, the tenant's local business date of execution
 
 
 @dataclass(frozen=True)
 class PaymentResult:
-    status: str  # "executed" | "refused"
+    status: str  # "executed" | "refused" | "already_executed"
     reason: str | None = None
     payment_id: str | None = None
     wallet_ref: str | None = None
     event_id: str | None = None
     amount_minor: int | None = None
+    label: str = SIMULATED
 
 
-def _get_tenant_id(conn: psycopg.Connection, proposal: dict[str, Any]) -> str:
-    t_id = proposal.get("tenant_id")
-    if t_id:
-        return str(t_id)
-    with conn.cursor() as cur:
-        cur.execute("SELECT app.current_tenant()")
-        row = cur.fetchone()
-        if row and row[0]:
-            return str(row[0])
-    return "ten_karachi_apparel"
+class Refusal(Exception):
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+        self.reason = reason
+
+
+def _id(prefix: str, moment: datetime, key: str) -> str:
+    """Deterministic ID for wallet records: the same proposal always gets the same IDs."""
+    ms = (moment - datetime(1970, 1, 1, tzinfo=UTC)) // timedelta(milliseconds=1)
+    digest = hashlib.sha256(f"{prefix}|{key}".encode()).digest()
+    return f"{prefix}_{encode_ulid(ms, digest[:10])}"
+
+
+def open_account(
+    conn: psycopg.Connection,
+    tenant_id: str,
+    *,
+    iban: str,
+    currency: str,
+    opening_balance_minor: int,
+    now: datetime,
+) -> str:
+    """Create the tenant's simulated wallet account (demo data calls this once)."""
+    account_id = _id("wal", now, f"{tenant_id}|{iban}")
+    with db.tenant_session(conn, tenant_id):
+        conn.execute(
+            "insert into wallet_accounts (tenant_id, id, iban, currency, balance_minor, created_at, updated_at)"
+            " values (%s, %s, %s, %s, %s, %s, %s) on conflict do nothing",
+            (tenant_id, account_id, iban, currency, opening_balance_minor, now, now),
+        )
+    return account_id
+
+
+def _one(conn: psycopg.Connection, sql: str, params: tuple) -> tuple | None:
+    return conn.execute(sql, params).fetchone()
+
+
+def _check(
+    conn: psycopg.Connection, tenant_id: str, req: PaymentRequest, now: datetime
+) -> dict[str, Any]:
+    """Every precondition; raises Refusal with the first failing reason."""
+    tz = ZoneInfo(_one(conn, "select timezone from tenants where id = %s", (tenant_id,))[0])
+    local_date = now.astimezone(tz).date().isoformat()
+
+    proposal = _one(
+        conn,
+        "select agent, type, amount_minor, currency, payload, created_by from proposals where id = %s",
+        (req.proposal_id,),
+    )
+    if proposal is None:
+        raise Refusal("NO_PROPOSAL: no stored proposal with this ID")
+    agent, ptype, amount, currency, payload, created_by = proposal
+    if ptype != "payment":
+        raise Refusal(f"NOT_A_PAYMENT: proposal type is {ptype}")
+    if (payload.get("payee_id"), amount, currency, payload.get("pay_on")) != (
+        req.payee_id,
+        req.amount_minor,
+        req.currency,
+        req.pay_on,
+    ):
+        raise Refusal(
+            "REQUEST_MISMATCH: payee, amount, currency or date differ from the stored proposal"
+        )
+    if local_date != req.pay_on:
+        raise Refusal(
+            f"WRONG_DATE: today is {local_date} in the tenant's time zone, the proposal pays on {req.pay_on}"
+        )
+
+    verdict = _one(
+        conn,
+        "select proposal_id, outcome, verdict_hash, body from verdicts where id = %s",
+        (req.verdict_id,),
+    )
+    if verdict is None:
+        raise Refusal("NO_VERDICT: no stored verdict with this ID")
+    v_proposal, outcome, stored_hash, body = verdict
+    if v_proposal != req.proposal_id:
+        raise Refusal("WRONG_PROPOSAL: the verdict belongs to another proposal")
+    latest = _one(
+        conn,
+        "select id from verdicts where proposal_id = %s and id not in"
+        " (select previous_verdict_id from verdicts where previous_verdict_id is not null)",
+        (req.proposal_id,),
+    )
+    if latest is None or latest[0] != req.verdict_id:
+        raise Refusal("STALE_VERDICT: a newer verdict replaces this one")
+    if (
+        body is None
+        or verdict_hash(body) != stored_hash
+        or body.get("outcome") != outcome
+        or body.get("proposal_id") != req.proposal_id
+        or body.get("id") != req.verdict_id
+    ):
+        raise Refusal("TAMPERED_VERDICT: the stored verdict does not match its hash")
+
+    released_by_owner = False
+    if outcome == "block":
+        raise Refusal(
+            "VERDICT_BLOCKED: the Guardian blocked this proposal; no approval can release it"
+        )
+    if outcome == "approve_with_conditions":
+        for condition in body.get("conditions", []):
+            kind = condition["kind"]
+            if kind == "pay_on" and condition["date"] != local_date:
+                raise Refusal(
+                    f"CONDITION_NOT_MET: must be paid on {condition['date']}, today is {local_date}"
+                )
+            if kind == "max_amount_minor" and req.amount_minor > int(condition["value"]):
+                raise Refusal(f"CONDITION_NOT_MET: amount above {condition['value']}")
+            if kind == "before_time" and now >= datetime.fromisoformat(
+                condition["ts"].replace("Z", "+00:00")
+            ):
+                raise Refusal(f"CONDITION_NOT_MET: deadline {condition['ts']} has passed")
+    elif outcome == "escalate":
+        proposer = (created_by or {}).get("id")
+        rows = conn.execute(
+            "select decision, decided_by from decisions where proposal_id = %s and verdict_id = %s"
+            " order by decided_at desc, id desc",  # the latest decision wins
+            (req.proposal_id, req.verdict_id),
+        ).fetchall()
+        if not rows:
+            raise Refusal("NEEDS_OWNER: escalated, and no owner decision is recorded")
+        decision, decided_by = rows[0]
+        if decision != "approve":
+            raise Refusal("OWNER_REJECTED: the owner rejected this proposal")
+        if decided_by == proposer:
+            raise Refusal("SAME_ACTOR: the approver is the proposer (maker-checker, G-04)")
+        released_by_owner = True
+    elif outcome != "approve":
+        raise Refusal(f"UNKNOWN_OUTCOME: {outcome}")
+
+    mandate = _one(
+        conn,
+        "select per_payment_cap_minor, daily_cap_minor, allowed_action_types from mandates"
+        " where agent = %s order by version desc limit 1",
+        (agent,),
+    )
+    if mandate is None or "payment" not in mandate[2]:
+        raise Refusal(f"OUTSIDE_MANDATE: {agent} has no mandate to pay")
+    cap, daily_cap, _ = mandate
+    if not released_by_owner:
+        if req.amount_minor > cap:
+            raise Refusal(f"OVER_CAP: {req.amount_minor} is above the per-payment cap {cap}")
+        paid_today = _one(
+            conn,
+            "select coalesce(sum((payload->>'amount_minor')::bigint), 0) from events"
+            " where type = 'supplier_payment' and source_type = 'wallet' and business_date = %s"
+            " and payload->>'agent' = %s",
+            (local_date, agent),
+        )[0]
+        if paid_today + req.amount_minor > daily_cap:
+            raise Refusal(
+                f"OVER_DAILY_CAP: {paid_today + req.amount_minor} would exceed the daily cap {daily_cap}"
+            )
+
+    party = _one(
+        conn,
+        "select on_allow_list, bank_iban, bank_account_changed_at from parties where id = %s",
+        (req.payee_id,),
+    )
+    if party is None:
+        raise Refusal("UNKNOWN_PAYEE")
+    on_allow_list, payee_iban, changed_at = party
+    if not on_allow_list:
+        raise Refusal("NOT_ALLOW_LISTED: add the payee to the allow-list first (an owner action)")
+    if changed_at is not None:
+        change = _one(
+            conn,
+            "select payload->>'confirmed_via', payload->>'confirmed_by' from events"
+            " where type = 'bank_detail_change' and party_id = %s order by occurred_at desc limit 1",
+            (req.payee_id,),
+        )
+        phone_confirmed = (
+            change is not None and change[0] == "phone" and str(change[1] or "").startswith("usr_")
+        )
+        cooling_days = int(get_threshold("T-G03-COOL")["value"])
+        if not phone_confirmed:
+            age = (now - changed_at).days
+            raise Refusal(
+                f"BANK_CHANGE_UNCONFIRMED: account changed {age} days ago (cooling-off {cooling_days} days),"
+                " not confirmed by a phone call-back"
+            )
+    if not payee_iban:
+        raise Refusal("NO_PAYEE_ACCOUNT")
+
+    account = _one(
+        conn,
+        "select id, balance_minor, iban from wallet_accounts where currency = %s for update",
+        (req.currency,),
+    )
+    if account is None:
+        raise Refusal("NO_WALLET_ACCOUNT")
+    if account[1] < req.amount_minor:
+        raise Refusal(f"INSUFFICIENT_FUNDS: balance {account[1]} is below {req.amount_minor}")
+    return {
+        "agent": agent,
+        "payload": payload,
+        "payee_iban": payee_iban,
+        "account": account,
+        "local_date": local_date,
+        "verdict_hash": stored_hash,
+        "outcome": outcome,
+    }
 
 
 def execute_payment(
-    conn: psycopg.Connection,
-    proposal: Any,
-    verdict: Verdict | dict[str, Any] | None,
-    approvals: list[dict[str, Any]] | list[Any] | None = None,
-    now: datetime | str | None = None,
+    conn: psycopg.Connection, tenant_id: str, req: PaymentRequest, *, now: datetime
 ) -> PaymentResult:
-    """Execute a payment from the simulated wallet account in one transaction,
-
-    or refuse with audited rationale.
-    """
-    # 1. Parse and normalise proposal inputs
-    p_dict = (
-        proposal.model_dump(mode="json", exclude_none=True)
-        if hasattr(proposal, "model_dump")
-        else dict(proposal)
-    )
-    if hasattr(proposal, "root") and hasattr(proposal.root, "model_dump"):
-        p_dict = proposal.root.model_dump(mode="json", exclude_none=True)
-
-    proposal_id = str(p_dict.get("id", "prop_unknown"))
-    tenant_id = _get_tenant_id(conn, p_dict)
-    agent = str(p_dict.get("agent", "treasurer"))
-
-    payload = p_dict.get("payload", {})
-    if not isinstance(payload, dict):
-        payload = {}
-
-    amount_minor = p_dict.get("amount_minor")
-    if amount_minor is None:
-        amount_struct = p_dict.get("amount")
-        if isinstance(amount_struct, dict):
-            amount_minor = amount_struct.get("minor")
-        elif payload.get("amount_minor") is not None:
-            amount_minor = payload.get("amount_minor")
-    amount_minor = int(amount_minor or 0)
-
-    currency = p_dict.get("currency")
-    if not currency:
-        amount_struct = p_dict.get("amount")
-        if isinstance(amount_struct, dict):
-            currency = amount_struct.get("currency")
-    currency = str(currency or "PKR")
-
-    payee_id = str(payload.get("payee_id") or p_dict.get("payee_id") or "")
-    to_iban = payload.get("to_iban") or p_dict.get("to_iban")
-    bill_id = payload.get("bill_id") or p_dict.get("bill_id")
-
-    created_by_user = None
-    created_by = p_dict.get("created_by")
-    if isinstance(created_by, dict):
-        created_by_user = created_by.get("id") or created_by.get("user_id")
-
-    # Parse now timestamp
-    if now is None:
-        now_dt = datetime.now(UTC)
-    elif isinstance(now, datetime):
-        now_dt = now.astimezone(UTC) if now.tzinfo else now.replace(tzinfo=UTC)
-    else:
-        s = str(now)
-        if s.endswith("Z"):
-            s = s[:-1] + "+00:00"
-        now_dt = datetime.fromisoformat(s).astimezone(UTC)
-
-    now_date = now_dt.strftime("%Y-%m-%d")
-    now_iso = now_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    def _refuse(reason: str) -> PaymentResult:
-        refusal_record = {
-            "action": "payment_refused",
-            "proposal_id": proposal_id,
-            "amount_minor": amount_minor,
-            "currency": currency,
-            "payee_id": payee_id,
-            "reason": reason,
-            "refused_at": now_iso,
-        }
-        append(conn, tenant_id, refusal_record, proposal_id=proposal_id, now=now_dt)
-        return PaymentResult(status="refused", reason=reason, amount_minor=amount_minor)
-
-    # 2. Verdict existence & cryptographic hash verification
-    if verdict is None:
-        return _refuse("NO_VERDICT: Verdict does not exist for proposal.")
-
-    v_dict = (
-        verdict.model_dump(mode="json", exclude_none=True)
-        if hasattr(verdict, "model_dump")
-        else dict(verdict)
-    )
-
-    if v_dict.get("proposal_id") != proposal_id:
-        return _refuse(
-            f"VERDICT_MISMATCH: Verdict proposal_id {v_dict.get('proposal_id')} != {proposal_id}."
+    """Pay one cleared proposal from the simulated wallet, or refuse. `now` comes from the engine clock."""
+    if now.tzinfo is None:
+        raise ValueError("now must be timezone-aware")
+    source_key = f"pay:{req.proposal_id}"
+    with db.tenant_session(conn, tenant_id):
+        existing = _one(
+            conn,
+            "select id, payload from events where source_type = 'wallet' and source_key = %s",
+            (source_key,),
         )
-
-    recomputed_hash = verdict_hash(v_dict)
-    stated_hash = v_dict.get("verdict_hash")
-    if stated_hash != recomputed_hash:
-        return _refuse("TAMPERED_VERDICT: Verdict hash does not match canonical recomputed hash.")
-
-    # 3. Verdict outcome checks
-    outcome = v_dict.get("outcome")
-
-    if outcome == "block":
-        return _refuse("VERDICT_BLOCKED: Proposal was blocked by Guardian.")
-
-    if outcome == "approve_with_conditions":
-        conditions = v_dict.get("conditions", [])
-        for cond in conditions:
-            c_dict = cond.model_dump(mode="json") if hasattr(cond, "model_dump") else dict(cond)
-            kind = c_dict.get("kind")
-            if kind == "pay_on":
-                c_date = c_dict.get("date")
-                if c_date and now_date < c_date:
-                    return _refuse(
-                        f"CONDITION_NOT_MET: Execution date {now_date} is earlier than required pay_on date {c_date}."
-                    )
-            elif kind == "before_time":
-                c_ts = c_dict.get("ts")
-                if c_ts and now_iso > c_ts:
-                    return _refuse(
-                        f"CONDITION_EXPIRED: Execution time {now_iso} is past deadline {c_ts}."
-                    )
-            elif kind == "max_amount_minor":
-                c_max = c_dict.get("value")
-                if c_max is not None and amount_minor > int(c_max):
-                    return _refuse(
-                        f"CONDITION_VIOLATED: Amount {amount_minor} exceeds allowed max_amount_minor {c_max}."
-                    )
-
-    elif outcome == "escalate":
-        # Requires owner approval from non-proposer
-        if not approvals:
-            return _refuse(
-                "ESCALATION_REQUIRES_APPROVAL: Proposal escalated to owner but no approval found."
+        if existing is not None:
+            return PaymentResult(
+                status="already_executed",
+                event_id=existing[0],
+                payment_id=existing[1]["payment_id"],
+                wallet_ref=existing[1]["wallet_ref"],
+                amount_minor=existing[1]["amount_minor"],
+            )
+        try:
+            facts = _check(conn, tenant_id, req, now)
+        except Refusal as refusal:
+            append(
+                conn,
+                tenant_id,
+                {
+                    "action": "payment_refused",
+                    "label": SIMULATED,
+                    "proposal_id": req.proposal_id,
+                    "verdict_id": req.verdict_id,
+                    "payee_id": req.payee_id,
+                    "amount_minor": req.amount_minor,
+                    "currency": req.currency,
+                    "reason": refusal.reason,
+                    "at": now.astimezone(UTC).isoformat(),
+                },
+                proposal_id=req.proposal_id,
+                now=now,
+            )
+            return PaymentResult(
+                status="refused", reason=refusal.reason, amount_minor=req.amount_minor
             )
 
-        proposer_actor = created_by_user or agent
-        valid_approval = False
-
-        for app_item in approvals:
-            a_dict = (
-                app_item.model_dump(mode="json")
-                if hasattr(app_item, "model_dump")
-                else dict(app_item)
-            )
-            u_id = a_dict.get("user_id")
-            dec = a_dict.get("decision")
-            # Segregation of duties: approver cannot be proposer
-            if dec == "approved" and u_id and u_id != proposer_actor:
-                valid_approval = True
-                break
-
-        if not valid_approval:
-            return _refuse(
-                "INVALID_APPROVAL: Owner approval missing, rejected, or made by proposer (maker-checker violation)."
-            )
-
-    elif outcome != "approve":
-        return _refuse(f"UNRECOGNIZED_OUTCOME: Unknown verdict outcome '{outcome}'.")
-
-    # 4. Defence in depth re-checks
-    with conn.cursor() as cur:
-        # 4a. Per-payment cap & daily cap defense in depth (for autonomous verdicts)
-        if outcome in ("approve", "approve_with_conditions"):
-            cur.execute(
-                """
-                SELECT per_payment_cap_minor, daily_cap_minor
-                  FROM public.mandates
-                 WHERE tenant_id = %s AND agent = %s
-                 ORDER BY version DESC
-                 LIMIT 1
-                """,
-                (tenant_id, agent),
-            )
-            m_row = cur.fetchone()
-            if m_row and m_row[0] is not None:
-                per_payment_cap_minor = int(m_row[0])
-                daily_cap_minor = int(m_row[1])
-            else:
-                per_payment_cap_minor = 15000000
-                daily_cap_minor = 45000000
-
-            if amount_minor > per_payment_cap_minor:
-                return _refuse(
-                    f"DEFENCE_IN_DEPTH_CAP: Amount {amount_minor} exceeds per-payment cap {per_payment_cap_minor}."
-                )
-
-            # 4b. Daily cumulative cap re-check
-            cur.execute(
-                """
-                SELECT coalesce(sum((payload->>'amount_minor')::bigint), 0)
-                  FROM public.events
-                 WHERE tenant_id = %s
-                   AND type = 'supplier_payment'
-                   AND business_date = %s
-                """,
-                (tenant_id, now_date),
-            )
-            paid_today_row = cur.fetchone()
-            paid_today_minor = paid_today_row[0] if paid_today_row else 0
-
-            if paid_today_minor + amount_minor > daily_cap_minor:
-                return _refuse(
-                    f"DEFENCE_IN_DEPTH_DAILY_CAP: Cumulative payments today {paid_today_minor + amount_minor} exceed daily cap {daily_cap_minor}."
-                )
-
-        # 4c. Payee allow-list and bank change cooling-off
-        if payee_id:
-            cur.execute(
-                """
-                SELECT on_allow_list, bank_iban, bank_account_changed_at
-                  FROM public.parties
-                 WHERE tenant_id = %s AND id = %s
-                """,
-                (tenant_id, payee_id),
-            )
-            party_row = cur.fetchone()
-            if party_row is not None:
-                on_allow_list, bank_iban, bank_account_changed_at = party_row
-                if not on_allow_list:
-                    return _refuse(
-                        f"DEFENCE_IN_DEPTH_ALLOW_LIST: Payee {payee_id} is not on the allow-list."
-                    )
-                if to_iban and bank_iban and to_iban != bank_iban:
-                    return _refuse(
-                        f"DEFENCE_IN_DEPTH_IBAN: Destination IBAN {to_iban} differs from IBAN on file {bank_iban}."
-                    )
-                if bank_account_changed_at is not None:
-                    ch_dt = (
-                        bank_account_changed_at.astimezone(UTC)
-                        if bank_account_changed_at.tzinfo
-                        else bank_account_changed_at.replace(tzinfo=UTC)
-                    )
-                    days_since = (now_dt - ch_dt).days
-                    if days_since < 7:
-                        cur.execute(
-                            """
-                            SELECT payload->>'confirmed_via'
-                              FROM public.events
-                             WHERE tenant_id = %s AND type = 'bank_detail_change' AND party_id = %s
-                             ORDER BY occurred_at DESC
-                             LIMIT 1
-                            """,
-                            (tenant_id, payee_id),
-                        )
-                        ch_ev = cur.fetchone()
-                        confirmed_via = ch_ev[0] if ch_ev else None
-                        if confirmed_via not in ("phone", "in_person"):
-                            return _refuse(
-                                f"DEFENCE_IN_DEPTH_COOLING_OFF: Payee bank details changed {days_since} days ago without phone confirmation."
-                            )
-
-        # 5. Simulated wallet balance check (never negative)
-        cur.execute(
-            """
-            SELECT id, balance_minor, iban, currency
-              FROM public.wallet_accounts
-             WHERE tenant_id = %s
-               FOR UPDATE
-             LIMIT 1
-            """,
-            (tenant_id,),
+        account_id, balance, from_iban = facts["account"]
+        payment_id = _id("pay", now, source_key)
+        wallet_ref = _id("wtx", now, source_key)
+        event_id = _id("evt", now, source_key)
+        conn.execute(
+            "update wallet_accounts set balance_minor = %s, updated_at = %s where id = %s",
+            (balance - req.amount_minor, now, account_id),
         )
-        wallet_row = cur.fetchone()
-
-        if wallet_row is None:
-            # Seed opening wallet account with default PKR 3,500,000 (350,000,000 minor)
-            wallet_acc_id = generate_ulid("wal", now_dt)
-            wallet_iban = "PK70SYNA0000000100000001"
-            opening_balance = 350000000
-            cur.execute(
-                """
-                INSERT INTO public.wallet_accounts (
-                    tenant_id, id, iban, currency, balance_minor, created_at, updated_at
-                ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s
-                )
-                """,
-                (
-                    tenant_id,
-                    wallet_acc_id,
-                    wallet_iban,
-                    currency,
-                    opening_balance,
-                    now_dt,
-                    now_dt,
-                ),
-            )
-            wallet_id = wallet_acc_id
-            current_balance = opening_balance
-            from_iban = wallet_iban
-        else:
-            wallet_id, current_balance, from_iban, _ = wallet_row
-
-        if current_balance < amount_minor:
-            return _refuse(
-                f"INSUFFICIENT_FUNDS: Wallet balance {current_balance} is below payment amount {amount_minor}."
-            )
-
-        # 6. Execute payment in one transaction
-        new_balance = current_balance - amount_minor
-        cur.execute(
-            """
-            UPDATE public.wallet_accounts
-               SET balance_minor = %s, updated_at = %s
-             WHERE tenant_id = %s AND id = %s
-            """,
-            (new_balance, now_dt, tenant_id, wallet_id),
-        )
-
-        wallet_ref = generate_ulid("wal", now_dt)
-        payment_id = generate_ulid("pay", now_dt)
-        event_id = generate_ulid("evt", now_dt)
-
-        # Insert supplier_payment event per FORMATS.md §3.13
-        event_payload = {
-            "party": payee_id,
+        payload = {
+            "party": req.payee_id,
             "payment_id": payment_id,
-            "bill_id": bill_id,
-            "amount_minor": amount_minor,
+            "bill_id": facts["payload"].get("bill_id"),
+            "amount_minor": req.amount_minor,
             "from_iban": from_iban,
-            "to_iban": to_iban or from_iban,
+            "to_iban": facts["payee_iban"],
             "method": "wallet",
             "wallet_ref": wallet_ref,
+            "agent": facts["agent"],
+            "proposal_id": req.proposal_id,
+            "verdict_id": req.verdict_id,
+            "label": SIMULATED,
         }
-        event_source = {"type": "wallet", "key": wallet_ref}
-
-        cur.execute(
-            """
-            INSERT INTO public.events (
-                tenant_id, id, type, occurred_at, business_date, recorded_at, party_id, currency, payload, source
-            ) VALUES (
-                %s, %s, 'supplier_payment', %s, %s, %s, %s, %s, %s, %s
-            )
-            """,
+        conn.execute(
+            "insert into events (tenant_id, id, type, occurred_at, business_date, recorded_at, party_id, currency,"
+            " payload, source) values (%s, %s, 'supplier_payment', %s, %s, %s, %s, %s, %s, %s)",
             (
                 tenant_id,
                 event_id,
-                now_dt,
-                now_date,
-                now_dt,
-                payee_id or None,
-                currency,
-                json.dumps(event_payload),
-                json.dumps(event_source),
+                now,
+                facts["local_date"],
+                now,
+                req.payee_id,
+                req.currency,
+                json.dumps(payload),
+                json.dumps({"type": "wallet", "key": source_key}),
             ),
         )
-
-        # Persist approvals if provided
-        if approvals:
-            for app_item in approvals:
-                a_dict = (
-                    app_item.model_dump(mode="json")
-                    if hasattr(app_item, "model_dump")
-                    else dict(app_item)
-                )
-                app_id = a_dict.get("id") or generate_ulid("app", now_dt)
-                u_id = str(a_dict.get("user_id", "usr_owner"))
-                decision = str(a_dict.get("decision", "approved"))
-                notes = a_dict.get("notes")
-                with contextlib.suppress(Exception), conn.transaction():
-                    cur.execute(
-                        """
-                        INSERT INTO public.approvals (
-                            tenant_id, id, proposal_id, user_id, decision, notes, created_at
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (tenant_id, id) DO NOTHING
-                        """,
-                        (tenant_id, app_id, proposal_id, u_id, decision, notes, now_dt),
-                    )
-
-        # Write execution audit record
-        audit_record = {
-            "action": "supplier_payment_executed",
-            "proposal_id": proposal_id,
-            "payment_id": payment_id,
-            "amount_minor": amount_minor,
-            "currency": currency,
-            "wallet_ref": wallet_ref,
-            "to_iban": to_iban,
-            "verdict_hash": stated_hash,
-            "new_balance_minor": new_balance,
-            "executed_at": now_iso,
-        }
-        append(conn, tenant_id, audit_record, proposal_id=proposal_id, now=now_dt)
-
+        append(
+            conn,
+            tenant_id,
+            {
+                "action": "payment_executed",
+                "label": SIMULATED,
+                "proposal_id": req.proposal_id,
+                "verdict_id": req.verdict_id,
+                "verdict_hash": facts["verdict_hash"],
+                "outcome": facts["outcome"],
+                "payment_id": payment_id,
+                "event_id": event_id,
+                "wallet_ref": wallet_ref,
+                "payee_id": req.payee_id,
+                "amount_minor": req.amount_minor,
+                "currency": req.currency,
+                "balance_after_minor": balance - req.amount_minor,
+                "at": now.astimezone(UTC).isoformat(),
+            },
+            proposal_id=req.proposal_id,
+            now=now,
+        )
     return PaymentResult(
         status="executed",
         payment_id=payment_id,
         wallet_ref=wallet_ref,
         event_id=event_id,
-        amount_minor=amount_minor,
+        amount_minor=req.amount_minor,
     )
