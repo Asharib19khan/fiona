@@ -1,0 +1,88 @@
+# Decision-memo scoring rubric (B4). Scores an agent memo out of 10 against a gold memo.
+# Human-readable: rulebook/docs/B4_Memo_Scoring_Rubric.md. Scorer: evals/score_memo.py.
+#
+# The rubric is applied the same way to every memo type (financing choice, debt versus equity,
+# dividend, new product). Deterministic checks run first (figures, citations, critical failures);
+# qualitative criteria are scored by a reviewer (a person, or a model acting as judge) using the
+# level descriptors below, and the reviewer must quote the memo text that justifies each level.
+
+schema_version: 1
+rubric_version: "1.0.0"
+effective_date: "2026-10-14"
+owner: abdullah (fiona-fa)
+pass_mark: 8.0          # blueprint target: average of at least 8 out of 10
+levels: {full: 1.0, partial: 0.5, none: 0.0}
+
+criteria:
+  - id: R1
+    name: Correct financial figures
+    weight: 2.0
+    method: deterministic
+    check: "Every numeric figure in the memo has a metric_id and matches the engine's Figure for that metric (money exactly in minor units after display rounding; bp within the metric's display rounding)."
+    full: "All figures match."
+    partial: "Every key figure matches; at most two non-key figures are wrong, or a figure is correct but mislabelled."
+    none: "Any key figure is wrong (also triggers CF1)."
+    key_figures: "the gold memo's `key_figures` list"
+  - id: R2
+    name: Direction of the recommendation
+    weight: 2.0
+    method: deterministic
+    check: "recommended_option equals the gold memo's, or is in its `acceptable_alternatives` with the stated condition met."
+    full: "Same option as the gold memo, with the same conditions."
+    partial: "An acceptable alternative, or the right option without its key conditions."
+    none: "Any other option."
+  - id: R3
+    name: Liquidity and risk come first
+    weight: 1.5
+    method: reviewer
+    full: "States the buffer, the lowest forecast cash and the first week below the buffer (if any), and shows how each option changes them; downside liquidity is tested."
+    partial: "Mentions liquidity but does not show each option's effect on the forecast."
+    none: "Ignores the forecast or the buffer (if a breach exists, also CF3)."
+  - id: R4
+    name: Alternatives compared
+    weight: 1.0
+    method: reviewer
+    full: "Every realistic option (for financing: debt, equity, internal, mix, defer) is compared on the same measures, and the trade-offs are explicit."
+    partial: "Two or more options compared, but on different measures or without trade-offs."
+    none: "One option argued alone."
+  - id: R5
+    name: Assumptions and limitations stated
+    weight: 1.0
+    method: reviewer
+    full: "Every assumption is labelled as such with its source class (owner, market, rulebook provisional, engine estimate); limitations of the data and of synthetic or stub inputs are stated."
+    partial: "Assumptions are listed but not labelled by class, or a material one is missing."
+    none: "Assumptions are presented as facts."
+  - id: R6
+    name: Evidence and traceability
+    weight: 1.0
+    method: deterministic
+    check: "Share of numeric claims that cite a Figure (metric_id plus source_refs), and every external fact cites a source with its date."
+    full: "100% of numeric claims cited; external facts sourced and dated."
+    partial: "At least 90% cited."
+    none: "Below 90% (an uncited number that is not in any Figure also triggers CF2)."
+  - id: R7
+    name: Downside and sensitivity
+    weight: 0.75
+    method: reviewer
+    full: "Base, downside and severe cases (T-DEC-DOWN-01) with their effect on coverage and cash; names what would change the recommendation."
+    partial: "One downside case only, or no 'what would change it'."
+    none: "No downside."
+  - id: R8
+    name: Actionable, with approvals
+    weight: 0.75
+    method: reviewer
+    full: "Staged next steps with owners and dates, the approvals required (owner, lender, board), monitoring triggers, and a 'pause or reverse if' list."
+    partial: "Next steps without approvals or triggers."
+    none: "No implementation plan."
+
+critical_failures:
+  # Applied after weighting. The lowest cap wins. Detected deterministically where possible.
+  - {id: CF1, name: Materially wrong calculation, test: "a key figure differs from the engine by more than its display rounding, or has the wrong sign", effect: {cap: 4.0}}
+  - {id: CF2, name: Unsupported factual claim, test: "a number or market fact appears that no Figure or cited source supports (invented benchmark, rate or probability)", effect: {cap: 5.0}}
+  - {id: CF3, name: Ignores an imminent liquidity crisis, test: "recommends an outflow while a forecast week is below the buffer and the memo does not address it", effect: {cap: 3.0}}
+  - {id: CF4, name: Violates a hard control or claims authority, test: "recommends or claims to execute an action a hard control forbids (G-rules, T-DEC-AFF-01, DIV-02), or states that an agent will borrow, raise equity, pay a dividend or sign a contract", effect: {score: 0.0, invalid: true}}
+  - {id: CF5, name: Invented probability, test: "states a probability the engine did not return (launch_lab.yaml meta.probability_rule)", effect: {cap: 5.0}}
+  - {id: CF6, name: Missing dissent in a council memo, test: "council mode memo without the Guardian's (or another agent's) dissent on record", effect: {deduct: 1.0}}
+
+output:
+  score_sheet_fields: [memo_id, gold_memo_id, criterion_scores, weighted_total, critical_failures, final_score, reviewer, reviewed_at, evidence_quotes]

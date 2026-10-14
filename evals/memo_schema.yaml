@@ -1,0 +1,28 @@
+# Decision memo schema (B4): the structure every CFO Strategist memo and every gold memo follows.
+# Proposed to fiona-19 as the CFO Strategist's structured output (A4/A7). Numbers are never typed
+# by the model: every numeric field is a reference to a Figure returned by an engine tool.
+
+schema_version: 1
+fields:
+  memo_id: {type: string, example: memo_01JD...}
+  tenant_id: {type: string}
+  decision_type: {type: enum, values: [financing_choice, debt_vs_equity, dividend_vs_reinvest, asset_investment, liability_reduction, innovation_budget, new_product]}
+  question: {type: string}
+  A_executive_decision:
+    recommended_option: {type: string, note: "an option key from the decision (e.g. D_mixed) or a financing option_id"}
+    urgency: {type: enum, values: [now, this_month, this_quarter, no_rush]}
+    confidence: {type: enum, values: [high, medium, low]}
+    one_line: {type: string}
+  B_business_context: {stage_figure: "metric stage.classification", objectives: "profile.objectives_ranked", constraints: "list of string"}
+  C_evidence_reviewed: {type: "list of {kind: statement|forecast_run|ledger_query|document|market_source|assumption, ref, as_of, verification}"}
+  D_financial_condition: {figures: "list of metric_id (each resolves to a Figure in `figures`)", health_bands: "from /v1/analysis/health"}
+  E_alternatives: {type: "list of {option, summary, figures: [metric_id], pros, cons, eligible: bool|null, why_not}"}
+  F_quantitative_analysis: {figures: "list of metric_id", formulas_shown: bool}
+  G_downside: {type: "list of {scenario: base|downside|severe|upside, parameters_ref: T-DEC-DOWN-01, figures: [metric_id]}"}
+  H_recommendation: {reasoning: string, would_change_if: "list of string"}
+  I_implementation: {type: "list of {step, owner, by_date, approval_required: owner|lender|board|none, success_measure}"}
+  J_risks_and_triggers: {type: "list of {risk, indicator_metric_id, trigger, action}"}
+  K_sources_and_audit: {type: "list of {ref, kind, as_of}", tool_calls: "list of tool call ids"}
+  dissent: {type: "list of {agent, position, reason}", required_when: "council mode"}
+  figures: {type: "list of Figure (the contract object)", rule: "every metric_id used above appears here exactly once"}
+  labels: {data_source: "ledger | stub | synthetic", note: "memos built on synthetic data say so in the header"}
