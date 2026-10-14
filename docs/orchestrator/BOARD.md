@@ -1,6 +1,6 @@
 # Fiona: Status Board
 
-Maintained by fiona-b7. Updated Wed 14 Oct 2026, 08:30 PKT. Plan: [PLAN.md](PLAN.md). Repo: https://github.com/Asharib19khan/fiona (origin/main is in sync).
+Maintained by the orchestrator (fiona-d3). Updated Wed 14 Oct 2026, 08:30 PKT. Plan: [PLAN.md](PLAN.md). Repo: https://github.com/Asharib19khan/fiona (origin/main is in sync).
 
 **Deadline: Tue 20 Oct, 20:59 PKT (registration and submission).** Next gate: G1, today at 23:59. Three of four lanes have finished their G1 items; A2 contracts are in progress.
 
@@ -15,7 +15,7 @@ Maintained by fiona-b7. Updated Wed 14 Oct 2026, 08:30 PKT. Plan: [PLAN.md](PLAN
 
 About 13 of 34 Tier 1 tasks are done. The foundations (data, schema, rules, forecast) are ahead of schedule. What remains is the parts that make it a product: contracts, agents, Guardian, wallet, screens, integration and the six deliverables.
 
-**Mode (from Wed 14): one lane active at a time; see PLAN.md §9b. Active now: fiona-19 (CI fix, A2).** Registration is done and the repository is public. Claude runs through the CLI, so no API key is needed.
+**Mode (from Wed 14): one lane active at a time; see PLAN.md §9b. Active now: fiona-19 (A2). Paused: fiona-79 at 77d9b8b (Y10 WIP), fiona-fa, fiona-b0.** Registration is done and the repository is public. Claude runs through the CLI, so no API key is needed.
 
 ## Waiting on Asharib (the user)
 

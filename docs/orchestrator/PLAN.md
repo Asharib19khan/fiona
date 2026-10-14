@@ -1,6 +1,6 @@
 # Fiona: Build Plan (re-planned for the 20 October deadline)
 
-Owner: fiona-b7 (orchestrator session). Updated Tue 13 Oct 2026, 20:00 PKT.
+Owner: the orchestrator session (currently fiona-d3, formerly fiona-b7; confirm with ListAgents). Updated Tue 13 Oct 2026, 20:00 PKT.
 This file overrides the *Build Blueprint* and *Team Roadmap* wherever they disagree. Contracts, data model, Guardian rules and conventions in the Blueprint still apply unless changed here.
 
 ## 0. The deadline moved: read this first
