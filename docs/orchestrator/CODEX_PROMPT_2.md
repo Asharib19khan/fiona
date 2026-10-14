@@ -1,116 +1,88 @@
-# Prompt 2 for Codex: the debt-versus-equity decision calculator (task Y4, core)
+# Prompt 2 for Codex: the inventory analytics engine (task Y3)
 
-This is pure maths with no database or AI calls, and the rulebook specifies it exactly. Paste everything below the line into Codex.
+Paste everything below the line into Codex, in a new conversation.
 
 ---
 
-You are the CODEX lane for Fiona (repository `Y:\Fiona`, Python 3.12, uv). You did the payment-timing optimiser well. Keep to the same discipline: other agents share this folder, so stay strictly inside the files listed below.
+You are the CODEX lane for Fiona, an AI finance copilot for small businesses. The repository is `Y:\Fiona` (Python 3.12, uv). Your last task (`CX-Y8`, the payment-timing optimiser) passed review. Other agents share this folder, so stay strictly inside the files listed below.
 
 ## The task
-Build the calculator behind **"Should I fund this with a loan, an investor, my own cash, a mix, or wait?"** It takes a funding request plus the business's numbers, runs the rulebook's rules DE-00 to DE-09, and returns every option's figures, every rule result, and one recommendation, all **computed by code, never estimated.**
+Replace the hand-built **inventory analysis mock** with the real engine. It reads the shop's sales and stock, and tells the owner:
+- which items are fast, slow or dead
+- how much cash each one ties up
+- when and how much to reorder (as draft purchase orders)
 
 ## Rule zero: do not invent anything
-- Every rule, threshold ID, metric ID, schema field and helper function you use must exist in the files below. Open them first.
-- Threshold **values** come from `rulebook/thresholds.yaml`, looked up by ID. Never hardcode them.
-- If an input a rule needs is missing, that rule reports `insufficient_data` / unknown (the rulebook's `on_unknown` text says how). Never guess a value.
-- Put any question in `docs/status/codex.md`. Don't claim tests pass unless you ran them.
+- The output shape already exists. Use exactly the fields in `services/engine/forecast/inventory/schemas.py`, and add none.
+- **Every parameter value** (ABC cut-offs, the XYZ coefficient-of-variation bands, the days that mean slow or dead, the service level or safety-stock factor, the cover target, the analysis window) **must be copied from the `parameters` list in `services/engine/forecast/mocks/inventory.py`**, keeping each one's origin label. Don't choose your own numbers. If the mock lacks one you need, choose the conservative standard value, give it origin "assumption", and list it in `docs/status/codex.md`.
+- Money is always an integer in minor units (PKR 1 = 100 minor), never a float in any output. There are no AI calls.
+- Don't claim tests pass unless you ran them.
 
 ## Read first
-1. `CLAUDE.md`: money is always an **integer in minor units**, ratios are integer **basis points** (1.35x = 13500 bp), and there are no floats in any output.
-2. `rulebook/finance_rules.yaml`, lines about 379 to 520: `decision_id: DEC-DE`, its options A_debt, B_equity, C_internal, D_mixed and E_defer, the **rules DE-00 to DE-09** (logic, conditions, outcomes, explanation templates, validation_tests), `recommendation_logic` (in order: the first match wins) and `confidence`. **This is your specification.**
-3. `rulebook/thresholds.yaml`: the entries T-SOL-DSCR-01, T-SOL-DSCR-02, T-DEC-DOWN-01 (including its country rate shocks), T-DEC-DIL-01, T-DEC-HURDLE-01, T-DEC-AFF-01 and T-DEC-DATA-01. Also look at how `services/engine/analysis/rulebook.py` loads the rulebook, and reuse that loader if it fits.
-4. `rulebook/metrics.yaml`: the metric IDs you will emit (`solvency.dscr_forward`, `solvency.dscr_forward_downside`, `solvency.debt_service_forward`, `decision.max_debt_at_min_dscr`, `decision.max_debt_downside`, `decision.dilution`, `decision.after_tax_cost_of_debt`, and so on). Use only IDs that exist there. If one is missing, list it as a question.
-5. `services/engine/analysis/coverage.py`: `dscr`, `dscr_forward`, `max_principal_at_dscr` and `ratio_bp`. **These are the only DSCR implementation in the project. Call them and never re-implement them.**
-6. `services/engine/decisions/tvm.py`: the amortisation, annuity payment, NPV and IRR helpers. Call them for loan schedules.
-7. `services/engine/decisions/schemas.py`: `DebtEquityRequest`, `DebtTerms`, `EquityTerms`, `DecisionResponse`, `DecisionOption`, `DecisionRecommendation`, `AmortisationRow` and `CashPathPoint`. Your output **is** a `DecisionResponse` with `decision="debt_equity"`.
-8. `services/engine/decisions/mocks.py`, the function behind the `decision_debt_equity` mock: the exact shape and style of the figures and rule checks. Your real output must look like it.
-9. `services/engine/decisions/payment_timing.py`: your own earlier file, for the Figure and RuleCheck helpers you already used.
+1. `CLAUDE.md`, the repository rules.
+2. `services/engine/forecast/inventory/schemas.py`: the output types `InventoryAnalysisResponse`, `InventoryItem`, `StyleRollup`, `BundleCandidate`, `DraftPurchaseOrder`.
+3. `services/engine/forecast/mocks/inventory.py`: the mock you're replacing. It shows how every field is filled and which Figure, Threshold and Finding helpers to use (`engine.forecast.figures`). **Mirror it, but compute the values from data.**
+4. `services/engine/forecast/api.py`: the function `_cash` (the live-with-fixture-fallback pattern) and the stub `inventory_analysis`.
+5. `services/engine/forecast/ledger_source.py`: how fixtures are loaded (`load_fixture_snapshot`, `TenantDataMissing`, `FIXTURES_ROOT`).
+6. `data/fixtures/FORMATS.md`, sections 3.5 (`items.csv`), 3.6 (purchase orders), 3.11 (`pos_sales.csv`) and 3.13 (`sale` and `stock_movement` events in `events.jsonl`). The tenant is `ten_karachi_apparel`.
+7. `services/engine/decisions/payment_timing.py`, your own earlier work, for style.
 
-## Files you may create (and nothing else)
-- `services/engine/decisions/debt_equity.py`
-- `services/engine/decisions/tests/test_debt_equity.py`
-- `docs/status/codex.md` (append a new section; keep the CX-Y8 section)
+## Files you may create or change (nothing else)
+- Create: `services/engine/forecast/inventory/engine.py`, `services/engine/forecast/inventory/loader.py`, `services/engine/forecast/inventory/tests/__init__.py` and `services/engine/forecast/inventory/tests/test_inventory.py`.
+- Change **only the body of `inventory_analysis()`** in `services/engine/forecast/api.py`. Follow the `_cash` pattern: run the real engine on the tenant's fixtures, and fall back to `load("inventory_analysis")` only when `TenantDataMissing` is raised.
+- `docs/status/codex.md`: add a new row for CX-Y3.
 
-Do not edit `api.py`, `mocks.py`, `schemas.py`, the rulebook or any other file. Another agent wires the endpoint and the ledger later.
+## Specification
+- **`loader.py`** reads, for one tenant, `items.csv`, the `sale` events (each line has item, qty, price_minor, total_minor and cost_minor; refunds have negative qty), the `stock_movement` events, and `purchase_orders.json`, `goods_received.json` and `tenant.json` (`as_of`, currency). On-hand stock is `opening_stock_qty + stock_movement qty − units sold + units refunded`, up to `as_of`. **Never negative:** if it would be, clamp it to 0 and record an `InsufficientData` note.
+- **`engine.py`**: `analyse_inventory(data, *, as_of, generated_at, mode) -> InventoryAnalysisResponse`. Per SKU it computes:
+  - units sold, revenue and gross margin over the window
+  - ABC class by the SKU's share of window gross margin or revenue (use whatever basis the mock's parameter says)
+  - XYZ class from the coefficient of variation of weekly demand, or `None` if there are fewer weeks than the mock's minimum
+  - movement:
+    - `new` if launched within the window
+    - `dead` if no sale for N days
+    - `slow` / `normal` / `fast` by days of cover against the bands
+  - days of cover = on hand ÷ average daily demand (`None` if demand is 0)
+  - safety stock and reorder point = demand over the lead time plus safety stock
+  - suggested order quantity, if on hand is at or below the reorder point
+  - turnover and GMROI in bp
+  - cash tied up: all of the stock value for dead stock; otherwise the value above the cover target
 
-## Design
-Write one public pure function. It reads no database and no ledger; every business fact is an argument:
+  It also builds:
+  - `styles`: a roll-up of size and colour variants by parent style
+  - `draft_purchase_orders`: one per supplier, from the SKUs needing reorder, with order-by = as_of and expected = as_of + lead time
+  - `summary` Figures
+  - `findings`: the slow and dead stock with total cash tied up, ranked by money at stake, using the mock's finding style
+- **`bundles`:** compute pairs bought in the same receipt (receipt number in the sale events), with `baskets_together` and lift, only if it's simple. Otherwise return `[]` plus an `InsufficientData` note. Correctness of the rest matters more.
+- **Determinism:** the same data gives the same output. The `run_id` is derived from a hash of the inputs, not from randomness.
 
-```python
-def decide_debt_equity(
-    request: DebtEquityRequest,
-    facts: DebtEquityFacts,       # define this Pydantic model in debt_equity.py
-    *,
-    as_of: date,
-    run_id: str,
-) -> DecisionResponse:
-```
-
-`DebtEquityFacts` holds exactly what DE-00 to DE-09 need, with integer money and basis points:
-- the weekly forecast closing cash (week start dates and closing_minor) and the cash buffer
-- EBITDA for the next 12 months (and, if missing, TTM EBITDA plus a flag that it is a fallback)
-- the existing scheduled debt service for the next 12 months
-- the stage classification
-- whether the operating cash flow is negative
-- the purpose category (one of the five in DE-01)
-- the 3-month operating outflows
-- the project IRR, in bp or None
-- the tax rate in bp
-- the cost of equity in bp or None
-- the pre-money valuation (with its source string) or None
-- the current ownership share of the owner in bp
-- the unencumbered assets in minor units, or None
-- the country (for DE-09 rate shocks)
-- whether the facility is floating-rate
-- the liquidity health band (`healthy`, `watch`, `stressed`, `critical`)
-
-Anything optional and missing makes the dependent rule report unknown, as `on_unknown` says. It is never a guess.
-
-**Computations:**
-- **Option A, debt.** The terms come from `request.debt`. If `request.debt` is None, the outcome for A is `insufficient_data`, with the need "loan terms or the financing matcher's top option" (the matcher is another agent's work; do not call it). Build the amortisation schedule with tvm. Then compute:
-  - the forward debt service = existing + new over the first 12 months
-  - `dscr_forward` via coverage.py
-  - the max principal at T-SOL-DSCR-01 via `max_principal_at_dscr`
-  - the downside: EBITDA changed by T-DEC-DOWN-01 `revenue_change_bp` (apply the rulebook's definition exactly), with the rate raised by `rate_change_bp`, giving `dscr_forward_downside` and `max_debt_downside`
-  - DE-09: the floating-rate shock for the country
-  - DE-08: collateral against unencumbered assets, if both are known
-- **Option B, equity.** If `request.equity` and a sourced valuation exist, dilution = amount / (pre_money + amount) in bp (DE-06), plus the escalation flag above T-DEC-DIL-01.
-- **Option C, internal funds.** DE-02 exactly: internal_capacity = max(0, the minimum of (closing − buffer) over the weeks from the funding date), giving feasible, partial or infeasible.
-- **Option D, a mix.** Debt equals `max_debt_downside`, with the remainder from C (up to internal_capacity) and then B.
-- **Option E, defer.** It is always available, with the reason codes from the rules that fired.
-- **DE-05 and DE-07** are applied exactly as written.
-- **The recommendation** walks `recommendation_logic` **in order**, and the first matching branch wins. Record every branch tested in `rule_trace`, with passed or failed, so a reviewer sees why. Set `confidence` per the rulebook's `confidence` section.
-- All rounding is half-up to integer minor units or basis points, using `Decimal` wherever a division happens.
-
-## Tests (in `test_debt_equity.py`)
-1. **The rulebook's own validation tests, exactly:**
-   - DE-00-T1: no debt schedule gives `insufficient_data`, naming "existing debt schedule".
-   - DE-02-T1: with a minimum closing balance of 258,000,000, a buffer of 200,000,000 and an amount of 100,000,000, the result is partial with capacity 58,000,000.
-   - DE-03-T1: with EBITDA of 710,000,000, existing service of 261,612,000 and new service of 361,284,000, dscr_forward is **11398 bp** and A is `not_recommended_at_requested_size`.
-2. One test per `recommendation_logic` branch, each a small hand-built `facts`, asserting the recommended option and the reason.
-3. Edge cases:
-   - funding operating losses (DE-01)
-   - critical liquidity forces E
-   - an equity request with no valuation makes B unknown, never a guessed dilution
-   - floating rate with a PK shock
-   - collateral exceeding the assets makes A `infeasible_collateral`
-4. Hypothesis property tests:
-   - Every money and basis-point value in the response is an `int`.
-   - `max_debt_at_min_dscr`, borrowed on the same terms, gives a DSCR of at least the threshold (within 1 bp).
-   - Increasing EBITDA never lowers dscr_forward.
-   - The output validates as `DecisionResponse`.
+## Tests (`test_inventory.py`)
+- **Small hand-made fixtures inside the test**, with numbers you can check by hand:
+  - a SKU with steady sales: fast, X class, correct reorder point
+  - a SKU unsold for longer than the dead threshold: dead, with cash tied up equal to the full stock value
+  - a SKU with zero demand: days of cover `None`, no division error
+  - refunds reduce units sold
+  - ABC classes sum to 100% of the basis
+  - draft purchase orders group by supplier, and their totals equal the sum of their lines
+- **On the real seed-42 fixtures** (`ten_karachi_apparel`):
+  - the engine runs without error
+  - every money value is an `int`
+  - on-hand stock is never negative
+  - the output validates as `InventoryAnalysisResponse`
+- **API:** `GET /v1/inventory/analysis` with header `X-Fiona-Tenant: ten_karachi_apparel` returns 200 from the real engine (not the mock: check `run_id` or the method). An unknown tenant behaves as `_cash` does. Look at `forecast/tests/test_api.py` for how the API is tested.
+- **Hypothesis:** for random sales histories, units sold equal the sum of sale quantities minus refunds, and cash tied up is never greater than the stock value.
 
 ## How to run (from `Y:\Fiona\services\engine`)
-- `uv run pytest decisions -q`
-- `uv run ruff check decisions` and `uv run ruff format decisions/debt_equity.py decisions/tests/test_debt_equity.py`
-- Note: if the full suite (`uv run pytest -q`) errors in `wallet/` or `guardian_checks/`, that is another agent's unfinished work. Report it and don't fix it.
+- `uv run pytest forecast -q`, then `uv run pytest -q`; the whole suite must stay green.
+  - If an unrelated test elsewhere fails, say so in your status note and don't fix it.
+  - Your earlier `--basetemp` workaround is fine.
+- `uv run ruff check forecast` and `uv run ruff format <your files>`
 
-## Git (a shared folder)
+## Git (a shared folder; be careful)
 - Never run checkout, switch, stash, reset, clean, rebase, `git add -A`, `git add .` or `commit -a`, and never push.
-- When green, run:
-  `git add services/engine/decisions/debt_equity.py services/engine/decisions/tests/test_debt_equity.py docs/status/codex.md`
-  `git commit -m "CX-Y4: debt-versus-equity calculator (DE-00..DE-09) with tests" -- services/engine/decisions/debt_equity.py services/engine/decisions/tests/test_debt_equity.py docs/status/codex.md`
+- When your tests pass, `git add` exactly your files (the inventory folder files, `services/engine/forecast/api.py` and `docs/status/codex.md`), then:
+  `git commit -m "CX-Y3: inventory analytics engine (ABC-XYZ, movement, reorder points, draft POs) with tests" -- <the same paths>`
   If you see `index.lock`, wait and retry.
 
 ## Finish
-In `docs/status/codex.md`, add a CX-Y4 section with the real pytest summary line, the list of questions, and the list of any `on_unknown` interpretations you made. Then stop.
+Add a CX-Y3 row to `docs/status/codex.md` with the real pytest summary line, every parameter you had to label "assumption", any questions, and the top 3 findings the engine produced on the seed-42 data (SKU, movement, cash tied up). Then stop.
