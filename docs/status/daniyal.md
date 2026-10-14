@@ -18,7 +18,7 @@ Dates follow docs/orchestrator/PLAN.md §4 (re-plan for the 20 Oct deadline).
 | D3 | Importers + postings + debits=credits property test | done | Fri 16 | Wed 14 | `python -m engine.ledger.db demo-data` loads 74,931 events, 298,622 journal lines in ~85 s; importer events equal the generator's; idempotent; row errors; cash ties to the bank; Hypothesis property |
 | D4 | Reconciliation passes 1-3, pass-4 intake, duplicate detector | todo | Fri 16 | Tue 13 | |
 | D5 | Guardian deterministic checks G-01..G-13 + mandate enforcement | done (review) | Sat 17 | Wed 14 | Built by Antigravity (75f5a8d), reviewed and fixed in 955692f: G-09 resolver (removed a '999' test hack), no threshold literals, G-03 phone-by-user, G-08 horizon/latest-date/statutory, G-13 fail-closed. Tests generated from scenarios.yaml: 36 pass, S-12 skipped (model) |
-| D6 | Wallet sandbox, hash-chained audit, operation-log export | doing (review done) | Sun 18 | Wed 14 | Built by Antigravity (30c2b3f), fixed in b2097b3: wallet trusts only DB rows, maker-checker, idempotent, one transaction, no literals; decisions table. Still to do: journal posting (after D3), /v1/wallet and /v1/audit endpoints |
+| D6 | Wallet sandbox, hash-chained audit, operation-log export | done (review + endpoints) | Sun 18 | Wed 14 | Reviewed/fixed b2097b3; /v1/wallet/pay, /v1/audit, /v1/import/{bank,pos,bills}, /v1/ledger/events in ledger/api.py. Open: journal posting of wallet payments (call posting after execute) |
 | W | Screens: bills, reconcile, wallet, audit | todo | Sun 18 | Tue 13 | fiona-19 screen kit |
 | D7 | Shenzhen persona + tenant switch (Tier 2) | todo | Mon 19 | Tue 13 | Only on green Tier 1 |
 | D9 | POS reconciliation (Tier 2) | todo | Mon 19 | Tue 13 | |
