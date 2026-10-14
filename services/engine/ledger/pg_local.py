@@ -26,6 +26,7 @@ MAVEN = "https://repo1.maven.org/maven2/io/zonky/test/postgres"
 # checked against Maven Central's published SHA-1 instead.
 PINNED_SHA256 = {
     "windows-amd64": "98040fae18dd9633ff95932125b0cecf0a45a1a9312e216e2a33ad03a31d4251",
+    "linux-amd64": "0dd7b72b6f335b8ecfb355fa24c5781e8a93edd09880bb77eb52ebbf29b3e96d",
 }
 PLATFORMS = {
     ("windows", "amd64"): "windows-amd64",
