@@ -21,6 +21,8 @@ out = SERVICES.parent / sys.argv[1]
 spec = create_app().openapi()
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(
-    json.dumps(spec, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8"
+    json.dumps(spec, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+    encoding="utf-8",
+    newline="\n",  # LF on Windows too, so the file is byte-identical to CI's
 )
 print(f"  wrote {sys.argv[1]} ({len(spec.get('paths', {}))} paths)")

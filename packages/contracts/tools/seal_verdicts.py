@@ -18,7 +18,8 @@ for path in sorted(SCENARIOS.glob("*.json")):
     new = verdict_hash(verdict)
     if verdict.get("verdict_hash") != new:
         verdict["verdict_hash"] = new
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        text = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+        path.write_text(text, encoding="utf-8", newline="\n")
         print(f"sealed {path.name}: {new}")
     else:
         print(f"ok     {path.name}")
