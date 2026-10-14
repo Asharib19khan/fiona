@@ -11,3 +11,6 @@ Additive changes only after the G1 freeze (Wed 14 Oct 2026). Breaking changes ne
 - `Mandate` (Abdullah's `mandate_shape`) and `TenantPolicies.cash_buffer_minor` (cash buffer ruling).
 - `LedgerEvent` union of the nine event types, matching `data/fixtures/FORMATS.md` §3.13.
 - Generated: TypeScript types, Pydantic v2 package `fiona_contracts`, and a typed engine client from the engine's OpenAPI.
+
+## 1.0.0-rc.2 (2026-10-14): Daniyal's G1 sign-off condition
+- `ProposalDraft.agent` / `Proposal.agent` use the full `AgentName` enum (was treasurer | controller | growth_analyst), so an out-of-mandate attempt (S-13: the CFO Strategist submits a payment) reaches the Guardian and is **blocked by G-13 with a verdict and an audit record**, instead of a 422 at intake that leaves no trace. Fail-closed is unchanged: G-13 blocks any action type missing from the agent's mandate.

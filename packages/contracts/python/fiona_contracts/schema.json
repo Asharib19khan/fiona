@@ -339,13 +339,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -416,13 +411,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -1557,13 +1547,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -1634,13 +1619,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2134,13 +2114,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2211,13 +2186,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2632,13 +2602,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2709,13 +2674,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2864,13 +2824,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -2941,13 +2896,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -3281,13 +3231,8 @@
           "description": "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)."
         },
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",
@@ -3358,13 +3303,8 @@
       ],
       "properties": {
         "agent": {
-          "description": "The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.",
-          "type": "string",
-          "enum": [
-            "treasurer",
-            "controller",
-            "growth_analyst"
-          ]
+          "description": "The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n",
+          "$ref": "#/$defs/AgentName"
         },
         "summary": {
           "type": "string",

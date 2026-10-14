@@ -1023,9 +1023,9 @@ class JournalAdjustmentProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1061,9 +1061,9 @@ class JournalAdjustmentProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1180,9 +1180,9 @@ class PaymentProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1218,9 +1218,9 @@ class PaymentProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1280,9 +1280,9 @@ class PurchaseOrderProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1318,9 +1318,9 @@ class PurchaseOrderProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1380,9 +1380,9 @@ class ReconciliationMatchProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1418,9 +1418,9 @@ class ReconciliationMatchProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1519,9 +1519,9 @@ class SendDocumentProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1557,9 +1557,9 @@ class SendDocumentProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1648,9 +1648,9 @@ class BillApprovalProposal(BaseModel):
         ),
     ] = None
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]
@@ -1686,9 +1686,9 @@ class BillApprovalProposalDraft(BaseModel):
         extra="forbid",
     )
     agent: Annotated[
-        Literal["treasurer", "controller", "growth_analyst"],
+        Literal["cfo_strategist", "treasurer", "controller", "growth_analyst", "guardian", "guide"],
         Field(
-            description="The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals."
+            description="The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.\n"
         ),
     ]
     summary: Annotated[str, Field(max_length=200, min_length=1)]

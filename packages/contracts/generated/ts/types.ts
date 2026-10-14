@@ -391,9 +391,10 @@ export interface BillApprovalProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.
+   *
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -460,9 +461,10 @@ export interface Meta {
 }
 export interface BillApprovalProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.
+   *
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -678,9 +680,10 @@ export interface JournalAdjustmentProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.
+   *
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -710,9 +713,10 @@ export interface Actor3 {
 }
 export interface JournalAdjustmentProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The proposing agent. Any council member may appear here so an out-of-mandate attempt is recorded and blocked by the Guardian (G-13, e.g. the CFO Strategist submitting a payment) rather than silently rejected at intake with no verdict or audit entry.
+   *
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -915,9 +919,9 @@ export interface PaymentProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -947,9 +951,9 @@ export interface Actor5 {
 }
 export interface PaymentProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -989,9 +993,9 @@ export interface SendDocumentProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -1044,9 +1048,9 @@ export interface PurchaseOrderProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -1099,9 +1103,9 @@ export interface ReconciliationMatchProposal {
    */
   supersedes?: ProposalId | null;
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -1140,9 +1144,9 @@ export interface ReconciliationMatchPayload {
 }
 export interface SendDocumentProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -1172,9 +1176,9 @@ export interface Actor10 {
 }
 export interface PurchaseOrderProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).
@@ -1204,9 +1208,9 @@ export interface Actor11 {
 }
 export interface ReconciliationMatchProposalDraft {
   /**
-   * The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+   * The six members of the council.
    */
-  agent: "treasurer" | "controller" | "growth_analyst";
+  agent: "cfo_strategist" | "treasurer" | "controller" | "growth_analyst" | "guardian" | "guide";
   summary: string;
   /**
    * The money involved, or null for types that move none (send_document, reconciliation_match).

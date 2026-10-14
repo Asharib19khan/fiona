@@ -73,6 +73,11 @@ describe("contracts reject what they must", () => {
     const draft = readJson(path.join(examplesDir, "ProposalDraft.payment.json"));
     expect(check("ProposalDraft", { ...draft, tenant_id: "ten_other" })).not.toEqual([]);
   });
+  it("but accepts an out-of-mandate agent, so G-13 can block it with a verdict (S-13)", () => {
+    const draft = readJson(path.join(examplesDir, "ProposalDraft.payment.json"));
+    expect(check("ProposalDraft", { ...draft, agent: "cfo_strategist", mandate_ref: "mnd_cfo_strategist_v1" })).toEqual([]);
+    expect(check("ProposalDraft", { ...draft, agent: "intern_bot" })).not.toEqual([]);
+  });
   it("a payment payload under the wrong type", () => {
     const draft = readJson(path.join(examplesDir, "ProposalDraft.payment.json"));
     expect(check("ProposalDraft", { ...draft, type: "bill_approval" })).not.toEqual([]);
