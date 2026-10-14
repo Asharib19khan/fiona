@@ -1,9 +1,9 @@
-> **HANDOFF (paused Wed 14 Oct, fiona-b0, by orchestrator order)**
-> 1. Done: D1 (schema, RLS, seed) and D2a (generator v0, seed-42 fixtures), both committed; FORMATS.md signed off by fiona-19; Linux PG17 checksum pinned.
-> 2. Half-done: D2. The v1 persona config is written and parked at `data/generator/wip/karachi_apparel_v1.toml.wip` (24 months from 1 Jul 2024, holidays and seasons, cost and price inflation, two suppliers per category, loan, leases, payroll, assets, stock builds, NRV, POS anomalies, every B3 plant and proposal). `build.py` is still v0.
-> 3. Next step: rewrite `data/generator/build.py` to v1 for that config (plants, proposals, finance schedules, holdout, PDFs), move the .wip file back to `personas/karachi_apparel.toml`, then tune for: FY26 CFO < -2% of revenue with CFI and CFF < 0, FY25 growth; week-7 dip (weeks from as_of+1) below 200,000,000 with weeks 1-6 above; 85-90% of bills within the 150k cap. Then extend the tests and FORMATS.md.
+> **HANDOFF (held Wed 14 Oct, fiona-b0, by orchestrator order)**
+> 1. Done: D1, D2a; A2 contracts signed off (condition met in 5a4295f, rc.2); mandates.json now has status + created_at and validates as contract Mandate (4978762).
+> 2. Half-done: D2. The v1 persona config is parked at `data/generator/wip/karachi_apparel_v1.toml.wip` (24 months from 1 Jul 2024, B3 plants with Abdullah's IDs, proposals, loan, leases, payroll, assets, stock builds, NRV, POS anomalies). `build.py` is still v0; no v1 code is written yet.
+> 3. Next step: write build.py v1 for that config (calendar and holidays, cost and price factors, plants, proposals as contract ProposalDraft with Evidence kinds bill/document and created_by Actor, finance schedules, a holdout through as_of+91 days, ~20 PDFs). Move the .wip file back to personas/, then tune: FY26 CFO < -2% of revenue (raise stock builds, payroll ~2.9M/month, drawings), FY25 growth, week-7 dip (weeks from as_of+1) below 200,000,000 with weeks 1-6 above, 85-90% of bills within the cap. Then D3.
 > 4. Files: data/generator/{build.py, core.py, render.py, write.py, __init__.py, tests/}, data/fixtures/FORMATS.md.
-> 5. Open: totals 14,950,000 / 9,900,000 / 9,500,000 / 7,400,000 can't be reached as subtotal + round(18% x subtotal), so the plants will be 1 minor unit off (tell fiona-fa). Answer fiona-fa: `clearing` = receivable, and add neutral classes prepayments and other_opex plus a current/non-current loan split.
+> 5. Open: 4 B3 totals are unreachable with 18% half-up tax, so plants come out 1 minor unit higher (fiona-fa told); clearing = receivable (fiona-fa told).
 
 # Daniyal lane status (fiona-b0)
 
