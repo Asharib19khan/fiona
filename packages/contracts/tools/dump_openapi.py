@@ -1,7 +1,9 @@
 """Write the engine's OpenAPI document (FastAPI) to a file, deterministically.
 
-Run from services/ with the engine's environment (packages/contracts/tools/gen.mjs does this):
-    uv run --project engine python ../packages/contracts/tools/dump_openapi.py <repo-relative output>
+    python dump_openapi.py <services dir> <output path>
+
+packages/contracts/tools/gen.mjs runs this against a clean export of the committed HEAD, so
+uncommitted work in the shared working tree never leaks into the contract (CI does the same).
 """
 
 from __future__ import annotations
@@ -12,12 +14,11 @@ import sys
 from pathlib import Path
 
 os.environ.setdefault("FIONA_MODE", "mock")
-SERVICES = Path(__file__).resolve().parents[3] / "services"
-sys.path.insert(0, str(SERVICES))
+services, out = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
+sys.path.insert(0, str(services))
 
 from engine.app.main import create_app  # noqa: E402
 
-out = SERVICES.parent / sys.argv[1]
 spec = create_app().openapi()
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(
@@ -25,4 +26,4 @@ out.write_text(
     encoding="utf-8",
     newline="\n",  # LF on Windows too, so the file is byte-identical to CI's
 )
-print(f"  wrote {sys.argv[1]} ({len(spec.get('paths', {}))} paths)")
+print(f"  wrote {out.name} ({len(spec.get('paths', {}))} paths) from committed HEAD")
