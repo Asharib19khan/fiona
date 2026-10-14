@@ -10,4 +10,7 @@ paths = [
   '''(^|/)pnpm-lock\.yaml$''',
   '''(^|/)uv\.lock$''',
   '''\.pdf$''',
+  # Fixture manifests list SHA-256 file hashes ("answer_key.json": "<64 hex>"), which the
+  # generic-api-key rule misreads as keys. Path-scoped so a real 64-hex key elsewhere is still caught.
+  '''^data/fixtures/[^/]+/manifest\.json$''',
 ]

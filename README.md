@@ -4,6 +4,8 @@ A finance team made of AI agents that works for a small or medium business. The 
 
 FinTechathon 2026 · International AI Track · Direction E: "AI as a Financial Participant".
 
+> **All data in this repository is synthetic.** The businesses, people, suppliers, customers, bank accounts and documents are invented by our generator (`data/generator`), and the bank codes, phone numbers and tax IDs are deliberately impossible. The agent wallet is **simulated**: no real money moves, and the interface labels every payment as simulated. Synthetic data proves the pipeline and the checks, not real-world forecast accuracy.
+
 ## Run it
 
 Requirements: Node 24, Python 3.12 and [uv](https://docs.astral.sh/uv/). pnpm comes from Corepack.

@@ -60,7 +60,7 @@ jobs:
         working-directory: services/${{ matrix.service }}
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0
         with:
           enable-cache: true
           cache-dependency-glob: services/${{ matrix.service }}/uv.lock
@@ -82,7 +82,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0
       - name: Every rule fires on a deliberately bad import
         run: uv run --no-project --python 3.12 python scripts/check-boundaries.py --self-test
       - name: The repo has no violations
