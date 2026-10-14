@@ -162,8 +162,9 @@ class CheckContext(BaseModel):
 
     proposal: Proposal | ProposalDraft | dict[str, Any]
     mandate: Mandate | dict[str, Any] | None = None
-    buffer_minor: int = 200000000  # Default PKR 2,000,000 from tenant policy
+    buffer_minor: int  # tenant.policies.cash_buffer_minor; required, never defaulted
     currency: str = "PKR"
+    country: str | None = None  # tenant country; selects the country pack for G-11
 
     payee: PartyContext | None = None
     bill: BillContext | None = None
@@ -174,6 +175,10 @@ class CheckContext(BaseModel):
     forecast: ForecastContext | None = None
 
     paid_today_minor: int = 0
+    # G-09 resolver: every record this tenant has that evidence may cite, keyed by ref, with the
+    # fields used to detect contradictions ({"kind", "party_id", "amount_minor"}). None means no
+    # resolver was supplied, and G-09 then fails closed.
+    evidence_index: dict[str, dict[str, Any]] | None = None
     proposer_id: str | None = None
     approver_id: str | None = None
     bill_created_by: str | None = None

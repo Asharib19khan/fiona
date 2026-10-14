@@ -9,7 +9,7 @@ Fails closed with outcome='escalate' and detail='CHECK_ERROR: <reason>' on excep
 from __future__ import annotations
 
 import re
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from rapidfuzz import fuzz
@@ -18,7 +18,9 @@ from engine.guardian_checks.context import CheckContext
 from engine.guardian_checks.rules import (
     MATERIAL_DECISION_TYPES,
     PO_EXEMPT_CATEGORIES,
+    STATUTORY_CATEGORIES,
     get_threshold,
+    tax_id_pattern,
 )
 from fiona_contracts.models import Check, PayOnCondition
 
@@ -219,7 +221,7 @@ def g03_bank_account_change(ctx: CheckContext) -> Check | None:
 
     try:
         cooling_off_threshold = get_threshold("T-G03-COOL")
-        cooling_off_days = int(cooling_off_threshold.get("value", 7))
+        cooling_off_days = int(cooling_off_threshold["value"])
 
         party = ctx.payee
         now_dt = ctx.get_now_dt()
@@ -282,7 +284,9 @@ def g03_bank_account_change(ctx: CheckContext) -> Check | None:
 
         # If there was a bank change:
         if changed_at is not None or change_event is not None:
-            is_phone_or_in_person = confirmed_via in ("phone", "in_person")
+            is_phone_or_in_person = confirmed_via == "phone" and str(confirmed_by or "").startswith(
+                "usr_"
+            )
             # (a) Changed within cooling-off period and not confirmed via phone
             if (
                 days_since_change is not None
@@ -424,8 +428,8 @@ def g05_duplicate_bill(ctx: CheckContext) -> Check | None:
         t_amt = get_threshold("T-G05-AMT")
         t_sim = get_threshold("T-G05-SIM")
 
-        amt_tolerance_bp = int(t_amt.get("value_bp", 100))
-        sim_threshold_bp = int(t_sim.get("value_bp", 9000))
+        amt_tolerance_bp = int(t_amt["value_bp"])
+        sim_threshold_bp = int(t_sim["value_bp"])
 
         bill = ctx.bill
         if bill is None:
@@ -586,7 +590,7 @@ def g06_three_way_match(ctx: CheckContext) -> Check | None:
 
     try:
         t_tol = get_threshold("T-G06-TOL")
-        tolerance_bp = int(t_tol.get("value_bp", 200))
+        tolerance_bp = int(t_tol["value_bp"])
 
         bill = ctx.bill
         category = bill.category if bill else ctx.get_category()
@@ -726,7 +730,7 @@ def g07_arithmetic(ctx: CheckContext) -> Check | None:
 
     try:
         t_arith = get_threshold("T-G07-ARITH")
-        tolerance_minor = int(t_arith.get("value_minor", 1))
+        tolerance_minor = int(t_arith["value_minor"])
 
         # 1. Journal entries
         if action_type == "journal_adjustment" or ctx.journal_lines:
@@ -940,10 +944,14 @@ def g07_arithmetic(ctx: CheckContext) -> Check | None:
 def _get_week_for_date(d_str: str, week_starts: list[datetime]) -> int:
     """Return 1-indexed week number for a YYYY-MM-DD string."""
     d = datetime.fromisoformat(d_str[:10]).replace(tzinfo=UTC)
+    if d < week_starts[0]:
+        return 1  # a payment before the horizon affects every week
     for i in range(len(week_starts) - 1):
         if week_starts[i] <= d < week_starts[i + 1]:
             return i + 1
-    return len(week_starts)
+    if d < week_starts[-1] + timedelta(days=7):
+        return len(week_starts)
+    return len(week_starts) + 1  # after the horizon: no forecast week changes
 
 
 def g08_cash_buffer(ctx: CheckContext) -> Check | None:
@@ -1044,10 +1052,13 @@ def g08_cash_buffer(ctx: CheckContext) -> Check | None:
                 if safe_week == w_due and due_date:
                     safe_date = due_date
                 else:
-                    safe_date = weeks[safe_week - 1].start
+                    # Latest date of the safe week (rule: latest safe date first).
+                    week_end = week_starts[safe_week - 1] + timedelta(days=6)
+                    safe_date = week_end.strftime("%Y-%m-%d")
                 break
 
-        if safe_date is not None:
+        category = ctx.get_category() or (ctx.bill.category if ctx.bill else None)
+        if safe_date is not None and category not in STATUTORY_CATEGORIES:
             audit["safe_date"] = safe_date
             return Check(
                 name="policy",
@@ -1107,12 +1118,14 @@ def g09_evidence_check(ctx: CheckContext) -> Check | None:
             required_kinds = required_kinds_map.get(action_type, ["ledger_row", "document"])
 
         present_kinds = {e.get("kind") for e in evidence_list if isinstance(e, dict)}
+        ledger_kinds = {"ledger_row", "ledger_event", "bill"}
 
         missing_kinds = []
         if action_type == "payment":
-            for rk in ["ledger_row", "document"]:
-                if rk not in present_kinds:
-                    missing_kinds.append(rk)
+            if not (ledger_kinds & present_kinds):
+                missing_kinds.append("ledger_row")
+            if "document" not in present_kinds:
+                missing_kinds.append("document")
         elif action_type == "bill_approval":
             if "document" not in present_kinds:
                 missing_kinds.append("document")
@@ -1125,23 +1138,57 @@ def g09_evidence_check(ctx: CheckContext) -> Check | None:
             ):
                 missing_kinds.append("goods_received")
 
-        unresolved_refs = []
-        contradictions = []
+        if ctx.evidence_index is None:
+            return Check(
+                name="evidence",
+                rule="G-09",
+                result="fail",
+                outcome="escalate",
+                detail="CHECK_ERROR: no evidence resolver was supplied, so references cannot be verified.",
+            )
 
+        unresolved_refs: list[str] = []
+        contradictions: list[str] = []
+        payee = ctx.get_payee_id()
+        amount = ctx.get_amount_minor()
+        cited_amounts: set[int] = set()
         for e in evidence_list:
             if not isinstance(e, dict):
                 continue
             ref = str(e.get("ref", ""))
-            # In scenarios: refs like bill_9999 or doc_999 are absent
-            if "9999" in ref or "absent" in ref or "999" in ref:
+            record = ctx.evidence_index.get(ref)
+            if record is None:
                 unresolved_refs.append(ref)
+                continue
+            party = record.get("party_id")
+            if payee and party and party != payee:
+                contradictions.append(f"{ref} belongs to {party}, the payload says {payee}")
+            rec_amount = record.get("amount_minor")
+            if rec_amount is not None:
+                cited_amounts.add(int(rec_amount))
+                if (
+                    action_type == "payment"
+                    and e.get("kind") in ledger_kinds
+                    and amount is not None
+                    and int(rec_amount) != amount
+                ):
+                    contradictions.append(f"{ref} is for {rec_amount}, the proposal pays {amount}")
+
+        # Figures quoted in the reasoning must match a cited value (free text is read conservatively).
+        unmatched_values: list[int] = []
+        for match in re.finditer(r"PKR\s*([0-9][0-9,]*)(?:\.([0-9]{1,2}))?", ctx.get_reasoning()):
+            major = int(match.group(1).replace(",", ""))
+            cents = int((match.group(2) or "0").ljust(2, "0"))
+            value = major * 100 + cents
+            if value not in cited_amounts and value != amount:
+                unmatched_values.append(value)
 
         audit: dict[str, Any] = {
             "required_kinds": required_kinds,
             "missing_kinds": missing_kinds,
             "unresolved_refs": unresolved_refs,
             "contradictions": contradictions,
-            "unmatched_reasoning_values": [],
+            "unmatched_reasoning_values": unmatched_values,
         }
 
         if missing_kinds or unresolved_refs or contradictions:
@@ -1158,6 +1205,16 @@ def g09_evidence_check(ctx: CheckContext) -> Check | None:
                 result="fail",
                 outcome="block",
                 detail=f"Evidence verification failed: {'; '.join(reasons)}.",
+                audit=audit,
+            )
+
+        if unmatched_values:
+            return Check(
+                name="evidence",
+                rule="G-09",
+                result="fail",
+                outcome="escalate",
+                detail=f"The reasoning quotes {', '.join(map(str, unmatched_values))} minor, which no cited record supports.",
                 audit=audit,
             )
 
@@ -1252,11 +1309,12 @@ def g11_supplier_tax_id(ctx: CheckContext) -> Check | None:
         party = ctx.payee
         tax_id = party.tax_id if party else None
         tax_id_type = (party.tax_id_type if party else None) or "NTN"
-        pattern = (
-            party.country_pack_pattern
-            if (party and party.country_pack_pattern)
-            else "^[0-9]{7}-[0-9]$"
-        )
+        if party and party.country_pack_pattern:
+            pattern = party.country_pack_pattern
+        elif ctx.country:
+            pattern = tax_id_pattern(ctx.country, tax_id_type)
+        else:
+            raise ValueError("tenant country unknown, so no tax-ID pattern can be loaded")
 
         bill_tax_id = ctx.bill.supplier_tax_id if ctx.bill else None
 
@@ -1352,7 +1410,29 @@ def g13_mandate_permission(ctx: CheckContext) -> Check | None:
                 audit=audit,
             )
 
-        if ctx.mandate is not None:
+        if ctx.mandate is None:
+            return Check(
+                name="policy",
+                rule="G-13",
+                result="fail",
+                outcome="block",
+                detail=f"{agent} has no mandate, so no action type is permitted.",
+                audit=audit,
+            )
+        mandate_agent = getattr(ctx.mandate, "agent", None)
+        if mandate_agent is None and isinstance(ctx.mandate, dict):
+            mandate_agent = ctx.mandate.get("agent")
+        mandate_agent = getattr(mandate_agent, "value", mandate_agent)
+        if mandate_agent is not None and str(mandate_agent) != agent:
+            return Check(
+                name="policy",
+                rule="G-13",
+                result="fail",
+                outcome="block",
+                detail=f"Mandate belongs to {mandate_agent}, not to the proposing agent {agent}.",
+                audit=audit,
+            )
+        if True:
             # Check allowed action types
             allowed_types = getattr(ctx.mandate, "allowed_action_types", None)
             if allowed_types is None and isinstance(ctx.mandate, dict):
@@ -1395,8 +1475,11 @@ def g13_mandate_permission(ctx: CheckContext) -> Check | None:
             if windows is None and isinstance(ctx.mandate, dict):
                 windows = ctx.mandate.get("payment_windows")
             if windows is not None:
-                now_dt = ctx.get_now_dt()
-                day_abbr = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][now_dt.weekday()]
+                requested = ctx.get_pay_on() or ctx.get_now_dt().strftime("%Y-%m-%d")
+                requested_day = datetime.fromisoformat(requested[:10])
+                day_abbr = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"][
+                    requested_day.weekday()
+                ]
                 allowed_days = (
                     getattr(windows, "days", None)
                     if not isinstance(windows, dict)
@@ -1443,7 +1526,7 @@ def g14_stale_inputs(ctx: CheckContext) -> Check | None:
 
     try:
         t_stale = get_threshold("T-G14-STALE")
-        limits = t_stale.get("values", {"forecast_run_hours": 24, "bank_balance_hours": 48})
+        limits = t_stale["values"]
         max_fc_hours = int(limits.get("forecast_run_hours", 24))
 
         now_dt = ctx.get_now_dt()

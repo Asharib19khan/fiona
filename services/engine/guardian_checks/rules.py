@@ -91,8 +91,25 @@ PO_EXEMPT_CATEGORIES: tuple[str, ...] = tuple(
 )
 
 
+# G-08 exceptions: "Statutory payments (tax, payroll) are never delayed past their due date by a
+# condition; if one causes a violation the result is escalate". Named with guardian.yaml's
+# po_exempt_categories vocabulary.
+STATUTORY_CATEGORIES: tuple[str, ...] = ("taxes_and_duties", "payroll_related")
+
+
 def get_threshold(threshold_id: str) -> dict[str, Any]:
     """Resolve a threshold definition by ID from rulebook/thresholds.yaml."""
     if threshold_id not in THRESHOLDS:
         raise KeyError(f"Threshold ID {threshold_id!r} not found in {THRESHOLDS_PATH}")
     return THRESHOLDS[threshold_id]
+
+
+def tax_id_pattern(country: str, tax_id_type: str) -> str:
+    """The tax-ID regex for a country and ID type, from rulebook/country_packs/<country>.yaml."""
+    pack = _load_yaml(RULEBOOK_DIR / "country_packs" / f"{country}.yaml")
+    for section in pack.values():
+        if isinstance(section, dict) and "tax_id_formats" in section:
+            return str(section["tax_id_formats"][tax_id_type]["pattern"])
+    if "tax_id_formats" in pack:
+        return str(pack["tax_id_formats"][tax_id_type]["pattern"])
+    raise KeyError(f"No tax_id_formats.{tax_id_type} in the {country} country pack")

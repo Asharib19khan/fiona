@@ -105,6 +105,8 @@ def test_adding_passing_check_never_changes_outcome(base_checks: list[Check]) ->
 def test_exception_in_rule_yields_escalate_or_stricter(failing_rule_idx: int, err_msg: str) -> None:
     """Property 3: An unhandled exception in any rule runner yields escalate or block, never approve."""
     ctx = CheckContext(
+        buffer_minor=200_000_000,
+        country="PK",
         proposal={"agent": "treasurer", "type": "payment", "amount_minor": 1000},
         now="2026-10-22T09:00:00Z",
     )
