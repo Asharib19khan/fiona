@@ -28,7 +28,6 @@ from zoneinfo import ZoneInfo
 
 import psycopg
 
-from engine.guardian_checks.rules import get_threshold
 from engine.ledger import db
 from engine.ledger.ids import encode_ulid
 from engine.wallet.audit import append
@@ -235,6 +234,9 @@ def _check(
         phone_confirmed = (
             change is not None and change[0] == "phone" and str(change[1] or "").startswith("usr_")
         )
+        # Imported here so that importing the API never needs the rulebook files (OpenAPI codegen).
+        from engine.guardian_checks.rules import get_threshold
+
         cooling_days = int(get_threshold("T-G03-COOL")["value"])
         if not phone_confirmed:
             age = (now - changed_at).days
