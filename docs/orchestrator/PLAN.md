@@ -173,6 +173,29 @@ fiona-19 owns the briefing, approvals, mandates and autonomy, council, command b
 | R9 | 13 Oct | The Verdict check carries its own `outcome`, and the strictest outcome wins. Conditions are machine-readable so the wallet can enforce them. Health is shown as categorical bands, never as a score. G-13 is Tier 1. Karachi Treasurer caps are PKR 150k per payment and 450k per day. |
 | R7 | 13 Oct | Financing-option matching is Tier 1: it is the first phrase of Topic E and was missing from our plan. |
 
+## 9b. Execution mode: one lane at a time (from Wed 14 Oct, Asharib's decision on token budget)
+
+Only **one** Claude lane session runs at a time. The others are paused, which costs nothing. fiona-b7 resumes the next lane by message once the active one reports "done, paused".
+
+- **Before pausing:** commit path-scoped with tests green, write a five-line HANDOFF block at the top of your status file, message fiona-b7, then stop.
+- **On resume:** read only your HANDOFF block and the files it names. Don't re-read the whole repository.
+- **Turn size:** a turn is a dependency-complete chunk, so the next lane can build on it.
+- **Rotation:**
+  1. fiona-19: CI green, A2
+  2. fiona-b0: D2, D3
+  3. fiona-79: Y10
+  4. fiona-fa: Y2
+  5. fiona-b0: D4, D5, D6
+  6. fiona-19: A3, A4 (CLI provider), A6, A5
+  7. fiona-79: Y4, Y6, Y8, and the forecast and financing screens
+  8. fiona-fa: B4 and the analysis screen
+  9. fiona-b0: bills, reconcile, wallet and audit screens, plus the log export
+  10. fiona-19: A7, A8 live link
+
+  After that, Tier 2 in the same pattern. fiona-b7 re-orders if a blocker appears.
+- **Antigravity** (Opus, its own budget) runs in parallel on `docs/submission/`, deliverables 01, 02, 05 and 06. Abdullah's lane does the finance QA of those documents.
+- **Claude access:** agents use the logged-in Claude Code CLI (`FIONA_LLM_PROVIDER=claude_cli`) locally. The public live link uses the replay cache (`replay`). An API key is optional.
+
 ## 10. Only Asharib (the user) can do these
 
 | Item | When | Unblocks |

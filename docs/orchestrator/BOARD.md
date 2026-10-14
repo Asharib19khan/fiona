@@ -15,11 +15,11 @@ Maintained by fiona-b7. Updated Wed 14 Oct 2026, 08:30 PKT. Plan: [PLAN.md](PLAN
 
 About 13 of 34 Tier 1 tasks are done. The foundations (data, schema, rules, forecast) are ahead of schedule. What remains is the parts that make it a product: contracts, agents, Guardian, wallet, screens, integration and the six deliverables.
 
+**Mode (from Wed 14): one lane active at a time; see PLAN.md §9b. Active now: fiona-19 (CI fix, A2).** Registration is done and the repository is public. Claude runs through the CLI, so no API key is needed.
+
 ## Waiting on Asharib (the user)
 
 | Item | Blocks | Latest |
 | --- | --- | --- |
-| Register the team | Everything | Today |
-| Anthropic API key in `Y:\Fiona\.env.local` | A4 agents (Fri), A6 Guardian review, council | **Thu 15** |
 | Supabase, Vercel and Fly.io accounts (checklist: `docs/lane-a/S2_SETUP.md`) | Live link (A8, Sun) | Fri 16 |
 | Abdullah (the person) reviews `rulebook/docs/B1_*.md` and `B2_*.md` | Finance credibility | Sat 17 |
