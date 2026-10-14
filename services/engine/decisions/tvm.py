@@ -69,25 +69,35 @@ def irr(cash_flows: Sequence[float], *, tol: float = 1e-10, max_iter: int = 300)
     if changes > 1:
         return IrrResult(None, IrrStatus.MULTIPLE_SIGN_CHANGES)
 
+    # Search on a rescaled NPV with the same sign and root, computed in log space, so long
+    # schedules near -100% or at very high rates neither underflow nor overflow.
     lo, hi = -0.9999, 1.0
-    f_lo = npv(lo, cash_flows)
-    f_hi = npv(hi, cash_flows)
+    f_lo = _scaled_npv(lo, cash_flows)
+    f_hi = _scaled_npv(hi, cash_flows)
     while f_lo * f_hi > 0 and hi < 1e6:
         hi *= 2.0
-        f_hi = npv(hi, cash_flows)
+        f_hi = _scaled_npv(hi, cash_flows)
     if f_lo * f_hi > 0:
         return IrrResult(None, IrrStatus.NO_ROOT_FOUND)
 
     for _ in range(max_iter):
         mid = (lo + hi) / 2.0
-        f_mid = npv(mid, cash_flows)
-        if abs(f_mid) < tol or (hi - lo) / 2.0 < tol:
+        f_mid = _scaled_npv(mid, cash_flows)
+        if f_mid == 0 or (hi - lo) / 2.0 < tol:
             return IrrResult(mid, IrrStatus.OK)
         if f_lo * f_mid < 0:
             hi, f_hi = mid, f_mid
         else:
             lo, f_lo = mid, f_mid
     return IrrResult((lo + hi) / 2.0, IrrStatus.OK)
+
+
+def _scaled_npv(rate: float, cash_flows: Sequence[float]) -> float:
+    """NPV divided by a positive constant: sum cf_t * exp(-t * ln(1 + r) - M)."""
+    log_growth = math.log1p(rate)
+    exponents = [-t * log_growth for t in range(len(cash_flows))]
+    top = max(exponents)
+    return math.fsum(cf * math.exp(e - top) for cf, e in zip(cash_flows, exponents, strict=True))
 
 
 def payback_period(cash_flows: Sequence[float], rate: float = 0.0) -> float | None:

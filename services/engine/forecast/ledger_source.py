@@ -72,6 +72,10 @@ class LedgerSnapshot:
     receipts: list[CustomerReceipt]
     source: str
     notes: list[str] = field(default_factory=list)
+    country: str | None = None
+    sales: list[tuple[date, int]] = field(
+        default_factory=list
+    )  # (day, receipt total incl. refunds as negatives)
 
 
 class TenantDataMissing(LookupError):
@@ -94,6 +98,7 @@ def load_fixture_snapshot(tenant_id: str, root: Path = FIXTURES_ROOT) -> LedgerS
     payments: list[SupplierPayment] = []
     invoices: list[CustomerInvoice] = []
     receipt_events: list[CustomerReceipt] = []
+    sales: list[tuple[date, int]] = []
     with (folder / "events.jsonl").open(encoding="utf-8") as fh:
         for raw in fh:
             e = json.loads(raw)
@@ -133,6 +138,8 @@ def load_fixture_snapshot(tenant_id: str, root: Path = FIXTURES_ROOT) -> LedgerS
                         e["total_minor"],
                     )
                 )
+            elif kind == "sale":
+                sales.append((_d(e["date"]), e["total_minor"]))
             elif kind == "customer_receipt":
                 receipt_events.append(
                     CustomerReceipt(tuple(e["invoice_ids"]), _d(e["date"]), e["amount_minor"])
@@ -170,6 +177,8 @@ def load_fixture_snapshot(tenant_id: str, root: Path = FIXTURES_ROOT) -> LedgerS
         payments=[p for p in payments if p.paid_on <= as_of],
         invoices=[i for i in invoices if i.issue_date <= as_of],
         receipts=[r for r in receipts if r.received_on <= as_of],
+        country=tenant.get("country"),
+        sales=[s for s in sales if s[0] <= as_of],
         source=f"fixtures:{folder.relative_to(root.parent.parent).as_posix()}",
         notes=notes,
     )

@@ -265,6 +265,8 @@
           "note": null
         }
       ],
+      "outcome": "recommended",
+      "max_amount": null,
       "rank": 1,
       "rank_reasons": [
         "lowest_effective_cost",
@@ -429,6 +431,8 @@
           "note": null
         }
       ],
+      "outcome": "recommended",
+      "max_amount": null,
       "rank": 2,
       "rank_reasons": []
     },
@@ -590,6 +594,8 @@
           "note": null
         }
       ],
+      "outcome": "needs_information",
+      "max_amount": null,
       "rank": null,
       "rank_reasons": []
     },
@@ -752,6 +758,8 @@
           "note": null
         }
       ],
+      "outcome": "ineligible",
+      "max_amount": null,
       "rank": null,
       "rank_reasons": []
     }

@@ -29,11 +29,41 @@ OptionKind = Literal[
 ]
 
 
+class BusinessProfile(BaseModel):
+    """Facts the catalogue's eligibility rules need that the ledger cannot tell us."""
+
+    owner_age_years: int | None = Field(None, ge=16, le=100)
+    legal_form: (
+        Literal["sole_proprietor", "partnership", "private_limited", "public_limited", "other"]
+        | None
+    ) = None
+    size_tier: Literal["micro", "small", "medium", "large"] | None = None
+    years_operating: int | None = Field(None, ge=0, le=200)
+    has_b2b_receivables: bool | None = Field(
+        None, description="None: derived from the ledger's open invoices."
+    )
+    industry: str | None = None
+
+
+class SupplierDiscount(BaseModel):
+    discount_bp: int = Field(ge=0, lt=10_000)
+    within_days: int = Field(ge=0)
+    net_days: int = Field(gt=0)
+
+
 class FinancingMatchRequest(BaseModel):
     amount: Money
     purpose: Purpose
     preferred_tenor_months: int | None = Field(None, ge=1, le=240)
     collateral_value: Money | None = None
+    is_new_borrower_of_bank: bool | None = None
+    profile: BusinessProfile = Field(default_factory=BusinessProfile)
+    pre_money_valuation: Money | None = Field(
+        None, description="Needed to size dilution for equity options."
+    )
+    supplier_discount: SupplierDiscount | None = Field(
+        None, description="Early-payment discount given up by taking longer supplier terms, if any."
+    )
     as_of: date | None = None
 
 
@@ -56,10 +86,16 @@ class FinancingOption(BaseModel):
         description="None when eligibility cannot be decided from the data."
     )
     eligibility: list[RuleCheck]
-    verification: Literal["primary", "secondary", "indicative_range"]
+    verification: Literal["primary", "secondary", "assumption", "unverified", "indicative_range"]
     figures: list[Figure] = Field(
         description="Effective annual cost, instalment, total cost, DSCR after (base and downside), runway after, "
         "dilution; range ends carry suffixes .low/.mid/.high in metric_id."
+    )
+    outcome: Literal[
+        "recommended", "possible_at_smaller_size", "cost_unknown", "needs_information", "ineligible"
+    ]
+    max_amount: Money | None = Field(
+        None, description="Largest amount that keeps cover at the minimum, when it is smaller."
     )
     rank: int | None = Field(
         None, description="1 = best among eligible options; None if not eligible."

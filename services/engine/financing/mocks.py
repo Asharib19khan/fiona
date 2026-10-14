@@ -137,6 +137,11 @@ def _option(option_id, name, kind, rate_annual, fee, months, style, eligible_rul
         eligibility=checks,
         verification="indicative_range",
         figures=figures,
+        outcome="recommended"
+        if eligible
+        else "needs_information"
+        if eligible is None
+        else "ineligible",
     ), eac
 
 

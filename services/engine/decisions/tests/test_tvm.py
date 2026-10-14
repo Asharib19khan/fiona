@@ -84,3 +84,11 @@ def test_discounted_payback_is_later_than_simple():
 def test_monthly_and_annual_rates_round_trip():
     assert annual_rate(monthly_rate(0.15)) == pytest.approx(0.15)
     assert monthly_rate(0.12682503) == pytest.approx(0.01, abs=1e-8)
+
+
+def test_irr_survives_long_schedules():
+    """120 monthly payments: the bracket near -100% must not underflow."""
+    flows = [-1_000_000.0] + [12_000.0] * 120
+    result = irr(flows)
+    assert result.valid
+    assert abs(npv(result.rate, flows)) <= 1e-8 * sum(abs(f) for f in flows)
