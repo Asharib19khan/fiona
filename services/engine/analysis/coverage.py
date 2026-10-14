@@ -49,7 +49,14 @@ def debt_service(interest_minor: int, principal_minor: int) -> int:
 def _coverage(metric_id: str, ebitda_minor: int, service_minor: int) -> Coverage:
     value = ratio_bp(ebitda_minor, service_minor)
     if value is None:
-        return Coverage(metric_id, None, ebitda_minor, service_minor, Status.NOT_COMPUTABLE, "no scheduled debt service")
+        return Coverage(
+            metric_id,
+            None,
+            ebitda_minor,
+            service_minor,
+            Status.NOT_COMPUTABLE,
+            "no scheduled debt service",
+        )
     return Coverage(metric_id, value, ebitda_minor, service_minor, Status.OK)
 
 
@@ -61,11 +68,15 @@ def dscr(ebitda_minor: int, interest_minor: int, principal_minor: int) -> Covera
     return _coverage("solvency.dscr", ebitda_minor, debt_service(interest_minor, principal_minor))
 
 
-def dscr_forward(ebitda_next_12m_minor: int, existing_service_minor: int, new_service_minor: int = 0) -> Coverage:
+def dscr_forward(
+    ebitda_next_12m_minor: int, existing_service_minor: int, new_service_minor: int = 0
+) -> Coverage:
     """Forward DSCR (solvency.dscr_forward): forecast EBITDA / (existing + new debt service)."""
     if existing_service_minor < 0 or new_service_minor < 0:
         raise ValueError("debt service must be non-negative")
-    return _coverage("solvency.dscr_forward", ebitda_next_12m_minor, existing_service_minor + new_service_minor)
+    return _coverage(
+        "solvency.dscr_forward", ebitda_next_12m_minor, existing_service_minor + new_service_minor
+    )
 
 
 def max_principal_at_dscr(
@@ -85,7 +96,9 @@ def max_principal_at_dscr(
         raise ValueError("min_dscr_bp must be positive")
 
     def passes(principal: int) -> bool:
-        cov = dscr_forward(ebitda_next_12m_minor, existing_service_minor, service_for_principal(principal))
+        cov = dscr_forward(
+            ebitda_next_12m_minor, existing_service_minor, service_for_principal(principal)
+        )
         return cov.value_bp is not None and cov.value_bp >= min_dscr_bp
 
     if not passes(0):

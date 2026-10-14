@@ -5,8 +5,7 @@
 #
 # Conventions
 #   - Money: integer minor units + currency. Ratios, rates and shares: integer basis points (bp).
-#     Days and months: integer x 10 (one decimal) where noted as `days_x10`/`months_x10`,
-#     otherwise integers. Compute unrounded; round once at the boundary, half away from zero.
+#     Days and months: whole integers (round half away from zero), matching the Figure unit enum. Compute unrounded; round once at the boundary, half away from zero.
 #   - Averages: (opening + closing) / 2 for the period. If the opening balance is missing, use the
 #     closing balance and set figure.basis = "closing_only" (shown in the drawer).
 #   - Division by zero or a missing input: value = null, status = not_computable, reason given.
@@ -170,7 +169,7 @@ metrics:
     category: liquidity
     formula: "bs.cash / average monthly net operating cash outflow over the last 3 months"
     inputs: [bs.cash, cash.cfo]
-    unit: months_x10
+    unit: months
     period: ttm
     null_when: ["average monthly net operating cash flow >= 0 (shown as 'not burning cash')"]
     thresholds: [T-LIQ-RUN-01]
@@ -180,7 +179,7 @@ metrics:
     category: liquidity
     formula: "(bs.cash - policy.cash_buffer) / average monthly net operating cash outflow"
     inputs: [bs.cash, policy.cash_buffer, cash.cfo]
-    unit: months_x10
+    unit: months
     period: ttm
     null_when: ["no operating cash outflow", "cash at or below the buffer"]
 
@@ -381,7 +380,7 @@ metrics:
     name: Inventory days
     category: efficiency
     formula: "average bs.inventory / is.cogs x days in window"
-    unit: days_x10
+    unit: days
     period: ttm
     null_when: ["is.cogs = 0"]
     limitations: "Seasonal stock-builds distort a year-end figure; Fiona uses average inventory and compares like periods."
@@ -397,21 +396,21 @@ metrics:
     name: Receivable days
     category: efficiency
     formula: "average bs.trade_receivables / is.revenue x days in window"
-    unit: days_x10
+    unit: days
     period: ttm
     limitations: "Use credit sales only when cash and credit sales can be separated; for a cash-heavy retailer total revenue understates the days for credit customers."
   - id: efficiency.payable_days
     name: Payable days
     category: efficiency
     formula: "average bs.trade_payables / is.cogs x days in window"
-    unit: days_x10
+    unit: days
     period: ttm
     limitations: "Purchases would be the precise denominator; cost of sales is used when purchases are not separable."
   - id: efficiency.cash_conversion_cycle
     name: Cash conversion cycle
     category: efficiency
     formula: "efficiency.inventory_days + efficiency.receivable_days - efficiency.payable_days"
-    unit: days_x10
+    unit: days
     period: ttm
   - id: efficiency.asset_turnover
     name: Asset turnover
@@ -558,14 +557,14 @@ metrics:
     name: Payback period
     category: decision
     formula: "first month in which cumulative undiscounted cash flow >= 0, with linear interpolation within the month"
-    unit: months_x10
+    unit: months
     period: project
     null_when: ["never pays back within the horizon"]
   - id: decision.discounted_payback_months
     name: Discounted payback period
     category: decision
     formula: "as payback, on cash flows discounted at the hurdle"
-    unit: months_x10
+    unit: months
     period: project
   - id: decision.peak_funding_need
     name: Peak funding need

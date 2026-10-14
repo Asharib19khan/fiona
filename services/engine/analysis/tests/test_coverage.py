@@ -34,21 +34,28 @@ def test_max_principal_annual_equal_principal_loan():
     ebitda, existing = 710_000_000, 261_612_000
     p = max_principal_at_dscr(ebitda, existing, 12500, service, 10_000_000_000)
     assert dscr_forward(ebitda, existing, service(p)).value_bp >= 12500
-    assert dscr_forward(ebitda, existing, service(p + 1)).value_bp < 12500 or service(p + 1) == service(p)
+    assert dscr_forward(ebitda, existing, service(p + 1)).value_bp < 12500 or service(
+        p + 1
+    ) == service(p)
 
 
 def test_max_principal_zero_when_existing_debt_already_fails():
     assert max_principal_at_dscr(100, 100, 12500, lambda p: p, 1_000) == 0
 
 
-@given(st.integers(-10**12, 10**12), st.integers(1, 10**12))
+@given(st.integers(-(10**12), 10**12), st.integers(1, 10**12))
 def test_ratio_bp_matches_exact_rounding(n, d):
     from fractions import Fraction
 
     exact = Fraction(n * 10000, d)
     floor = exact.numerator // exact.denominator
     frac = exact - floor
-    expected = floor + (1 if frac >= Fraction(1, 2) else 0) if exact >= 0 else -(
-        (-exact).numerator // (-exact).denominator + (1 if (-exact) - (-exact).numerator // (-exact).denominator >= Fraction(1, 2) else 0)
+    expected = (
+        floor + (1 if frac >= Fraction(1, 2) else 0)
+        if exact >= 0
+        else -(
+            (-exact).numerator // (-exact).denominator
+            + (1 if (-exact) - (-exact).numerator // (-exact).denominator >= Fraction(1, 2) else 0)
+        )
     )
     assert ratio_bp(n, d) == expected
