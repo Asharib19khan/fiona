@@ -36,5 +36,11 @@ def load_mandates(tenant_id: str, path: Path = RULEBOOK_MANDATES) -> tuple[list[
     with path.open(encoding="utf-8") as handle:
         rulebook = yaml.safe_load(handle)
     persona = rulebook["persona_mandates"][tenant_id]
-    mandates = [{"tenant_id": tenant_id, **m} for m in persona["mandates"]]
+    mandates = []
+    for m in persona["mandates"]:
+        mandate = {"tenant_id": tenant_id, **m}
+        # Contract Mandate requires these; the rulebook leaves them implicit for defaults.
+        mandate.setdefault("status", "active")
+        mandate.setdefault("created_at", f"{m['effective_from']}T00:00:00Z")
+        mandates.append(mandate)
     return mandates, f"rulebook/mandates.yaml v{rulebook['mandates_version']}"
