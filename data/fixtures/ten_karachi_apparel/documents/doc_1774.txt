@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Swat Wool Works
+Mingora, Pakistan    NTN: 6979048-7
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: SWW-25-363
+Date: 2025-10-30    Due: 2025-12-29
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2720
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  SHL-OS-BEI Wool shawl - OS - BEI          2,687.00      32,244.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        32,244.00
+                                             GST 18.00%         5,803.92
+                                              TOTAL PKR        38,047.92
+------------------------------------------------------------------------
+Pay to IBAN: PK59SYND0345004627957038

@@ -1,22 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Hala Dupatta Crafts
-Hala, Pakistan    NTN: 1649637-3
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: HDC/259
-Date: 2026-09-24    Due: 2026-10-09
+Invoice no: GKW929
+Date: 2024-07-29    Due: 2024-08-13
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1060
+PO ref: PO-1064
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   18  DUP-OS-BLK Chiffon dupatta - OS - BLK     1,050.00      18,900.00
-    6  DUP-OS-GRN Chiffon dupatta - OS - GRN     1,050.00       6,300.00
-   12  DUP-OS-MRN Chiffon dupatta - OS - MRN     1,050.00      12,600.00
-    6  DUP-OS-PNK Chiffon dupatta - OS - PNK     1,050.00       6,300.00
+   12  KKR-6Y-BLU Kids kurta - 6Y - BLU            725.00       8,700.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        44,100.00
-                                             GST 18.00%         7,938.00
-                                              TOTAL PKR        52,038.00
+                                           Subtotal PKR         8,700.00
+                                             GST 18.00%         1,566.00
+                                              TOTAL PKR        10,266.00
 ------------------------------------------------------------------------
-Pay to IBAN: PK96SYNB1941253908622411
+Pay to IBAN: PK45SYNB5872076931292399

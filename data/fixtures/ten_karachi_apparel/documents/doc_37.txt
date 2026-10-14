@@ -1,27 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Hala Handloom
+Hala, Pakistan    NTN: 2758379-1
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2229
-Date: 2026-09-16    Due: 2026-09-23
+Invoice no: HH474
+Date: 2024-07-23    Due: 2024-08-07
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1043
+PO ref: PO-1038
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  KRT-L-BLK Cotton kurta - L - BLK          1,800.00      21,600.00
-   12  KRT-L-MRN Cotton kurta - L - MRN          1,800.00      21,600.00
-    6  KRT-L-WHT Cotton kurta - L - WHT          1,800.00      10,800.00
-   12  KRT-M-BLK Cotton kurta - M - BLK          1,800.00      21,600.00
-   12  KRT-M-MRN Cotton kurta - M - MRN          1,800.00      21,600.00
-    6  KRT-M-WHT Cotton kurta - M - WHT          1,800.00      10,800.00
-    6  KRT-S-WHT Cotton kurta - S - WHT          1,800.00      10,800.00
-    6  KRT-XL-MRN Cotton kurta - XL - MRN        1,800.00      10,800.00
-    6  KRT-XL-WHT Cotton kurta - XL - WHT        1,800.00      10,800.00
+   12  DUP-OS-WHT Chiffon dupatta - OS - WHT       761.00       9,132.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       140,400.00
-                                             GST 18.00%        25,272.00
-                                              TOTAL PKR       165,672.00
+                                           Subtotal PKR         9,132.00
+                                             GST 18.00%         1,643.76
+                                              TOTAL PKR        10,775.76
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK30SYNB4988933137105487

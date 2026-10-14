@@ -1,19 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Swat Wool Works
-Mingora, Pakistan    NTN: 6979048-7
+Hala Handloom
+Hala, Pakistan    NTN: 2758379-1
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: SWW-26-52
-Date: 2026-09-14    Due: 2026-10-14
+Invoice no: HH472
+Date: 2024-07-21    Due: 2024-08-05
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1020
+PO ref: PO-1029
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SHL-OS-MRN Wool shawl - OS - MRN          3,100.00      18,600.00
+   12  DUP-OS-PNK Chiffon dupatta - OS - PNK       761.00       9,132.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        18,600.00
-                                             GST 18.00%         3,348.00
-                                              TOTAL PKR        21,948.00
+                                           Subtotal PKR         9,132.00
+                                             GST 18.00%         1,643.76
+                                              TOTAL PKR        10,775.76
 ------------------------------------------------------------------------
-Pay to IBAN: PK59SYND0345004627957038
+Pay to IBAN: PK30SYNB4988933137105487

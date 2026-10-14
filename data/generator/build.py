@@ -1,8 +1,12 @@
-"""Day-by-day simulation of one synthetic business (generator v0, D2a).
+"""Day-by-day simulation of one synthetic business (generator v1, D2).
 
-The simulation keeps stock, payables, receivables and the bank balance consistent, so every
-bank line really is a POS settlement, a cash deposit, a supplier payment, a customer receipt
-or a known recurring cost. Everything is driven by the persona config and the seed.
+The history starts at the fiscal-year start on or before `as_of - months`, so whole fiscal years
+are available for cash-flow statements, and runs `holdout_days` past `as_of`. Everything after
+`as_of` is withheld from the published fixtures and written only to the held-out folder for
+backtests.
+
+Stock, payables, receivables, taxes, the loan, the leases and the bank balance stay consistent,
+so every bank line really is a settlement, a deposit, a payment or a known recurring item.
 """
 
 from __future__ import annotations
@@ -11,10 +15,10 @@ import hashlib
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
-from data.generator import core
-from data.generator.render import render_bill
+from data.generator import core, finance
+from data.generator.render import render_bill, render_bill_pdf
 
-GENERATOR_VERSION = "0.1.0"
+GENERATOR_VERSION = "1.0.0"
 WALLETS = ("jazzcash", "easypaisa")
 NON_CASH = ("card", "bank_qr", "raast", "jazzcash", "easypaisa")
 SETTLEMENT_NARRATION = {
@@ -24,6 +28,10 @@ SETTLEMENT_NARRATION = {
     "jazzcash": "JAZZCASH MERCH SETTL BATCH {batch}",
     "easypaisa": "EASYPAISA MERCH SETTL BATCH {batch}",
 }
+
+
+def _ts(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
 @dataclass
@@ -38,48 +46,28 @@ class BankTxn:
     extra: dict = field(default_factory=dict)
 
 
-@dataclass
-class Output:
-    tenant: dict
-    mandates: list[dict]
-    accounts: list[list[str]]
-    parties: list[dict]
-    items: list[dict]
-    purchase_orders: list[dict]
-    goods_received: list[dict]
-    bills: list[dict]
-    documents: dict[str, bytes]
-    invoices: list[dict]
-    bank_rows: list[dict]
-    pos_rows: list[dict]
-    z_rows: list[dict]
-    events: list[dict]
-    answer_key: dict
-
-
 class Simulation:
-    def __init__(self, config: dict, seed: int, months: int, mandates: list[dict]) -> None:
-        self.cfg, self.seed, self.mandates = config, seed, mandates
+    def __init__(
+        self, config: dict, seed: int, months: int, mandates: list[dict], scenarios: dict
+    ) -> None:
+        self.cfg, self.seed, self.mandates, self.scenarios = config, seed, mandates, scenarios
         t = config["tenant"]
         self.tenant_id, self.currency = t["id"], t["currency"]
         self.offset = t["utc_offset_hours"]
         self.gst_bp = config["country_pack_draft"]["gst_rate_bp"]
-        self.end = date.fromisoformat(t["as_of"])
-        self.start = core.add_months(self.end, -months) + timedelta(1)
+        self.as_of = date.fromisoformat(t["as_of"])
+        earliest = core.add_months(self.as_of, -months)
+        fy_month = t["fiscal_year_start_month"]
+        start_year = earliest.year if earliest.month >= fy_month else earliest.year - 1
+        self.start = date(start_year, fy_month, 1)
+        self.end = self.as_of + timedelta(t["holdout_days"])
         self.country = t["country"]
-        demo = config.get("demo", {})
-        reserved_bills = {
-            d[k]
-            for d in demo.values()
-            for k in ("bill_id", "original_bill_id", "resend_bill_id")
-            if k in d
-        }
-        reserved_docs = {
-            d[k]
-            for d in demo.values()
-            for k in ("document_id", "original_document_id", "resend_document_id")
-            if k in d
-        }
+        self.cal = core.Calendar(config["calendar"]["bank_holidays"])
+        reserved_bills = {p["bill_id"] for p in config.get("plants", [])}
+        reserved_docs = {p["document_id"] for p in config.get("plants", [])}
+        demo = config.get("demo", {}).get("duplicate_bill", {})
+        reserved_bills |= {demo.get("original_bill_id"), demo.get("resend_bill_id")} - {None}
+        reserved_docs |= {demo.get("original_document_id"), demo.get("resend_document_id")} - {None}
         self.bill_ids = core.IdAllocator("bill", 1001, 4, reserved_bills)
         self.doc_ids = core.IdAllocator("doc", 1, 1, reserved_docs)
         self.po_ids = core.IdAllocator("po", 1001, 4)
@@ -94,102 +82,137 @@ class Simulation:
         self.bills: list[dict] = []
         self.documents: dict[str, bytes] = {}
         self.invoices: list[dict] = []
-        self.scenarios: list[dict] = []
-        self.unpaid_bill_ids: set[str] = set()
+        self.never_pay: set[str] = set()
+        self.output_tax: dict[int, int] = {}
+        self.input_tax: dict[int, int] = {}
+        self.tax_credit = 0
+        self.demand_actual: dict[tuple[date, str], int] = {}
+        self.nrv_allowance: dict[str, int] = {}
+        self.nrv_events: list[str] = []
+        self.nrv_records: list[dict] = []
+        self.loan = finance.loan_schedule(config["loan"], self.cal)
+        self.loan["currency"] = self.currency
+        self._weights_cache: dict[date, tuple[dict[str, int], int]] = {}
+        self._cost_cache: dict[tuple, int] = {}
+        self._price_cache: dict[tuple, int] = {}
+        self._growth_cache: dict[int, int] = {}
         self._build_parties()
         self._build_items()
 
     # ------------------------------------------------------------ setup
-    def _account_digits(self, rng) -> str:
+    def _digits(self, rng) -> str:
         return "".join(str(rng.randint(0, 9)) for _ in range(16))
+
+    def _party(
+        self,
+        pid: str,
+        kind: str,
+        code: str,
+        name: str,
+        *,
+        iban: str | None,
+        tax_id: str | None,
+        allow: bool,
+        terms: int = 0,
+        credit: int | None = None,
+        phone: str | None = None,
+        city: str = "Karachi",
+    ) -> dict:
+        return {
+            "party_id": pid,
+            "kind": kind,
+            "code": code,
+            "name": name,
+            "tax_id": tax_id,
+            "tax_id_type": "NTN" if tax_id else None,
+            "bank_iban": iban,
+            "bank_account_changed_at": None,
+            "on_allow_list": allow,
+            "payment_terms_days": terms,
+            "credit_limit_minor": credit,
+            "phone": phone,
+            "city": city,
+        }
+
+    def scenario_given(self, scenario_id: str) -> dict:
+        return (
+            next(s for s in self.scenarios["scenarios"] if s["id"] == scenario_id).get("given")
+            or {}
+        )
 
     def _build_parties(self) -> None:
         rng = core.stream(self.seed, "parties")
-        bank = self.cfg["bank"]
-        self.own_iban = core.iban(self.country, bank["iban_bank_code"], self._account_digits(rng))
+        self.own_iban = core.iban(
+            self.country, self.cfg["bank"]["iban_bank_code"], self._digits(rng)
+        )
         self.parties: dict[str, dict] = {}
+        self.supplier_cfg = {s["id"]: s for s in self.cfg["suppliers"]}
         for i, s in enumerate(self.cfg["suppliers"]):
             ntn = f"{rng.randint(1_000_000, 9_999_999)}-{rng.randint(0, 9)}"
-            code = "SYNB" if i % 2 == 0 else "SYND"
-            self.parties[s["id"]] = {
-                "party_id": s["id"],
-                "kind": "supplier",
-                "code": "S-" + s["id"][4:],
-                "name": s["name"],
-                "tax_id": ntn,
-                "tax_id_type": "NTN",
-                "bank_iban": core.iban(self.country, code, self._account_digits(rng)),
-                "bank_account_changed_at": None,
-                "on_allow_list": s["allow_list"],
-                "payment_terms_days": s["terms_days"],
-                "credit_limit_minor": None,
-                "phone": f"+92-000-000-{s['id'][4:].zfill(4)}",
-                "city": s["city"],
-            }
-        loyalty = self.cfg["pos"]["loyalty_customers"]
-        for n in range(1, loyalty + 1):
-            pid = f"cus_{n:04d}"
-            self.parties[pid] = {
-                "party_id": pid,
-                "kind": "customer",
-                "code": f"C-{n:04d}",
-                "name": f"Customer C-{n:04d}",
-                "tax_id": None,
-                "tax_id_type": None,
-                "bank_iban": None,
-                "bank_account_changed_at": None,
-                "on_allow_list": False,
-                "payment_terms_days": 0,
-                "credit_limit_minor": None,
-                "phone": None,
-                "city": "Karachi",
-            }
+            bank = "SYNB" if i % 2 == 0 else "SYND"
+            self.parties[s["id"]] = self._party(
+                s["id"],
+                "supplier",
+                "S-" + s["id"][4:],
+                s["name"],
+                iban=core.iban(self.country, bank, self._digits(rng)),
+                tax_id=ntn,
+                allow=s["allow_list"],
+                terms=s["terms_days"],
+                phone=f"+92-000-000-{s['id'][4:].zfill(4)}",
+                city=s["city"],
+            )
+        for plant in self.cfg.get("plants", []):  # S-11: a malformed NTN on file
+            if plant.get("scenario") == "S-11":
+                self.parties[plant["supplier"]]["tax_id"] = self.scenario_given("S-11")["party"][
+                    "tax_id"
+                ]
+        for n in range(1, self.cfg["pos"]["loyalty_customers"] + 1):
+            self.parties[f"cus_{n:04d}"] = self._party(
+                f"cus_{n:04d}",
+                "customer",
+                f"C-{n:04d}",
+                f"Customer C-{n:04d}",
+                iban=None,
+                tax_id=None,
+                allow=False,
+            )
         for c in self.cfg["b2b"]["customers"]:
-            self.parties[c["id"]] = {
-                "party_id": c["id"],
-                "kind": "customer",
-                "code": c["code"],
-                "name": c["name"],
-                "tax_id": f"{rng.randint(1_000_000, 9_999_999)}-{rng.randint(0, 9)}",
-                "tax_id_type": "NTN",
-                "bank_iban": core.iban(self.country, "SYNE", self._account_digits(rng)),
-                "bank_account_changed_at": None,
-                "on_allow_list": False,
-                "payment_terms_days": c["terms_days"],
-                "credit_limit_minor": c["credit_limit_minor"],
-                "phone": None,
-                "city": "Karachi",
-            }
+            self.parties[c["id"]] = self._party(
+                c["id"],
+                "customer",
+                c["code"],
+                c["name"],
+                iban=core.iban(self.country, "SYNE", self._digits(rng)),
+                tax_id=f"{rng.randint(1_000_000, 9_999_999)}-{rng.randint(0, 9)}",
+                allow=False,
+                terms=c["terms_days"],
+                credit=c["credit_limit_minor"],
+            )
         for o in self.cfg["others"]:
-            self.parties[o["id"]] = {
-                "party_id": o["id"],
-                "kind": o["kind"],
-                "code": o["id"].upper().replace("_", "-"),
-                "name": o["name"],
-                "tax_id": None,
-                "tax_id_type": None,
-                "bank_iban": core.iban(self.country, "SYNF", self._account_digits(rng)),
-                "bank_account_changed_at": None,
-                "on_allow_list": True,
-                "payment_terms_days": 0,
-                "credit_limit_minor": None,
-                "phone": None,
-                "city": "Karachi",
-            }
-        self.supplier_cfg = {s["id"]: s for s in self.cfg["suppliers"]}
+            self.parties[o["id"]] = self._party(
+                o["id"],
+                o["kind"],
+                o["id"].upper().replace("_", "-"),
+                o["name"],
+                iban=core.iban(self.country, "SYNF", self._digits(rng)),
+                tax_id=None,
+                allow=True,
+            )
         self.invoice_counter = {s["id"]: s["invoice_start"] for s in self.cfg["suppliers"]}
+        self.invoice_year: dict[str, int | None] = {s["id"]: None for s in self.cfg["suppliers"]}
 
     def _build_items(self) -> None:
-        pos = self.cfg["pos"]
-        size_weights = pos["size_weights"]
+        size_weights = self.cfg["pos"]["size_weights"]
         self.items: dict[str, dict] = {}
-        self.weights: dict[str, int] = {}
+        self.base_weight: dict[str, int] = {}
+        self.category_cfg = {c["code"]: c for c in self.cfg["categories"]}
         for cat in self.cfg["categories"]:
             variants = [(s, c) for s in cat["sizes"] for c in cat["colours"]]
             total_size = sum(size_weights[s] for s, _ in variants)
             for size, colour in variants:
                 sku = f"{cat['code']}-{size}-{colour}"
-                supplier = self.supplier_cfg[cat["supplier"]]
+                supplier = cat["suppliers"][cat["colours"].index(colour) % len(cat["suppliers"])]
                 self.items[sku] = {
                     "sku": sku,
                     "name": f"{cat['name']} - {size} - {colour}",
@@ -202,24 +225,26 @@ class Simulation:
                     "currency": self.currency,
                     "opening_stock_qty": 0,
                     "reorder_level": 0,
-                    "supplier_id": cat["supplier"],
-                    "lead_time_days": supplier["lead_time_days"],
+                    "supplier_id": supplier,
+                    "lead_time_days": self.supplier_cfg[supplier]["lead_time_days"],
                     "launched_on": cat["launched_on"],
                 }
-                # Integer weight per SKU, in 1/10000 of the category weight.
-                self.weights[sku] = cat["weight"] * 10_000 * size_weights[size] // total_size
+                self.base_weight[sku] = 10_000 * size_weights[size] // total_size
         self.units_per_day_x100 = self._expected_units_x100()
-        stock_cfg = self.cfg["purchasing"]
-        self.stock: dict[str, int] = {}
-        self.on_order: dict[str, int] = dict.fromkeys(self.items, 0)
+        self.stock = dict.fromkeys(self.items, 0)
+        self.on_order = dict.fromkeys(self.items, 0)
+        self.layer_cost: dict[str, int] = {}
+        purchasing = self.cfg["purchasing"]
         for sku, item in self.items.items():
+            if self.category_cfg[item["category"]].get("reorder", True) is False:
+                continue
             per_day = self._demand_x100(sku, self.start)
-            opening = -(-per_day * stock_cfg["opening_cover_days"] // 100)
-            item["opening_stock_qty"] = opening
+            item["opening_stock_qty"] = -(-per_day * purchasing["opening_cover_days"] // 100)
             item["reorder_level"] = -(
-                -per_day * (item["lead_time_days"] + stock_cfg["reorder_days"]) // 100
+                -per_day * (item["lead_time_days"] + purchasing["reorder_days"]) // 100
             )
-            self.stock[sku] = opening
+            self.stock[sku] = item["opening_stock_qty"]
+            self.layer_cost[sku] = self.cost_at(sku, self.start)
 
     def _expected_units_x100(self) -> int:
         pos = self.cfg["pos"]
@@ -236,17 +261,100 @@ class Simulation:
         )
         return receipts * lines_x100 * qty_x100 // 100
 
-    def _season_pct(self, sku: str, day: date) -> int:
-        if self.items[sku]["season"] == "winter":
-            return self.cfg["pos"]["winter_month_pct"][day.month - 1]
-        return 100
+    # ------------------------------------------------------------ prices, costs, demand
+    def cost_at(self, sku: str, day: date) -> int:
+        key = (sku, core.month_index(day))
+        if key not in self._cost_cache:
+            self._cost_cache[key] = self._cost_at(sku, day)
+        return self._cost_cache[key]
+
+    def _cost_at(self, sku: str, day: date) -> int:
+        steps = core.month_index(day) - core.month_index(self.as_of)
+        factor = core.compound_ppm(steps, self.cfg["inflation"]["purchase_cost_ppm_per_month"])
+        return core.div_half_up(self.items[sku]["unit_cost_minor"] * factor, 1_000_000 * 100) * 100
+
+    def price_at(self, sku: str, day: date) -> int:
+        key = (sku, core.month_index(day), day < self.as_of)
+        if key not in self._price_cache:
+            self._price_cache[key] = self._price_at(sku, day)
+        return self._price_cache[key]
+
+    def _price_at(self, sku: str, day: date) -> int:
+        months = self.cfg["inflation"]["retail_price_step_months"]
+        lo, hi = min(day, self.as_of), max(day, self.as_of)
+        steps, cursor = 0, date(lo.year, lo.month, 1)
+        while cursor <= hi:
+            if cursor.month in months and lo < cursor <= hi:
+                steps += 1
+            cursor = core.add_months(cursor, 1)
+        price, pct = self.items[sku]["price_minor"], self.cfg["inflation"]["retail_price_step_pct"]
+        for _ in range(steps):
+            price = price * 100 // (100 + pct) if day < self.as_of else price * (100 + pct) // 100
+        return core.div_half_up(price, 5_000) * 5_000  # whole PKR 50
+
+    def traffic_pct(self, day: date) -> int:
+        pct = 100
+        for season in self.cfg["calendar"]["seasons"]:
+            if season["start"] <= day.isoformat() <= season["end"] and "categories" not in season:
+                pct = pct * season["traffic_pct"] // 100
+        return pct
+
+    def growth_ppm(self, day: date) -> int:
+        month = core.month_index(day)
+        if month not in self._growth_cache:
+            self._growth_cache[month] = self._growth_ppm(day)
+        return self._growth_cache[month]
+
+    def _growth_ppm(self, day: date) -> int:
+        steps = core.month_index(day) - core.month_index(self.as_of)
+        # (1 + yearly growth)^(1/12) - 1, kept as an integer ppm in the persona-independent table
+        monthly_ppm = {14: 10_978, 10: 7_974, 0: 0}[
+            self.cfg["calendar"]["traffic_growth_pct_per_year"]
+        ]
+        return core.compound_ppm(steps, monthly_ppm)
+
+    def _weights(self, day: date) -> tuple[dict[str, int], int]:
+        if day not in self._weights_cache:
+            weights, iso_day = {}, day.isoformat()
+            winter = self.cfg["pos"]["winter_month_pct"][day.month - 1]
+            for sku, item in self.items.items():
+                cat = self.category_cfg[item["category"]]
+                weight = cat["weight"]
+                if cat.get("windows"):
+                    weight = next(
+                        (w["weight"] for w in cat["windows"] if w["start"] <= iso_day <= w["end"]),
+                        0,
+                    )
+                w = weight * self.base_weight[sku]
+                if item["season"] == "winter":
+                    w = w * winter // 100
+                for season in self.cfg["calendar"]["seasons"]:
+                    if season["start"] <= iso_day <= season["end"] and item[
+                        "category"
+                    ] in season.get("categories", []):
+                        w = w * season["mix_pct"] // 100
+                weights[sku] = w
+            self._weights_cache[day] = (weights, sum(weights.values()))
+        return self._weights_cache[day]
 
     def _demand_x100(self, sku: str, day: date) -> int:
-        """Expected units per day for one SKU, times 100 (integer)."""
-        weighted = {s: self.weights[s] * self._season_pct(s, day) for s in self.items}
-        return self.units_per_day_x100 * weighted[sku] // sum(weighted.values())
+        weights, total = self._weights(day)
+        units = (
+            self.units_per_day_x100
+            * self.traffic_pct(day)
+            // 100
+            * self.growth_ppm(day)
+            // 1_000_000
+        )
+        return units * weights[sku] // total if total else 0
 
-    # ------------------------------------------------------------ events
+    def _window_discount_bp(self, sku: str, day: date) -> int:
+        for window in self.category_cfg[self.items[sku]["category"]].get("windows", []):
+            if window["start"] <= day.isoformat() <= window["end"]:
+                return window.get("discount_bp", 0)
+        return 0
+
+    # ------------------------------------------------------------ events and taxes
     def _event(
         self,
         kind: str,
@@ -256,9 +364,8 @@ class Simulation:
         key: str,
         fields: dict,
         source_extra: dict | None = None,
-        prefix: str = "evt",
     ) -> dict:
-        event_id = core.source_ulid(prefix, occurred_at, self.tenant_id, source_type, key)
+        event_id = core.source_ulid("evt", occurred_at, self.tenant_id, source_type, key)
         event = {
             "id": event_id,
             "tenant_id": self.tenant_id,
@@ -272,34 +379,47 @@ class Simulation:
         self.events.append(event)
         return event
 
+    def _add_tax(self, ledger: dict[int, int], day: date, amount: int) -> None:
+        month = core.month_index(day)
+        ledger[month] = ledger.get(month, 0) + amount
+
+    def _local_date(self, moment: datetime) -> date:
+        return (moment + timedelta(hours=self.offset)).date()
+
     # ------------------------------------------------------------ purchasing
-    def _supplier_number(self, supplier_id: str, rng) -> str:
+    def _supplier_number(self, supplier_id: str, rng, day: date) -> str:
         cfg = self.supplier_cfg[supplier_id]
+        if cfg.get("invoice_yearly_reset") and self.invoice_year[supplier_id] != day.year:
+            self.invoice_year[supplier_id] = day.year
+            self.invoice_counter[supplier_id] = cfg["invoice_start"]
         number = self.invoice_counter[supplier_id]
-        self.invoice_counter[supplier_id] += rng.randint(2, 6)
-        return f"{cfg['invoice_prefix']}{number}"
+        self.invoice_counter[supplier_id] += (
+            1 if cfg.get("invoice_yearly_reset") else rng.randint(2, 6)
+        )
+        return cfg["invoice_format"].format(n=number, yy=f"{day.year % 100:02d}", yyyy=day.year)
 
     def _create_po(
-        self, day: date, supplier_id: str, lines: list[dict], forced: dict | None = None
+        self,
+        day: date,
+        supplier_id: str,
+        lines: list[dict],
+        *,
+        expected: date | None = None,
+        plant: dict | None = None,
     ) -> dict:
         po_id = self.po_ids.take()
         lead = self.supplier_cfg[supplier_id]["lead_time_days"]
-        expected = (
-            date.fromisoformat(forced["received_on"])
-            if forced and "received_on" in forced
-            else day + timedelta(lead)
-        )
         po = {
             "po_id": po_id,
             "number": "PO-" + po_id[3:],
             "supplier_id": supplier_id,
             "ordered_on": day.isoformat(),
-            "expected_on": expected.isoformat(),
+            "expected_on": (expected or day + timedelta(lead)).isoformat(),
             "status": "open",
             "currency": self.currency,
             "lines": lines,
-            "total_minor": sum(line["qty"] * line["unit_cost_minor"] for line in lines),
-            "_forced": forced,
+            "total_minor": sum(ln["qty"] * ln["unit_cost_minor"] for ln in lines),
+            "_plant": plant,
         }
         for line in lines:
             if line.get("sku"):
@@ -307,77 +427,165 @@ class Simulation:
         self.pos.append(po)
         return po
 
+    def _stock_lines(self, skus: list[str], qty: int, day: date) -> list[dict]:
+        return [
+            {
+                "sku": s,
+                "description": self.items[s]["name"],
+                "qty": qty,
+                "unit_cost_minor": self.cost_at(s, day),
+            }
+            for s in skus
+        ]
+
+    def _plant_lines(self, plant: dict, day: date) -> list[dict]:
+        if "lines" in plant:
+            return [
+                {
+                    "sku": ln.get("sku"),
+                    "description": ln.get("description") or self.items[ln["sku"]]["name"],
+                    "qty": ln["qty"],
+                    "unit_cost_minor": ln["unit_price_minor"],
+                }
+                for ln in plant["lines"]
+            ]
+        if "category" in plant:
+            skus = sorted(s for s, it in self.items.items() if it["category"] == plant["category"])
+            return self._stock_lines(skus, plant["qty_per_sku"], day)
+        if "sku" in plant:
+            unit, sku, description = (
+                self.cost_at(plant["sku"], day),
+                plant["sku"],
+                self.items[plant["sku"]]["name"],
+            )
+        else:
+            unit, sku, description = plant["unit_price_minor"], None, plant["description"]
+        lines = core.lines_for_total(
+            plant["target_total_minor"], self.gst_bp, unit, sku=sku, description=description
+        )
+        return [
+            {
+                "sku": ln["sku"],
+                "description": ln["description"],
+                "qty": ln["qty"],
+                "unit_cost_minor": ln["unit_price_minor"],
+            }
+            for ln in lines
+        ]
+
     def _order_day(self, day: date, rng) -> None:
-        purchasing = self.cfg["purchasing"]
-        forced_today = {}
-        for name, demo in self.cfg.get("demo", {}).items():
-            if demo.get("ordered_on") == day.isoformat():
-                forced_today[demo["supplier"]] = (name, demo)
-        for supplier_id, (name, demo) in sorted(forced_today.items()):
-            if name == "duplicate_bill":
-                lines = [
-                    {
-                        "sku": ln.get("sku"),
-                        "description": ln.get(
-                            "description", self.items[ln["sku"]]["name"] if ln.get("sku") else ""
-                        ),
-                        "qty": ln["qty"],
-                        "unit_cost_minor": ln["unit_price_minor"],
-                    }
-                    for ln in demo["lines"]
-                ]
-            else:
-                skus = sorted(
-                    s for s, it in self.items.items() if it["category"] == demo["category"]
+        iso_day = day.isoformat()
+        planted_suppliers: set[str] = set()
+        demo = self.cfg.get("demo", {}).get("duplicate_bill")
+        if demo and demo["ordered_on"] == iso_day:
+            lines = [
+                {
+                    "sku": ln.get("sku"),
+                    "description": ln.get("description") or self.items[ln["sku"]]["name"],
+                    "qty": ln["qty"],
+                    "unit_cost_minor": ln["unit_price_minor"],
+                }
+                for ln in demo["lines"]
+            ]
+            self._create_po(
+                day,
+                demo["supplier"],
+                lines,
+                expected=date.fromisoformat(demo["received_on"]),
+                plant={"demo": True, **demo},
+            )
+            planted_suppliers.add(demo["supplier"])
+        for plant in self.cfg.get("plants", []):
+            if plant.get("ordered_on") == iso_day:
+                self._create_po(
+                    day,
+                    plant["supplier"],
+                    self._plant_lines(plant, day),
+                    expected=date.fromisoformat(plant["received_on"]),
+                    plant=plant,
                 )
-                lines = [
-                    {
-                        "sku": s,
-                        "description": self.items[s]["name"],
-                        "qty": demo["qty_per_sku"],
-                        "unit_cost_minor": self.items[s]["unit_cost_minor"],
-                    }
-                    for s in skus
-                ]
-            self._create_po(day, supplier_id, lines, forced={"name": name, **demo})
-        if day.weekday() not in purchasing["order_weekdays"]:
+                planted_suppliers.add(plant["supplier"])
+        for build in self.cfg.get("stock_builds", []):
+            if build["ordered_on"] == iso_day:
+                skus = sorted(
+                    s for s, it in self.items.items() if it["category"] == build["category"]
+                )
+                expected = (
+                    date.fromisoformat(build["received_on"]) if "received_on" in build else None
+                )
+                self._create_po(
+                    day,
+                    build["supplier"],
+                    self._stock_lines(skus, build["qty_per_sku"], day),
+                    expected=expected,
+                    plant={"stock_build": True, **build},
+                )
+        self._packaging_orders(day, rng)
+        if day.weekday() not in self.cfg["purchasing"]["order_weekdays"]:
             return
+        purchasing = self.cfg["purchasing"]
         by_supplier: dict[str, list[str]] = {}
         for sku, item in self.items.items():
-            by_supplier.setdefault(item["supplier_id"], []).append(sku)
+            if self.category_cfg[item["category"]].get("reorder", True):
+                by_supplier.setdefault(item["supplier_id"], []).append(sku)
         for supplier_id in sorted(by_supplier):
-            if supplier_id in forced_today:
+            if supplier_id in planted_suppliers:
                 continue
             lines = []
             for sku in sorted(by_supplier[supplier_id]):
                 item = self.items[sku]
                 per_day = self._demand_x100(sku, day + timedelta(item["lead_time_days"]))
                 projected = self.stock[sku] + self.on_order[sku]
-                reorder_at = per_day * (item["lead_time_days"] + purchasing["reorder_days"]) // 100
-                if projected > reorder_at:
+                if projected * 100 > per_day * (
+                    item["lead_time_days"] + purchasing["reorder_days"]
+                ):
                     continue
                 target = -(-per_day * (item["lead_time_days"] + purchasing["cover_days"]) // 100)
-                pack = purchasing["pack_size"]
-                qty = -(-(target - projected) // pack) * pack
+                qty = -(-(target - projected) // purchasing["pack_size"]) * purchasing["pack_size"]
                 if qty > 0:
-                    lines.append(
-                        {
-                            "sku": sku,
-                            "description": item["name"],
-                            "qty": qty,
-                            "unit_cost_minor": item["unit_cost_minor"],
-                        }
-                    )
+                    lines += self._stock_lines([sku], qty, day)
             if lines:
                 self._create_po(day, supplier_id, lines)
+
+    def _packaging_orders(self, day: date, rng) -> None:
+        if day != self.cal.nth_business_day(day.year, day.month, 1):
+            return
+        for supplier_id, months, unit, description in (
+            ("sup_010", range(1, 13), 50_000, "Printed shopping bags and boxes"),
+            ("sup_011", (1, 4, 7, 10), 2_400_000, "Wooden hangers, branded (box of 100)"),
+        ):
+            if day.month not in months:
+                continue
+            if any(
+                p.get("supplier") == supplier_id
+                and p.get("ordered_on", "")[:7] == day.isoformat()[:7]
+                for p in self.cfg.get("plants", [])
+            ):
+                continue  # the planted bills replace this month's routine order
+            low, high = self.supplier_cfg[supplier_id].get(
+                "packaging_monthly_range_minor", [4_800_000, 7_200_000]
+            )
+            qty = max(1, rng.randint(low, high) // unit)
+            self._create_po(
+                day,
+                supplier_id,
+                [{"sku": None, "description": description, "qty": qty, "unit_cost_minor": unit}],
+            )
 
     def _receive_goods(self, day: date, rng) -> None:
         for po in self.pos:
             if po["expected_on"] != day.isoformat() or po["status"] != "open":
                 continue
+            plant = po["_plant"] or {}
             grn_id = "grn_" + po["po_id"][3:]
+            qty_override = plant.get("grn_qty", {})
             lines = [
-                {"sku": ln["sku"], "qty_received": ln["qty"]} for ln in po["lines"] if ln.get("sku")
+                {
+                    "sku": ln["sku"],
+                    "description": ln["description"],
+                    "qty_received": qty_override.get(ln["sku"], ln["qty"]),
+                }
+                for ln in po["lines"]
             ]
             self.grns.append(
                 {
@@ -388,11 +596,19 @@ class Simulation:
                     "lines": lines,
                 }
             )
-            po["status"] = "received"
+            po["status"] = "partially_received" if qty_override else "received"
             moment = core.local_time(day, 11 * 60, 0, self.offset)
-            for ln in lines:
-                self.stock[ln["sku"]] += ln["qty_received"]
-                self.on_order[ln["sku"]] -= ln["qty_received"]
+            for ln, po_line in zip(lines, po["lines"], strict=True):
+                if not ln["sku"]:
+                    continue
+                received, cost = ln["qty_received"], po_line["unit_cost_minor"]
+                old_qty = self.stock[ln["sku"]]
+                old_cost = self.layer_cost.get(ln["sku"], cost)
+                self.layer_cost[ln["sku"]] = (old_qty * old_cost + received * cost) // max(
+                    old_qty + received, 1
+                )
+                self.stock[ln["sku"]] += received
+                self.on_order[ln["sku"]] -= po_line["qty"]
                 self._event(
                     "stock_movement",
                     moment,
@@ -401,69 +617,108 @@ class Simulation:
                     f"{grn_id}#{ln['sku']}",
                     {
                         "item": ln["sku"],
-                        "qty": ln["qty_received"],
-                        "unit_cost_minor": self.items[ln["sku"]]["unit_cost_minor"],
+                        "qty": received,
+                        "unit_cost_minor": cost,
                         "reason": "goods_received",
                         "ref": grn_id,
                     },
                 )
-            forced = po["_forced"]
-            if forced and forced["name"] == "duplicate_bill":
+            if plant.get("demo"):
                 self._bill(
                     po,
-                    date.fromisoformat(forced["original_issue_date"]),
-                    forced["original_number"],
-                    bill_id=forced["original_bill_id"],
-                    doc_id=forced["original_document_id"],
-                    due=date.fromisoformat(forced["original_due_date"]),
+                    date.fromisoformat(plant["original_issue_date"]),
+                    plant["original_number"],
+                    bill_id=plant["original_bill_id"],
+                    doc_id=plant["original_document_id"],
+                    due=date.fromisoformat(plant["original_due_date"]),
+                    pdf=True,
                 )
-            elif forced:
+            elif plant.get("stock_build"):
+                terms = plant.get("terms_days", self.supplier_cfg[po["supplier_id"]]["terms_days"])
                 self._bill(
                     po,
                     day,
-                    self._supplier_number(po["supplier_id"], rng),
-                    bill_id=forced["bill_id"],
-                    doc_id=forced["document_id"],
+                    self._supplier_number(po["supplier_id"], rng, day),
+                    due=day + timedelta(terms),
                 )
+            elif plant.get("bill_id"):
+                number = plant.get("number") or self._supplier_number(po["supplier_id"], rng, day)
+                due = date.fromisoformat(plant["due_date"]) if "due_date" in plant else None
+                bill = self._bill(
+                    po,
+                    day,
+                    number,
+                    bill_id=plant["bill_id"],
+                    doc_id=plant["document_id"],
+                    due=due,
+                    notes=plant.get("notes", ""),
+                    stated_tax=plant.get("stated_tax_minor"),
+                    entry=plant.get("entry", "extraction"),
+                    entered_by=plant.get("entered_by"),
+                    pdf=plant.get("pdf", False),
+                )
+                if "stated_tax_minor" in plant:
+                    self.never_pay.add(
+                        bill["bill_id"]
+                    )  # S-07: a wrong bill is never paid as stated
             else:
-                self._bill(po, day, self._supplier_number(po["supplier_id"], rng))
+                self._bill(po, day, self._supplier_number(po["supplier_id"], rng, day))
 
     def _bill(
         self,
-        po: dict,
+        po: dict | None,
         issue: date,
         number: str,
         *,
+        supplier_id: str | None = None,
+        lines: list[dict] | None = None,
         bill_id: str | None = None,
         doc_id: str | None = None,
         due: date | None = None,
         received_at: datetime | None = None,
         iban: str | None = None,
         notes: str = "",
-        pay: bool = True,
+        stated_tax: int | None = None,
+        entry: str = "extraction",
+        entered_by: str | None = None,
+        category: str = "inventory_supplier",
+        contract_ref: str | None = None,
+        taxable: bool = True,
+        pdf: bool = False,
+        document: bytes | None = None,
     ) -> dict:
-        supplier = self.parties[po["supplier_id"]]
-        terms = self.supplier_cfg[po["supplier_id"]]["terms_days"]
-        lines = [
-            {
-                "sku": ln["sku"],
-                "description": ln["description"],
-                "qty": ln["qty"],
-                "unit_price_minor": ln["unit_cost_minor"],
-                "line_total_minor": ln["qty"] * ln["unit_cost_minor"],
-            }
-            for ln in po["lines"]
-        ]
+        supplier_id = supplier_id or po["supplier_id"]
+        supplier = self.parties[supplier_id]
+        terms = (
+            self.supplier_cfg[supplier_id]["terms_days"] if supplier_id in self.supplier_cfg else 0
+        )
+        if lines is None:
+            lines = [
+                {
+                    "sku": ln["sku"],
+                    "description": ln["description"],
+                    "qty": ln["qty"],
+                    "unit_price_minor": ln["unit_cost_minor"],
+                    "line_total_minor": ln["qty"] * ln["unit_cost_minor"],
+                }
+                for ln in po["lines"]
+            ]
         subtotal = sum(ln["line_total_minor"] for ln in lines)
-        tax = core.tax_on(subtotal, self.gst_bp)
+        stated = (
+            stated_tax
+            if stated_tax is not None
+            else (core.tax_on(subtotal, self.gst_bp) if taxable else 0)
+        )
+        received = received_at or core.local_time(
+            issue + timedelta(1), 10 * 60 + 10, 0, self.offset
+        )
         bill = {
             "bill_id": bill_id or self.bill_ids.take(),
             "document_id": doc_id or self.doc_ids.take(),
             "document_sha256": "",
-            "received_at": core.iso(
-                received_at or core.local_time(issue + timedelta(1), 10 * 60 + 10, 0, self.offset)
-            ),
-            "supplier_id": po["supplier_id"],
+            "document_path": "",
+            "received_at": core.iso(received),
+            "supplier_id": supplier_id,
             "supplier": {
                 "name": supplier["name"],
                 "tax_id": supplier["tax_id"],
@@ -472,101 +727,260 @@ class Simulation:
             "number": number,
             "issue_date": issue.isoformat(),
             "due_date": (due or issue + timedelta(terms)).isoformat(),
-            "po_number": po["number"],
+            "po_number": po["number"] if po else None,
+            "contract_ref": contract_ref,
+            "category": category,
             "currency": self.currency,
             "lines": lines,
             "subtotal_minor": subtotal,
-            "tax": [{"code": "GST", "rate_bp": self.gst_bp, "amount_minor": tax}],
-            "total_minor": subtotal + tax,
+            "tax": [{"code": "GST", "rate_bp": self.gst_bp, "amount_minor": stated}]
+            if taxable
+            else [],
+            "total_minor": subtotal + stated,
             "notes": notes,
+            "entry": entry,
+            "entered_by": entered_by or "svc_extraction",
             "extraction": {"method": "synthetic_ground_truth"},
         }
-        document = render_bill(bill, supplier, self.cfg["tenant"]["name"])
+        if document is None:
+            render = render_bill_pdf if pdf else render_bill
+            document = render(bill, supplier, self.cfg["tenant"]["name"])
+        bill["document_path"] = f"documents/{bill['document_id']}.{'pdf' if pdf else 'txt'}"
         bill["document_sha256"] = hashlib.sha256(document).hexdigest()
-        self.documents[bill["document_id"]] = document
+        self.documents[bill["document_path"]] = document
         self.bills.append(bill)
-        if not pay:
-            self.unpaid_bill_ids.add(bill["bill_id"])
+        self._add_tax(self.input_tax, issue, stated)
+        actor = {
+            "kind": "user" if bill["entered_by"].startswith("usr_") else "system",
+            "id": bill["entered_by"],
+        }
         self._event(
             "purchase_bill",
-            datetime.fromisoformat(bill["received_at"].replace("Z", "+00:00")),
-            date.fromisoformat(bill["received_at"][:10]),
+            received,
+            self._local_date(received),
             "bill_extraction",
             bill["bill_id"],
             {
-                "party": bill["supplier_id"],
+                "party": supplier_id,
                 "bill_id": bill["bill_id"],
                 "number": number,
                 "issue_date": bill["issue_date"],
                 "due_date": bill["due_date"],
-                "po_number": po["number"],
+                "po_number": bill["po_number"],
                 "lines": lines,
                 "subtotal_minor": subtotal,
-                "tax_minor": tax,
+                "tax_minor": stated,
                 "total_minor": bill["total_minor"],
                 "document_id": bill["document_id"],
                 "document_sha256": bill["document_sha256"],
+                "created_by": actor,
             },
             {"file": "bills.json"},
         )
         return bill
 
-    def _planted_resend(self, day: date) -> None:
-        demo = self.cfg.get("demo", {}).get("duplicate_bill")
-        if not demo:
-            return
-        if day.isoformat() == demo["bank_change_at"][:10]:
-            party = self.parties[demo["supplier"]]
-            rng = core.stream(self.seed, "demo-bank-change")
-            new_iban = core.iban(
-                self.country, demo["new_iban_bank_code"], self._account_digits(rng)
-            )
-            changed_at = datetime.fromisoformat(demo["bank_change_at"].replace("Z", "+00:00"))
+    def _bill_by_id(self, bill_id: str) -> dict:
+        return next(b for b in self.bills if b["bill_id"] == bill_id)
+
+    def _planted_followups(self, day: date) -> None:
+        """Bank changes, the DEMO-1 resend and the S-05 / S-05b duplicates, each on its own date."""
+        iso_day = day.isoformat()
+        for change in self.cfg.get("bank_changes", []):
+            if change["changed_at"][:10] != iso_day:
+                continue
+            party = self.parties[change["supplier"]]
+            rng = core.stream(self.seed, f"bank-change:{change['supplier']}")
+            new_iban = core.iban(self.country, change["new_bank_code"], self._digits(rng))
             self._event(
                 "bank_detail_change",
-                changed_at,
+                _ts(change["changed_at"]),
                 day,
                 "manual",
-                f"bdc:{party['party_id']}:{day.isoformat()}",
+                f"bdc:{party['party_id']}:{iso_day}",
                 {
                     "party": party["party_id"],
                     "old_iban": party["bank_iban"],
                     "new_iban": new_iban,
-                    "confirmed_via": demo["bank_change_confirmed_via"],
-                    "confirmed_by": "supplier email",
+                    "confirmed_via": change["confirmed_via"],
+                    "confirmed_by": change["confirmed_by"],
                 },
             )
-            party["bank_iban"], party["bank_account_changed_at"] = new_iban, demo["bank_change_at"]
-        if day.isoformat() == demo["resend_received_at"][:10]:
-            original = next(b for b in self.bills if b["bill_id"] == demo["original_bill_id"])
+            party["bank_iban"], party["bank_account_changed_at"] = new_iban, change["changed_at"]
+        demo = self.cfg.get("demo", {}).get("duplicate_bill")
+        if demo and demo["resend_received_at"][:10] == iso_day:
+            original = self._bill_by_id(demo["original_bill_id"])
             po = next(p for p in self.pos if p["number"] == original["po_number"])
-            rng = core.stream(self.seed, "demo-resend-iban")
-            printed_iban = core.iban(
-                self.country, demo["new_iban_bank_code"], self._account_digits(rng)
-            )
-            self._bill(
+            bill = self._bill(
                 po,
                 date.fromisoformat(demo["resend_issue_date"]),
                 demo["resend_number"],
                 bill_id=demo["resend_bill_id"],
                 doc_id=demo["resend_document_id"],
                 due=date.fromisoformat(demo["resend_due_date"]),
-                received_at=datetime.fromisoformat(
-                    demo["resend_received_at"].replace("Z", "+00:00")
-                ),
-                iban=printed_iban,
+                received_at=_ts(demo["resend_received_at"]),
+                iban=self.parties[demo["supplier"]]["bank_iban"],
                 notes=demo["resend_notes"],
-                pay=False,
+                pdf=True,
+            )
+            self.never_pay.add(bill["bill_id"])
+        for plant in self.cfg.get("plants", []):
+            if plant.get("role") != "duplicate" or plant["received_at"][:10] != iso_day:
+                continue
+            source = self._bill_by_id(plant.get("same_file_as") or plant["resend_of"])
+            po = next((p for p in self.pos if p["number"] == source["po_number"]), None)
+            if (
+                "same_file_as" in plant
+            ):  # S-05: the identical file arrives again through email intake
+                bill = self._bill(
+                    po,
+                    date.fromisoformat(source["issue_date"]),
+                    source["number"],
+                    supplier_id=source["supplier_id"],
+                    lines=source["lines"],
+                    bill_id=plant["bill_id"],
+                    doc_id=plant["document_id"],
+                    due=date.fromisoformat(source["due_date"]),
+                    received_at=_ts(plant["received_at"]),
+                    entry=plant["entry"],
+                    document=self.documents[source["document_path"]],
+                    pdf=source["document_path"].endswith(".pdf"),
+                )
+            else:  # S-05b: re-sent with a reformatted number and a small extra line
+                lines = [dict(ln) for ln in source["lines"]]
+                extra = (
+                    core.subtotal_for_total(plant["target_total_minor"], self.gst_bp)
+                    - source["subtotal_minor"]
+                )
+                lines.append(
+                    {
+                        "sku": None,
+                        "description": "Freight surcharge",
+                        "qty": 1,
+                        "unit_price_minor": extra,
+                        "line_total_minor": extra,
+                    }
+                )
+                bill = self._bill(
+                    po,
+                    date.fromisoformat(plant["issue_date"]),
+                    plant["number"],
+                    supplier_id=source["supplier_id"],
+                    lines=lines,
+                    bill_id=plant["bill_id"],
+                    doc_id=plant["document_id"],
+                    received_at=_ts(plant["received_at"]),
+                    pdf=plant.get("pdf", False),
+                )
+            self.never_pay.add(bill["bill_id"])
+
+    def _rent_bill(self, day: date) -> None:
+        lease = next((ls for ls in self.cfg["leases"] if ls.get("billed")), None)
+        if lease is None or day != self.cal.nth_business_day(day.year, day.month, 1):
+            return
+        amount = lease["rent_by_year_minor"][str(day.year)]
+        description = f"Shop rent, {lease['asset']}, {day.strftime('%B %Y')}"
+        self._bill(
+            None,
+            day,
+            f"RNT-{day.year}-{day.month:02d}",
+            supplier_id=lease["lessor"],
+            lines=[
+                {
+                    "sku": None,
+                    "description": description,
+                    "qty": 1,
+                    "unit_price_minor": amount,
+                    "line_total_minor": amount,
+                }
+            ],
+            due=date(day.year, day.month, lease["payment_day"]),
+            category="rent",
+            contract_ref=lease["id"],
+            taxable=False,
+        )
+
+    # ------------------------------------------------------------ NRV assessments (facts, not treatments)
+    def _nrv_day(self, day: date) -> None:
+        for assessment in self.cfg.get("nrv_assessments", []):
+            if assessment["on"] != day.isoformat():
+                continue
+            details, needed = [], 0
+            for sku in sorted(
+                s for s, it in self.items.items() if it["category"] == assessment["category"]
+            ):
+                qty = self.stock[sku]
+                cost = self.layer_cost.get(sku, self.cost_at(sku, day))
+                price_ex_tax = self.price_at(sku, day) * 10_000 // (10_000 + self.gst_bp)
+                esp = price_ex_tax * assessment["estimated_selling_price_pct"] // 100
+                nrv = esp - esp * assessment["costs_to_sell_pct"] // 100
+                gap = max(0, cost - nrv) * qty
+                needed += gap
+                details.append(
+                    {
+                        "item": sku,
+                        "qty_on_hand": qty,
+                        "unit_cost_minor": cost,
+                        "estimated_selling_price_minor": esp,
+                        "nrv_per_unit_minor": nrv,
+                        "shortfall_minor": gap,
+                    }
+                )
+            change = needed - self.nrv_allowance.get(assessment["category"], 0)
+            self.nrv_allowance[assessment["category"]] = needed
+            if change == 0:
+                continue
+            lines = (
+                [
+                    {"account": "5100", "debit_minor": change, "credit_minor": 0},
+                    {"account": "1290", "debit_minor": 0, "credit_minor": change},
+                ]
+                if change > 0
+                else [
+                    {"account": "1290", "debit_minor": -change, "credit_minor": 0},
+                    {"account": "5100", "debit_minor": 0, "credit_minor": -change},
+                ]
+            )
+            event = self._event(
+                "journal_adjustment",
+                core.local_time(day, 18 * 60, 0, self.offset),
+                day,
+                "manual",
+                f"nrv:{assessment['category']}:{day.isoformat()}",
+                {
+                    "lines": lines,
+                    "reason": "nrv_writedown" if change > 0 else "nrv_writedown_reversal",
+                    "approver": "usr_owner",
+                },
+            )
+            self.nrv_events.append(event["id"])
+            self.nrv_records.append(
+                {
+                    "event_id": event["id"],
+                    "category": assessment["category"],
+                    "assessment_date": day.isoformat(),
+                    "allowance_minor": needed,
+                    "change_minor": change,
+                    "items": details,
+                }
             )
 
     # ------------------------------------------------------------ POS
+    def _anomaly(self, kind: str, register: str, day: date) -> dict | None:
+        for a in self.cfg["pos"].get("anomalies", []):
+            if (
+                a["kind"] == kind
+                and a["register"] == register
+                and a["start"] <= day.isoformat() <= a["end"]
+            ):
+                return a
+        return None
+
     def _pos_day(
         self, day: date, rng, receipt_seq: dict[str, int], recent: dict[str, list[dict]]
     ) -> None:
         pos = self.cfg["pos"]
         methods = list(pos["payment_mix"])
         method_weights = [pos["payment_mix"][m] for m in methods]
-        # Both branches share one stock, so the day's receipts are processed in time order.
         drawer = {
             r: {
                 "cash_sales": 0,
@@ -579,11 +993,12 @@ class Simulation:
             for b in self.cfg["branches"]
             for r in b["registers"]
         }
+        traffic = self.traffic_pct(day) * self.growth_ppm(day) // 1_000_000
         arrivals = []
         for branch in self.cfg["branches"]:
-            n = branch["daily_receipts"] * pos["weekday_pct"][day.weekday()] // 100 + rng.randint(
-                -6, 6
-            )
+            n = branch["daily_receipts"] * pos["weekday_pct"][
+                day.weekday()
+            ] * traffic // 10_000 + rng.randint(-5, 5)
             arrivals += [
                 (rng.randint(pos["open_minute"] * 60, pos["close_minute"] * 60), branch["id"])
                 for _ in range(n)
@@ -596,13 +1011,19 @@ class Simulation:
             shift = 1 if minute < pos["shift_change_minute"] else 2
             cashier = f"CSH-{int(register[1:]) * 2 - 2 + shift:02d}"
             moment = core.local_time(day, minute, second_of_day % 60, self.offset)
+            spike = self._anomaly("refund_spike", register, day)
+            refund_rate = (
+                spike["refund_per_mille"]
+                if spike and spike["cashier"] == cashier
+                else pos["refund_per_mille"]
+            )
             roll = rng.randint(1, 1000)
-            if roll <= pos["refund_per_mille"] and recent[branch["id"]]:
+            if roll <= refund_rate and recent[branch["id"]]:
                 self._refund(
                     day, moment, branch, register, cashier, rng, receipt_seq, recent, drawer
                 )
                 continue
-            txn = "void" if roll <= pos["refund_per_mille"] + pos["void_per_mille"] else "sale"
+            txn = "void" if roll <= refund_rate + pos["void_per_mille"] else "sale"
             self._sale(
                 day,
                 moment,
@@ -635,13 +1056,14 @@ class Simulation:
         receipt_seq,
         recent,
         drawer,
-    ):
+    ) -> None:
         pos = self.cfg["pos"]
-        in_stock = [s for s in self.items if self.stock[s] > 0]
+        weights_all, _ = self._weights(day)
+        in_stock = [s for s in self.items if self.stock[s] > 0 and weights_all[s] > 0]
         if not in_stock:
             return
         n_lines = rng.choices([1, 2, 3], weights=pos["lines_weights"])[0]
-        weights = [self.weights[s] * self._season_pct(s, day) for s in in_stock]
+        weights = [weights_all[s] for s in in_stock]
         chosen: list[str] = []
         for _ in range(n_lines):
             sku = rng.choices(in_stock, weights=weights)[0]
@@ -651,16 +1073,15 @@ class Simulation:
         customer = None
         if rng.randint(1, 100) <= pos["loyalty_share_pct"]:
             customer = f"C-{rng.randint(1, pos['loyalty_customers']):04d}"
-        discount_bp = pos["discount_bp"] if rng.randint(1, 100) <= pos["discount_share_pct"] else 0
+        promo_bp = pos["discount_bp"] if rng.randint(1, 100) <= pos["discount_share_pct"] else 0
         receipt_seq[register] += 1
         receipt_no = f"{register}-{receipt_seq[register]:06d}"
         lines = []
         for sku in chosen:
             qty = min(rng.choices([1, 2], weights=pos["qty_weights"])[0], self.stock[sku])
-            price = self.items[sku]["price_minor"]
-            discount = (
-                core.div_half_up(qty * price * discount_bp, 10_000 * 100) * 100
-            )  # whole rupees
+            price = self.price_at(sku, day)
+            discount_bp = max(promo_bp, self._window_discount_bp(sku, day))
+            discount = core.div_half_up(qty * price * discount_bp, 10_000 * 100) * 100
             total = qty * price - discount
             lines.append(
                 {
@@ -670,11 +1091,12 @@ class Simulation:
                     "discount_minor": discount,
                     "total_minor": total,
                     "tax_minor": core.tax_within(total, self.gst_bp),
-                    "cost_minor": self.items[sku]["unit_cost_minor"],
+                    "cost_minor": self.layer_cost.get(sku, self.cost_at(sku, day)),
                 }
             )
             if txn == "sale":
                 self.stock[sku] -= qty
+                self.demand_actual[(day, sku)] = self.demand_actual.get((day, sku), 0) + qty
         self._record_receipt(
             day,
             moment,
@@ -697,7 +1119,9 @@ class Simulation:
                 r for r in recent[branch["id"]] if (day - r["day"]).days <= 7
             ]
 
-    def _refund(self, day, moment, branch, register, cashier, rng, receipt_seq, recent, drawer):
+    def _refund(
+        self, day, moment, branch, register, cashier, rng, receipt_seq, recent, drawer
+    ) -> None:
         original = rng.choice(recent[branch["id"]])
         line = rng.choice(original["lines"])
         receipt_seq[register] += 1
@@ -739,7 +1163,7 @@ class Simulation:
         lines,
         method,
         drawer,
-    ):
+    ) -> None:
         status = "settled" if txn == "sale" else "reversed"
         first_row = len(self.pos_rows) + 1
         for i, ln in enumerate(lines, start=1):
@@ -767,6 +1191,7 @@ class Simulation:
                 }
             )
         total = sum(ln["total_minor"] for ln in lines)
+        tax = sum(ln["tax_minor"] for ln in lines)
         event = self._event(
             "sale",
             moment,
@@ -783,7 +1208,7 @@ class Simulation:
                 "cashier": cashier,
                 "lines": lines,
                 "total_minor": total,
-                "tax_minor": sum(ln["tax_minor"] for ln in lines),
+                "tax_minor": tax,
                 "payment": {"method": method, "status": status},
             },
             {"file": "pos_sales.csv", "row": first_row},
@@ -792,6 +1217,7 @@ class Simulation:
         if txn == "void":
             d["voids"] += 1
             return
+        self._add_tax(self.output_tax, day, tax)
         if txn == "refund":
             d["refunds"] += 1
             d["cash_refunds"] += total
@@ -811,18 +1237,21 @@ class Simulation:
             }
         )
 
-    def _z_report(self, day, branch, register, d, rng):
+    def _z_report(self, day, branch, register, d, rng) -> None:
         pos = self.cfg["pos"]
         expected = pos["opening_float_minor"] + d["cash_sales"] + d["cash_refunds"]
         over_short = 0
-        if d["receipts"] and rng.randint(1, 100) <= pos["over_short_share_pct"]:
+        shortage = self._anomaly("cash_shortage", register, day)
+        if d["receipts"] and shortage and rng.randint(1, 100) <= shortage["shortage_share_pct"]:
+            low, high = shortage["shortage_range_minor"]
+            over_short = rng.randint(low // 100, high // 100) * 100
+        elif d["receipts"] and rng.randint(1, 100) <= pos["over_short_share_pct"]:
             low, high = pos["over_short_range_minor"]
             over_short = rng.randint(low // 100, high // 100) * 100
         counted = expected + over_short
-        z_no = f"Z-{register}-{day.strftime('%y%m%d')}"
         self.z_rows.append(
             {
-                "z_no": z_no,
+                "z_no": f"Z-{register}-{day.strftime('%y%m%d')}",
                 "business_date": day.isoformat(),
                 "branch_id": branch["id"],
                 "register_id": register,
@@ -868,9 +1297,7 @@ class Simulation:
         lines = []
         for sku in sorted(rng.sample(skus, min(len(skus), rng.randint(1, 2)))):
             qty = min(rng.randint(*b2b["qty_range"]), self.stock[sku] - 5)
-            unit = (
-                self.items[sku]["price_minor"] * 10_000 // (10_000 + self.gst_bp)
-            )  # ex-GST trade price
+            unit = self.price_at(sku, day) * 10_000 // (10_000 + self.gst_bp)
             self.stock[sku] -= qty
             lines.append(
                 {
@@ -897,6 +1324,7 @@ class Simulation:
             "total_minor": subtotal + tax,
         }
         self.invoices.append(invoice)
+        self._add_tax(self.output_tax, day, tax)
         event = self._event(
             "customer_invoice",
             core.local_time(day, 21 * 60 + 45, 0, self.offset),
@@ -923,7 +1351,7 @@ class Simulation:
             {
                 "invoice": invoice,
                 "event_id": event["id"],
-                "pay_on": core.on_or_before_business_day(pay_on),
+                "pay_on": self.cal.on_or_before(pay_on),
                 "combine": rng.randint(1, 100) <= b2b["combine_share_pct"],
             }
         )
@@ -931,51 +1359,54 @@ class Simulation:
     # ------------------------------------------------------------ bank
     def _settle(self, day: date) -> None:
         lags = self.cfg["pos"]["settlement_lag_business_days"]
-        due = [
-            p
+        due_ids = {
+            id(p)
             for p in self.pending
-            if p["method"] != "cash" and core.next_business_day(p["day"], lags[p["method"]]) <= day
-        ]
-        self.pending = [p for p in self.pending if p not in due]
+            if p["method"] != "cash"
+            and self.cal.next_business_day(p["day"], lags[p["method"]]) <= day
+        }
         groups: dict[tuple[str, str], list[dict]] = {}
-        for p in due:
-            key = (p["method"], "ALL" if p["method"] in WALLETS else p["branch"])
-            groups.setdefault(key, []).append(p)
+        for p in self.pending:
+            if id(p) in due_ids:
+                groups.setdefault(
+                    (p["method"], "ALL" if p["method"] in WALLETS else p["branch"]), []
+                ).append(p)
         for (method, branch_id), group in sorted(groups.items()):
             mid = next((b["card_mid"] for b in self.cfg["branches"] if b["id"] == branch_id), "")
-            batch = day.strftime("%m%d")
-            narration = SETTLEMENT_NARRATION[method].format(mid=mid, branch=branch_id, batch=batch)
-            self.bank.append(
+            narration = SETTLEMENT_NARRATION[method].format(
+                mid=mid, branch=branch_id, batch=day.strftime("%m%d")
+            )
+            amount = sum(p["amount"] for p in group)
+            self._post(
                 BankTxn(
                     day,
                     narration,
                     f"ST{day.strftime('%y%m%d')}{method[:2].upper()}{branch_id[-2:]}",
-                    sum(p["amount"] for p in group),
+                    amount,
                     "pos_settlement",
                     [p["event_id"] for p in group],
                 )
             )
-            self.mdr_base.setdefault((day.year, day.month), {}).setdefault(method, 0)
-            self.mdr_base[(day.year, day.month)][method] += sum(p["amount"] for p in group)
-        # Cash: each branch deposits the counted cash of all days since its last deposit.
-        cash_events = [p for p in self.pending if p["method"] == "cash" and p["day"] < day]
-        self.pending = [p for p in self.pending if p not in cash_events]
+            month = self.mdr_base.setdefault(core.month_index(day), {})
+            month[method] = month.get(method, 0) + amount
+        cash_ids = {id(p) for p in self.pending if p["method"] == "cash" and p["day"] < day}
+        cash_events = [p for p in self.pending if id(p) in cash_ids]
+        self.pending = [p for p in self.pending if id(p) not in due_ids and id(p) not in cash_ids]
         drawers = [c for c in self.pending_cash if c["day"] < day]
-        self.pending_cash = [c for c in self.pending_cash if c not in drawers]
+        self.pending_cash = [c for c in self.pending_cash if c["day"] >= day]
         for branch in self.cfg["branches"]:
             mine = [c for c in drawers if c["branch"] == branch["id"]]
-            if not mine:
-                continue
             events = [p["event_id"] for p in cash_events if p["branch"] == branch["id"]]
-            if not events and not sum(c["amount"] for c in mine):
+            amount = sum(c["amount"] for c in mine)
+            if not mine or (not events and not amount):
                 continue
             self.slip += 1
-            self.bank.append(
+            self._post(
                 BankTxn(
                     day,
                     f"CASH DEPOSIT {branch['id']} SLIP {self.slip:05d}",
                     f"CD{self.slip:07d}",
-                    sum(c["amount"] for c in mine),
+                    amount,
                     "cash_deposit",
                     events,
                     extra={"over_short_minor": sum(c["over_short"] for c in mine)},
@@ -984,9 +1415,12 @@ class Simulation:
 
     def _pay_suppliers(self, day: date) -> None:
         for bill in self.bills:
-            if bill["bill_id"] in self.unpaid_bill_ids or bill.get("_paid"):
+            if bill["bill_id"] in self.never_pay or bill.get("_paid_on"):
                 continue
-            if core.on_or_before_business_day(date.fromisoformat(bill["due_date"])) != day:
+            if (
+                self.cal.on_or_before(date.fromisoformat(bill["due_date"])) > day
+                or bill["received_at"][:10] > day.isoformat()
+            ):
                 continue
             party = self.parties[bill["supplier_id"]]
             pay_id = self.pay_ids.take()
@@ -1008,9 +1442,9 @@ class Simulation:
                     "wallet_ref": None,
                 },
             )
-            bill["_paid"] = True
+            bill["_paid_on"] = day.isoformat()
             narration = f"IBFT TO {party['name'].upper()} {bill['number'].replace('-', ' ').replace('/', ' ')}"
-            self.bank.append(
+            self._post(
                 BankTxn(
                     day,
                     narration,
@@ -1033,18 +1467,17 @@ class Simulation:
                 and o["pay_on"] > day
                 for o in self.receivables
             ):
-                continue  # this customer will pay it together with the next invoice
+                continue
             by_customer.setdefault(r["invoice"]["customer_id"], []).append(r)
         for customer_id, group in sorted(by_customer.items()):
             for r in group:
                 r["paid"] = True
             party = self.parties[customer_id]
             numbers = " ".join(r["invoice"]["number"] for r in group)
-            # Some customers write the invoice numbers in the transfer, some only their name.
             narration = f"IBFT FROM {party['name'].upper()}" + (
                 f" {numbers}" if rng.randint(1, 100) <= 70 else ""
             )
-            self.bank.append(
+            self._post(
                 BankTxn(
                     day,
                     narration,
@@ -1057,48 +1490,98 @@ class Simulation:
                 )
             )
 
+    def _post(self, txn: BankTxn) -> None:
+        self.bank.append(txn)
+        self.balance += txn.amount_minor
+
+    def _on(self, day: date, nominal: date) -> bool:
+        return day == self.cal.on_or_before(nominal)
+
     def _recurring(self, day: date, rng) -> None:
-        rec = self.cfg["recurring"]
+        rec, cfg = self.cfg["recurring"], self.cfg
         mon = day.strftime("%b-%Y").upper()
-        if day == core.nth_business_day_of_month(day.year, day.month, rec["payroll_day"]):
-            self.bank.append(
+        payroll = cfg["payroll"]
+        if day == self.cal.nth_business_day(day.year, day.month, payroll["day"]):
+            gross = finance.payroll_gross(payroll, day)
+            wht = gross * payroll["wht_bp"] // 10_000
+            self.payroll_rows.append(
+                {
+                    "month": day.strftime("%Y-%m"),
+                    "paid_on": day.isoformat(),
+                    "headcount": payroll["headcount"],
+                    "gross_minor": gross,
+                    "wht_minor": wht,
+                    "net_minor": gross - wht,
+                }
+            )
+            self._post(
                 BankTxn(
                     day,
                     f"SALARY BULK TRF {mon}",
                     f"SAL{day.strftime('%y%m')}",
-                    -rec["payroll_minor"],
+                    -(gross - wht),
                     "payroll",
                 )
             )
-        if day == core.on_or_before_business_day(date(day.year, day.month, rec["rent_day"])):
-            for b in self.cfg["branches"]:
-                self.bank.append(
+            self.wht_due.append((date(day.year, day.month, rec["wht_day"]), wht, mon))
+        for nominal, amount, label in list(self.wht_due):
+            if self._on(day, nominal):
+                self._post(
                     BankTxn(
                         day,
-                        f"RENT {mon} {b['id']}",
-                        f"RNT{day.strftime('%y%m')}{b['id']}",
-                        -b["rent_minor"],
-                        "rent",
-                        party=b["landlord"],
+                        f"FBR WHT SALARIES {label}",
+                        f"WHT{day.strftime('%y%m')}",
+                        -amount,
+                        "tax",
+                        party="pty_006",
                     )
                 )
-        if day == core.on_or_before_business_day(date(day.year, day.month, rec["loan_day"])):
-            first = date.fromisoformat(rec["loan_first_instalment"])
-            number = (day.year - first.year) * 12 + day.month - first.month + 1
-            if 1 <= number <= rec["loan_instalments"]:
-                self.bank.append(
+                self.wht_due.remove((nominal, amount, label))
+        for row in self.lease_rows:
+            if row["paid_on"] == day.isoformat():
+                self._post(
                     BankTxn(
                         day,
-                        f"LOAN INSTALMENT {number:02d}/{rec['loan_instalments']}",
+                        f"RENT {mon} BR02 CLIFTON",
+                        f"RNT{day.strftime('%y%m')}BR02",
+                        -row["amount_minor"],
+                        "rent",
+                        party="pty_002",
+                    )
+                )
+        for row in self.loan["schedule"]:
+            if row["paid_on"] == day.isoformat():
+                self._post(
+                    BankTxn(
+                        day,
+                        f"LOAN INSTALMENT {row['n']:02d}/{self.loan['instalments']}",
                         f"LN{day.strftime('%y%m')}",
-                        -rec["loan_instalment_minor"],
+                        -row["instalment_minor"],
                         "loan",
                         party="pty_005",
+                        extra={
+                            "principal_minor": row["principal_minor"],
+                            "interest_minor": row["interest_minor"],
+                        },
                     )
                 )
-        if day == core.on_or_before_business_day(date(day.year, day.month, rec["electricity_day"])):
-            low, high = rec["electricity_range_minor"]
-            self.bank.append(
+        if self._on(day, date.fromisoformat(cfg["loan"]["disbursed_on"])):
+            self._post(
+                BankTxn(
+                    day,
+                    "LOAN DISBURSEMENT SME FINANCE",
+                    "LNDISB",
+                    cfg["loan"]["principal_minor"],
+                    "loan_disbursement",
+                    party="pty_005",
+                )
+            )
+        summer = 5 <= day.month <= 9
+        if self._on(day, date(day.year, day.month, rec["electricity_day"])):
+            low, high = rec[
+                "electricity_summer_range_minor" if summer else "electricity_winter_range_minor"
+            ]
+            self._post(
                 BankTxn(
                     day,
                     f"ELECTRICITY BILL {mon}",
@@ -1108,9 +1591,9 @@ class Simulation:
                     party="pty_003",
                 )
             )
-        if day == core.on_or_before_business_day(date(day.year, day.month, rec["gas_day"])):
+        if self._on(day, date(day.year, day.month, rec["gas_day"])):
             low, high = rec["gas_range_minor"]
-            self.bank.append(
+            self._post(
                 BankTxn(
                     day,
                     f"GAS BILL {mon}",
@@ -1120,10 +1603,29 @@ class Simulation:
                     party="pty_004",
                 )
             )
-        if day == core.on_or_before_business_day(
-            date(day.year, day.month, rec["bank_charges_day"])
+        for kind, label in (
+            ("security", "SECURITY AND CLEANING"),
+            ("marketing", "DIGITAL MARKETING"),
+            ("drawings", "OWNER DRAWINGS TRF"),
         ):
-            self.bank.append(
+            # The owner skips a month's drawings when the account would fall below the comfort level.
+            if (
+                kind == "drawings"
+                and self.balance - rec["drawings_minor"] < rec["drawings_min_balance_minor"]
+            ):
+                continue
+            if self._on(day, date(day.year, day.month, rec[f"{kind}_day"])):
+                self._post(
+                    BankTxn(
+                        day,
+                        f"{label} {mon}",
+                        f"{kind[:3].upper()}{day.strftime('%y%m')}",
+                        -rec[f"{kind}_minor"],
+                        kind,
+                    )
+                )
+        if self._on(day, date(day.year, day.month, rec["bank_charges_day"])):
+            self._post(
                 BankTxn(
                     day,
                     f"BANK CHARGES {mon}",
@@ -1132,320 +1634,169 @@ class Simulation:
                     "bank_charges",
                 )
             )
-        prev_year, prev_month = (day.year, day.month - 1) if day.month > 1 else (day.year - 1, 12)
-        prev = f"{date(prev_year, prev_month, 1).strftime('%b-%Y').upper()}"
+        prev_month = core.month_index(day) - 1
+        prev_label = date(prev_month // 12, prev_month % 12 + 1, 1).strftime("%b-%Y").upper()
         if (
-            day == core.nth_business_day_of_month(day.year, day.month, rec["mdr_day"])
-            and (prev_year, prev_month) in self.mdr_base
+            day == self.cal.nth_business_day(day.year, day.month, rec["mdr_day"])
+            and prev_month in self.mdr_base
         ):
             mdr = self.cfg["pos"]["mdr_bp"]
             fee = sum(
                 core.div_half_up(amount * mdr[m], 10_000)
-                for m, amount in sorted(self.mdr_base[(prev_year, prev_month)].items())
+                for m, amount in sorted(self.mdr_base[prev_month].items())
             )
             if fee:
-                self.bank.append(
-                    BankTxn(
-                        day, f"MDR CHARGES {prev}", f"MDR{day.strftime('%y%m')}", -fee, "mdr_fees"
-                    )
-                )
-        if day == core.on_or_before_business_day(date(day.year, day.month, rec["tax_day"])):
-            net = self._sales_tax_due(prev_year, prev_month)
-            if net > 0:
-                self.bank.append(
+                self._post(
                     BankTxn(
                         day,
-                        f"FBR SALES TAX {prev}",
+                        f"MDR CHARGES {prev_label}",
+                        f"MDR{day.strftime('%y%m')}",
+                        -fee,
+                        "mdr_fees",
+                    )
+                )
+        if self._on(day, date(day.year, day.month, rec["tax_day"])):
+            if prev_month < core.month_index(self.start):
+                net = rec["opening_sales_tax_payable_minor"]
+            else:
+                net = (
+                    self.output_tax.get(prev_month, 0)
+                    - self.input_tax.get(prev_month, 0)
+                    - self.tax_credit
+                )
+            self.tax_credit = max(0, -net)  # excess input tax carries forward
+            if net > 0:
+                self._post(
+                    BankTxn(
+                        day,
+                        f"FBR SALES TAX {prev_label}",
                         f"FBR{day.strftime('%y%m')}",
                         -net,
                         "tax",
                         party="pty_006",
                     )
                 )
-
-    def _sales_tax_due(self, year: int, month: int) -> int:
-        prefix = f"{year:04d}-{month:02d}"
-        output = sum(
-            e["tax_minor"]
-            for e in self.events
-            if e["event"] in ("sale", "customer_invoice")
-            and e["date"].startswith(prefix)
-            and e.get("txn", "sale") != "void"
-        )
-        inputs = sum(
-            b["tax"][0]["amount_minor"] for b in self.bills if b["issue_date"].startswith(prefix)
-        )
-        observed = {
-            e["date"] for e in self.events if e["event"] == "sale" and e["date"].startswith(prefix)
-        }
-        if not observed:
-            return 0
-        # ASSUMPTION: a month only partly inside the generated period is scaled up to a full month.
-        days_in_month = (core.add_months(date(year, month, 1), 1) - date(year, month, 1)).days
-        return core.div_half_up((output - inputs) * days_in_month, len(observed))
+        for instalment in rec["advance_tax"]:
+            nominal = date(day.year, int(instalment["due"][:2]), int(instalment["due"][3:]))
+            if self._on(day, nominal):
+                self._post(
+                    BankTxn(
+                        day,
+                        f"FBR ADVANCE INCOME TAX {mon}",
+                        f"ADV{day.strftime('%y%m')}",
+                        -instalment["minor"],
+                        "income_tax",
+                        party="pty_006",
+                    )
+                )
+        for asset in self.cfg["fixed_assets"]:
+            acquired = date.fromisoformat(asset["acquired_on"])
+            if asset.get("payee") and acquired >= self.start and self._on(day, acquired):
+                payee = self.parties[asset["payee"]]
+                self._post(
+                    BankTxn(
+                        day,
+                        f"IBFT TO {payee['name'].upper()} {asset['id'].upper()}",
+                        f"CPX{asset['id'][3:]}",
+                        -asset["cost_minor"],
+                        "capex",
+                        party=asset["payee"],
+                        extra={"asset_id": asset["id"]},
+                    )
+                )
 
     # ------------------------------------------------------------ run
-    def run(self) -> Output:
+    def run(self) -> dict:
         self.pending: list[dict] = []
         self.pending_cash: list[dict] = []
         self.receivables: list[dict] = []
-        self.mdr_base: dict[tuple[int, int], dict[str, int]] = {}
+        self.mdr_base: dict[int, dict[str, int]] = {}
+        self.payroll_rows: list[dict] = []
+        self.wht_due: list[tuple[date, int, str]] = []
         self.slip = 0
+        self.balance = self.cfg["bank"]["opening_balance_minor"]
+        self.lease_rows = finance.lease_payments(
+            next(ls for ls in self.cfg["leases"] if not ls.get("billed")),
+            self.start,
+            self.end,
+            self.cal,
+        )
         receipt_seq = {r: 0 for b in self.cfg["branches"] for r in b["registers"]}
         recent: dict[str, list[dict]] = {b["id"]: [] for b in self.cfg["branches"]}
-        purchasing_rng = core.stream(self.seed, "purchasing")
-        pos_rng = core.stream(self.seed, "pos")
-        b2b_rng = core.stream(self.seed, "b2b")
-        bank_rng = core.stream(self.seed, "bank")
+        streams = {
+            name: core.stream(self.seed, name) for name in ("purchasing", "pos", "b2b", "bank")
+        }
         self._opening_balances()
         for day in core.days(self.start, self.end):
-            self._order_day(day, purchasing_rng)
-            self._receive_goods(day, purchasing_rng)
-            self._planted_resend(day)
-            self._pos_day(day, pos_rng, receipt_seq, recent)
-            self._invoice_day(day, b2b_rng)
-            if core.is_business_day(day):
+            self._order_day(day, streams["purchasing"])
+            self._receive_goods(day, streams["purchasing"])
+            self._planted_followups(day)
+            self._rent_bill(day)
+            self._pos_day(day, streams["pos"], receipt_seq, recent)
+            self._invoice_day(day, streams["b2b"])
+            if self.cal.is_business_day(day):
                 self._settle(day)
                 self._pay_suppliers(day)
-                self._collect_receivables(day, bank_rng)
-                self._recurring(day, bank_rng)
-        return self._finish()
+                self._collect_receivables(day, streams["bank"])
+                self._recurring(day, streams["bank"])
+            self._nrv_day(day)
+            if day == self.as_of:
+                self.stock_at_as_of = dict(self.stock)
+        from data.generator.outputs import build_outputs
+
+        return build_outputs(self)
 
     def _opening_balances(self) -> None:
-        bank_cfg, rec = self.cfg["bank"], self.cfg["recurring"]
+        rec = self.cfg["recurring"]
+        register = finance.asset_register(self.cfg["fixed_assets"], self.start, self.as_of)
+        prior = [a for a in register if not a["in_period"]]
+        ppe = sum(a["cost_minor"] for a in prior)
+        acc_dep = sum(a["accumulated_depreciation_at_start_minor"] for a in prior)
         inventory = sum(
-            it["opening_stock_qty"] * it["unit_cost_minor"] for it in self.items.values()
+            it["opening_stock_qty"] * self.layer_cost.get(s, 0) for s, it in self.items.items()
         )
         floats = self.cfg["pos"]["opening_float_minor"] * sum(
             len(b["registers"]) for b in self.cfg["branches"]
         )
-        loan = rec["loan_outstanding_principal_minor"]
-        cash = bank_cfg["opening_balance_minor"]
-        equity = cash + floats + inventory - loan
-        lines = [
+        deposit = next(
+            (
+                ls.get("security_deposit_minor", 0)
+                for ls in self.cfg["leases"]
+                if not ls.get("billed")
+            ),
+            0,
+        )
+        cash = self.cfg["bank"]["opening_balance_minor"]
+        tax_payable = rec["opening_sales_tax_payable_minor"]
+        equity = cash + floats + inventory + deposit + ppe - acc_dep - tax_payable
+        self.opening_lines = [
             {"account": "1000", "debit_minor": cash, "credit_minor": 0},
             {"account": "1010", "debit_minor": floats, "credit_minor": 0},
             {"account": "1200", "debit_minor": inventory, "credit_minor": 0},
-            {"account": "2200", "debit_minor": 0, "credit_minor": loan},
+            {"account": "1400", "debit_minor": deposit, "credit_minor": 0},
+            {"account": "1500", "debit_minor": ppe, "credit_minor": 0},
+            {"account": "1510", "debit_minor": 0, "credit_minor": acc_dep},
+            {"account": "2100", "debit_minor": 0, "credit_minor": tax_payable},
             {"account": "3000", "debit_minor": 0, "credit_minor": equity},
         ]
-        moment = core.local_time(self.start, 5 * 60, 0, 0)
         self._event(
             "journal_adjustment",
-            moment,
+            core.local_time(self.start, 0, 0, 0),
             self.start,
             "manual",
             "opening_balances",
-            {"lines": lines, "reason": "opening_balances", "approver": "owner"},
+            {"lines": self.opening_lines, "reason": "opening_balances", "approver": "owner"},
         )
 
-    # ------------------------------------------------------------ outputs
-    def _finish(self) -> Output:
-        t = self.cfg["tenant"]
-        order = {"credit": 0, "debit": 1}
-        self.bank.sort(
-            key=lambda b: (
-                b.posted_on,
-                order["credit" if b.amount_minor > 0 else "debit"],
-                b.narration,
-                b.reference,
-            )
-        )
-        balance = self.cfg["bank"]["opening_balance_minor"]
-        bank_rows, matches, unmatched = [], [], []
-        for line_no, txn in enumerate(self.bank, start=1):
-            balance += txn.amount_minor
-            if balance < 0:
-                raise RuntimeError(
-                    f"bank balance went negative on {txn.posted_on}; raise opening_balance_minor"
-                )
-            key = f"{self.own_iban}#{line_no}"
-            moment = core.local_time(txn.posted_on, 0, 0, 0)
-            row = {
-                "account_iban": self.own_iban,
-                "line_no": line_no,
-                "posted_on": txn.posted_on.isoformat(),
-                "value_date": txn.posted_on.isoformat(),
-                "narration": txn.narration,
-                "reference": txn.reference,
-                "amount_minor": txn.amount_minor,
-                "balance_minor": balance,
-                "currency": self.currency,
-            }
-            bank_rows.append(row)
-            bank_line_id = core.source_ulid("bln", moment, self.tenant_id, "bank_statement", key)
-            self._event(
-                "bank_line",
-                moment,
-                txn.posted_on,
-                "bank_statement",
-                key,
-                {
-                    "bank_line_id": bank_line_id,
-                    "account_iban": self.own_iban,
-                    "line_no": line_no,
-                    "narration": txn.narration,
-                    "reference": txn.reference,
-                    "amount_minor": txn.amount_minor,
-                    "balance_minor": balance,
-                },
-                {"file": "bank_statement.csv", "row": line_no},
-            )
-            if txn.event_ids:
-                matches.append(
-                    {
-                        "bank_line_id": bank_line_id,
-                        "line_no": line_no,
-                        "kind": txn.kind,
-                        "event_ids": txn.event_ids,
-                        **txn.extra,
-                    }
-                )
-            else:
-                unmatched.append(
-                    {"bank_line_id": bank_line_id, "line_no": line_no, "category": txn.kind}
-                )
-        self.events.sort(key=lambda e: (e["occurred_at"], e["id"]))
-        for po in self.pos:
-            po.pop("_forced", None)
-        for bill in self.bills:
-            bill.pop("_paid", None)
-        events_by_key = {(e["event"], e["source"]["key"]): e["id"] for e in self.events}
-        tenant = {
-            "synthetic": True,
-            "id": self.tenant_id,
-            "name": t["name"],
-            "country": t["country"],
-            "currency": self.currency,
-            "minor_unit": t["minor_unit"],
-            "framework": t["framework"],
-            "fiscal_year_start_month": t["fiscal_year_start_month"],
-            "timezone": t["timezone"],
-            "as_of": self.end.isoformat(),
-            "period": {"start": self.start.isoformat(), "end": self.end.isoformat()},
-            "branches": [
-                {
-                    "id": b["id"],
-                    "name": b["name"],
-                    "registers": b["registers"],
-                    "card_mid": b["card_mid"],
-                }
-                for b in self.cfg["branches"]
-            ],
-            "bank_accounts": [
-                {
-                    "iban": self.own_iban,
-                    "name": self.cfg["bank"]["name"],
-                    "opening_balance_minor": self.cfg["bank"]["opening_balance_minor"],
-                }
-            ],
-            "policies": self.cfg["policies"],
-            "country_pack_draft": self.cfg["country_pack_draft"],
-        }
-        mandates = self.mandates
-        return Output(
-            tenant=tenant,
-            mandates=mandates,
-            accounts=self.cfg["chart"]["accounts"],
-            parties=list(self.parties.values()),
-            items=list(self.items.values()),
-            purchase_orders=self.pos,
-            goods_received=self.grns,
-            bills=self.bills,
-            documents=self.documents,
-            invoices=self.invoices,
-            bank_rows=bank_rows,
-            pos_rows=self.pos_rows,
-            z_rows=self.z_rows,
-            events=self.events,
-            answer_key=self._answer_key(matches, unmatched, events_by_key, mandates),
-        )
 
-    def _answer_key(self, matches, unmatched, events_by_key, mandates) -> dict:
-        demo = self.cfg.get("demo", {})
-        scenarios, planted = [], set()
-        if "duplicate_bill" in demo:
-            d = demo["duplicate_bill"]
-            planted |= {d["resend_bill_id"]}
-            scenarios.append(
-                {
-                    "id": "DEMO-1",
-                    "rules": ["G-03", "G-05", "G-12"],
-                    "expected_outcome": "block",
-                    "refs": {
-                        "bill_ids": [d["resend_bill_id"], d["original_bill_id"]],
-                        "document_ids": [d["resend_document_id"], d["original_document_id"]],
-                        "party_ids": [d["supplier"]],
-                        "event_ids": [
-                            events_by_key[("purchase_bill", d["resend_bill_id"])],
-                            events_by_key[("purchase_bill", d["original_bill_id"])],
-                            events_by_key[
-                                (
-                                    "bank_detail_change",
-                                    f"bdc:{d['supplier']}:{d['bank_change_at'][:10]}",
-                                )
-                            ],
-                        ],
-                    },
-                    "also_fires": self._also_fires_cap(
-                        events_by_key, d["resend_bill_id"], mandates
-                    ),
-                    "note": (
-                        f"{d['resend_number']} re-sends {d['original_number']} ({d['original_bill_id']}), paid on "
-                        f"{d['original_due_date']}; {d['supplier']} changed its bank account on {d['bank_change_at'][:10]} "
-                        f"(confirmed by {d['bank_change_confirmed_via']} only); the bill presses for urgent payment."
-                    ),
-                }
-            )
-        if "over_cap_bill" in demo:
-            d = demo["over_cap_bill"]
-            bill = next(b for b in self.bills if b["bill_id"] == d["bill_id"])
-            cap = next(m["per_payment_cap_minor"] for m in mandates if m["agent"] == "treasurer")
-            planted.add(d["bill_id"])
-            scenarios.append(
-                {
-                    "id": "S-01",
-                    "rules": ["G-01"],
-                    "expected_outcome": "escalate",
-                    "refs": {
-                        "bill_ids": [d["bill_id"]],
-                        "document_ids": [d["document_id"]],
-                        "party_ids": [d["supplier"]],
-                        "event_ids": [events_by_key[("purchase_bill", d["bill_id"])]],
-                    },
-                    "note": f"Clean bill of {bill['total_minor']} minor, above the treasurer cap of {cap}; owner approves by phone.",
-                }
-            )
-        dup = demo.get("duplicate_bill", {})
-        clean = sorted(
-            b["bill_id"]
-            for b in self.bills
-            if b["bill_id"] not in planted and b["bill_id"] != dup.get("original_bill_id")
-        )
-        return {
-            "synthetic": True,
-            "tenant_id": self.tenant_id,
-            "seed": self.seed,
-            "as_of": self.end.isoformat(),
-            "generator_version": GENERATOR_VERSION,
-            "scenarios": scenarios,
-            "matches": matches,
-            "unmatched_bank_lines": unmatched,
-            "clean_bill_ids": clean,
-            "open_bill_ids": sorted(
-                b["bill_id"]
-                for b in self.bills
-                if b["bill_id"] in self.unpaid_bill_ids or b["due_date"] > self.end.isoformat()
-            ),
-            "other_lanes": {},
-            "notes": "v0 (D2a): demo threads only. D2 adds S-01..S-12 in full, the other lanes' truths and held-out weeks.",
-        }
-
-    def _also_fires_cap(self, events_by_key, bill_id: str, mandates: list[dict]) -> list[str]:
-        bill = next(b for b in self.bills if b["bill_id"] == bill_id)
-        cap = next(m["per_payment_cap_minor"] for m in mandates if m["agent"] == "treasurer")
-        return ["G-01"] if bill["total_minor"] > cap else []
-
-
-def generate(config: dict, seed: int, months: int, mandates: list[dict]) -> Output:
-    return Simulation(config, seed, months, mandates).run()
+def generate(
+    config: dict,
+    seed: int,
+    months: int,
+    mandates: list[dict],
+    scenarios: dict,
+    mandates_source: str = "rulebook/mandates.yaml",
+) -> dict:
+    sim = Simulation(config, seed, months, mandates, scenarios)
+    sim.mandates_source = mandates_source
+    return sim.run()

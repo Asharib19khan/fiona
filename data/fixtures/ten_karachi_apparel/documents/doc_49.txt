@@ -1,24 +1,22 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Indus Weaving Mills
-Faisalabad, Pakistan    NTN: 5945744-0
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: IWM/26/423
-Date: 2026-09-21    Due: 2026-10-01
+Invoice no: KG-3320
+Date: 2024-07-26    Due: 2024-08-25
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1044
+PO ref: PO-1054
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   30  UNS-OS-BLU Unstitched three-piece lawn    3,300.00      99,000.00
-   24  UNS-OS-GRN Unstitched three-piece lawn    3,300.00      79,200.00
-   12  UNS-OS-PNK Unstitched three-piece lawn    3,300.00      39,600.00
-   24  UNS-OS-PRP Unstitched three-piece lawn    3,300.00      79,200.00
-   30  UNS-OS-WHT Unstitched three-piece lawn    3,300.00      99,000.00
-   24  UNS-OS-YLW Unstitched three-piece lawn    3,300.00      79,200.00
+   12  TRS-M-BEI Cotton trousers - M - BEI         797.00       9,564.00
+    6  TRS-M-BLK Cotton trousers - M - BLK         797.00       4,782.00
+    6  TRS-S-BEI Cotton trousers - S - BEI         797.00       4,782.00
+    6  TRS-S-BLK Cotton trousers - S - BLK         797.00       4,782.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       475,200.00
-                                             GST 18.00%        85,536.00
-                                              TOTAL PKR       560,736.00
+                                           Subtotal PKR        23,910.00
+                                             GST 18.00%         4,303.80
+                                              TOTAL PKR        28,213.80
 ------------------------------------------------------------------------
-Pay to IBAN: PK24SYNB0349937808765007
+Pay to IBAN: PK93SYND3188429112252004

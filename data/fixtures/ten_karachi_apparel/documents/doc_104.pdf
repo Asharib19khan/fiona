@@ -1,0 +1,58 @@
+%PDF-1.4
+% SYNTHETIC DOCUMENT - Fiona demo data
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+5 0 obj
+<< /Length 1256 >>
+stream
+BT
+/F1 8.5 Tf
+10.5 TL
+36 812 Td
+(SYNTHETIC DOCUMENT - Fiona demo data) '
+(========================================================================) '
+(Hala Dupatta Crafts) '
+(Hala, Pakistan    NTN: 1649637-3) '
+(------------------------------------------------------------------------) '
+(SALES TAX INVOICE) '
+(Invoice no: HDC/0412) '
+(Date: 2026-10-17    Due: 2026-11-01) '
+(Bill to: Karachi Apparel Co. \(synthetic\)) '
+(PO ref: PO-3860) '
+(------------------------------------------------------------------------) '
+(  Qty  Item / description                      Unit price         Amount) '
+(   79  DUP-OS-MRN Chiffon dupatta - OS - MRN     1,038.00      82,002.00) '
+(    1  Freight and handling                      2,743.76       2,743.76) '
+(    1  Freight surcharge                           508.48         508.48) '
+(------------------------------------------------------------------------) '
+(                                           Subtotal PKR        85,254.24) '
+(                                             GST 18.00%        15,345.76) '
+(                                              TOTAL PKR       100,600.00) '
+(------------------------------------------------------------------------) '
+(Pay to IBAN: PK96SYNB1941253908622411) '
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000048 00000 n 
+0000000097 00000 n 
+0000000154 00000 n 
+0000000280 00000 n 
+0000000348 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1656
+%%EOF

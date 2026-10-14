@@ -1,0 +1,24 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Lahore Velvet Works
+Lahore, Pakistan    NTN: 7044764-9
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: LVW-15
+Date: 2024-11-23    Due: 2024-12-23
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-1463
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   30  JKT-L-BLK Embroidered velvet jacket -     3,648.00     109,440.00
+   30  JKT-L-MRN Embroidered velvet jacket -     3,648.00     109,440.00
+   30  JKT-M-BLK Embroidered velvet jacket -     3,648.00     109,440.00
+   30  JKT-M-MRN Embroidered velvet jacket -     3,648.00     109,440.00
+   30  JKT-S-BLK Embroidered velvet jacket -     3,648.00     109,440.00
+   30  JKT-S-MRN Embroidered velvet jacket -     3,648.00     109,440.00
+------------------------------------------------------------------------
+                                           Subtotal PKR       656,640.00
+                                             GST 18.00%       118,195.20
+                                              TOTAL PKR       774,835.20
+------------------------------------------------------------------------
+Pay to IBAN: PK31SYND4233718012654979

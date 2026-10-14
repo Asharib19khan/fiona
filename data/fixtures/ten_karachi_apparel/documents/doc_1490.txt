@@ -1,0 +1,24 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Indus Weaving Mills
+Faisalabad, Pakistan    NTN: 5945744-0
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: IWM/25/0779
+Date: 2025-08-18    Due: 2025-11-16
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2448
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+  600  LWN-OS-IVR Premium embroidered lawn -     5,416.00   3,249,600.00
+  600  LWN-OS-LIL Premium embroidered lawn -     5,416.00   3,249,600.00
+  600  LWN-OS-OLV Premium embroidered lawn -     5,416.00   3,249,600.00
+  600  LWN-OS-ROS Premium embroidered lawn -     5,416.00   3,249,600.00
+  600  LWN-OS-SKY Premium embroidered lawn -     5,416.00   3,249,600.00
+  600  LWN-OS-TEA Premium embroidered lawn -     5,416.00   3,249,600.00
+------------------------------------------------------------------------
+                                           Subtotal PKR    19,497,600.00
+                                             GST 18.00%     3,509,568.00
+                                              TOTAL PKR    23,007,168.00
+------------------------------------------------------------------------
+Pay to IBAN: PK24SYNB0349937808765007

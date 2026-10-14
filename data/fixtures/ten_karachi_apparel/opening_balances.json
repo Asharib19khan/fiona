@@ -1,0 +1,48 @@
+{
+  "synthetic": true,
+  "as_of": "2024-07-01",
+  "currency": "PKR",
+  "lines": [
+    {
+      "account": "1000",
+      "debit_minor": 650000000,
+      "credit_minor": 0
+    },
+    {
+      "account": "1010",
+      "debit_minor": 5000000,
+      "credit_minor": 0
+    },
+    {
+      "account": "1200",
+      "debit_minor": 293946700,
+      "credit_minor": 0
+    },
+    {
+      "account": "1400",
+      "debit_minor": 126000000,
+      "credit_minor": 0
+    },
+    {
+      "account": "1500",
+      "debit_minor": 1370000000,
+      "credit_minor": 0
+    },
+    {
+      "account": "1510",
+      "debit_minor": 0,
+      "credit_minor": 163083333
+    },
+    {
+      "account": "2100",
+      "debit_minor": 0,
+      "credit_minor": 95000000
+    },
+    {
+      "account": "3000",
+      "debit_minor": 0,
+      "credit_minor": 2186863367
+    }
+  ],
+  "note": "Opening trial balance at the start of the period; accounts in accounts.csv. Trade payables and receivables are nil (ASSUMPTION: June bills were settled by 30 June)."
+}

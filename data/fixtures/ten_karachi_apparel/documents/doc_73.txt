@@ -4,18 +4,18 @@ Mehran Garments
 Karachi, Pakistan    NTN: 3564187-3
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2246
-Date: 2026-09-28    Due: 2026-10-05
+Invoice no: INV-1824
+Date: 2024-07-31    Due: 2024-08-07
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1078
+PO ref: PO-1075
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  KRT-L-BLK Cotton kurta - L - BLK          1,800.00      10,800.00
-   12  KRT-M-BLK Cotton kurta - M - BLK          1,800.00      21,600.00
-    6  KRT-XL-MRN Cotton kurta - XL - MRN        1,800.00      10,800.00
+   18  KRT-M-BLK Cotton kurta - M - BLK          1,304.00      23,472.00
+    6  KRT-XL-BLK Cotton kurta - XL - BLK        1,304.00       7,824.00
+    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,304.00       7,824.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        43,200.00
-                                             GST 18.00%         7,776.00
-                                              TOTAL PKR        50,976.00
+                                           Subtotal PKR        39,120.00
+                                             GST 18.00%         7,041.60
+                                              TOTAL PKR        46,161.60
 ------------------------------------------------------------------------
 Pay to IBAN: PK72SYNB9216553175680255

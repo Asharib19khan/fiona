@@ -1,0 +1,18 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Tariq Road Properties (synthetic)
+Karachi, Pakistan    NTN: None
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: RNT-2024-09
+Date: 2024-09-02    Due: 2024-09-05
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: -
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+    1  Shop rent, Shop premises, Tariq Road (  290,000.00     290,000.00
+------------------------------------------------------------------------
+                                           Subtotal PKR       290,000.00
+                                              TOTAL PKR       290,000.00
+------------------------------------------------------------------------
+Pay to IBAN: PK05SYNF7501390256366410

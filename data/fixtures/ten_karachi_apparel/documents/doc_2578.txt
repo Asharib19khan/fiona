@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: GKW1815
+Date: 2026-06-29    Due: 2026-07-14
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-3536
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  KKR-6Y-BLU Kids kurta - 6Y - BLU            953.00      11,436.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        11,436.00
+                                             GST 18.00%         2,058.48
+                                              TOTAL PKR        13,494.48
+------------------------------------------------------------------------
+Pay to IBAN: PK45SYNB5872076931292399

@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Murree Knitwear
+Murree, Pakistan    NTN: 1606145-7
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: MK1696
+Date: 2025-02-16    Due: 2025-03-18
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-1824
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+    6  SCF-OS-BLK Knitted scarf - OS - BLK         551.00       3,306.00
+   12  SCF-OS-MRN Knitted scarf - OS - MRN         551.00       6,612.00
+------------------------------------------------------------------------
+                                           Subtotal PKR         9,918.00
+                                             GST 18.00%         1,785.24
+                                              TOTAL PKR        11,703.24
+------------------------------------------------------------------------
+Pay to IBAN: PK74SYNB6033235568991472

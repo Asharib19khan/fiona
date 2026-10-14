@@ -1,23 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Lyari Stitching House
-Karachi, Pakistan    NTN: 2561976-8
+Indus Weaving Mills
+Faisalabad, Pakistan    NTN: 5945744-0
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: LSH-1196
-Date: 2026-09-20    Due: 2026-10-20
+Invoice no: IWM/24/0410
+Date: 2024-07-26    Due: 2024-08-05
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1045
+PO ref: PO-1040
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  STS-L-GRN Stitched two-piece suit - L     4,700.00      56,400.00
-   12  STS-L-PNK Stitched two-piece suit - L     4,700.00      56,400.00
-    6  STS-M-BEI Stitched two-piece suit - M     4,700.00      28,200.00
-   12  STS-M-GRN Stitched two-piece suit - M     4,700.00      56,400.00
-   12  STS-M-PNK Stitched two-piece suit - M     4,700.00      56,400.00
+   18  UNS-OS-BLU Unstitched three-piece lawn    2,391.00      43,038.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       253,800.00
-                                             GST 18.00%        45,684.00
-                                              TOTAL PKR       299,484.00
+                                           Subtotal PKR        43,038.00
+                                             GST 18.00%         7,746.84
+                                              TOTAL PKR        50,784.84
 ------------------------------------------------------------------------
-Pay to IBAN: PK87SYND1331844186178407
+Pay to IBAN: PK24SYNB0349937808765007

@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Hala Handloom
+Hala, Pakistan    NTN: 2758379-1
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: HH704
+Date: 2025-03-25    Due: 2025-04-09
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-1973
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   18  DUP-OS-PNK Chiffon dupatta - OS - PNK       837.00      15,066.00
+   24  DUP-OS-WHT Chiffon dupatta - OS - WHT       837.00      20,088.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        35,154.00
+                                             GST 18.00%         6,327.72
+                                              TOTAL PKR        41,481.72
+------------------------------------------------------------------------
+Pay to IBAN: PK30SYNB4988933137105487

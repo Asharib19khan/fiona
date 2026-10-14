@@ -1,0 +1,91 @@
+{
+  "synthetic": true,
+  "assets": [
+    {
+      "id": "fa_001",
+      "name": "Shop fit-out, Tariq Road",
+      "branch": "BR01",
+      "acquired_on": "2023-01-10",
+      "cost_minor": 600000000,
+      "useful_life_months": 120,
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 5000000,
+      "accumulated_depreciation_at_start_minor": 90000000,
+      "accumulated_depreciation_at_as_of_minor": 225000000,
+      "in_period": false
+    },
+    {
+      "id": "fa_002",
+      "name": "Shop fit-out, Clifton",
+      "branch": "BR02",
+      "acquired_on": "2024-06-20",
+      "cost_minor": 450000000,
+      "useful_life_months": 120,
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 3750000,
+      "accumulated_depreciation_at_start_minor": 3750000,
+      "accumulated_depreciation_at_as_of_minor": 105000000,
+      "in_period": false
+    },
+    {
+      "id": "fa_003",
+      "name": "Delivery van",
+      "acquired_on": "2023-06-15",
+      "cost_minor": 320000000,
+      "useful_life_months": 60,
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 5333333,
+      "accumulated_depreciation_at_start_minor": 69333333,
+      "accumulated_depreciation_at_as_of_minor": 213333333,
+      "in_period": false
+    },
+    {
+      "id": "fa_004",
+      "name": "POS terminals and printers (5)",
+      "acquired_on": "2025-06-16",
+      "cost_minor": 65000000,
+      "useful_life_months": 36,
+      "payee": "pty_008",
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 1805555,
+      "accumulated_depreciation_at_start_minor": 0,
+      "accumulated_depreciation_at_as_of_minor": 28888888,
+      "in_period": true
+    },
+    {
+      "id": "fa_005",
+      "name": "Display upgrade, Clifton",
+      "branch": "BR02",
+      "acquired_on": "2026-02-10",
+      "cost_minor": 120000000,
+      "useful_life_months": 60,
+      "payee": "pty_007",
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 2000000,
+      "accumulated_depreciation_at_start_minor": 0,
+      "accumulated_depreciation_at_as_of_minor": 16000000,
+      "in_period": true
+    },
+    {
+      "id": "fa_006",
+      "name": "Third-shop fit-out deposit (Bahadurabad, delayed)",
+      "branch": "BR03",
+      "acquired_on": "2026-03-16",
+      "cost_minor": 250000000,
+      "useful_life_months": 120,
+      "payee": "pty_007",
+      "note": "Capital work in progress: the shop has not opened",
+      "method": "straight_line",
+      "residual_minor": 0,
+      "monthly_depreciation_minor": 2083333,
+      "accumulated_depreciation_at_start_minor": 0,
+      "accumulated_depreciation_at_as_of_minor": 14583333,
+      "in_period": true
+    }
+  ]
+}

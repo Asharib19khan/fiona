@@ -1,20 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Swat Wool Works
-Mingora, Pakistan    NTN: 6979048-7
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: SWW-26-90
-Date: 2026-10-19    Due: 2026-11-18
+Invoice no: GKW946
+Date: 2024-08-12    Due: 2024-08-27
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1130
+PO ref: PO-1115
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SHL-OS-BEI Wool shawl - OS - BEI          3,100.00      18,600.00
-    6  SHL-OS-BLK Wool shawl - OS - BLK          3,100.00      18,600.00
+   12  KKR-4Y-WHT Kids kurta - 4Y - WHT            733.00       8,796.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        37,200.00
-                                             GST 18.00%         6,696.00
-                                              TOTAL PKR        43,896.00
+                                           Subtotal PKR         8,796.00
+                                             GST 18.00%         1,583.28
+                                              TOTAL PKR        10,379.28
 ------------------------------------------------------------------------
-Pay to IBAN: PK59SYND0345004627957038
+Pay to IBAN: PK45SYNB5872076931292399

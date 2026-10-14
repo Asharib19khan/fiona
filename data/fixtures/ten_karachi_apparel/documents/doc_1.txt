@@ -1,19 +1,18 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Tariq Road Properties (synthetic)
+Karachi, Pakistan    NTN: None
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2201
-Date: 2026-08-31    Due: 2026-09-07
+Invoice no: RNT-2024-07
+Date: 2024-07-02    Due: 2024-07-05
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1003
+PO ref: -
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   18  KRT-XL-WHT Cotton kurta - XL - WHT        1,800.00      32,400.00
+    1  Shop rent, Shop premises, Tariq Road (  290,000.00     290,000.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        32,400.00
-                                             GST 18.00%         5,832.00
-                                              TOTAL PKR        38,232.00
+                                           Subtotal PKR       290,000.00
+                                              TOTAL PKR       290,000.00
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK05SYNF7501390256366410

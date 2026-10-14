@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Sialkot Apparel Works
+Sialkot, Pakistan    NTN: 1289897-6
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: SAW-420
+Date: 2025-07-16    Due: 2025-08-15
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2346
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  STS-M-PNK Stitched two-piece suit - M     3,930.00      47,160.00
+    6  STS-S-PNK Stitched two-piece suit - S     3,930.00      23,580.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        70,740.00
+                                             GST 18.00%        12,733.20
+                                              TOTAL PKR        83,473.20
+------------------------------------------------------------------------
+Pay to IBAN: PK84SYND7195703786355945

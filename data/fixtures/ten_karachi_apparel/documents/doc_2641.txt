@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: GKW1846
+Date: 2026-07-18    Due: 2026-08-02
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-3596
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   18  KKR-4Y-WHT Kids kurta - 4Y - WHT            965.00      17,370.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        17,370.00
+                                             GST 18.00%         3,126.60
+                                              TOTAL PKR        20,496.60
+------------------------------------------------------------------------
+Pay to IBAN: PK45SYNB5872076931292399

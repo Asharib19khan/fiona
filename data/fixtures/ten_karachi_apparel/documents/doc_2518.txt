@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Lyari Stitching House
+Karachi, Pakistan    NTN: 2561976-8
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: LSH-2090
+Date: 2026-06-09    Due: 2026-07-09
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-3469
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  STS-S-BEI Stitched two-piece suit - S     4,481.00      53,772.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        53,772.00
+                                             GST 18.00%         9,678.96
+                                              TOTAL PKR        63,450.96
+------------------------------------------------------------------------
+Pay to IBAN: PK87SYND1331844186178407

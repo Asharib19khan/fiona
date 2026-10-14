@@ -1,21 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Hala Dupatta Crafts
-Hala, Pakistan    NTN: 1649637-3
+Sialkot Apparel Works
+Sialkot, Pakistan    NTN: 1289897-6
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: HDC/236
-Date: 2026-09-10    Due: 2026-09-25
+Invoice no: SAW-91
+Date: 2024-07-19    Due: 2024-08-18
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1018
+PO ref: PO-1017
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  DUP-OS-BLK Chiffon dupatta - OS - BLK     1,050.00       6,300.00
-   12  DUP-OS-GRN Chiffon dupatta - OS - GRN     1,050.00      12,600.00
-   12  DUP-OS-WHT Chiffon dupatta - OS - WHT     1,050.00      12,600.00
+    6  STS-L-PNK Stitched two-piece suit - L     3,406.00      20,436.00
+   12  STS-M-PNK Stitched two-piece suit - M     3,406.00      40,872.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        31,500.00
-                                             GST 18.00%         5,670.00
-                                              TOTAL PKR        37,170.00
+                                           Subtotal PKR        61,308.00
+                                             GST 18.00%        11,035.44
+                                              TOTAL PKR        72,343.44
 ------------------------------------------------------------------------
-Pay to IBAN: PK96SYNB1941253908622411
+Pay to IBAN: PK84SYND7195703786355945

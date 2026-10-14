@@ -1,32 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Sialkot Apparel Works
+Sialkot, Pakistan    NTN: 1289897-6
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2264
-Date: 2026-10-10    Due: 2026-10-17
+Invoice no: SAW-822
+Date: 2026-10-14    Due: 2026-10-23
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1116
+PO ref: PO-3908
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   18  KRT-L-BLK Cotton kurta - L - BLK          1,800.00      32,400.00
-   12  KRT-L-BLU Cotton kurta - L - BLU          1,800.00      21,600.00
-   18  KRT-L-MRN Cotton kurta - L - MRN          1,800.00      32,400.00
-   24  KRT-L-WHT Cotton kurta - L - WHT          1,800.00      43,200.00
-   12  KRT-M-BLK Cotton kurta - M - BLK          1,800.00      21,600.00
-   18  KRT-M-BLU Cotton kurta - M - BLU          1,800.00      32,400.00
-   12  KRT-M-MRN Cotton kurta - M - MRN          1,800.00      21,600.00
-   24  KRT-M-WHT Cotton kurta - M - WHT          1,800.00      43,200.00
-   12  KRT-S-BLK Cotton kurta - S - BLK          1,800.00      21,600.00
-   12  KRT-S-MRN Cotton kurta - S - MRN          1,800.00      21,600.00
-   18  KRT-S-WHT Cotton kurta - S - WHT          1,800.00      32,400.00
-   18  KRT-XL-BLK Cotton kurta - XL - BLK        1,800.00      32,400.00
-    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,800.00      10,800.00
-    6  KRT-XL-MRN Cotton kurta - XL - MRN        1,800.00      10,800.00
+   26  STS-M-BEI Stitched two-piece suit - M     4,700.00     122,200.00
+    1  Freight and handling                      4,494.92       4,494.92
 ------------------------------------------------------------------------
-                                           Subtotal PKR       378,000.00
-                                             GST 18.00%        68,040.00
-                                              TOTAL PKR       446,040.00
+                                           Subtotal PKR       126,694.92
+                                             GST 18.00%        22,805.09
+                                              TOTAL PKR       149,500.01
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK84SYND7195703786355945

@@ -1,25 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Indus Weaving Mills
+Faisalabad, Pakistan    NTN: 5945744-0
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2238
-Date: 2026-09-23    Due: 2026-09-30
+Invoice no: IWM/24/0416
+Date: 2024-07-29    Due: 2024-08-08
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1064
+PO ref: PO-1049
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  KRT-L-BLK Cotton kurta - L - BLK          1,800.00      21,600.00
-   18  KRT-M-BLK Cotton kurta - M - BLK          1,800.00      32,400.00
-    6  KRT-M-MRN Cotton kurta - M - MRN          1,800.00      10,800.00
-    6  KRT-M-WHT Cotton kurta - M - WHT          1,800.00      10,800.00
-    6  KRT-S-BLK Cotton kurta - S - BLK          1,800.00      10,800.00
-    6  KRT-S-MRN Cotton kurta - S - MRN          1,800.00      10,800.00
-   12  KRT-XL-BLK Cotton kurta - XL - BLK        1,800.00      21,600.00
+   18  UNS-OS-PNK Unstitched three-piece lawn    2,391.00      43,038.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       118,800.00
-                                             GST 18.00%        21,384.00
-                                              TOTAL PKR       140,184.00
+                                           Subtotal PKR        43,038.00
+                                             GST 18.00%         7,746.84
+                                              TOTAL PKR        50,784.84
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK24SYNB0349937808765007

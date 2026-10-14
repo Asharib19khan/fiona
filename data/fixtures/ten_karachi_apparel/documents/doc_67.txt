@@ -1,27 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Lyari Stitching House
-Karachi, Pakistan    NTN: 2561976-8
+Murree Knitwear
+Murree, Pakistan    NTN: 1606145-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: LSH-1210
-Date: 2026-09-27    Due: 2026-10-27
+Invoice no: MK1507
+Date: 2024-07-31    Due: 2024-08-30
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1066
+PO ref: PO-1056
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  STS-L-BEI Stitched two-piece suit - L     4,700.00      56,400.00
-   12  STS-L-GRN Stitched two-piece suit - L     4,700.00      56,400.00
-   12  STS-L-PNK Stitched two-piece suit - L     4,700.00      56,400.00
-   12  STS-M-BEI Stitched two-piece suit - M     4,700.00      56,400.00
-   12  STS-M-GRN Stitched two-piece suit - M     4,700.00      56,400.00
-    6  STS-M-PNK Stitched two-piece suit - M     4,700.00      28,200.00
-    6  STS-S-BEI Stitched two-piece suit - S     4,700.00      28,200.00
-    6  STS-S-GRN Stitched two-piece suit - S     4,700.00      28,200.00
-    6  STS-S-PNK Stitched two-piece suit - S     4,700.00      28,200.00
+    6  SCF-OS-BLU Knitted scarf - OS - BLU         507.00       3,042.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       394,800.00
-                                             GST 18.00%        71,064.00
-                                              TOTAL PKR       465,864.00
+                                           Subtotal PKR         3,042.00
+                                             GST 18.00%           547.56
+                                              TOTAL PKR         3,589.56
 ------------------------------------------------------------------------
-Pay to IBAN: PK87SYND1331844186178407
+Pay to IBAN: PK74SYNB6033235568991472

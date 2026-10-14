@@ -1,19 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Murree Knitwear
-Murree, Pakistan    NTN: 1606145-7
+Kotri Textile Traders
+Hyderabad, Pakistan    NTN: 4092505-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: MK1510
-Date: 2026-09-16    Due: 2026-10-16
+Invoice no: KTT86
+Date: 2024-07-23    Due: 2024-08-22
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1028
+PO ref: PO-1023
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SCF-OS-GRY Knitted scarf - OS - GRY         700.00       4,200.00
+   12  UNS-OS-PRP Unstitched three-piece lawn    2,391.00      28,692.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR         4,200.00
-                                             GST 18.00%           756.00
-                                              TOTAL PKR         4,956.00
+                                           Subtotal PKR        28,692.00
+                                             GST 18.00%         5,164.56
+                                              TOTAL PKR        33,856.56
 ------------------------------------------------------------------------
-Pay to IBAN: PK74SYNB6033235568991472
+Pay to IBAN: PK21SYNB6333477923618852

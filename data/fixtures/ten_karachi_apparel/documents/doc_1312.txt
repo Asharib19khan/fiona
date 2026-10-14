@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: KG-3707
+Date: 2025-06-27    Due: 2025-07-27
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2281
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  TRS-L-BLK Cotton trousers - L - BLK         909.00      10,908.00
+    6  TRS-S-BLK Cotton trousers - S - BLK         909.00       5,454.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        16,362.00
+                                             GST 18.00%         2,945.16
+                                              TOTAL PKR        19,307.16
+------------------------------------------------------------------------
+Pay to IBAN: PK93SYND3188429112252004

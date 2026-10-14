@@ -1,0 +1,229 @@
+{
+  "synthetic": true,
+  "months": [
+    {
+      "month": "2024-07",
+      "paid_on": "2024-07-02",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2024-08",
+      "paid_on": "2024-08-01",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2024-09",
+      "paid_on": "2024-09-02",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2024-10",
+      "paid_on": "2024-10-01",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2024-11",
+      "paid_on": "2024-11-01",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2024-12",
+      "paid_on": "2024-12-02",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-01",
+      "paid_on": "2025-01-01",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-02",
+      "paid_on": "2025-02-03",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-03",
+      "paid_on": "2025-03-03",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-04",
+      "paid_on": "2025-04-03",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-05",
+      "paid_on": "2025-05-02",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-06",
+      "paid_on": "2025-06-02",
+      "headcount": 34,
+      "gross_minor": 205000000,
+      "wht_minor": 4100000,
+      "net_minor": 200900000
+    },
+    {
+      "month": "2025-07",
+      "paid_on": "2025-07-02",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2025-08",
+      "paid_on": "2025-08-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2025-09",
+      "paid_on": "2025-09-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2025-10",
+      "paid_on": "2025-10-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2025-11",
+      "paid_on": "2025-11-03",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2025-12",
+      "paid_on": "2025-12-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-01",
+      "paid_on": "2026-01-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-02",
+      "paid_on": "2026-02-02",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-03",
+      "paid_on": "2026-03-02",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-04",
+      "paid_on": "2026-04-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-05",
+      "paid_on": "2026-05-04",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-06",
+      "paid_on": "2026-06-01",
+      "headcount": 34,
+      "gross_minor": 228000000,
+      "wht_minor": 4560000,
+      "net_minor": 223440000
+    },
+    {
+      "month": "2026-07",
+      "paid_on": "2026-07-02",
+      "headcount": 34,
+      "gross_minor": 250000000,
+      "wht_minor": 5000000,
+      "net_minor": 245000000
+    },
+    {
+      "month": "2026-08",
+      "paid_on": "2026-08-03",
+      "headcount": 34,
+      "gross_minor": 250000000,
+      "wht_minor": 5000000,
+      "net_minor": 245000000
+    },
+    {
+      "month": "2026-09",
+      "paid_on": "2026-09-01",
+      "headcount": 34,
+      "gross_minor": 250000000,
+      "wht_minor": 5000000,
+      "net_minor": 245000000
+    },
+    {
+      "month": "2026-10",
+      "paid_on": "2026-10-01",
+      "headcount": 34,
+      "gross_minor": 250000000,
+      "wht_minor": 5000000,
+      "net_minor": 245000000
+    }
+  ]
+}

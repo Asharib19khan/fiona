@@ -1,19 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Murree Knitwear
-Murree, Pakistan    NTN: 1606145-7
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: MK1540
-Date: 2026-10-18    Due: 2026-11-17
+Invoice no: KG-3331
+Date: 2024-08-11    Due: 2024-09-10
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1131
+PO ref: PO-1114
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  SCF-OS-GRY Knitted scarf - OS - GRY         700.00       8,400.00
+   12  TRS-M-BEI Cotton trousers - M - BEI         807.00       9,684.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR         8,400.00
-                                             GST 18.00%         1,512.00
-                                              TOTAL PKR         9,912.00
+                                           Subtotal PKR         9,684.00
+                                             GST 18.00%         1,743.12
+                                              TOTAL PKR        11,427.12
 ------------------------------------------------------------------------
-Pay to IBAN: PK74SYNB6033235568991472
+Pay to IBAN: PK93SYND3188429112252004

@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Faisalabad Cotton Mills
+Faisalabad, Pakistan    NTN: 4151102-9
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: FCM/614
+Date: 2026-02-09    Due: 2026-03-11
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-3141
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  TRS-L-WHT Cotton trousers - L - WHT       1,000.00      12,000.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        12,000.00
+                                             GST 18.00%         2,160.00
+                                              TOTAL PKR        14,160.00
+------------------------------------------------------------------------
+Pay to IBAN: PK13SYND4538690166195012

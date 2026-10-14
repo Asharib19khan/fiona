@@ -1,0 +1,395 @@
+{
+  "synthetic": true,
+  "loans": [
+    {
+      "id": "loan_01",
+      "lender": "pty_005",
+      "facility": "SME term finance (synthetic)",
+      "principal_minor": 1500000000,
+      "disbursed_on": "2025-03-10",
+      "rate_type": "floating",
+      "benchmark": "6M KIBOR",
+      "benchmark_bp": 1150,
+      "spread_bp": 300,
+      "rate_bp": 1450,
+      "reset_months": 6,
+      "instalments": 36,
+      "instalment_minor": 51631500,
+      "security": "Hypothecation of stock and receivables (synthetic)",
+      "covenants": [
+        {
+          "id": "COV-1",
+          "metric": "dscr",
+          "operator": ">=",
+          "threshold_bp": 12500,
+          "tested": "quarterly",
+          "description": "Debt service coverage ratio of at least 1.25x on the trailing four quarters"
+        }
+      ],
+      "schedule": [
+        {
+          "n": 1,
+          "due_date": "2025-04-10",
+          "paid_on": "2025-04-10",
+          "opening_principal_minor": 1500000000,
+          "interest_minor": 18125000,
+          "principal_minor": 33506500,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1466493500
+        },
+        {
+          "n": 2,
+          "due_date": "2025-05-10",
+          "paid_on": "2025-05-09",
+          "opening_principal_minor": 1466493500,
+          "interest_minor": 17720130,
+          "principal_minor": 33911370,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1432582130
+        },
+        {
+          "n": 3,
+          "due_date": "2025-06-10",
+          "paid_on": "2025-06-10",
+          "opening_principal_minor": 1432582130,
+          "interest_minor": 17310367,
+          "principal_minor": 34321133,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1398260997
+        },
+        {
+          "n": 4,
+          "due_date": "2025-07-10",
+          "paid_on": "2025-07-10",
+          "opening_principal_minor": 1398260997,
+          "interest_minor": 16895654,
+          "principal_minor": 34735846,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1363525151
+        },
+        {
+          "n": 5,
+          "due_date": "2025-08-10",
+          "paid_on": "2025-08-08",
+          "opening_principal_minor": 1363525151,
+          "interest_minor": 16475929,
+          "principal_minor": 35155571,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1328369580
+        },
+        {
+          "n": 6,
+          "due_date": "2025-09-10",
+          "paid_on": "2025-09-10",
+          "opening_principal_minor": 1328369580,
+          "interest_minor": 16051132,
+          "principal_minor": 35580368,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1292789212
+        },
+        {
+          "n": 7,
+          "due_date": "2025-10-10",
+          "paid_on": "2025-10-10",
+          "opening_principal_minor": 1292789212,
+          "interest_minor": 15621203,
+          "principal_minor": 36010297,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1256778915
+        },
+        {
+          "n": 8,
+          "due_date": "2025-11-10",
+          "paid_on": "2025-11-10",
+          "opening_principal_minor": 1256778915,
+          "interest_minor": 15186079,
+          "principal_minor": 36445421,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1220333494
+        },
+        {
+          "n": 9,
+          "due_date": "2025-12-10",
+          "paid_on": "2025-12-10",
+          "opening_principal_minor": 1220333494,
+          "interest_minor": 14745696,
+          "principal_minor": 36885804,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1183447690
+        },
+        {
+          "n": 10,
+          "due_date": "2026-01-10",
+          "paid_on": "2026-01-09",
+          "opening_principal_minor": 1183447690,
+          "interest_minor": 14299993,
+          "principal_minor": 37331507,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1146116183
+        },
+        {
+          "n": 11,
+          "due_date": "2026-02-10",
+          "paid_on": "2026-02-10",
+          "opening_principal_minor": 1146116183,
+          "interest_minor": 13848904,
+          "principal_minor": 37782596,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1108333587
+        },
+        {
+          "n": 12,
+          "due_date": "2026-03-10",
+          "paid_on": "2026-03-10",
+          "opening_principal_minor": 1108333587,
+          "interest_minor": 13392364,
+          "principal_minor": 38239136,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1070094451
+        },
+        {
+          "n": 13,
+          "due_date": "2026-04-10",
+          "paid_on": "2026-04-10",
+          "opening_principal_minor": 1070094451,
+          "interest_minor": 12930308,
+          "principal_minor": 38701192,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 1031393259
+        },
+        {
+          "n": 14,
+          "due_date": "2026-05-10",
+          "paid_on": "2026-05-08",
+          "opening_principal_minor": 1031393259,
+          "interest_minor": 12462669,
+          "principal_minor": 39168831,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 992224428
+        },
+        {
+          "n": 15,
+          "due_date": "2026-06-10",
+          "paid_on": "2026-06-10",
+          "opening_principal_minor": 992224428,
+          "interest_minor": 11989379,
+          "principal_minor": 39642121,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 952582307
+        },
+        {
+          "n": 16,
+          "due_date": "2026-07-10",
+          "paid_on": "2026-07-10",
+          "opening_principal_minor": 952582307,
+          "interest_minor": 11510370,
+          "principal_minor": 40121130,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 912461177
+        },
+        {
+          "n": 17,
+          "due_date": "2026-08-10",
+          "paid_on": "2026-08-10",
+          "opening_principal_minor": 912461177,
+          "interest_minor": 11025573,
+          "principal_minor": 40605927,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 871855250
+        },
+        {
+          "n": 18,
+          "due_date": "2026-09-10",
+          "paid_on": "2026-09-10",
+          "opening_principal_minor": 871855250,
+          "interest_minor": 10534918,
+          "principal_minor": 41096582,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 830758668
+        },
+        {
+          "n": 19,
+          "due_date": "2026-10-10",
+          "paid_on": "2026-10-09",
+          "opening_principal_minor": 830758668,
+          "interest_minor": 10038334,
+          "principal_minor": 41593166,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 789165502
+        },
+        {
+          "n": 20,
+          "due_date": "2026-11-10",
+          "paid_on": "2026-11-10",
+          "opening_principal_minor": 789165502,
+          "interest_minor": 9535750,
+          "principal_minor": 42095750,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 747069752
+        },
+        {
+          "n": 21,
+          "due_date": "2026-12-10",
+          "paid_on": "2026-12-10",
+          "opening_principal_minor": 747069752,
+          "interest_minor": 9027093,
+          "principal_minor": 42604407,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 704465345
+        },
+        {
+          "n": 22,
+          "due_date": "2027-01-10",
+          "paid_on": "2027-01-08",
+          "opening_principal_minor": 704465345,
+          "interest_minor": 8512290,
+          "principal_minor": 43119210,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 661346135
+        },
+        {
+          "n": 23,
+          "due_date": "2027-02-10",
+          "paid_on": "2027-02-10",
+          "opening_principal_minor": 661346135,
+          "interest_minor": 7991266,
+          "principal_minor": 43640234,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 617705901
+        },
+        {
+          "n": 24,
+          "due_date": "2027-03-10",
+          "paid_on": "2027-03-10",
+          "opening_principal_minor": 617705901,
+          "interest_minor": 7463946,
+          "principal_minor": 44167554,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 573538347
+        },
+        {
+          "n": 25,
+          "due_date": "2027-04-10",
+          "paid_on": "2027-04-09",
+          "opening_principal_minor": 573538347,
+          "interest_minor": 6930255,
+          "principal_minor": 44701245,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 528837102
+        },
+        {
+          "n": 26,
+          "due_date": "2027-05-10",
+          "paid_on": "2027-05-10",
+          "opening_principal_minor": 528837102,
+          "interest_minor": 6390115,
+          "principal_minor": 45241385,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 483595717
+        },
+        {
+          "n": 27,
+          "due_date": "2027-06-10",
+          "paid_on": "2027-06-10",
+          "opening_principal_minor": 483595717,
+          "interest_minor": 5843448,
+          "principal_minor": 45788052,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 437807665
+        },
+        {
+          "n": 28,
+          "due_date": "2027-07-10",
+          "paid_on": "2027-07-09",
+          "opening_principal_minor": 437807665,
+          "interest_minor": 5290176,
+          "principal_minor": 46341324,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 391466341
+        },
+        {
+          "n": 29,
+          "due_date": "2027-08-10",
+          "paid_on": "2027-08-10",
+          "opening_principal_minor": 391466341,
+          "interest_minor": 4730218,
+          "principal_minor": 46901282,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 344565059
+        },
+        {
+          "n": 30,
+          "due_date": "2027-09-10",
+          "paid_on": "2027-09-10",
+          "opening_principal_minor": 344565059,
+          "interest_minor": 4163494,
+          "principal_minor": 47468006,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 297097053
+        },
+        {
+          "n": 31,
+          "due_date": "2027-10-10",
+          "paid_on": "2027-10-08",
+          "opening_principal_minor": 297097053,
+          "interest_minor": 3589923,
+          "principal_minor": 48041577,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 249055476
+        },
+        {
+          "n": 32,
+          "due_date": "2027-11-10",
+          "paid_on": "2027-11-10",
+          "opening_principal_minor": 249055476,
+          "interest_minor": 3009420,
+          "principal_minor": 48622080,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 200433396
+        },
+        {
+          "n": 33,
+          "due_date": "2027-12-10",
+          "paid_on": "2027-12-10",
+          "opening_principal_minor": 200433396,
+          "interest_minor": 2421904,
+          "principal_minor": 49209596,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 151223800
+        },
+        {
+          "n": 34,
+          "due_date": "2028-01-10",
+          "paid_on": "2028-01-10",
+          "opening_principal_minor": 151223800,
+          "interest_minor": 1827288,
+          "principal_minor": 49804212,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 101419588
+        },
+        {
+          "n": 35,
+          "due_date": "2028-02-10",
+          "paid_on": "2028-02-10",
+          "opening_principal_minor": 101419588,
+          "interest_minor": 1225487,
+          "principal_minor": 50406013,
+          "instalment_minor": 51631500,
+          "closing_principal_minor": 51013575
+        },
+        {
+          "n": 36,
+          "due_date": "2028-03-10",
+          "paid_on": "2028-03-10",
+          "opening_principal_minor": 51013575,
+          "interest_minor": 616414,
+          "principal_minor": 51013575,
+          "instalment_minor": 51629989,
+          "closing_principal_minor": 0
+        }
+      ],
+      "note": "ASSUMPTION: the benchmark is held constant, so the schedule is level. Real KIBOR resets every 6 months.",
+      "currency": "PKR"
+    }
+  ]
+}

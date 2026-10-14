@@ -165,14 +165,15 @@ def seed_tenant(conn: psycopg.Connection, folder: Path) -> dict[str, int]:
             bills = _json(folder / "bills.json")["bills"]
             cur.executemany(
                 "insert into documents (tenant_id, id, kind, storage_path, sha256, mime_type, size_bytes, extracted,"
-                " received_at) values (%s, %s, 'bill', %s, %s, 'text/plain', %s, %s, %s) on conflict do nothing",
+                " received_at) values (%s, %s, 'bill', %s, %s, %s, %s, %s, %s) on conflict do nothing",
                 [
                     (
                         tid,
                         b["document_id"],
-                        f"data/fixtures/{tid}/documents/{b['document_id']}.txt",
+                        f"data/fixtures/{tid}/{b['document_path']}",
                         b["document_sha256"],
-                        (folder / "documents" / f"{b['document_id']}.txt").stat().st_size,
+                        "application/pdf" if b["document_path"].endswith(".pdf") else "text/plain",
+                        (folder / b["document_path"]).stat().st_size,
                         Jsonb(b),
                         b["received_at"],
                     )

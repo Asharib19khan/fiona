@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Kotri Textile Traders
+Hyderabad, Pakistan    NTN: 4092505-7
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: KTT944
+Date: 2026-09-01    Due: 2026-10-01
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-3737
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   18  UNS-OS-GRN Unstitched three-piece lawn    3,222.00      57,996.00
+   24  UNS-OS-YLW Unstitched three-piece lawn    3,222.00      77,328.00
+------------------------------------------------------------------------
+                                           Subtotal PKR       135,324.00
+                                             GST 18.00%        24,358.32
+                                              TOTAL PKR       159,682.32
+------------------------------------------------------------------------
+Pay to IBAN: PK21SYNB6333477923618852

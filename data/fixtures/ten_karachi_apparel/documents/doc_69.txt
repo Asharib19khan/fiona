@@ -1,21 +1,21 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Korangi Garments
-Karachi, Pakistan    NTN: 4648585-4
+Saddar Embroidery Works
+Karachi, Pakistan    NTN: 8889804-0
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: KG-3355
-Date: 2026-09-27    Due: 2026-10-27
+Invoice no: SEW-534
+Date: 2024-07-31    Due: 2024-08-15
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1075
+PO ref: PO-1070
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  TRS-L-BEI Cotton trousers - L - BEI       1,100.00      13,200.00
-    6  TRS-M-BLK Cotton trousers - M - BLK       1,100.00       6,600.00
-    6  TRS-M-WHT Cotton trousers - M - WHT       1,100.00       6,600.00
+   12  KRT-M-MRN Cotton kurta - M - MRN          1,304.00      15,648.00
+   12  KRT-M-WHT Cotton kurta - M - WHT          1,304.00      15,648.00
+   12  KRT-S-MRN Cotton kurta - S - MRN          1,304.00      15,648.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        26,400.00
-                                             GST 18.00%         4,752.00
-                                              TOTAL PKR        31,152.00
+                                           Subtotal PKR        46,944.00
+                                             GST 18.00%         8,449.92
+                                              TOTAL PKR        55,393.92
 ------------------------------------------------------------------------
-Pay to IBAN: PK93SYND3188429112252004
+Pay to IBAN: PK29SYND0340044727931167

@@ -1,0 +1,21 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Indus Weaving Mills
+Faisalabad, Pakistan    NTN: 5945744-0
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: IWM/25/0746
+Date: 2025-07-07    Due: 2025-07-17
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2306
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   24  UNS-OS-BLU Unstitched three-piece lawn    2,727.00      65,448.00
+   24  UNS-OS-PNK Unstitched three-piece lawn    2,727.00      65,448.00
+   18  UNS-OS-WHT Unstitched three-piece lawn    2,727.00      49,086.00
+------------------------------------------------------------------------
+                                           Subtotal PKR       179,982.00
+                                             GST 18.00%        32,396.76
+                                              TOTAL PKR       212,378.76
+------------------------------------------------------------------------
+Pay to IBAN: PK24SYNB0349937808765007

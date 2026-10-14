@@ -1,27 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Sialkot Apparel Works
+Sialkot, Pakistan    NTN: 1289897-6
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2274
-Date: 2026-10-14    Due: 2026-10-21
+Invoice no: SAW-117
+Date: 2024-08-09    Due: 2024-09-08
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1132
+PO ref: PO-1100
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  KRT-L-BLU Cotton kurta - L - BLU          1,800.00      21,600.00
-    6  KRT-L-MRN Cotton kurta - L - MRN          1,800.00      10,800.00
-   12  KRT-L-WHT Cotton kurta - L - WHT          1,800.00      21,600.00
-   12  KRT-M-BLU Cotton kurta - M - BLU          1,800.00      21,600.00
-    6  KRT-M-MRN Cotton kurta - M - MRN          1,800.00      10,800.00
-    6  KRT-S-BLK Cotton kurta - S - BLK          1,800.00      10,800.00
-    6  KRT-S-MRN Cotton kurta - S - MRN          1,800.00      10,800.00
-    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,800.00      10,800.00
-    6  KRT-XL-MRN Cotton kurta - XL - MRN        1,800.00      10,800.00
+   12  STS-L-PNK Stitched two-piece suit - L     3,447.00      41,364.00
+   12  STS-S-PNK Stitched two-piece suit - S     3,447.00      41,364.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       129,600.00
-                                             GST 18.00%        23,328.00
-                                              TOTAL PKR       152,928.00
+                                           Subtotal PKR        82,728.00
+                                             GST 18.00%        14,891.04
+                                              TOTAL PKR        97,619.04
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK84SYND7195703786355945

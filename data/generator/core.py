@@ -144,3 +144,96 @@ def iban(country: str, bank_code: str, account_digits: str) -> str:
 def iban_is_valid(value: str) -> bool:
     rearranged = value[4:] + value[:4]
     return int("".join(str(int(ch, 36)) for ch in rearranged)) % 97 == 1
+
+
+# ---------------------------------------------------------------- v1: calendar with bank holidays
+class Calendar:
+    """Business days are Monday to Friday, minus the persona's bank holidays."""
+
+    def __init__(self, holidays: list[str]) -> None:
+        self.holidays = {date.fromisoformat(h) for h in holidays}
+
+    def is_business_day(self, day: date) -> bool:
+        return day.weekday() < 5 and day not in self.holidays
+
+    def next_business_day(self, day: date, n: int = 1) -> date:
+        while n > 0:
+            day += timedelta(1)
+            if self.is_business_day(day):
+                n -= 1
+        return day
+
+    def on_or_before(self, day: date) -> date:
+        while not self.is_business_day(day):
+            day -= timedelta(1)
+        return day
+
+    def on_or_after(self, day: date) -> date:
+        while not self.is_business_day(day):
+            day += timedelta(1)
+        return day
+
+    def nth_business_day(self, year: int, month: int, n: int) -> date:
+        day = self.on_or_after(date(year, month, 1))
+        return self.next_business_day(day, n - 1) if n > 1 else day
+
+
+def month_index(day: date) -> int:
+    return day.year * 12 + day.month - 1
+
+
+def compound_ppm(steps: int, rate_ppm: int) -> int:
+    """(1 + rate)^steps in parts per million, by integer steps (negative steps divide)."""
+    factor = 1_000_000
+    for _ in range(abs(steps)):
+        factor = (
+            factor * (1_000_000 + rate_ppm) // 1_000_000
+            if steps > 0
+            else factor * 1_000_000 // (1_000_000 + rate_ppm)
+        )
+    return factor
+
+
+def subtotal_for_total(total_minor: int, rate_bp: int) -> int:
+    """Largest subtotal whose total (subtotal + half-up tax) does not exceed the target total."""
+    subtotal = total_minor * 10_000 // (10_000 + rate_bp)
+    while subtotal + tax_on(subtotal + 1, rate_bp) + 1 <= total_minor:
+        subtotal += 1
+    while subtotal + tax_on(subtotal, rate_bp) > total_minor:
+        subtotal -= 1
+    return subtotal
+
+
+def lines_for_total(
+    target_total: int, rate_bp: int, unit_minor: int, *, sku: str | None, description: str
+) -> list[dict]:
+    """Lines whose subtotal plus GST is as close to `target_total` as integer tax allows.
+
+    Some totals are unreachable (subtotal + round_half_up(18 %) skips values); the result is then
+    the nearest reachable total above the target. A balancing line carries the remainder.
+    """
+    subtotal = subtotal_for_total(target_total, rate_bp)
+    if subtotal + tax_on(subtotal, rate_bp) != target_total:
+        subtotal += 1  # unreachable target: nearest total above it
+    qty = max(1, subtotal * 97 // 100 // unit_minor)
+    lines = [
+        {
+            "sku": sku,
+            "description": description,
+            "qty": qty,
+            "unit_price_minor": unit_minor,
+            "line_total_minor": qty * unit_minor,
+        }
+    ]
+    remainder = subtotal - qty * unit_minor
+    if remainder > 0:
+        lines.append(
+            {
+                "sku": None,
+                "description": "Freight and handling",
+                "qty": 1,
+                "unit_price_minor": remainder,
+                "line_total_minor": remainder,
+            }
+        )
+    return lines

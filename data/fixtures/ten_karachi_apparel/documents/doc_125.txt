@@ -1,21 +1,21 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Gulshan Kidswear
-Karachi, Pakistan    NTN: 1132881-2
+Indus Weaving Mills
+Faisalabad, Pakistan    NTN: 5945744-0
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: GKW961
-Date: 2026-10-14    Due: 2026-10-29
+Invoice no: IWM/24/0432
+Date: 2024-08-09    Due: 2024-08-19
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1129
+PO ref: PO-1097
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  KKR-4Y-BLU Kids kurta - 4Y - BLU          1,000.00       6,000.00
-    6  KKR-6Y-WHT Kids kurta - 6Y - WHT          1,000.00       6,000.00
-   12  KKR-8Y-WHT Kids kurta - 8Y - WHT          1,000.00      12,000.00
+   24  UNS-OS-BLU Unstitched three-piece lawn    2,420.00      58,080.00
+   24  UNS-OS-PNK Unstitched three-piece lawn    2,420.00      58,080.00
+   18  UNS-OS-WHT Unstitched three-piece lawn    2,420.00      43,560.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        24,000.00
-                                             GST 18.00%         4,320.00
-                                              TOTAL PKR        28,320.00
+                                           Subtotal PKR       159,720.00
+                                             GST 18.00%        28,749.60
+                                              TOTAL PKR       188,469.60
 ------------------------------------------------------------------------
-Pay to IBAN: PK45SYNB5872076931292399
+Pay to IBAN: PK24SYNB0349937808765007

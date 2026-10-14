@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Mehran Garments
+Karachi, Pakistan    NTN: 3564187-3
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: INV-2588
+Date: 2025-12-15    Due: 2025-12-22
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2927
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,598.00       9,588.00
+------------------------------------------------------------------------
+                                           Subtotal PKR         9,588.00
+                                             GST 18.00%         1,725.84
+                                              TOTAL PKR        11,313.84
+------------------------------------------------------------------------
+Pay to IBAN: PK72SYNB9216553175680255

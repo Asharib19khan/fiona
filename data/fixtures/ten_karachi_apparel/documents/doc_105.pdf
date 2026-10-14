@@ -1,0 +1,56 @@
+%PDF-1.4
+% SYNTHETIC DOCUMENT - Fiona demo data
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+5 0 obj
+<< /Length 1103 >>
+stream
+BT
+/F1 8.5 Tf
+10.5 TL
+36 812 Td
+(SYNTHETIC DOCUMENT - Fiona demo data) '
+(========================================================================) '
+(Swat Wool Works) '
+(Mingora, Pakistan    NTN: 6979048-7) '
+(------------------------------------------------------------------------) '
+(SALES TAX INVOICE) '
+(Invoice no: SWW-26-613) '
+(Date: 2026-10-13    Due: 2026-12-12) '
+(Bill to: Karachi Apparel Co. \(synthetic\)) '
+(PO ref: PO-3883) '
+(------------------------------------------------------------------------) '
+(  Qty  Item / description                      Unit price         Amount) '
+(   50  SHL-OS-MRN Wool shawl - OS - MRN          1,200.00      60,000.00) '
+(------------------------------------------------------------------------) '
+(                                           Subtotal PKR        60,000.00) '
+(                                             GST 18.00%        10,800.00) '
+(                                              TOTAL PKR        70,800.00) '
+(------------------------------------------------------------------------) '
+(Pay to IBAN: PK59SYND0345004627957038) '
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000048 00000 n 
+0000000097 00000 n 
+0000000154 00000 n 
+0000000280 00000 n 
+0000000348 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1503
+%%EOF

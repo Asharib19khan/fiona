@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Bahadurabad Hangers
+Karachi, Pakistan    NTN: 1379579-0
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: BH126
+Date: 2024-10-04    Due: 2024-11-03
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-1315
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+    2  Wooden hangers, branded (box of 100)     24,000.00      48,000.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        48,000.00
+                                             GST 18.00%         8,640.00
+                                              TOTAL PKR        56,640.00
+------------------------------------------------------------------------
+Pay to IBAN: PK89SYNB1264641266828048

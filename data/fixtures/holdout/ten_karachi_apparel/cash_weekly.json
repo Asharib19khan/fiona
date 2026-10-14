@@ -1,0 +1,552 @@
+{
+  "synthetic": true,
+  "notice": "HELD OUT: do not train or tune on this file.",
+  "weeks": [
+    {
+      "w": 1,
+      "start": "2026-10-23",
+      "end": "2026-10-29",
+      "opening_minor": 953352992,
+      "inflows_minor": 374109200,
+      "outflows_minor": 335995002,
+      "closing_minor": 991467190,
+      "lowest_balance_minor": 846258415,
+      "largest_outflows": [
+        {
+          "date": "2026-10-26",
+          "narration": "OWNER DRAWINGS TRF OCT-2026",
+          "amount_minor": 65000000
+        },
+        {
+          "date": "2026-10-23",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1712",
+          "amount_minor": 29311200
+        },
+        {
+          "date": "2026-10-23",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1157",
+          "amount_minor": 28036800
+        },
+        {
+          "date": "2026-10-23",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 2936",
+          "amount_minor": 20390400
+        },
+        {
+          "date": "2026-10-27",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2260",
+          "amount_minor": 19727712
+        },
+        {
+          "date": "2026-10-29",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2264",
+          "amount_minor": 16439760
+        }
+      ]
+    },
+    {
+      "w": 2,
+      "start": "2026-10-30",
+      "end": "2026-11-05",
+      "opening_minor": 991467190,
+      "inflows_minor": 381318594,
+      "outflows_minor": 558269663,
+      "closing_minor": 814516121,
+      "lowest_balance_minor": 814516121,
+      "largest_outflows": [
+        {
+          "date": "2026-11-02",
+          "narration": "SALARY BULK TRF NOV-2026",
+          "amount_minor": 245000000
+        },
+        {
+          "date": "2026-11-05",
+          "narration": "RENT NOV-2026 BR02 CLIFTON",
+          "amount_minor": 50820000
+        },
+        {
+          "date": "2026-11-05",
+          "narration": "IBFT TO TARIQ ROAD PROPERTIES (SYNTHETIC) RNT 2026 11",
+          "amount_minor": 35000000
+        },
+        {
+          "date": "2026-11-03",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2270",
+          "amount_minor": 26303616
+        },
+        {
+          "date": "2026-11-05",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT978",
+          "amount_minor": 25396668
+        },
+        {
+          "date": "2026-10-30",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 2944",
+          "amount_minor": 16567200
+        }
+      ]
+    },
+    {
+      "w": 3,
+      "start": "2026-11-06",
+      "end": "2026-11-12",
+      "opening_minor": 814516121,
+      "inflows_minor": 383048200,
+      "outflows_minor": 237648002,
+      "closing_minor": 959916319,
+      "lowest_balance_minor": 773617921,
+      "largest_outflows": [
+        {
+          "date": "2026-11-10",
+          "narration": "LOAN INSTALMENT 20/36",
+          "amount_minor": 51631500
+        },
+        {
+          "date": "2026-11-06",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 2959",
+          "amount_minor": 19116000
+        },
+        {
+          "date": "2026-11-12",
+          "narration": "ELECTRICITY BILL NOV-2026",
+          "amount_minor": 18983900
+        },
+        {
+          "date": "2026-11-12",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT980",
+          "amount_minor": 18691200
+        },
+        {
+          "date": "2026-11-06",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1732",
+          "amount_minor": 16567200
+        },
+        {
+          "date": "2026-11-06",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1174",
+          "amount_minor": 16354800
+        }
+      ]
+    },
+    {
+      "w": 4,
+      "start": "2026-11-13",
+      "end": "2026-11-19",
+      "opening_minor": 959916319,
+      "inflows_minor": 380008900,
+      "outflows_minor": 211162838,
+      "closing_minor": 1128762381,
+      "lowest_balance_minor": 855342877,
+      "largest_outflows": [
+        {
+          "date": "2026-11-13",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1176",
+          "amount_minor": 23364000
+        },
+        {
+          "date": "2026-11-13",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1737",
+          "amount_minor": 20390400
+        },
+        {
+          "date": "2026-11-16",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 2973",
+          "amount_minor": 14189736
+        },
+        {
+          "date": "2026-11-13",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2296",
+          "amount_minor": 13310400
+        },
+        {
+          "date": "2026-11-19",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2301",
+          "amount_minor": 13310400
+        },
+        {
+          "date": "2026-11-13",
+          "narration": "IBFT TO SIALKOT APPAREL WORKS SAW 827",
+          "amount_minor": 9982800
+        }
+      ]
+    },
+    {
+      "w": 5,
+      "start": "2026-11-20",
+      "end": "2026-11-26",
+      "opening_minor": 1128762381,
+      "inflows_minor": 489359946,
+      "outflows_minor": 277650448,
+      "closing_minor": 1340471879,
+      "lowest_balance_minor": 1065986354,
+      "largest_outflows": [
+        {
+          "date": "2026-11-26",
+          "narration": "OWNER DRAWINGS TRF NOV-2026",
+          "amount_minor": 65000000
+        },
+        {
+          "date": "2026-11-26",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1186",
+          "amount_minor": 35470800
+        },
+        {
+          "date": "2026-11-20",
+          "narration": "DIGITAL MARKETING NOV-2026",
+          "amount_minor": 32000000
+        },
+        {
+          "date": "2026-11-20",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT989",
+          "amount_minor": 23364000
+        },
+        {
+          "date": "2026-11-20",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1184",
+          "amount_minor": 18917760
+        },
+        {
+          "date": "2026-11-20",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1745",
+          "amount_minor": 15479712
+        }
+      ]
+    },
+    {
+      "w": 6,
+      "start": "2026-11-27",
+      "end": "2026-12-03",
+      "opening_minor": 1340471879,
+      "inflows_minor": 409644600,
+      "outflows_minor": 430698859,
+      "closing_minor": 1319417620,
+      "lowest_balance_minor": 1289427691,
+      "largest_outflows": [
+        {
+          "date": "2026-12-01",
+          "narration": "SALARY BULK TRF DEC-2026",
+          "amount_minor": 245000000
+        },
+        {
+          "date": "2026-11-27",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT993",
+          "amount_minor": 25700400
+        },
+        {
+          "date": "2026-12-03",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT997",
+          "amount_minor": 18691200
+        },
+        {
+          "date": "2026-12-01",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2318",
+          "amount_minor": 16638000
+        },
+        {
+          "date": "2026-11-27",
+          "narration": "IBFT TO SIALKOT APPAREL WORKS SAW 837",
+          "amount_minor": 13310400
+        },
+        {
+          "date": "2026-11-27",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 2993",
+          "amount_minor": 11609784
+        }
+      ]
+    },
+    {
+      "w": 7,
+      "start": "2026-12-04",
+      "end": "2026-12-10",
+      "opening_minor": 1319417620,
+      "inflows_minor": 418362149,
+      "outflows_minor": 1571693264,
+      "closing_minor": 166086505,
+      "lowest_balance_minor": 166086505,
+      "largest_outflows": [
+        {
+          "date": "2026-12-08",
+          "narration": "IBFT TO SWAT WOOL WORKS SWW 26 607",
+          "amount_minor": 1243332960
+        },
+        {
+          "date": "2026-12-10",
+          "narration": "LOAN INSTALMENT 21/36",
+          "amount_minor": 51631500
+        },
+        {
+          "date": "2026-12-04",
+          "narration": "RENT DEC-2026 BR02 CLIFTON",
+          "amount_minor": 50820000
+        },
+        {
+          "date": "2026-12-04",
+          "narration": "IBFT TO TARIQ ROAD PROPERTIES (SYNTHETIC) RNT 2026 12",
+          "amount_minor": 35000000
+        },
+        {
+          "date": "2026-12-08",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2331",
+          "amount_minor": 26937984
+        },
+        {
+          "date": "2026-12-10",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1007",
+          "amount_minor": 16553040
+        }
+      ]
+    },
+    {
+      "w": 8,
+      "start": "2026-12-11",
+      "end": "2026-12-17",
+      "opening_minor": 166086505,
+      "inflows_minor": 399126599,
+      "outflows_minor": 300067516,
+      "closing_minor": 265145588,
+      "lowest_balance_minor": 137392488,
+      "largest_outflows": [
+        {
+          "date": "2026-12-15",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2338",
+          "amount_minor": 50508720
+        },
+        {
+          "date": "2026-12-17",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1020",
+          "amount_minor": 40200240
+        },
+        {
+          "date": "2026-12-16",
+          "narration": "IBFT TO SIALKOT APPAREL WORKS SAW 849",
+          "amount_minor": 30305232
+        },
+        {
+          "date": "2026-12-17",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1214",
+          "amount_minor": 26011920
+        },
+        {
+          "date": "2026-12-11",
+          "narration": "ELECTRICITY BILL DEC-2026",
+          "amount_minor": 14435400
+        },
+        {
+          "date": "2026-12-11",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1785",
+          "amount_minor": 14189736
+        }
+      ]
+    },
+    {
+      "w": 9,
+      "start": "2026-12-18",
+      "end": "2026-12-24",
+      "opening_minor": 265145588,
+      "inflows_minor": 425350100,
+      "outflows_minor": 392217151,
+      "closing_minor": 298278537,
+      "lowest_balance_minor": 196121537,
+      "largest_outflows": [
+        {
+          "date": "2026-12-24",
+          "narration": "FBR ADVANCE INCOME TAX DEC-2026",
+          "amount_minor": 70000000
+        },
+        {
+          "date": "2026-12-18",
+          "narration": "FBR SALES TAX NOV-2026",
+          "amount_minor": 51654427
+        },
+        {
+          "date": "2026-12-18",
+          "narration": "DIGITAL MARKETING DEC-2026",
+          "amount_minor": 32000000
+        },
+        {
+          "date": "2026-12-24",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1219",
+          "amount_minor": 31109520
+        },
+        {
+          "date": "2026-12-24",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1029",
+          "amount_minor": 23647200
+        },
+        {
+          "date": "2026-12-24",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 3034",
+          "amount_minor": 14353284
+        }
+      ]
+    },
+    {
+      "w": 10,
+      "start": "2026-12-25",
+      "end": "2026-12-31",
+      "opening_minor": 298278537,
+      "inflows_minor": 433302583,
+      "outflows_minor": 197160140,
+      "closing_minor": 534420980,
+      "lowest_balance_minor": 298278537,
+      "largest_outflows": [
+        {
+          "date": "2026-12-29",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2359",
+          "amount_minor": 26937984
+        },
+        {
+          "date": "2026-12-31",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1033",
+          "amount_minor": 18917760
+        },
+        {
+          "date": "2026-12-30",
+          "narration": "IBFT TO SIALKOT APPAREL WORKS SAW 859",
+          "amount_minor": 16836240
+        },
+        {
+          "date": "2026-12-31",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1221",
+          "amount_minor": 16751280
+        },
+        {
+          "date": "2026-12-31",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2362",
+          "amount_minor": 13468992
+        },
+        {
+          "date": "2026-12-31",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1225",
+          "amount_minor": 9572160
+        }
+      ]
+    },
+    {
+      "w": 11,
+      "start": "2027-01-01",
+      "end": "2027-01-07",
+      "opening_minor": 534420980,
+      "inflows_minor": 425517900,
+      "outflows_minor": 494167228,
+      "closing_minor": 465771652,
+      "lowest_balance_minor": 465771652,
+      "largest_outflows": [
+        {
+          "date": "2027-01-04",
+          "narration": "SALARY BULK TRF JAN-2027",
+          "amount_minor": 245000000
+        },
+        {
+          "date": "2027-01-05",
+          "narration": "RENT JAN-2027 BR02 CLIFTON",
+          "amount_minor": 50820000
+        },
+        {
+          "date": "2027-01-05",
+          "narration": "IBFT TO TARIQ ROAD PROPERTIES (SYNTHETIC) RNT 2027 01",
+          "amount_minor": 38000000
+        },
+        {
+          "date": "2027-01-07",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1044",
+          "amount_minor": 35470800
+        },
+        {
+          "date": "2027-01-05",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2370",
+          "amount_minor": 30305232
+        },
+        {
+          "date": "2027-01-07",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 26 1237",
+          "amount_minor": 19144320
+        }
+      ]
+    },
+    {
+      "w": 12,
+      "start": "2027-01-08",
+      "end": "2027-01-14",
+      "opening_minor": 465771652,
+      "inflows_minor": 465857493,
+      "outflows_minor": 275883672,
+      "closing_minor": 655745473,
+      "lowest_balance_minor": 410495081,
+      "largest_outflows": [
+        {
+          "date": "2027-01-08",
+          "narration": "LOAN INSTALMENT 22/36",
+          "amount_minor": 51631500
+        },
+        {
+          "date": "2027-01-12",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2375",
+          "amount_minor": 27260832
+        },
+        {
+          "date": "2027-01-13",
+          "narration": "IBFT TO SIALKOT APPAREL WORKS SAW 884",
+          "amount_minor": 27260832
+        },
+        {
+          "date": "2027-01-14",
+          "narration": "IBFT TO KOTRI TEXTILE TRADERS KTT1054",
+          "amount_minor": 21537360
+        },
+        {
+          "date": "2027-01-08",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 3055",
+          "amount_minor": 19572660
+        },
+        {
+          "date": "2027-01-08",
+          "narration": "IBFT TO SADDAR EMBROIDERY WORKS SEW 1832",
+          "amount_minor": 19572660
+        }
+      ]
+    },
+    {
+      "w": 13,
+      "start": "2027-01-15",
+      "end": "2027-01-21",
+      "opening_minor": 655745473,
+      "inflows_minor": 432556400,
+      "outflows_minor": 373073725,
+      "closing_minor": 715228148,
+      "lowest_balance_minor": 639730921,
+      "largest_outflows": [
+        {
+          "date": "2027-01-18",
+          "narration": "FBR SALES TAX DEC-2026",
+          "amount_minor": 142756449
+        },
+        {
+          "date": "2027-01-20",
+          "narration": "DIGITAL MARKETING JAN-2027",
+          "amount_minor": 32000000
+        },
+        {
+          "date": "2027-01-19",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2386",
+          "amount_minor": 27260832
+        },
+        {
+          "date": "2027-01-21",
+          "narration": "IBFT TO INDUS WEAVING MILLS IWM 27 1254",
+          "amount_minor": 21792240
+        },
+        {
+          "date": "2027-01-15",
+          "narration": "IBFT TO LYARI STITCHING HOUSE LSH 2381",
+          "amount_minor": 17038020
+        },
+        {
+          "date": "2027-01-15",
+          "narration": "IBFT TO MEHRAN GARMENTS INV 3067",
+          "amount_minor": 14532408
+        }
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@
   "timezone": "Asia/Karachi",
   "as_of": "2026-10-22",
   "period": {
-    "start": "2026-08-23",
+    "start": "2024-07-01",
     "end": "2026-10-22"
   },
   "branches": [
@@ -38,7 +38,7 @@
     {
       "iban": "PK72SYNA3011793858792276",
       "name": "Operating account",
-      "opening_balance_minor": 800000000
+      "opening_balance_minor": 650000000
     }
   ],
   "policies": {

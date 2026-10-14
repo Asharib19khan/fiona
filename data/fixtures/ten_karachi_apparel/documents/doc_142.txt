@@ -1,24 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Hala Handloom
+Hala, Pakistan    NTN: 2758379-1
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2284
-Date: 2026-10-19    Due: 2026-10-26
+Invoice no: HH492
+Date: 2024-08-13    Due: 2024-08-28
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1147
+PO ref: PO-1116
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  KRT-L-BLU Cotton kurta - L - BLU          1,800.00      10,800.00
-   18  KRT-L-MRN Cotton kurta - L - MRN          1,800.00      32,400.00
-    6  KRT-S-BLK Cotton kurta - S - BLK          1,800.00      10,800.00
-   12  KRT-XL-BLK Cotton kurta - XL - BLK        1,800.00      21,600.00
-    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,800.00      10,800.00
-    6  KRT-XL-MRN Cotton kurta - XL - MRN        1,800.00      10,800.00
+   18  DUP-OS-WHT Chiffon dupatta - OS - WHT       770.00      13,860.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        97,200.00
-                                             GST 18.00%        17,496.00
-                                              TOTAL PKR       114,696.00
+                                           Subtotal PKR        13,860.00
+                                             GST 18.00%         2,494.80
+                                              TOTAL PKR        16,354.80
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK30SYNB4988933137105487

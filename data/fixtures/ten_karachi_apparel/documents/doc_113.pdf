@@ -1,0 +1,57 @@
+%PDF-1.4
+% SYNTHETIC DOCUMENT - Fiona demo data
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+5 0 obj
+<< /Length 1181 >>
+stream
+BT
+/F1 8.5 Tf
+10.5 TL
+36 812 Td
+(SYNTHETIC DOCUMENT - Fiona demo data) '
+(========================================================================) '
+(Multan Block Prints) '
+(Multan, Pakistan    NTN: 441702-36) '
+(------------------------------------------------------------------------) '
+(SALES TAX INVOICE) '
+(Invoice no: MBP310) '
+(Date: 2026-10-15    Due: 2026-11-14) '
+(Bill to: Karachi Apparel Co. \(synthetic\)) '
+(PO ref: PO-3905) '
+(------------------------------------------------------------------------) '
+(  Qty  Item / description                      Unit price         Amount) '
+(  194  Block-printed lawn fabric \(metres\)          400.00      77,600.00) '
+(    1  Freight and handling                      2,400.00       2,400.00) '
+(------------------------------------------------------------------------) '
+(                                           Subtotal PKR        80,000.00) '
+(                                             GST 18.00%        14,400.00) '
+(                                              TOTAL PKR        94,400.00) '
+(------------------------------------------------------------------------) '
+(Pay to IBAN: PK48SYNB7641247892433583) '
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000048 00000 n 
+0000000097 00000 n 
+0000000154 00000 n 
+0000000280 00000 n 
+0000000348 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1581
+%%EOF

@@ -1,27 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Korangi Garments
-Karachi, Pakistan    NTN: 4648585-4
+Swat Wool Works
+Mingora, Pakistan    NTN: 6979048-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: KG-3336
-Date: 2026-09-18    Due: 2026-10-18
+Invoice no: SWW-24-44
+Date: 2024-07-25    Due: 2024-09-23
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1047
+PO ref: PO-1027
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  TRS-L-BEI Cotton trousers - L - BEI       1,100.00      13,200.00
-   12  TRS-L-BLK Cotton trousers - L - BLK       1,100.00      13,200.00
-    6  TRS-L-WHT Cotton trousers - L - WHT       1,100.00       6,600.00
-    6  TRS-M-BEI Cotton trousers - M - BEI       1,100.00       6,600.00
-   12  TRS-M-BLK Cotton trousers - M - BLK       1,100.00      13,200.00
-   12  TRS-M-WHT Cotton trousers - M - WHT       1,100.00      13,200.00
-    6  TRS-S-BEI Cotton trousers - S - BEI       1,100.00       6,600.00
-    6  TRS-S-BLK Cotton trousers - S - BLK       1,100.00       6,600.00
-    6  TRS-S-WHT Cotton trousers - S - WHT       1,100.00       6,600.00
+    6  SHL-OS-BEI Wool shawl - OS - BEI          2,246.00      13,476.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        85,800.00
-                                             GST 18.00%        15,444.00
-                                              TOTAL PKR       101,244.00
+                                           Subtotal PKR        13,476.00
+                                             GST 18.00%         2,425.68
+                                              TOTAL PKR        15,901.68
 ------------------------------------------------------------------------
-Pay to IBAN: PK93SYND3188429112252004
+Pay to IBAN: PK59SYND0345004627957038

@@ -1,22 +1,21 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Hala Dupatta Crafts
-Hala, Pakistan    NTN: 1649637-3
+Saddar Embroidery Works
+Karachi, Pakistan    NTN: 8889804-0
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: HDC/265
-Date: 2026-10-01    Due: 2026-10-16
+Invoice no: SEW-537
+Date: 2024-08-03    Due: 2024-08-18
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1081
+PO ref: PO-1079
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  DUP-OS-BLK Chiffon dupatta - OS - BLK     1,050.00      12,600.00
-    6  DUP-OS-MRN Chiffon dupatta - OS - MRN     1,050.00       6,300.00
-   12  DUP-OS-PNK Chiffon dupatta - OS - PNK     1,050.00      12,600.00
-    6  DUP-OS-WHT Chiffon dupatta - OS - WHT     1,050.00       6,300.00
+   18  KRT-L-MRN Cotton kurta - L - MRN          1,304.00      23,472.00
+   12  KRT-XL-MRN Cotton kurta - XL - MRN        1,304.00      15,648.00
+    6  KRT-XL-WHT Cotton kurta - XL - WHT        1,304.00       7,824.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        37,800.00
-                                             GST 18.00%         6,804.00
-                                              TOTAL PKR        44,604.00
+                                           Subtotal PKR        46,944.00
+                                             GST 18.00%         8,449.92
+                                              TOTAL PKR        55,393.92
 ------------------------------------------------------------------------
-Pay to IBAN: PK96SYNB1941253908622411
+Pay to IBAN: PK29SYND0340044727931167

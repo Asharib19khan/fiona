@@ -5,17 +5,31 @@ code,name,class,neutral_class
 1030,Mobile wallet settlements in transit,asset,clearing
 1100,Trade receivables,asset,receivables
 1200,Inventory,asset,inventory
+1290,Inventory NRV allowance,asset,inventory
 1300,Input sales tax recoverable,asset,tax_receivable
+1350,Advance income tax,asset,tax_receivable
+1400,Security deposits,asset,deposits
+1500,"Property, plant and equipment",asset,ppe
+1510,Accumulated depreciation,asset,ppe
+1550,Capital work in progress,asset,ppe
 2000,Trade payables,liability,payables
 2100,Output sales tax payable,liability,tax_payable
+2150,Withholding tax payable,liability,tax_payable
 2200,Bank loan,liability,borrowings
 3000,Owner's equity,equity,equity
+3100,Owner's drawings,equity,drawings
 4000,Sales revenue,income,revenue
 4010,Sales returns,income,sales_returns
 5000,Cost of sales,expense,cost_of_sales
+5100,Inventory write-down and reversal,expense,cost_of_sales
 6000,Salaries and wages,expense,payroll
 6100,Rent,expense,occupancy
 6200,Utilities,expense,utilities
+6250,Security and cleaning,expense,services
+6270,Marketing,expense,marketing
 6300,Bank and card charges,expense,bank_charges
 6400,Cash over and short,expense,cash_over_short
+6500,Depreciation,expense,depreciation
+6600,Packaging and supplies,expense,supplies
 7000,Interest expense,expense,interest
+8000,Income tax,expense,income_tax

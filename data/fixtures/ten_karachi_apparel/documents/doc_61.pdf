@@ -1,0 +1,58 @@
+%PDF-1.4
+% SYNTHETIC DOCUMENT - Fiona demo data
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+5 0 obj
+<< /Length 1257 >>
+stream
+BT
+/F1 8.5 Tf
+10.5 TL
+36 812 Td
+(SYNTHETIC DOCUMENT - Fiona demo data) '
+(========================================================================) '
+(Mehran Garments) '
+(Karachi, Pakistan    NTN: 3564187-3) '
+(------------------------------------------------------------------------) '
+(SALES TAX INVOICE) '
+(Invoice no: INV 2231) '
+(Date: 2026-09-21    Due: 2026-09-28) '
+(Bill to: Karachi Apparel Co. \(synthetic\)) '
+(PO ref: PO-3807) '
+(------------------------------------------------------------------------) '
+(  Qty  Item / description                      Unit price         Amount) '
+(   40  KRT-M-BLU Cotton kurta - M - BLU          1,800.00      72,000.00) '
+(   40  KRT-L-BLU Cotton kurta - L - BLU          1,800.00      72,000.00) '
+(    1  Finishing and packing \(lot\)              12,355.93      12,355.93) '
+(------------------------------------------------------------------------) '
+(                                           Subtotal PKR       156,355.93) '
+(                                             GST 18.00%        28,144.07) '
+(                                              TOTAL PKR       184,500.00) '
+(------------------------------------------------------------------------) '
+(Pay to IBAN: PK72SYNB9216553175680255) '
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000048 00000 n 
+0000000097 00000 n 
+0000000154 00000 n 
+0000000280 00000 n 
+0000000348 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1657
+%%EOF

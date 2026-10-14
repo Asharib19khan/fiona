@@ -1,19 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Murree Knitwear
-Murree, Pakistan    NTN: 1606145-7
+Hala Dupatta Crafts
+Hala, Pakistan    NTN: 1649637-3
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: MK1514
-Date: 2026-09-20    Due: 2026-10-20
+Invoice no: HDC/237
+Date: 2024-07-25    Due: 2024-08-09
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1042
+PO ref: PO-1043
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SCF-OS-MRN Knitted scarf - OS - MRN         700.00       4,200.00
+   18  DUP-OS-GRN Chiffon dupatta - OS - GRN       761.00      13,698.00
+   18  DUP-OS-MRN Chiffon dupatta - OS - MRN       761.00      13,698.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR         4,200.00
-                                             GST 18.00%           756.00
-                                              TOTAL PKR         4,956.00
+                                           Subtotal PKR        27,396.00
+                                             GST 18.00%         4,931.28
+                                              TOTAL PKR        32,327.28
 ------------------------------------------------------------------------
-Pay to IBAN: PK74SYNB6033235568991472
+Pay to IBAN: PK96SYNB1941253908622411

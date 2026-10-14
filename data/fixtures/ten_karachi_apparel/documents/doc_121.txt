@@ -1,20 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Hala Dupatta Crafts
-Hala, Pakistan    NTN: 1649637-3
+Swat Wool Works
+Mingora, Pakistan    NTN: 6979048-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: HDC/289
-Date: 2026-10-13    Due: 2026-10-28
+Invoice no: SWW-24-60
+Date: 2024-08-08    Due: 2024-10-07
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1119
+PO ref: PO-1083
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  DUP-OS-BLK Chiffon dupatta - OS - BLK     1,050.00      12,600.00
-   18  DUP-OS-GRN Chiffon dupatta - OS - GRN     1,050.00      18,900.00
+    6  SHL-OS-BLK Wool shawl - OS - BLK          2,246.00      13,476.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        31,500.00
-                                             GST 18.00%         5,670.00
-                                              TOTAL PKR        37,170.00
+                                           Subtotal PKR        13,476.00
+                                             GST 18.00%         2,425.68
+                                              TOTAL PKR        15,901.68
 ------------------------------------------------------------------------
-Pay to IBAN: PK96SYNB1941253908622411
+Pay to IBAN: PK59SYND0345004627957038

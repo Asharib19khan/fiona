@@ -4,16 +4,16 @@ Swat Wool Works
 Mingora, Pakistan    NTN: 6979048-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: SWW-26-49
-Date: 2026-09-12    Due: 2026-10-12
+Invoice no: SWW-24-41
+Date: 2024-07-20    Due: 2024-09-18
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1014
+PO ref: PO-1008
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SHL-OS-GRY Wool shawl - OS - GRY          3,100.00      18,600.00
+    6  SHL-OS-BLK Wool shawl - OS - BLK          2,246.00      13,476.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        18,600.00
-                                             GST 18.00%         3,348.00
-                                              TOTAL PKR        21,948.00
+                                           Subtotal PKR        13,476.00
+                                             GST 18.00%         2,425.68
+                                              TOTAL PKR        15,901.68
 ------------------------------------------------------------------------
 Pay to IBAN: PK59SYND0345004627957038

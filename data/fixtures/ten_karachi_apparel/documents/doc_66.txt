@@ -1,32 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2244
-Date: 2026-09-26    Due: 2026-10-03
+Invoice no: KG-3325
+Date: 2024-07-30    Due: 2024-08-29
 Bill to: Karachi Apparel Co. (synthetic)
 PO ref: PO-1071
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  KRT-L-BLK Cotton kurta - L - BLK          1,800.00      21,600.00
-   18  KRT-L-MRN Cotton kurta - L - MRN          1,800.00      32,400.00
-   24  KRT-L-WHT Cotton kurta - L - WHT          1,800.00      43,200.00
-   12  KRT-M-BLK Cotton kurta - M - BLK          1,800.00      21,600.00
-   12  KRT-M-BLU Cotton kurta - M - BLU          1,800.00      21,600.00
-   18  KRT-M-MRN Cotton kurta - M - MRN          1,800.00      32,400.00
-   12  KRT-M-WHT Cotton kurta - M - WHT          1,800.00      21,600.00
-   12  KRT-S-BLK Cotton kurta - S - BLK          1,800.00      21,600.00
-   18  KRT-S-BLU Cotton kurta - S - BLU          1,800.00      32,400.00
-   12  KRT-S-MRN Cotton kurta - S - MRN          1,800.00      21,600.00
-    6  KRT-S-WHT Cotton kurta - S - WHT          1,800.00      10,800.00
-   12  KRT-XL-BLK Cotton kurta - XL - BLK        1,800.00      21,600.00
-   12  KRT-XL-BLU Cotton kurta - XL - BLU        1,800.00      21,600.00
-    6  KRT-XL-WHT Cotton kurta - XL - WHT        1,800.00      10,800.00
+    6  TRS-M-BLK Cotton trousers - M - BLK         797.00       4,782.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       334,800.00
-                                             GST 18.00%        60,264.00
-                                              TOTAL PKR       395,064.00
+                                           Subtotal PKR         4,782.00
+                                             GST 18.00%           860.76
+                                              TOTAL PKR         5,642.76
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK93SYND3188429112252004

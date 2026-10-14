@@ -1,0 +1,380 @@
+{
+  "synthetic": true,
+  "leases": [
+    {
+      "id": "lease_br02",
+      "branch": "BR02",
+      "lessor": "pty_002",
+      "asset": "Shop premises, Clifton (synthetic)",
+      "commencement": "2024-07-01",
+      "term_months": 60,
+      "payment_day": 5,
+      "payment_timing": "advance",
+      "monthly_rent_minor": 42000000,
+      "escalation_pct_per_year": 10,
+      "escalation_month": 7,
+      "renewal_option": "One further 5-year term at market rent, at the lessee's option",
+      "incremental_borrowing_rate_bp": 1600,
+      "security_deposit_minor": 126000000,
+      "payments": [
+        {
+          "month": "2024-07",
+          "due_date": "2024-07-05",
+          "paid_on": "2024-07-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2024-08",
+          "due_date": "2024-08-05",
+          "paid_on": "2024-08-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2024-09",
+          "due_date": "2024-09-05",
+          "paid_on": "2024-09-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2024-10",
+          "due_date": "2024-10-05",
+          "paid_on": "2024-10-04",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2024-11",
+          "due_date": "2024-11-05",
+          "paid_on": "2024-11-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2024-12",
+          "due_date": "2024-12-05",
+          "paid_on": "2024-12-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-01",
+          "due_date": "2025-01-05",
+          "paid_on": "2025-01-03",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-02",
+          "due_date": "2025-02-05",
+          "paid_on": "2025-02-04",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-03",
+          "due_date": "2025-03-05",
+          "paid_on": "2025-03-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-04",
+          "due_date": "2025-04-05",
+          "paid_on": "2025-04-04",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-05",
+          "due_date": "2025-05-05",
+          "paid_on": "2025-05-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-06",
+          "due_date": "2025-06-05",
+          "paid_on": "2025-06-05",
+          "amount_minor": 42000000
+        },
+        {
+          "month": "2025-07",
+          "due_date": "2025-07-05",
+          "paid_on": "2025-07-04",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2025-08",
+          "due_date": "2025-08-05",
+          "paid_on": "2025-08-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2025-09",
+          "due_date": "2025-09-05",
+          "paid_on": "2025-09-04",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2025-10",
+          "due_date": "2025-10-05",
+          "paid_on": "2025-10-03",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2025-11",
+          "due_date": "2025-11-05",
+          "paid_on": "2025-11-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2025-12",
+          "due_date": "2025-12-05",
+          "paid_on": "2025-12-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-01",
+          "due_date": "2026-01-05",
+          "paid_on": "2026-01-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-02",
+          "due_date": "2026-02-05",
+          "paid_on": "2026-02-04",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-03",
+          "due_date": "2026-03-05",
+          "paid_on": "2026-03-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-04",
+          "due_date": "2026-04-05",
+          "paid_on": "2026-04-03",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-05",
+          "due_date": "2026-05-05",
+          "paid_on": "2026-05-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-06",
+          "due_date": "2026-06-05",
+          "paid_on": "2026-06-05",
+          "amount_minor": 46200000
+        },
+        {
+          "month": "2026-07",
+          "due_date": "2026-07-05",
+          "paid_on": "2026-07-03",
+          "amount_minor": 50820000
+        },
+        {
+          "month": "2026-08",
+          "due_date": "2026-08-05",
+          "paid_on": "2026-08-05",
+          "amount_minor": 50820000
+        },
+        {
+          "month": "2026-09",
+          "due_date": "2026-09-05",
+          "paid_on": "2026-09-04",
+          "amount_minor": 50820000
+        },
+        {
+          "month": "2026-10",
+          "due_date": "2026-10-05",
+          "paid_on": "2026-10-05",
+          "amount_minor": 50820000
+        }
+      ]
+    },
+    {
+      "id": "lease_br01",
+      "branch": "BR01",
+      "lessor": "pty_001",
+      "asset": "Shop premises, Tariq Road (synthetic)",
+      "commencement": "2023-01-01",
+      "term_months": 11,
+      "payment_day": 5,
+      "payment_timing": "advance",
+      "renewal_option": "Renewed every 11 months by mutual agreement; renewal has always happened",
+      "incremental_borrowing_rate_bp": 1600,
+      "rent_by_year_minor": {
+        "2024": 29000000,
+        "2025": 32000000,
+        "2026": 35000000,
+        "2027": 38000000
+      },
+      "billed": true,
+      "payments": [
+        {
+          "month": "2024-07",
+          "due_date": "2024-07-05",
+          "paid_on": "2024-07-05",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2024-08",
+          "due_date": "2024-08-05",
+          "paid_on": "2024-08-05",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2024-09",
+          "due_date": "2024-09-05",
+          "paid_on": "2024-09-05",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2024-10",
+          "due_date": "2024-10-05",
+          "paid_on": "2024-10-04",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2024-11",
+          "due_date": "2024-11-05",
+          "paid_on": "2024-11-05",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2024-12",
+          "due_date": "2024-12-05",
+          "paid_on": "2024-12-05",
+          "amount_minor": 29000000
+        },
+        {
+          "month": "2025-01",
+          "due_date": "2025-01-05",
+          "paid_on": "2025-01-03",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-02",
+          "due_date": "2025-02-05",
+          "paid_on": "2025-02-04",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-03",
+          "due_date": "2025-03-05",
+          "paid_on": "2025-03-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-04",
+          "due_date": "2025-04-05",
+          "paid_on": "2025-04-04",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-05",
+          "due_date": "2025-05-05",
+          "paid_on": "2025-05-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-06",
+          "due_date": "2025-06-05",
+          "paid_on": "2025-06-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-07",
+          "due_date": "2025-07-05",
+          "paid_on": "2025-07-04",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-08",
+          "due_date": "2025-08-05",
+          "paid_on": "2025-08-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-09",
+          "due_date": "2025-09-05",
+          "paid_on": "2025-09-04",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-10",
+          "due_date": "2025-10-05",
+          "paid_on": "2025-10-03",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-11",
+          "due_date": "2025-11-05",
+          "paid_on": "2025-11-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2025-12",
+          "due_date": "2025-12-05",
+          "paid_on": "2025-12-05",
+          "amount_minor": 32000000
+        },
+        {
+          "month": "2026-01",
+          "due_date": "2026-01-05",
+          "paid_on": "2026-01-05",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-02",
+          "due_date": "2026-02-05",
+          "paid_on": "2026-02-04",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-03",
+          "due_date": "2026-03-05",
+          "paid_on": "2026-03-05",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-04",
+          "due_date": "2026-04-05",
+          "paid_on": "2026-04-03",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-05",
+          "due_date": "2026-05-05",
+          "paid_on": "2026-05-05",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-06",
+          "due_date": "2026-06-05",
+          "paid_on": "2026-06-05",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-07",
+          "due_date": "2026-07-05",
+          "paid_on": "2026-07-03",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-08",
+          "due_date": "2026-08-05",
+          "paid_on": "2026-08-05",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-09",
+          "due_date": "2026-09-05",
+          "paid_on": "2026-09-04",
+          "amount_minor": 35000000
+        },
+        {
+          "month": "2026-10",
+          "due_date": "2026-10-05",
+          "paid_on": "2026-10-05",
+          "amount_minor": 35000000
+        }
+      ]
+    }
+  ]
+}

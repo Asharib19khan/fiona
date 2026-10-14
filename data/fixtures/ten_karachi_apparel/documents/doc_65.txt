@@ -1,22 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Gulshan Kidswear
-Karachi, Pakistan    NTN: 1132881-2
+Lyari Stitching House
+Karachi, Pakistan    NTN: 2561976-8
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: GKW928
-Date: 2026-09-26    Due: 2026-10-11
+Invoice no: LSH-1200
+Date: 2024-07-30    Due: 2024-08-29
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1069
+PO ref: PO-1061
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  KKR-4Y-BLU Kids kurta - 4Y - BLU          1,000.00       6,000.00
-    6  KKR-6Y-BLU Kids kurta - 6Y - BLU          1,000.00       6,000.00
-   12  KKR-8Y-BLU Kids kurta - 8Y - BLU          1,000.00      12,000.00
-   12  KKR-8Y-WHT Kids kurta - 8Y - WHT          1,000.00      12,000.00
+   12  STS-L-GRN Stitched two-piece suit - L     3,406.00      40,872.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        36,000.00
-                                             GST 18.00%         6,480.00
-                                              TOTAL PKR        42,480.00
+                                           Subtotal PKR        40,872.00
+                                             GST 18.00%         7,356.96
+                                              TOTAL PKR        48,228.96
 ------------------------------------------------------------------------
-Pay to IBAN: PK45SYNB5872076931292399
+Pay to IBAN: PK87SYND1331844186178407

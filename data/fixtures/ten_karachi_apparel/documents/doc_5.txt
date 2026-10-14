@@ -1,21 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Mehran Garments
-Karachi, Pakistan    NTN: 3564187-3
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: INV-2205
-Date: 2026-09-05    Due: 2026-09-12
+Invoice no: GKW905
+Date: 2024-07-13    Due: 2024-07-28
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1009
+PO ref: PO-1004
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  KRT-M-BLU Cotton kurta - M - BLU          1,800.00      10,800.00
-    6  KRT-XL-BLK Cotton kurta - XL - BLK        1,800.00      10,800.00
-    6  KRT-XL-WHT Cotton kurta - XL - WHT        1,800.00      10,800.00
+   12  KKR-6Y-BLU Kids kurta - 6Y - BLU            725.00       8,700.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        32,400.00
-                                             GST 18.00%         5,832.00
-                                              TOTAL PKR        38,232.00
+                                           Subtotal PKR         8,700.00
+                                             GST 18.00%         1,566.00
+                                              TOTAL PKR        10,266.00
 ------------------------------------------------------------------------
-Pay to IBAN: PK72SYNB9216553175680255
+Pay to IBAN: PK45SYNB5872076931292399

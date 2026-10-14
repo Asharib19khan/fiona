@@ -1,23 +1,23 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Indus Weaving Mills
-Faisalabad, Pakistan    NTN: 5945744-0
+Mehran Garments
+Karachi, Pakistan    NTN: 3564187-3
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: IWM/26/421
-Date: 2026-09-18    Due: 2026-09-28
+Invoice no: INV-1812
+Date: 2024-07-24    Due: 2024-07-31
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1037
+PO ref: PO-1048
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  UNS-OS-GRN Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-PNK Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-PRP Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-WHT Unstitched three-piece lawn    3,300.00      39,600.00
-    6  UNS-OS-YLW Unstitched three-piece lawn    3,300.00      19,800.00
+   12  KRT-L-BLK Cotton kurta - L - BLK          1,304.00      15,648.00
+   18  KRT-L-BLU Cotton kurta - L - BLU          1,304.00      23,472.00
+   12  KRT-M-BLU Cotton kurta - M - BLU          1,304.00      15,648.00
+    6  KRT-XL-BLK Cotton kurta - XL - BLK        1,304.00       7,824.00
+    6  KRT-XL-BLU Cotton kurta - XL - BLU        1,304.00       7,824.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       178,200.00
-                                             GST 18.00%        32,076.00
-                                              TOTAL PKR       210,276.00
+                                           Subtotal PKR        70,416.00
+                                             GST 18.00%        12,674.88
+                                              TOTAL PKR        83,090.88
 ------------------------------------------------------------------------
-Pay to IBAN: PK24SYNB0349937808765007
+Pay to IBAN: PK72SYNB9216553175680255

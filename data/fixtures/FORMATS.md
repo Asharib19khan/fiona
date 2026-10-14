@@ -9,7 +9,7 @@ bank accounts. Nothing here comes from or refers to a real company, person or ac
 Produced by:
 
 ```
-python -m data.generator --seed 42 --persona karachi_apparel --months 2 --out data/fixtures/
+python -m data.generator --seed 42 --persona karachi_apparel --months 24 --out data/fixtures/
 ```
 
 The same seed, persona, months and generator version always produce byte-identical files.
@@ -89,6 +89,18 @@ The generator writes `data/fixtures/<tenant_id>/`:
 | `pos_z_reports.csv` | end-of-day drawer report per register | cash over/short, register outliers |
 | `events.jsonl` | the canonical ledger events (ground truth) | `GET /v1/ledger/events` mock, forecast |
 | `answer_key.json` | planted scenarios, true bank-line matches, clean bills, truths for other lanes | tests, scoring |
+| `loans.json` | loan agreement and full repayment schedule (principal, interest, KIBOR + spread, DSCR covenant) | frameworks, decisions, D3 postings |
+| `leases.json` | shop leases (term, rent schedule, escalation, renewal option, IBR); BR01 is billed monthly | frameworks lens (IFRS 16 / Section 20) |
+| `fixed_assets.json` | asset register (cost, date, useful life, straight-line depreciation) | statements, Stage Detector |
+| `payroll.json` | monthly payroll summary (headcount, gross, withholding, net paid) | statements, forecast |
+| `opening_balances.json` | opening trial balance at the period start (also an `opening_balances` event) | statements |
+| `nrv_assessments.json` | NRV assessments of dead stock (estimated selling price per item), linked to their journal events | frameworks write-down lens |
+
+**Held-out truth** lives apart, in `data/fixtures/holdout/<tenant_id>/` (`cash_weekly.json`, `demand_weekly.csv`,
+own manifest): the 13 weeks after `as_of`, for backtests and the dip check only. Never train or tune on it.
+
+**Period (v1, D2).** The history starts on the fiscal-year start on or before `as_of − months`, so every fiscal year
+in it is complete (Karachi: 1 Jul 2024 to 22 Oct 2026, FY25 and FY26 whole).
 
 ---
 
@@ -232,6 +244,11 @@ obeyed.**
     "extraction": { "method": "synthetic_ground_truth" } } ] }
 ```
 
+Additive in v1: `document_path` (`documents/<doc_id>.txt` or `.pdf`; the hashed file), `category`
+(`inventory_supplier` or `rent`), `contract_ref` (rent bills, PO-exempt), `entry` (`extraction`, `manual`,
+`email_intake`) and `entered_by` (who keyed or extracted it; G-04). The `purchase_bill` event carries the same
+person as `created_by` (contract Actor).
+
 `sku` may be null for non-stock lines (for example, finishing charges). Arithmetic: the sum of
 `line_total_minor` equals `subtotal_minor`, and `subtotal_minor` plus the tax amounts equals
 `total_minor`. Planted G-07 cases break this deliberately.
@@ -347,9 +364,17 @@ is above the treasurer cap as well). `open_bill_ids` lists bills still unpaid at
 A `cash_deposit` match carries `over_short_minor`: deposit = sum of its events + over/short.
 `matches[].kind` ∈ `supplier_payment, customer_receipt, pos_settlement, cash_deposit`. A
 one-to-many match lists several `event_ids`. `unmatched_bank_lines` are lines that have no book
-event by design (payroll, rent, utilities, loan, fees, tax) with their category. D2 adds all
-twelve scenarios S-01 to S-12 and the `other_lanes` truths (cash dip in week 7, slow and dead
-stock, seasonal peak, refund spike), plus a separate held-out file of the last 13 weeks.
+event by design (payroll, rent, utilities, loan, fees, tax) with their category. In v1 (D2):
+
+- `scenarios` follows `rulebook/scenarios.yaml` exactly (DEMO-1, S-01..S-13, S-05b, S-08a/b/c, C-01..C-04): its IDs,
+  rules and expected outcomes, plus `refs` to the real planted rows and `proposals[]`, each a contract
+  `ProposalDraft` (with `approval` for S-04). Totals that integer GST cannot produce are 1 minor unit above the
+  scenario figure (for example 14,950,001).
+- `bill_size` reports how many supplier bills fit the treasurer's per-payment cap.
+- `other_lanes`: `cash_dip` (weekly closings from the held-out run, first week below the buffer, drivers and open
+  bills by week; weeks start the day after `as_of`, as in Y1), `fiscal_year_cash_flows` (direct-method CFO/CFI/CFF
+  per whole FY with revenue), `dead_stock`, `slow_stock`, `nrv_events`, `pos_anomalies` (refund spike, cash
+  shortage), `seasonal_peaks`, `launch_lab_history_categories`, `loan_id`, `lease_ids`.
 
 ---
 

@@ -1,0 +1,119 @@
+{
+  "synthetic": true,
+  "assessments": [
+    {
+      "event_id": "evt_01JZ0ERJ40QRT4D38MXDMDW29R",
+      "category": "JKT",
+      "assessment_date": "2025-06-30",
+      "allowance_minor": 12086198,
+      "change_minor": 12086198,
+      "items": [
+        {
+          "item": "JKT-L-BLK",
+          "qty_on_hand": 12,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 1959924
+        },
+        {
+          "item": "JKT-L-MRN",
+          "qty_on_hand": 19,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 3103213
+        },
+        {
+          "item": "JKT-M-BLK",
+          "qty_on_hand": 2,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 326654
+        },
+        {
+          "item": "JKT-M-MRN",
+          "qty_on_hand": 7,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 1143289
+        },
+        {
+          "item": "JKT-S-BLK",
+          "qty_on_hand": 17,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 2776559
+        },
+        {
+          "item": "JKT-S-MRN",
+          "qty_on_hand": 17,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 212076,
+          "nrv_per_unit_minor": 201473,
+          "shortfall_minor": 2776559
+        }
+      ]
+    },
+    {
+      "event_id": "evt_01KGA27340MWT7WK9AERSNTX3H",
+      "category": "JKT",
+      "assessment_date": "2026-01-31",
+      "allowance_minor": 0,
+      "change_minor": -12086198,
+      "items": [
+        {
+          "item": "JKT-L-BLK",
+          "qty_on_hand": 0,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        },
+        {
+          "item": "JKT-L-MRN",
+          "qty_on_hand": 0,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        },
+        {
+          "item": "JKT-M-BLK",
+          "qty_on_hand": 0,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        },
+        {
+          "item": "JKT-M-MRN",
+          "qty_on_hand": 0,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        },
+        {
+          "item": "JKT-S-BLK",
+          "qty_on_hand": 0,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        },
+        {
+          "item": "JKT-S-MRN",
+          "qty_on_hand": 8,
+          "unit_cost_minor": 364800,
+          "estimated_selling_price_minor": 406779,
+          "nrv_per_unit_minor": 386441,
+          "shortfall_minor": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,21 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Swat Wool Works
-Mingora, Pakistan    NTN: 6979048-7
+Faisalabad Cotton Mills
+Faisalabad, Pakistan    NTN: 4151102-9
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: SWW-26-80
-Date: 2026-10-15    Due: 2026-11-14
+Invoice no: FCM/88
+Date: 2024-08-09    Due: 2024-09-08
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1114
+PO ref: PO-1101
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  SHL-OS-BLK Wool shawl - OS - BLK          3,100.00      18,600.00
-    6  SHL-OS-GRY Wool shawl - OS - GRY          3,100.00      18,600.00
-    6  SHL-OS-MRN Wool shawl - OS - MRN          3,100.00      18,600.00
+   12  TRS-S-WHT Cotton trousers - S - WHT         807.00       9,684.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        55,800.00
-                                             GST 18.00%        10,044.00
-                                              TOTAL PKR        65,844.00
+                                           Subtotal PKR         9,684.00
+                                             GST 18.00%         1,743.12
+                                              TOTAL PKR        11,427.12
 ------------------------------------------------------------------------
-Pay to IBAN: PK59SYND0345004627957038
+Pay to IBAN: PK13SYND4538690166195012

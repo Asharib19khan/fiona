@@ -1,0 +1,19 @@
+{
+  "synthetic": true,
+  "notice": "SYNTHETIC DATA: invented business, people, suppliers and accounts. Not real.",
+  "generator_version": "1.0.0",
+  "seed": 42,
+  "persona": "karachi_apparel",
+  "months": 24,
+  "tenant_id": "ten_karachi_apparel",
+  "as_of": "2026-10-22",
+  "period": {
+    "start": "2024-07-01",
+    "end": "2026-10-22"
+  },
+  "held_out": "13 weeks after as_of; for backtests only",
+  "files": {
+    "cash_weekly.json": "48c23028ba5e8116a90ec87a0b7dc6ea82c4f67260f627df1d56e0245115182b",
+    "demand_weekly.csv": "3d03156e4db1879f5b93b435a08b56c99becccab0725061bc5d9931e693d7b26"
+  }
+}

@@ -1,22 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Lyari Stitching House
-Karachi, Pakistan    NTN: 2561976-8
+Hala Dupatta Crafts
+Hala, Pakistan    NTN: 1649637-3
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: LSH-1259
-Date: 2026-10-22    Due: 2026-11-21
+Invoice no: HDC/253
+Date: 2024-08-18    Due: 2024-09-02
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1149
+PO ref: PO-1128
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  STS-M-BEI Stitched two-piece suit - M     4,700.00      28,200.00
-    6  STS-M-GRN Stitched two-piece suit - M     4,700.00      28,200.00
-    6  STS-M-PNK Stitched two-piece suit - M     4,700.00      28,200.00
-    6  STS-S-GRN Stitched two-piece suit - S     4,700.00      28,200.00
+   18  DUP-OS-GRN Chiffon dupatta - OS - GRN       770.00      13,860.00
+   18  DUP-OS-MRN Chiffon dupatta - OS - MRN       770.00      13,860.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       112,800.00
-                                             GST 18.00%        20,304.00
-                                              TOTAL PKR       133,104.00
+                                           Subtotal PKR        27,720.00
+                                             GST 18.00%         4,989.60
+                                              TOTAL PKR        32,709.60
 ------------------------------------------------------------------------
-Pay to IBAN: PK87SYND1331844186178407
+Pay to IBAN: PK96SYNB1941253908622411

@@ -1,22 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Korangi Garments
-Karachi, Pakistan    NTN: 4648585-4
+Swat Wool Works
+Mingora, Pakistan    NTN: 6979048-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: KG-3377
-Date: 2026-10-09    Due: 2026-11-08
+Invoice no: SWW-26-611
+Date: 2026-10-13    Due: 2026-12-12
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1112
+PO ref: PO-3882
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  TRS-L-BEI Cotton trousers - L - BEI       1,100.00       6,600.00
-   12  TRS-M-WHT Cotton trousers - M - WHT       1,100.00      13,200.00
-    6  TRS-S-BEI Cotton trousers - S - BEI       1,100.00       6,600.00
-    6  TRS-S-WHT Cotton trousers - S - WHT       1,100.00       6,600.00
+   37  SHL-OS-BLK Wool shawl - OS - BLK          3,100.00     114,700.00
+    1  Freight and handling                      3,944.07       3,944.07
 ------------------------------------------------------------------------
-                                           Subtotal PKR        33,000.00
-                                             GST 18.00%         5,940.00
-                                              TOTAL PKR        38,940.00
+                                           Subtotal PKR       118,644.07
+                                             GST 18.00%        21,355.93
+                                              TOTAL PKR       140,000.00
 ------------------------------------------------------------------------
-Pay to IBAN: PK93SYND3188429112252004
+Pay to IBAN: PK59SYND0345004627957038

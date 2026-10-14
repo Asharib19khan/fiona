@@ -1,20 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Indus Weaving Mills
-Faisalabad, Pakistan    NTN: 5945744-0
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: IWM/26/425
-Date: 2026-09-23    Due: 2026-10-03
+Invoice no: KG-3322
+Date: 2024-07-28    Due: 2024-08-27
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1052
+PO ref: PO-1063
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  UNS-OS-BLU Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-PNK Unstitched three-piece lawn    3,300.00      39,600.00
+   12  TRS-L-BEI Cotton trousers - L - BEI         797.00       9,564.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        79,200.00
-                                             GST 18.00%        14,256.00
-                                              TOTAL PKR        93,456.00
+                                           Subtotal PKR         9,564.00
+                                             GST 18.00%         1,721.52
+                                              TOTAL PKR        11,285.52
 ------------------------------------------------------------------------
-Pay to IBAN: PK24SYNB0349937808765007
+Pay to IBAN: PK93SYND3188429112252004

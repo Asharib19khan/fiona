@@ -1,22 +1,20 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Indus Weaving Mills
-Faisalabad, Pakistan    NTN: 5945744-0
+Murree Knitwear
+Murree, Pakistan    NTN: 1606145-7
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: IWM/26/456
-Date: 2026-10-14    Due: 2026-10-24
+Invoice no: MK1513
+Date: 2024-08-09    Due: 2024-09-08
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1117
+PO ref: PO-1093
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  UNS-OS-BLU Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-PRP Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-WHT Unstitched three-piece lawn    3,300.00      39,600.00
-   12  UNS-OS-YLW Unstitched three-piece lawn    3,300.00      39,600.00
+    6  SCF-OS-GRY Knitted scarf - OS - GRY         507.00       3,042.00
+    6  SCF-OS-MRN Knitted scarf - OS - MRN         507.00       3,042.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       158,400.00
-                                             GST 18.00%        28,512.00
-                                              TOTAL PKR       186,912.00
+                                           Subtotal PKR         6,084.00
+                                             GST 18.00%         1,095.12
+                                              TOTAL PKR         7,179.12
 ------------------------------------------------------------------------
-Pay to IBAN: PK24SYNB0349937808765007
+Pay to IBAN: PK74SYNB6033235568991472

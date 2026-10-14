@@ -1,24 +1,23 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Lyari Stitching House
-Karachi, Pakistan    NTN: 2561976-8
+Korangi Garments
+Karachi, Pakistan    NTN: 4648585-4
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: LSH-1247
-Date: 2026-10-15    Due: 2026-11-14
+Invoice no: KG-3329
+Date: 2024-08-09    Due: 2024-09-08
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1126
+PO ref: PO-1107
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  STS-L-BEI Stitched two-piece suit - L     4,700.00      28,200.00
-    6  STS-L-GRN Stitched two-piece suit - L     4,700.00      28,200.00
-    6  STS-L-PNK Stitched two-piece suit - L     4,700.00      28,200.00
-   12  STS-M-BEI Stitched two-piece suit - M     4,700.00      56,400.00
-    6  STS-M-GRN Stitched two-piece suit - M     4,700.00      28,200.00
-    6  STS-M-PNK Stitched two-piece suit - M     4,700.00      28,200.00
+   12  TRS-L-BEI Cotton trousers - L - BEI         807.00       9,684.00
+   18  TRS-L-BLK Cotton trousers - L - BLK         807.00      14,526.00
+   18  TRS-M-BLK Cotton trousers - M - BLK         807.00      14,526.00
+   12  TRS-S-BEI Cotton trousers - S - BEI         807.00       9,684.00
+   12  TRS-S-BLK Cotton trousers - S - BLK         807.00       9,684.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR       197,400.00
-                                             GST 18.00%        35,532.00
-                                              TOTAL PKR       232,932.00
+                                           Subtotal PKR        58,104.00
+                                             GST 18.00%        10,458.72
+                                              TOTAL PKR        68,562.72
 ------------------------------------------------------------------------
-Pay to IBAN: PK87SYND1331844186178407
+Pay to IBAN: PK93SYND3188429112252004

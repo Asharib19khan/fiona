@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Saddar Embroidery Works
+Karachi, Pakistan    NTN: 8889804-0
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: SEW-1024
+Date: 2025-06-18    Due: 2025-07-03
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-2246
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+   12  KRT-L-WHT Cotton kurta - L - WHT          1,487.00      17,844.00
+   18  KRT-M-WHT Cotton kurta - M - WHT          1,487.00      26,766.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        44,610.00
+                                             GST 18.00%         8,029.80
+                                              TOTAL PKR        52,639.80
+------------------------------------------------------------------------
+Pay to IBAN: PK29SYND0340044727931167

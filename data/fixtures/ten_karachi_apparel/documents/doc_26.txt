@@ -1,20 +1,19 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Korangi Garments
-Karachi, Pakistan    NTN: 4648585-4
+Lyari Stitching House
+Karachi, Pakistan    NTN: 2561976-8
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: KG-3327
-Date: 2026-09-13    Due: 2026-10-13
+Invoice no: LSH-1185
+Date: 2024-07-21    Due: 2024-08-20
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1033
+PO ref: PO-1022
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-    6  TRS-L-WHT Cotton trousers - L - WHT       1,100.00       6,600.00
-    6  TRS-M-BEI Cotton trousers - M - BEI       1,100.00       6,600.00
+   18  STS-M-GRN Stitched two-piece suit - M     3,406.00      61,308.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        13,200.00
-                                             GST 18.00%         2,376.00
-                                              TOTAL PKR        15,576.00
+                                           Subtotal PKR        61,308.00
+                                             GST 18.00%        11,035.44
+                                              TOTAL PKR        72,343.44
 ------------------------------------------------------------------------
-Pay to IBAN: PK93SYND3188429112252004
+Pay to IBAN: PK87SYND1331844186178407

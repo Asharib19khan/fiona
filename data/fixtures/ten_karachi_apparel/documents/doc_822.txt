@@ -1,0 +1,19 @@
+SYNTHETIC DOCUMENT - Fiona demo data
+========================================================================
+Karachi Allied Cartons
+Karachi, Pakistan    NTN: 9135874-1
+------------------------------------------------------------------------
+SALES TAX INVOICE
+Invoice no: KAC-2025-0002
+Date: 2025-02-06    Due: 2025-03-08
+Bill to: Karachi Apparel Co. (synthetic)
+PO ref: PO-1794
+------------------------------------------------------------------------
+  Qty  Item / description                      Unit price         Amount
+  111  Printed shopping bags and boxes             500.00      55,500.00
+------------------------------------------------------------------------
+                                           Subtotal PKR        55,500.00
+                                             GST 18.00%         9,990.00
+                                              TOTAL PKR        65,490.00
+------------------------------------------------------------------------
+Pay to IBAN: PK88SYND7135556501205696

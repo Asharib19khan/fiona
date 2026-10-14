@@ -1,22 +1,21 @@
 SYNTHETIC DOCUMENT - Fiona demo data
 ========================================================================
-Murree Knitwear
-Murree, Pakistan    NTN: 1606145-7
+Gulshan Kidswear
+Karachi, Pakistan    NTN: 1132881-2
 ------------------------------------------------------------------------
 SALES TAX INVOICE
-Invoice no: MK1520
-Date: 2026-10-02    Due: 2026-11-01
+Invoice no: GKW933
+Date: 2024-08-03    Due: 2024-08-18
 Bill to: Karachi Apparel Co. (synthetic)
-PO ref: PO-1077
+PO ref: PO-1082
 ------------------------------------------------------------------------
   Qty  Item / description                      Unit price         Amount
-   12  SCF-OS-BLK Knitted scarf - OS - BLK         700.00       8,400.00
-   12  SCF-OS-BLU Knitted scarf - OS - BLU         700.00       8,400.00
-   12  SCF-OS-GRY Knitted scarf - OS - GRY         700.00       8,400.00
-   12  SCF-OS-MRN Knitted scarf - OS - MRN         700.00       8,400.00
+   12  KKR-4Y-BLU Kids kurta - 4Y - BLU            725.00       8,700.00
+    6  KKR-4Y-WHT Kids kurta - 4Y - WHT            725.00       4,350.00
+   12  KKR-8Y-WHT Kids kurta - 8Y - WHT            725.00       8,700.00
 ------------------------------------------------------------------------
-                                           Subtotal PKR        33,600.00
-                                             GST 18.00%         6,048.00
-                                              TOTAL PKR        39,648.00
+                                           Subtotal PKR        21,750.00
+                                             GST 18.00%         3,915.00
+                                              TOTAL PKR        25,665.00
 ------------------------------------------------------------------------
-Pay to IBAN: PK74SYNB6033235568991472
+Pay to IBAN: PK45SYNB5872076931292399

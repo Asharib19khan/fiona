@@ -44,3 +44,14 @@ def load_mandates(tenant_id: str, path: Path = RULEBOOK_MANDATES) -> tuple[list[
         mandate.setdefault("created_at", f"{m['effective_from']}T00:00:00Z")
         mandates.append(mandate)
     return mandates, f"rulebook/mandates.yaml v{rulebook['mandates_version']}"
+
+
+RULEBOOK_SCENARIOS = Path(__file__).resolve().parents[2] / "rulebook" / "scenarios.yaml"
+
+
+def load_scenarios(path: Path = RULEBOOK_SCENARIOS) -> dict:
+    """Abdullah's B3 scenarios: the single source of scenario IDs, rules and expected outcomes."""
+    import yaml
+
+    with path.open(encoding="utf-8") as handle:
+        return yaml.safe_load(handle)
