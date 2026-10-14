@@ -1,0 +1,15 @@
+{
+  "agent": "treasurer",
+  "type": "payment",
+  "summary": "Pay supplier bill INV-2231 on 23 October",
+  "amount": { "minor": 18450000, "currency": "PKR" },
+  "payload": { "payee_id": "sup_017", "bill_id": "bill_2231", "pay_on": "2026-10-23", "channel": "wallet", "category": "inventory_supplier" },
+  "evidence": [
+    { "kind": "bill", "ref": "bill_2231" },
+    { "kind": "document", "ref": "doc_88" },
+    { "kind": "tool_result", "ref": "tr_0003" }
+  ],
+  "reasoning": "Due on 24 October; cash stays above the buffer in every forecast week [tr_0003].",
+  "mandate_ref": "mnd_treasurer_v1",
+  "created_by": { "kind": "user", "id": "usr_staff_01" }
+}

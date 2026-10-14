@@ -1,0 +1,81 @@
+# Mandates: the owner's written delegation to one agent (rulebook/mandates.yaml `mandate_shape`,
+# Abdullah, 4f4fc26). Every change is a new version. Only the owner changes levels or caps; no
+# automatic ratchet; a downgrade is instant. System ceilings live in the rulebook and are
+# enforced in code. The cash buffer is a tenant policy, not a mandate field (fiona-b7, 13 Oct).
+$defs:
+  AutonomyLevel:
+    description: "advise: recommend only. prepare: draft a Proposal; the owner approves. act_within_mandate: executes after Guardian clearance, inside the limits."
+    type: string
+    enum: [advise, prepare, act_within_mandate]
+
+  ActionType:
+    description: Proposal types, plus decision_memo (memos are advice, never Proposals).
+    type: string
+    enum: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match, decision_memo]
+
+  Weekday:
+    type: string
+    enum: [mon, tue, wed, thu, fri, sat, sun]
+
+  PaymentWindow:
+    type: object
+    additionalProperties: false
+    required: [days, local_start, local_end, timezone]
+    properties:
+      days: { type: array, minItems: 1, uniqueItems: true, items: { $ref: "#/$defs/Weekday" } }
+      local_start: { type: string, pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" }
+      local_end: { type: string, pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$" }
+      timezone: { type: string, minLength: 1, description: "IANA zone, e.g. Asia/Karachi." }
+      exclude_public_holidays: { type: boolean, default: true }
+
+  Mandate:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - tenant_id
+      - agent
+      - version
+      - status
+      - currency
+      - autonomy
+      - allowed_action_types
+      - per_payment_cap_minor
+      - daily_cap_minor
+      - effective_from
+      - approved_by
+      - created_at
+    properties:
+      id: { $ref: "#/$defs/MandateId" }
+      tenant_id: { $ref: "#/$defs/TenantId" }
+      agent: { $ref: "#/$defs/AgentName" }
+      version: { type: integer, minimum: 1, description: "Monotonic per (tenant, agent); a change writes a new row." }
+      status: { type: string, enum: [active, superseded] }
+      currency: { $ref: "#/$defs/Currency" }
+      autonomy:
+        description: Action type to autonomy level. An absent type is not permitted (G-13 blocks it).
+        type: object
+        propertyNames: { $ref: "#/$defs/ActionType" }
+        additionalProperties: { $ref: "#/$defs/AutonomyLevel" }
+      allowed_action_types:
+        description: Derived from the autonomy keys; kept for the Blueprint's mandates table.
+        type: array
+        uniqueItems: true
+        items: { $ref: "#/$defs/ActionType" }
+      per_payment_cap_minor: { type: integer, minimum: 0 }
+      daily_cap_minor: { type: integer, minimum: 0 }
+      allowed_categories: { type: [array, "null"], items: { type: string, minLength: 1 } }
+      payee_scope: { type: [string, "null"], enum: [allow_list_only, null] }
+      payment_windows: { anyOf: [{ $ref: "#/$defs/PaymentWindow" }, { type: "null" }] }
+      effective_from: { $ref: "#/$defs/Date" }
+      effective_to: { anyOf: [{ $ref: "#/$defs/Date" }, { type: "null" }] }
+      approved_by: { $ref: "#/$defs/UserId" }
+      created_at: { $ref: "#/$defs/Timestamp" }
+
+  TenantPolicies:
+    description: The owner's tenant-level policies. cash_buffer_minor is read by the forecast, the briefing, Launch Lab and G-08.
+    type: object
+    additionalProperties: false
+    required: [cash_buffer_minor]
+    properties:
+      cash_buffer_minor: { type: integer, minimum: 0 }

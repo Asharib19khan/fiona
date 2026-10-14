@@ -1,0 +1,9 @@
+{
+  "metric_id": "inventory_turnover",
+  "label": "Inventory turnover",
+  "status": "insufficient_data",
+  "money": null,
+  "value": null,
+  "unit": "count",
+  "missing": ["12 months of cost of sales (have 2)"]
+}

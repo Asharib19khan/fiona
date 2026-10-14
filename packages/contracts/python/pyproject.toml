@@ -1,0 +1,23 @@
+[project]
+name = "fiona-contracts"
+version = "1.0.0"
+description = "Fiona shared contracts: Pydantic v2 models generated from packages/contracts/schemas, plus full JSON Schema validation and verdict hashing."
+requires-python = ">=3.12"
+dependencies = [
+  "pydantic>=2.14.1",
+  "jsonschema>=4.26.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.1.1", "ruff>=0.17.0"]
+
+[build-system]
+requires = ["uv_build>=0.11.12,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["tests"]

@@ -1,0 +1,105 @@
+# Every number the product shows is a Figure (PLAN.md §3.2): a value or money, the metric it
+# measures (rulebook/metrics.yaml), its inputs and where they came from. This is what powers
+# explain-any-number. Shape agreed with Yahya (forecast/_contracts.py at f45e8d4).
+# Non-money numbers are integers in their unit; every dimensionless decimal (rate, ratio, share,
+# probability, multiple, elasticity) is in basis points: DSCR 1.35 -> {value: 13500, unit: bp}.
+$defs:
+  Unit:
+    type: string
+    enum: [minor, bp, units, days, weeks, months, count]
+
+  Origin:
+    description: Where a number or assumption comes from.
+    type: string
+    enum:
+      - user_provided
+      - ledger_derived
+      - market_observed
+      - engine_estimate
+      - assumption_unverified
+      - figure
+      - stub
+      - tenant_policy
+      - rulebook
+      - owner
+      - draft_default
+
+  FigureInput:
+    description: One input to a Figure. Exactly one of money or value is set; money means unit "minor".
+    type: object
+    additionalProperties: false
+    required: [name, origin, unit]
+    properties:
+      name: { type: string, minLength: 1 }
+      origin: { $ref: "#/$defs/Origin" }
+      metric_id: { type: [string, "null"] }
+      ref: { type: [string, "null"], description: "An evidence ID, or a metric_id when origin is figure." }
+      money: { anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }] }
+      value: { type: [integer, "null"] }
+      unit: { $ref: "#/$defs/Unit" }
+    allOf:
+      - not: { required: [money, value], properties: { money: { type: object }, value: { type: integer } } }
+      - if: { required: [money], properties: { money: { type: object } } }
+        then: { properties: { unit: { const: minor } } }
+
+  Threshold:
+    description: A rule threshold applied to a Figure, and whether it passed.
+    type: object
+    additionalProperties: false
+    required: [name, origin, comparison, unit]
+    properties:
+      name: { type: string, minLength: 1 }
+      origin: { $ref: "#/$defs/Origin" }
+      comparison: { type: string, enum: [">=", "<=", ">", "<"] }
+      passed: { type: [boolean, "null"] }
+      money: { anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }] }
+      value: { type: [integer, "null"] }
+      unit: { $ref: "#/$defs/Unit" }
+    allOf:
+      - not: { required: [money, value], properties: { money: { type: object }, value: { type: integer } } }
+      - if: { required: [money], properties: { money: { type: object } } }
+        then: { properties: { unit: { const: minor } } }
+
+  FigureStatus:
+    type: string
+    enum: [ok, insufficient_data, not_applicable]
+
+  Figure:
+    description: >
+      A number with its provenance. status ok requires money or value. Any other status carries
+      no value, and insufficient_data lists what is missing ("insufficient data, need X" instead
+      of guessing).
+    type: object
+    additionalProperties: false
+    required: [metric_id, label, unit]
+    properties:
+      metric_id: { type: string, minLength: 1, description: "ID in rulebook/metrics.yaml." }
+      label: { type: string, minLength: 1 }
+      status: { $ref: "#/$defs/FigureStatus", default: ok }
+      money: { anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }] }
+      value: { type: [integer, "null"] }
+      unit: { $ref: "#/$defs/Unit" }
+      formula: { type: [string, "null"] }
+      inputs: { type: array, items: { $ref: "#/$defs/FigureInput" }, default: [] }
+      thresholds: { type: array, items: { $ref: "#/$defs/Threshold" }, default: [] }
+      source_refs: { type: array, items: { type: string, minLength: 1 }, default: [] }
+      missing: { type: array, items: { type: string, minLength: 1 }, default: [] }
+      note: { type: [string, "null"] }
+    allOf:
+      - not: { required: [money, value], properties: { money: { type: object }, value: { type: integer } } }
+      - if: { required: [money], properties: { money: { type: object } } }
+        then: { properties: { unit: { const: minor } } }
+      # status ok (or absent, which means ok) needs a number
+      - if: { anyOf: [{ not: { required: [status] } }, { properties: { status: { const: ok } } }] }
+        then:
+          anyOf:
+            - { required: [money], properties: { money: { type: object } } }
+            - { required: [value], properties: { value: { type: integer } } }
+      # any other status carries no number
+      - if: { required: [status], properties: { status: { enum: [insufficient_data, not_applicable] } } }
+        then:
+          properties:
+            money: { type: "null" }
+            value: { type: "null" }
+      - if: { required: [status], properties: { status: { const: insufficient_data } } }
+        then: { required: [missing], properties: { missing: { minItems: 1 } } }

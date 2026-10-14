@@ -40,10 +40,16 @@ jobs:
           restore-keys: turbo-${{ runner.os }}-
       - name: Lint, typecheck, test, build (mock mode)
         run: pnpm turbo run lint typecheck test build --filter=./apps/* --filter=./packages/* --cache-dir=.turbo/cache
-      - name: Generated code is up to date
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            packages/contracts/tools/uv.lock
+            services/engine/uv.lock
+      - name: Generated contracts are up to date (run `pnpm gen` and commit if this fails)
         run: |
           pnpm gen
-          git diff --exit-code
+          git diff --exit-code -- packages/contracts
       - name: Every env var read in code is documented in .env.example
         run: node scripts/check-env-coverage.mjs
 
@@ -74,6 +80,24 @@ jobs:
         with:
           path: ~/.cache/fiona
           key: portable-pg-${{ runner.os }}-${{ hashFiles('services/engine/ledger/pg_local.py') }}
+      - run: uv run pytest -q
+
+  contracts-python:
+    name: contracts (fiona_contracts, ruff, pytest incl. fixture events)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/contracts/python
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: packages/contracts/python/uv.lock
+      - run: uv sync --locked
+      - run: uv run ruff check . ../tools
+      - run: uv run ruff format --check . ../tools
       - run: uv run pytest -q
 
   boundaries:

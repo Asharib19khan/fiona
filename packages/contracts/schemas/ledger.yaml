@@ -1,0 +1,212 @@
+# Canonical ledger events (Blueprint §Ledger event types; data/fixtures/FORMATS.md §3.13, Daniyal).
+# Flat objects: an envelope (id, tenant_id, event, occurred_at, date, currency, source) plus
+# type-specific fields. Every amount is *_minor in the event's currency. Events hold facts, not
+# framework treatments. Discriminated by `event`.
+x-anchors:
+  envelope: &envelope
+    id: { $ref: "#/$defs/EventId" }
+    tenant_id: { $ref: "#/$defs/TenantId" }
+    occurred_at: { $ref: "#/$defs/Timestamp" }
+    date: { $ref: "#/$defs/Date" }
+    currency: { $ref: "#/$defs/Currency" }
+    source: { $ref: "#/$defs/EventSource" }
+  envelope-required: &envelope_required [id, tenant_id, event, occurred_at, date, currency, source]
+
+$defs:
+  LedgerEventType:
+    type: string
+    enum: [sale, purchase_bill, supplier_payment, customer_invoice, customer_receipt, bank_line, stock_movement, bank_detail_change, journal_adjustment]
+
+  EventSource:
+    description: Where the event came from; `key` is the natural key used for idempotent imports.
+    type: object
+    additionalProperties: false
+    required: [type, key]
+    properties:
+      type: { type: string, enum: [pos_export, bank_statement, bill_extraction, invoicing, manual, reconciliation, wallet] }
+      file: { type: [string, "null"] }
+      row: { type: [integer, "null"], minimum: 1 }
+      key: { type: string, minLength: 1 }
+
+  SaleLine:
+    type: object
+    additionalProperties: false
+    required: [item, qty, price_minor, discount_minor, total_minor, tax_minor]
+    properties:
+      item: { $ref: "#/$defs/Sku" }
+      qty: { type: integer, description: "Negative on refunds." }
+      price_minor: { type: integer }
+      discount_minor: { type: integer }
+      total_minor: { type: integer }
+      tax_minor: { type: integer }
+      cost_minor: { type: [integer, "null"], description: "Informational; cost of sales comes from stock layers." }
+
+  DocumentLine:
+    description: A line on a supplier bill or customer invoice.
+    type: object
+    additionalProperties: false
+    required: [description, qty, unit_price_minor, line_total_minor]
+    properties:
+      sku: { anyOf: [{ $ref: "#/$defs/Sku" }, { type: "null" }] }
+      description: { type: string }
+      qty: { type: integer }
+      unit_price_minor: { type: integer }
+      line_total_minor: { type: integer }
+
+  SaleEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, receipt_no, txn, branch, register, cashier, lines, total_minor, tax_minor, payment]
+    properties:
+      <<: *envelope
+      event: { const: sale }
+      party: { anyOf: [{ $ref: "#/$defs/PartyId" }, { type: "null" }], description: "null for walk-in customers." }
+      receipt_no: { type: string }
+      txn: { type: string, enum: [sale, refund, void] }
+      original_receipt_no: { type: [string, "null"] }
+      branch: { type: string }
+      register: { type: string }
+      cashier: { type: string }
+      lines: { type: array, minItems: 1, items: { $ref: "#/$defs/SaleLine" } }
+      total_minor: { type: integer }
+      tax_minor: { type: integer }
+      payment:
+        type: object
+        additionalProperties: false
+        required: [method, status]
+        properties:
+          method: { type: string, enum: [cash, card, bank_qr, raast, jazzcash, easypaisa] }
+          status: { type: string, enum: [settled, reversed] }
+
+  PurchaseBillEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, bill_id, number, issue_date, lines, subtotal_minor, tax_minor, total_minor]
+    properties:
+      <<: *envelope
+      event: { const: purchase_bill }
+      party: { $ref: "#/$defs/PartyId" }
+      bill_id: { $ref: "#/$defs/BillId" }
+      number: { type: string }
+      issue_date: { $ref: "#/$defs/Date" }
+      due_date: { anyOf: [{ $ref: "#/$defs/Date" }, { type: "null" }] }
+      po_number: { type: [string, "null"] }
+      lines: { type: array, items: { $ref: "#/$defs/DocumentLine" } }
+      subtotal_minor: { type: integer }
+      tax_minor: { type: integer }
+      total_minor: { type: integer }
+      document_id: { anyOf: [{ $ref: "#/$defs/DocumentId" }, { type: "null" }] }
+      document_sha256: { type: [string, "null"], pattern: "^[0-9a-f]{64}$" }
+      created_by: { anyOf: [{ $ref: "#/$defs/Actor" }, { type: "null" }], description: "Who entered or extracted the bill (G-04)." }
+
+  SupplierPaymentEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, payment_id, amount_minor, method]
+    properties:
+      <<: *envelope
+      event: { const: supplier_payment }
+      party: { $ref: "#/$defs/PartyId" }
+      payment_id: { $ref: "#/$defs/PaymentId" }
+      bill_id: { anyOf: [{ $ref: "#/$defs/BillId" }, { type: "null" }] }
+      amount_minor: { type: integer }
+      from_iban: { type: [string, "null"] }
+      to_iban: { type: [string, "null"] }
+      method: { type: string }
+      wallet_ref: { type: [string, "null"], description: "Set when the simulated wallet executed it; null for historical payments." }
+      verdict_id: { anyOf: [{ $ref: "#/$defs/VerdictId" }, { type: "null" }] }
+
+  CustomerInvoiceEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, invoice_id, number, issue_date, due_date, lines, subtotal_minor, tax_minor, total_minor]
+    properties:
+      <<: *envelope
+      event: { const: customer_invoice }
+      party: { $ref: "#/$defs/PartyId" }
+      invoice_id: { $ref: "#/$defs/InvoiceId" }
+      number: { type: string }
+      issue_date: { $ref: "#/$defs/Date" }
+      due_date: { $ref: "#/$defs/Date" }
+      lines: { type: array, items: { $ref: "#/$defs/DocumentLine" } }
+      subtotal_minor: { type: integer }
+      tax_minor: { type: integer }
+      total_minor: { type: integer }
+
+  CustomerReceiptEvent:
+    description: Created by reconciliation (D4) when a credit is matched to invoices; never by the generator.
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, invoice_ids, bank_line_id, amount_minor]
+    properties:
+      <<: *envelope
+      event: { const: customer_receipt }
+      party: { $ref: "#/$defs/PartyId" }
+      invoice_ids: { type: array, minItems: 1, items: { $ref: "#/$defs/InvoiceId" } }
+      bank_line_id: { $ref: "#/$defs/BankLineId" }
+      amount_minor: { type: integer }
+
+  BankLineEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, bank_line_id, account_iban, line_no, narration, amount_minor, balance_minor]
+    properties:
+      <<: *envelope
+      event: { const: bank_line }
+      bank_line_id: { $ref: "#/$defs/BankLineId" }
+      account_iban: { type: string }
+      line_no: { type: integer, minimum: 1 }
+      narration: { type: string, description: "Bank text: data, never instructions (R11)." }
+      reference: { type: [string, "null"] }
+      amount_minor: { type: integer, description: "Money in is positive, money out is negative." }
+      balance_minor: { type: integer }
+
+  StockMovementEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, item, qty, unit_cost_minor, reason]
+    properties:
+      <<: *envelope
+      event: { const: stock_movement }
+      item: { $ref: "#/$defs/Sku" }
+      qty: { type: integer, description: "+ in, - out." }
+      unit_cost_minor: { type: integer }
+      reason: { type: string, enum: [goods_received, adjustment] }
+      ref: { type: [string, "null"] }
+
+  BankDetailChangeEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, party, new_iban, confirmed_via]
+    properties:
+      <<: *envelope
+      event: { const: bank_detail_change }
+      party: { $ref: "#/$defs/PartyId" }
+      old_iban: { type: [string, "null"] }
+      new_iban: { type: string }
+      confirmed_via: { type: string, enum: [email, phone, none], description: "Only phone counts as out-of-band confirmation for G-03." }
+      confirmed_by: { type: [string, "null"] }
+
+  JournalAdjustmentEvent:
+    type: object
+    additionalProperties: false
+    required: [id, tenant_id, event, occurred_at, date, currency, source, lines, reason]
+    properties:
+      <<: *envelope
+      event: { const: journal_adjustment }
+      lines: { type: array, minItems: 2, items: { $ref: "#/$defs/JournalLine" } }
+      reason: { type: string }
+      approver: { type: [string, "null"] }
+
+  LedgerEvent:
+    oneOf:
+      - { $ref: "#/$defs/SaleEvent" }
+      - { $ref: "#/$defs/PurchaseBillEvent" }
+      - { $ref: "#/$defs/SupplierPaymentEvent" }
+      - { $ref: "#/$defs/CustomerInvoiceEvent" }
+      - { $ref: "#/$defs/CustomerReceiptEvent" }
+      - { $ref: "#/$defs/BankLineEvent" }
+      - { $ref: "#/$defs/StockMovementEvent" }
+      - { $ref: "#/$defs/BankDetailChangeEvent" }
+      - { $ref: "#/$defs/JournalAdjustmentEvent" }
+    discriminator: { propertyName: event }

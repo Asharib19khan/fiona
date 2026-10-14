@@ -1,5 +1,19 @@
 #!/bin/sh
-# Secret scan of staged changes (R16). CI scans again with a pinned gitleaks.
+# Shared pre-commit hook for every lane (git config core.hooksPath .githooks, set by `pnpm install`).
+# 1. Python formatting: CI runs `ruff format --check`; catch it here instead of a red build.
+# 2. Secret scan of staged changes (R16). CI scans the full history again with a pinned gitleaks.
+
+staged_py=$(git diff --cached --name-only --diff-filter=ACMR -- '*.py' | grep -v '/generated/' | grep -v 'fiona_contracts/models.py')
+if [ -n "$staged_py" ] && command -v uvx >/dev/null 2>&1; then
+  # shellcheck disable=SC2086
+  if ! uvx --quiet ruff@0.17.0 format --check $staged_py >/dev/null 2>&1; then
+    echo "pre-commit: these staged Python files are not ruff-formatted (CI would fail):" >&2
+    uvx --quiet ruff@0.17.0 format --check $staged_py 2>&1 | grep -i "would reformat" >&2
+    echo "  Fix: uvx ruff@0.17.0 format <files>   (then git add them again)" >&2
+    exit 1
+  fi
+fi
+
 if command -v gitleaks >/dev/null 2>&1; then
   exec gitleaks git --pre-commit --staged --redact --no-banner
 fi

@@ -1,0 +1,83 @@
+# The Guardian's verdict on a Proposal (Blueprint §Verdict, rulebook/guardian.yaml v1).
+# The combiner takes the strictest outcome across every rule that ran:
+#   block > escalate > approve_with_conditions > approve.
+# A language model can only raise the outcome (G-12). A rule that can't run reports result "fail",
+# outcome "escalate" and a detail starting "CHECK_ERROR:" (fail closed, R9).
+$defs:
+  Outcome:
+    type: string
+    enum: [approve, approve_with_conditions, escalate, block]
+
+  CheckName:
+    description: The four check families. Several checks may share a name (one entry per rule that ran).
+    type: string
+    enum: [policy, evidence, arithmetic, adversarial]
+
+  PayOnCondition:
+    type: object
+    additionalProperties: false
+    required: [kind, date]
+    properties:
+      kind: { const: pay_on }
+      date: { $ref: "#/$defs/Date" }
+  MaxAmountCondition:
+    type: object
+    additionalProperties: false
+    required: [kind, value]
+    properties:
+      kind: { const: max_amount_minor }
+      value: { type: integer, minimum: 0 }
+  BeforeTimeCondition:
+    type: object
+    additionalProperties: false
+    required: [kind, ts]
+    properties:
+      kind: { const: before_time }
+      ts: { $ref: "#/$defs/Timestamp" }
+  Condition:
+    description: Machine-checkable, so the wallet re-checks it at execution and refuses if it fails. Conflicting conditions make the outcome escalate.
+    oneOf:
+      - { $ref: "#/$defs/PayOnCondition" }
+      - { $ref: "#/$defs/MaxAmountCondition" }
+      - { $ref: "#/$defs/BeforeTimeCondition" }
+    discriminator: { propertyName: kind }
+
+  Check:
+    description: One rule's result. `outcome` is what this rule contributes (a rule can map to different outcomes, e.g. G-13 block or escalate); a pass contributes approve.
+    type: object
+    additionalProperties: false
+    required: [name, rule, result, outcome, detail]
+    properties:
+      name: { $ref: "#/$defs/CheckName" }
+      rule: { $ref: "#/$defs/RuleId" }
+      result: { type: string, enum: [pass, fail] }
+      outcome: { $ref: "#/$defs/Outcome" }
+      detail: { type: string, minLength: 1, description: "Plain-language reason. Starts with CHECK_ERROR: when the rule could not run." }
+      condition: { anyOf: [{ $ref: "#/$defs/Condition" }, { type: "null" }] }
+      audit: { type: object, description: "The rule's audit_fields from rulebook/guardian.yaml." }
+    allOf:
+      - if: { properties: { result: { const: pass } } }
+        then: { properties: { outcome: { const: approve } } }
+      - if: { properties: { outcome: { const: approve_with_conditions } } }
+        then: { required: [condition], properties: { condition: { $ref: "#/$defs/Condition" } } }
+
+  Verdict:
+    description: >
+      Immutable once written; a re-run creates a new verdict linked through previous_verdict_id.
+      verdict_hash = "sha256:" + hex(SHA-256(canonical JSON (RFC 8785) of this object without
+      verdict_hash)). The wallet refuses any payment without a verdict whose outcome is approve,
+      or approve_with_conditions with every condition met.
+    type: object
+    additionalProperties: false
+    required: [id, proposal_id, outcome, checks, conditions, decided_at, verdict_hash]
+    properties:
+      id: { $ref: "#/$defs/VerdictId" }
+      proposal_id: { $ref: "#/$defs/ProposalId" }
+      outcome: { $ref: "#/$defs/Outcome" }
+      checks: { type: array, minItems: 1, items: { $ref: "#/$defs/Check" } }
+      conditions: { type: array, items: { $ref: "#/$defs/Condition" } }
+      decided_at: { $ref: "#/$defs/Timestamp" }
+      policy_version: { type: [string, "null"], description: "rulebook/guardian.yaml policy_version used." }
+      previous_verdict_id: { anyOf: [{ $ref: "#/$defs/VerdictId" }, { type: "null" }] }
+      meta: { $ref: "#/$defs/Meta" }
+      verdict_hash: { type: string, pattern: "^sha256:[0-9a-f]{64}$" }

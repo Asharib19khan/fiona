@@ -1,0 +1,107 @@
+{
+  "description": "A routine on-time payment inside the treasurer's mandate. Every rule passes; with act_within_mandate the wallet may execute it.",
+  "proposal": {
+    "id": "prop_01JC9B0001",
+    "tenant_id": "ten_karachi_apparel",
+    "status": "cleared",
+    "created_at": "2026-10-21T05:00:00Z",
+    "agent": "treasurer",
+    "type": "payment",
+    "summary": "Pay K-Electric October bill on 23 October",
+    "amount": {
+      "minor": 4860000,
+      "currency": "PKR"
+    },
+    "payload": {
+      "payee_id": "pty_004",
+      "bill_id": "bill_2240",
+      "pay_on": "2026-10-23",
+      "channel": "wallet",
+      "category": "utilities"
+    },
+    "evidence": [
+      {
+        "kind": "bill",
+        "ref": "bill_2240"
+      },
+      {
+        "kind": "tool_result",
+        "ref": "tr_0004"
+      }
+    ],
+    "reasoning": "Due on 23 October; the forecast keeps cash above the buffer [tr_0004].",
+    "mandate_ref": "mnd_treasurer_v1",
+    "created_by": {
+      "kind": "agent",
+      "id": "treasurer"
+    },
+    "verdict_id": "vrd_01JC9B0001"
+  },
+  "verdict": {
+    "id": "vrd_01JC9B0001",
+    "proposal_id": "prop_01JC9B0001",
+    "outcome": "approve",
+    "checks": [
+      {
+        "name": "policy",
+        "rule": "G-01",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "PKR 48,600.00 is within the PKR 150,000.00 cap."
+      },
+      {
+        "name": "policy",
+        "rule": "G-02",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "K-Electric is on the allow-list."
+      },
+      {
+        "name": "policy",
+        "rule": "G-03",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "No bank-detail change in the cooling-off period."
+      },
+      {
+        "name": "policy",
+        "rule": "G-08",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Cash stays above the buffer after this payment."
+      },
+      {
+        "name": "evidence",
+        "rule": "G-09",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Every claim cites a row or a tool result."
+      },
+      {
+        "name": "policy",
+        "rule": "G-10",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Payments today stay within the daily cap."
+      },
+      {
+        "name": "policy",
+        "rule": "G-13",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Inside the mandate (utilities, Wednesday 10:00)."
+      },
+      {
+        "name": "adversarial",
+        "rule": "G-12",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "No concern found."
+      }
+    ],
+    "conditions": [],
+    "decided_at": "2026-10-21T05:00:03Z",
+    "policy_version": "1.0.0",
+    "verdict_hash": "sha256:5a831aef86e90814bb6c489ded94c0a4a16af4baa6afd6d43b4eb84090b9d21c"
+  }
+}

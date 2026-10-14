@@ -1,0 +1,23 @@
+{
+  "id": "prop_01JC9A0004",
+  "tenant_id": "ten_karachi_apparel",
+  "status": "needs_owner",
+  "created_at": "2026-10-22T06:15:00Z",
+  "agent": "controller",
+  "type": "reconciliation_match",
+  "summary": "Match the 28 Sep transfer to INV 2231",
+  "amount": null,
+  "payload": {
+    "bank_line_id": "bln_01M3ZQ0000000000000000000B",
+    "event_ids": ["evt_01M1DNZK20B29TSKJFK8ZC18VG"],
+    "kind": "supplier_payment",
+    "confidence_bp": 9400
+  },
+  "evidence": [
+    { "kind": "bank_line", "ref": "bln_01M3ZQ0000000000000000000B" },
+    { "kind": "ledger_event", "ref": "evt_01M1DNZK20B29TSKJFK8ZC18VG" }
+  ],
+  "reasoning": "The narration names the supplier and the invoice number, and the amount is exact [tr_0013].",
+  "mandate_ref": "mnd_controller_v1",
+  "created_by": { "kind": "agent", "id": "controller" }
+}

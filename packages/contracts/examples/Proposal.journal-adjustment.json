@@ -1,0 +1,23 @@
+{
+  "id": "prop_01JC9A0001",
+  "tenant_id": "ten_karachi_apparel",
+  "status": "needs_owner",
+  "created_at": "2026-10-22T06:00:00Z",
+  "agent": "controller",
+  "type": "journal_adjustment",
+  "summary": "Record September MDR card charges",
+  "amount": { "minor": 1245000, "currency": "PKR" },
+  "payload": {
+    "lines": [
+      { "account": "6400", "debit_minor": 1245000, "credit_minor": 0 },
+      { "account": "1000", "debit_minor": 0, "credit_minor": 1245000 }
+    ],
+    "reason": "Bank line MDR CHARGES SEP-2026 has no book entry",
+    "effective_date": "2026-09-30"
+  },
+  "evidence": [{ "kind": "bank_line", "ref": "bln_01M3ZQ0000000000000000000A" }],
+  "reasoning": "Reconciliation left this bank charge unmatched; it is a recurring monthly fee [tr_0011].",
+  "mandate_ref": "mnd_controller_v1",
+  "created_by": { "kind": "agent", "id": "controller" },
+  "verdict_id": null
+}

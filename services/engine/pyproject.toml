@@ -11,6 +11,7 @@ dependencies = [
   "rapidfuzz>=3.10",
   "numpy>=2.5.4",
   "pyyaml>=6.0.3",
+  "fiona-contracts",
 ]
 
 [dependency-groups]
@@ -25,6 +26,9 @@ dev = [
 # The engine is not installed as a distribution: it runs as the `engine` package from
 # services/ (uvicorn --app-dir .., pytest pythonpath ..). See D-010.
 package = false
+
+[tool.uv.sources]
+fiona-contracts = { path = "../../packages/contracts/python", editable = true }
 
 [tool.pytest.ini_options]
 pythonpath = [".."]

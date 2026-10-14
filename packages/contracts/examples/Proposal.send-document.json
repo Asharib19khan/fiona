@@ -1,0 +1,15 @@
+{
+  "id": "prop_01JC9A0002",
+  "tenant_id": "ten_karachi_apparel",
+  "status": "needs_owner",
+  "created_at": "2026-10-22T06:05:00Z",
+  "agent": "controller",
+  "type": "send_document",
+  "summary": "Send a polite reminder for invoice KAC-INV-0007",
+  "amount": null,
+  "payload": { "document_kind": "payment_reminder", "recipient_party_id": "cus_9001", "ref": "inv_0007", "channel": "email", "tone": "polite" },
+  "evidence": [{ "kind": "invoice", "ref": "inv_0007" }],
+  "reasoning": "The invoice was due on 2 October and no receipt has been matched [tr_0012].",
+  "mandate_ref": "mnd_controller_v1",
+  "created_by": { "kind": "agent", "id": "controller" }
+}

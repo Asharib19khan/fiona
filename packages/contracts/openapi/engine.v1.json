@@ -1,0 +1,6202 @@
+{
+  "components": {
+    "schemas": {
+      "Action": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "route"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
+      "AmortisationRow": {
+        "properties": {
+          "balance": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "due_on": {
+            "format": "date",
+            "title": "Due On",
+            "type": "string"
+          },
+          "interest": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "month": {
+            "minimum": 1.0,
+            "title": "Month",
+            "type": "integer"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "month",
+          "due_on",
+          "payment",
+          "interest",
+          "principal",
+          "balance"
+        ],
+        "title": "AmortisationRow",
+        "type": "object"
+      },
+      "AnalysisRequest": {
+        "properties": {
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "country pack for the tax rate, e.g. PK",
+            "title": "Country"
+          },
+          "forecast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "industry pack key, e.g. retail_apparel",
+            "title": "Industry"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/Window"
+          },
+          "owner_declared_event": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Declared Event"
+          },
+          "owner_stated_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Stated Stage"
+          },
+          "prior": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Window"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "latest"
+        ],
+        "title": "AnalysisRequest",
+        "type": "object"
+      },
+      "BalanceSheet": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "borrowings_current": {
+            "default": 0,
+            "title": "Borrowings Current",
+            "type": "integer"
+          },
+          "borrowings_noncurrent": {
+            "default": 0,
+            "title": "Borrowings Noncurrent",
+            "type": "integer"
+          },
+          "cash": {
+            "title": "Cash",
+            "type": "integer"
+          },
+          "equity": {
+            "title": "Equity",
+            "type": "integer"
+          },
+          "inventory": {
+            "default": 0,
+            "title": "Inventory",
+            "type": "integer"
+          },
+          "lease_liabilities": {
+            "default": 0,
+            "title": "Lease Liabilities",
+            "type": "integer"
+          },
+          "non_current_assets": {
+            "default": 0,
+            "title": "Non Current Assets",
+            "type": "integer"
+          },
+          "other_current_assets": {
+            "default": 0,
+            "title": "Other Current Assets",
+            "type": "integer"
+          },
+          "other_current_liabilities": {
+            "default": 0,
+            "title": "Other Current Liabilities",
+            "type": "integer"
+          },
+          "other_noncurrent_liabilities": {
+            "default": 0,
+            "title": "Other Noncurrent Liabilities",
+            "type": "integer"
+          },
+          "trade_payables": {
+            "default": 0,
+            "title": "Trade Payables",
+            "type": "integer"
+          },
+          "trade_receivables": {
+            "default": 0,
+            "title": "Trade Receivables",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "as_of",
+          "cash",
+          "equity"
+        ],
+        "title": "BalanceSheet",
+        "type": "object"
+      },
+      "BillTiming": {
+        "properties": {
+          "action": {
+            "enum": [
+              "pay_early",
+              "pay_on_due",
+              "cannot_pay_on_due"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "bill_id": {
+            "title": "Bill Id",
+            "type": "string"
+          },
+          "due_date": {
+            "format": "date",
+            "title": "Due Date",
+            "type": "string"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "issue_date": {
+            "format": "date",
+            "title": "Issue Date",
+            "type": "string"
+          },
+          "pay_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pay On"
+          },
+          "rule_checks": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "title": "Rule Checks",
+            "type": "array"
+          },
+          "supplier_id": {
+            "title": "Supplier Id",
+            "type": "string"
+          },
+          "supplier_name": {
+            "title": "Supplier Name",
+            "type": "string"
+          },
+          "terms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EarlyPaymentTerms"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "bill_id",
+          "supplier_id",
+          "supplier_name",
+          "amount",
+          "issue_date",
+          "due_date",
+          "terms",
+          "action",
+          "pay_on",
+          "figures",
+          "rule_checks"
+        ],
+        "title": "BillTiming",
+        "type": "object"
+      },
+      "BundleCandidate": {
+        "properties": {
+          "baskets_together": {
+            "title": "Baskets Together",
+            "type": "integer"
+          },
+          "lift_bp": {
+            "title": "Lift Bp",
+            "type": "integer"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "skus": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skus",
+            "type": "array"
+          }
+        },
+        "required": [
+          "skus",
+          "baskets_together",
+          "lift_bp",
+          "reason_code"
+        ],
+        "title": "BundleCandidate",
+        "type": "object"
+      },
+      "BusinessProfile": {
+        "description": "Facts the catalogue's eligibility rules need that the ledger cannot tell us.",
+        "properties": {
+          "has_b2b_receivables": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None: derived from the ledger's open invoices.",
+            "title": "Has B2B Receivables"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "legal_form": {
+            "anyOf": [
+              {
+                "enum": [
+                  "sole_proprietor",
+                  "partnership",
+                  "private_limited",
+                  "public_limited",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Form"
+          },
+          "owner_age_years": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 16.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Age Years"
+          },
+          "size_tier": {
+            "anyOf": [
+              {
+                "enum": [
+                  "micro",
+                  "small",
+                  "medium",
+                  "large"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Tier"
+          },
+          "years_operating": {
+            "anyOf": [
+              {
+                "maximum": 200.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Years Operating"
+          }
+        },
+        "title": "BusinessProfile",
+        "type": "object"
+      },
+      "CashCategory": {
+        "enum": [
+          "pos_sales",
+          "customer_receipts",
+          "other_inflow",
+          "supplier_bills",
+          "payroll",
+          "rent",
+          "utilities",
+          "loan_repayment",
+          "tax",
+          "other_outflow"
+        ],
+        "title": "CashCategory",
+        "type": "string"
+      },
+      "CashFlows": {
+        "properties": {
+          "acquisitions": {
+            "default": 0,
+            "description": "business acquisitions inside CFI, negative",
+            "title": "Acquisitions",
+            "type": "integer"
+          },
+          "capex": {
+            "default": 0,
+            "description": "purchases of PPE and intangibles, negative",
+            "title": "Capex",
+            "type": "integer"
+          },
+          "cff": {
+            "title": "Cff",
+            "type": "integer"
+          },
+          "cfi": {
+            "title": "Cfi",
+            "type": "integer"
+          },
+          "cfo": {
+            "title": "Cfo",
+            "type": "integer"
+          },
+          "dividends_paid": {
+            "default": 0,
+            "title": "Dividends Paid",
+            "type": "integer"
+          },
+          "largest_disposal": {
+            "default": 0,
+            "description": "largest single asset sale inside CFI, positive",
+            "title": "Largest Disposal",
+            "type": "integer"
+          },
+          "largest_financing_inflow": {
+            "default": 0,
+            "description": "largest single loan drawdown or equity injection",
+            "title": "Largest Financing Inflow",
+            "type": "integer"
+          },
+          "principal_repaid": {
+            "default": 0,
+            "description": "scheduled borrowing and lease principal repaid, positive",
+            "title": "Principal Repaid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cfo",
+          "cfi",
+          "cff"
+        ],
+        "title": "CashFlows",
+        "type": "object"
+      },
+      "CashForecastResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__FigureInput"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "buffer": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "findings": {
+            "description": "Alert findings raised by this run.",
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "first_week_below_buffer": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Week Below Buffer"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "horizon_weeks": {
+            "title": "Horizon Weeks",
+            "type": "integer"
+          },
+          "insufficient_data": {
+            "items": {
+              "$ref": "#/components/schemas/InsufficientData"
+            },
+            "title": "Insufficient Data",
+            "type": "array"
+          },
+          "lowest_closing": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "method": {
+            "$ref": "#/components/schemas/ForecastMethod"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "open_payables": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "open_receivables": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "opening_balance": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "shortfall": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure",
+            "description": "How far the lowest closing balance falls below the buffer (0 if never)."
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "weeks": {
+            "items": {
+              "$ref": "#/components/schemas/CashWeek"
+            },
+            "title": "Weeks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "run_id",
+          "currency",
+          "as_of",
+          "horizon_weeks",
+          "method",
+          "opening_balance",
+          "buffer",
+          "lowest_closing",
+          "first_week_below_buffer",
+          "shortfall",
+          "open_receivables",
+          "open_payables",
+          "weeks"
+        ],
+        "title": "CashForecastResponse",
+        "type": "object"
+      },
+      "CashLine": {
+        "properties": {
+          "basis": {
+            "description": "scheduled: a known bill, invoice or recurring commitment; forecast: a statistical estimate.",
+            "enum": [
+              "scheduled",
+              "forecast"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CashCategory"
+          },
+          "direction": {
+            "enum": [
+              "in",
+              "out"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "money": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "Always positive; `direction` gives the sign."
+          },
+          "refs": {
+            "description": "Bill, invoice or pattern ids behind the line.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Refs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "category",
+          "direction",
+          "money",
+          "basis"
+        ],
+        "title": "CashLine",
+        "type": "object"
+      },
+      "CashPathPoint": {
+        "properties": {
+          "closing_with": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "Closing cash if this option is taken."
+          },
+          "closing_without": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "Closing cash on the current forecast."
+          },
+          "week": {
+            "minimum": 1.0,
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "week",
+          "closing_with",
+          "closing_without"
+        ],
+        "title": "CashPathPoint",
+        "type": "object"
+      },
+      "CashWeek": {
+        "properties": {
+          "below_buffer": {
+            "title": "Below Buffer",
+            "type": "boolean"
+          },
+          "closing": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "closing_high": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "High end of the band (p90 of the closing balance)."
+          },
+          "closing_low": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "Low end of the band (p10 of the closing balance)."
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "inflows": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/CashLine"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "net": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "opening": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "outflows": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          },
+          "week": {
+            "minimum": 1.0,
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "week",
+          "start",
+          "end",
+          "opening",
+          "inflows",
+          "outflows",
+          "net",
+          "closing",
+          "closing_low",
+          "closing_high",
+          "below_buffer",
+          "lines"
+        ],
+        "title": "CashWeek",
+        "type": "object"
+      },
+      "CatalogueRef": {
+        "properties": {
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "source": {
+            "default": "rulebook/financing.yaml",
+            "title": "Source",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "as_of"
+        ],
+        "title": "CatalogueRef",
+        "type": "object"
+      },
+      "CompetitorPrice": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "observed_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed On"
+          },
+          "price": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ],
+        "title": "CompetitorPrice",
+        "type": "object"
+      },
+      "CompetitorRange": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "high": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "low": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "median": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "origin": {
+            "enum": [
+              "market_observed",
+              "user_provided"
+            ],
+            "title": "Origin",
+            "type": "string"
+          }
+        },
+        "required": [
+          "low",
+          "high",
+          "median",
+          "count",
+          "origin"
+        ],
+        "title": "CompetitorRange",
+        "type": "object"
+      },
+      "DataGap": {
+        "properties": {
+          "blocking": {
+            "title": "Blocking",
+            "type": "boolean"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "impact": {
+            "title": "Impact",
+            "type": "string"
+          },
+          "question": {
+            "description": "The focused follow-up question that would close the gap.",
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "blocking",
+          "impact",
+          "question"
+        ],
+        "title": "DataGap",
+        "type": "object"
+      },
+      "DebtEquityRequest": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "debt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DebtTerms"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None: use the cheapest eligible catalogue loan."
+          },
+          "equity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EquityTerms"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "horizon_months": {
+            "default": 12,
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Horizon Months",
+            "type": "integer"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "purpose"
+        ],
+        "title": "DebtEquityRequest",
+        "type": "object"
+      },
+      "DebtTerms": {
+        "properties": {
+          "annual_rate_bp": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Annual Rate Bp",
+            "type": "integer"
+          },
+          "grace_months": {
+            "default": 0,
+            "maximum": 60.0,
+            "minimum": 0.0,
+            "title": "Grace Months",
+            "type": "integer"
+          },
+          "lender_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lender Label"
+          },
+          "repayment": {
+            "default": "annuity",
+            "enum": [
+              "annuity",
+              "equal_principal",
+              "bullet"
+            ],
+            "title": "Repayment",
+            "type": "string"
+          },
+          "term_months": {
+            "maximum": 360.0,
+            "minimum": 1.0,
+            "title": "Term Months",
+            "type": "integer"
+          },
+          "upfront_fee_bp": {
+            "default": 0,
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Upfront Fee Bp",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "annual_rate_bp",
+          "term_months"
+        ],
+        "title": "DebtTerms",
+        "type": "object"
+      },
+      "DecisionOption": {
+        "properties": {
+          "amortisation": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AmortisationRow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amortisation"
+          },
+          "cash_path": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CashPathPoint"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Path"
+          },
+          "eligible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "option_id": {
+            "title": "Option Id",
+            "type": "string"
+          },
+          "rule_checks": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "title": "Rule Checks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "option_id",
+          "label",
+          "eligible",
+          "figures",
+          "rule_checks"
+        ],
+        "title": "DecisionOption",
+        "type": "object"
+      },
+      "DecisionRecommendation": {
+        "properties": {
+          "option_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Option Id"
+          },
+          "outcome": {
+            "enum": [
+              "recommend",
+              "no_clear_winner",
+              "insufficient_data"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "rule_trace": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "title": "Rule Trace",
+            "type": "array"
+          }
+        },
+        "required": [
+          "outcome",
+          "option_id",
+          "rule_trace"
+        ],
+        "title": "DecisionRecommendation",
+        "type": "object"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "debt_equity",
+              "dividend"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "figures": {
+            "description": "Figures shared by every option, e.g. current DSCR and buffer.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__FigureInput"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "insufficient_data": {
+            "items": {
+              "$ref": "#/components/schemas/InsufficientData"
+            },
+            "title": "Insufficient Data",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/DecisionRecommendation"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "decision",
+          "run_id",
+          "currency",
+          "as_of",
+          "inputs",
+          "figures",
+          "options",
+          "recommendation"
+        ],
+        "title": "DecisionResponse",
+        "type": "object"
+      },
+      "Dimension": {
+        "properties": {
+          "band": {
+            "enum": [
+              "healthy",
+              "watch",
+              "stressed",
+              "critical",
+              "not_computable"
+            ],
+            "title": "Band",
+            "type": "string"
+          },
+          "metric_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metric Ids",
+            "type": "array"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "band"
+        ],
+        "title": "Dimension",
+        "type": "object"
+      },
+      "DividendRequest": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "owner_required_return_bp": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Required Return Bp"
+          },
+          "proposed_dividend": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None: the engine reports the largest safe amount."
+          },
+          "reinvestment_return_bp": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": -10000.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reinvestment Return Bp"
+          }
+        },
+        "title": "DividendRequest",
+        "type": "object"
+      },
+      "DraftPOLine": {
+        "properties": {
+          "line_total": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "qty": {
+            "minimum": 1.0,
+            "title": "Qty",
+            "type": "integer"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "unit_cost": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "sku",
+          "qty",
+          "unit_cost",
+          "line_total"
+        ],
+        "title": "DraftPOLine",
+        "type": "object"
+      },
+      "DraftPurchaseOrder": {
+        "properties": {
+          "draft_id": {
+            "title": "Draft Id",
+            "type": "string"
+          },
+          "expected_on": {
+            "format": "date",
+            "title": "Expected On",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/DraftPOLine"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "order_by": {
+            "format": "date",
+            "title": "Order By",
+            "type": "string"
+          },
+          "reason_code": {
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Refs",
+            "type": "array"
+          },
+          "supplier_id": {
+            "title": "Supplier Id",
+            "type": "string"
+          },
+          "total": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "draft_id",
+          "supplier_id",
+          "order_by",
+          "expected_on",
+          "lines",
+          "total",
+          "reason_code"
+        ],
+        "title": "DraftPurchaseOrder",
+        "type": "object"
+      },
+      "EarlyPaymentTerms": {
+        "properties": {
+          "discount_bp": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Discount Bp",
+            "type": "integer"
+          },
+          "net_days": {
+            "minimum": 0.0,
+            "title": "Net Days",
+            "type": "integer"
+          },
+          "origin": {
+            "enum": [
+              "bill_text",
+              "supplier_terms",
+              "assumption_unverified"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "within_days": {
+            "minimum": 0.0,
+            "title": "Within Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "discount_bp",
+          "within_days",
+          "net_days",
+          "origin"
+        ],
+        "title": "EarlyPaymentTerms",
+        "type": "object"
+      },
+      "EquityTerms": {
+        "properties": {
+          "investor_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investor Label"
+          },
+          "owner_required_return_bp": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Required Return Bp"
+          },
+          "pre_money_valuation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stake_offered_bp": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stake Offered Bp"
+          }
+        },
+        "title": "EquityTerms",
+        "type": "object"
+      },
+      "Evidence": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "Explain": {
+        "description": "Pointers into this response, so an agent can answer 'why?' from the numbers.",
+        "properties": {
+          "best_lever": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Lever"
+          },
+          "main_risks": {
+            "description": "Drivers with the largest downside, by sensitivity rank.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Main Risks",
+            "type": "array"
+          },
+          "max_amount_at_risk": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "safest_test": {
+            "enum": [
+              "pilot",
+              "proposed"
+            ],
+            "title": "Safest Test",
+            "type": "string"
+          },
+          "strongest_evidence": {
+            "description": "Names of the best-supported inputs.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Strongest Evidence",
+            "type": "array"
+          }
+        },
+        "required": [
+          "strongest_evidence",
+          "main_risks",
+          "safest_test",
+          "best_lever",
+          "max_amount_at_risk"
+        ],
+        "title": "Explain",
+        "type": "object"
+      },
+      "FinancingMatchRequest": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Money-Input"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "collateral_value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_new_borrower_of_bank": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is New Borrower Of Bank"
+          },
+          "pre_money_valuation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Needed to size dilution for equity options."
+          },
+          "preferred_tenor_months": {
+            "anyOf": [
+              {
+                "maximum": 240.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Tenor Months"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/BusinessProfile"
+          },
+          "purpose": {
+            "enum": [
+              "working_capital_seasonal",
+              "working_capital_permanent",
+              "capex",
+              "refinancing"
+            ],
+            "title": "Purpose",
+            "type": "string"
+          },
+          "supplier_discount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SupplierDiscount"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Early-payment discount given up by taking longer supplier terms, if any."
+          }
+        },
+        "required": [
+          "amount",
+          "purpose"
+        ],
+        "title": "FinancingMatchRequest",
+        "type": "object"
+      },
+      "FinancingMatchResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "business_figures": {
+            "description": "The business's own figures each option was tested against.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Business Figures",
+            "type": "array"
+          },
+          "catalogue": {
+            "$ref": "#/components/schemas/CatalogueRef"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "insufficient_data": {
+            "items": {
+              "$ref": "#/components/schemas/InsufficientData"
+            },
+            "title": "Insufficient Data",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "options": {
+            "description": "Ranked eligible options first, then ineligible ones.",
+            "items": {
+              "$ref": "#/components/schemas/FinancingOption"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "purpose": {
+            "enum": [
+              "working_capital_seasonal",
+              "working_capital_permanent",
+              "capex",
+              "refinancing"
+            ],
+            "title": "Purpose",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "run_id",
+          "currency",
+          "as_of",
+          "amount",
+          "purpose",
+          "catalogue",
+          "business_figures",
+          "options"
+        ],
+        "title": "FinancingMatchResponse",
+        "type": "object"
+      },
+      "FinancingOption": {
+        "properties": {
+          "eligibility": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "title": "Eligibility",
+            "type": "array"
+          },
+          "eligible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None when eligibility cannot be decided from the data.",
+            "title": "Eligible"
+          },
+          "figures": {
+            "description": "Effective annual cost, instalment, total cost, DSCR after (base and downside), runway after, dilution; range ends carry suffixes .low/.mid/.high in metric_id.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "illustrative": {
+            "description": "True when the catalogue row is an illustrative example product.",
+            "title": "Illustrative",
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "term_loan",
+              "running_finance",
+              "invoice_discounting",
+              "supplier_credit",
+              "equipment_lease",
+              "refinance_scheme",
+              "microfinance",
+              "equity_angel",
+              "revenue_based"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "max_amount": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast__money__Money"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Largest amount that keeps cover at the minimum, when it is smaller."
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "option_id": {
+            "description": "Catalogue row id.",
+            "title": "Option Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "recommended",
+              "possible_at_smaller_size",
+              "cost_unknown",
+              "needs_information",
+              "ineligible"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "provider_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Label"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "1 = best among eligible options; None if not eligible.",
+            "title": "Rank"
+          },
+          "rank_reasons": {
+            "description": "Reason codes, e.g. 'lowest_effective_cost'.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Rank Reasons",
+            "type": "array"
+          },
+          "source_ref": {
+            "description": "Catalogue row id plus the source and as-of date it cites.",
+            "title": "Source Ref",
+            "type": "string"
+          },
+          "verification": {
+            "enum": [
+              "primary",
+              "secondary",
+              "assumption",
+              "unverified",
+              "indicative_range"
+            ],
+            "title": "Verification",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_id",
+          "name",
+          "kind",
+          "illustrative",
+          "source_ref",
+          "eligible",
+          "eligibility",
+          "verification",
+          "figures",
+          "outcome"
+        ],
+        "title": "FinancingOption",
+        "type": "object"
+      },
+      "Finding": {
+        "description": "Blueprint Finding; the fields after `actions` are the proposed additive fields.",
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/Action"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "dedupe_key": {
+            "description": "Stable across runs, so the briefing never repeats an alert.",
+            "title": "Dedupe Key",
+            "type": "string"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "money_at_stake": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "period": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "severity": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "forecast",
+              "inventory",
+              "launch_lab",
+              "decisions",
+              "financing"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "severity",
+          "title",
+          "money_at_stake",
+          "evidence",
+          "actions",
+          "type",
+          "created_at",
+          "dedupe_key"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
+      "FindingsResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "findings": {
+            "description": "Highest money at stake first; severity breaks ties.",
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "ranked_by": {
+            "const": "money_at_stake",
+            "default": "money_at_stake",
+            "title": "Ranked By",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceStatus"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "findings",
+          "sources"
+        ],
+        "title": "FindingsResponse",
+        "type": "object"
+      },
+      "ForecastMethod": {
+        "properties": {
+          "backtest": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Backtest",
+            "type": "array"
+          },
+          "band": {
+            "description": "How closing_low/closing_high are produced.",
+            "title": "Band",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "band"
+        ],
+        "title": "ForecastMethod",
+        "type": "object"
+      },
+      "ForecastView": {
+        "description": "What the 13-week forecast (Y1) contributes: weekly closing cash and the owner's buffer.",
+        "properties": {
+          "buffer_minor": {
+            "title": "Buffer Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "forecast_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Run Id"
+          },
+          "weekly_closing_minor": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Weekly Closing Minor",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weekly_closing_minor",
+          "buffer_minor",
+          "currency"
+        ],
+        "title": "ForecastView",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "data_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Note"
+          },
+          "data_source": {
+            "enum": [
+              "stub",
+              "ledger",
+              "request"
+            ],
+            "title": "Data Source",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/HealthResult"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "data_source",
+          "result"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HealthResult": {
+        "properties": {
+          "dimensions": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Dimension"
+            },
+            "title": "Dimensions",
+            "type": "object"
+          },
+          "divergences": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Divergences",
+            "type": "array"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__analysis___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "note": {
+            "default": "Bands follow transparent rules; Fiona does not compute a composite health score.",
+            "title": "Note",
+            "type": "string"
+          },
+          "overall": {
+            "enum": [
+              "healthy",
+              "watch",
+              "stressed",
+              "critical",
+              "not_computable"
+            ],
+            "title": "Overall",
+            "type": "string"
+          }
+        },
+        "required": [
+          "overall",
+          "dimensions"
+        ],
+        "title": "HealthResult",
+        "type": "object"
+      },
+      "HistogramBin": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "lower": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "upper": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "lower",
+          "upper",
+          "count"
+        ],
+        "title": "HistogramBin",
+        "type": "object"
+      },
+      "IncomeStatement": {
+        "properties": {
+          "cogs": {
+            "title": "Cogs",
+            "type": "integer"
+          },
+          "depreciation_amortisation": {
+            "default": 0,
+            "title": "Depreciation Amortisation",
+            "type": "integer"
+          },
+          "interest_expense": {
+            "default": 0,
+            "title": "Interest Expense",
+            "type": "integer"
+          },
+          "operating_expenses": {
+            "description": "excluding depreciation and amortisation",
+            "title": "Operating Expenses",
+            "type": "integer"
+          },
+          "other_income": {
+            "default": 0,
+            "title": "Other Income",
+            "type": "integer"
+          },
+          "revenue": {
+            "title": "Revenue",
+            "type": "integer"
+          },
+          "tax_expense": {
+            "default": 0,
+            "title": "Tax Expense",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revenue",
+          "cogs",
+          "operating_expenses"
+        ],
+        "title": "IncomeStatement",
+        "type": "object"
+      },
+      "InsufficientData": {
+        "description": "'Insufficient data, need X' instead of a guess.",
+        "properties": {
+          "blocking": {
+            "title": "Blocking",
+            "type": "boolean"
+          },
+          "metric_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Metric Ids",
+            "type": "array"
+          },
+          "need": {
+            "title": "Need",
+            "type": "string"
+          },
+          "why": {
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "required": [
+          "need",
+          "why",
+          "blocking"
+        ],
+        "title": "InsufficientData",
+        "type": "object"
+      },
+      "InventoryAnalysisResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "bundles": {
+            "items": {
+              "$ref": "#/components/schemas/BundleCandidate"
+            },
+            "title": "Bundles",
+            "type": "array"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "draft_purchase_orders": {
+            "items": {
+              "$ref": "#/components/schemas/DraftPurchaseOrder"
+            },
+            "title": "Draft Purchase Orders",
+            "type": "array"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "insufficient_data": {
+            "items": {
+              "$ref": "#/components/schemas/InsufficientData"
+            },
+            "title": "Insufficient Data",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InventoryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Threshold"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "styles": {
+            "items": {
+              "$ref": "#/components/schemas/StyleRollup"
+            },
+            "title": "Styles",
+            "type": "array"
+          },
+          "summary": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Summary",
+            "type": "array"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/Period"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "run_id",
+          "currency",
+          "as_of",
+          "window",
+          "parameters",
+          "summary",
+          "items",
+          "styles",
+          "bundles",
+          "draft_purchase_orders"
+        ],
+        "title": "InventoryAnalysisResponse",
+        "type": "object"
+      },
+      "InventoryItem": {
+        "properties": {
+          "abc": {
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Abc",
+            "type": "string"
+          },
+          "cash_tied_up": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money",
+            "description": "Stock value above the cover target; all of it for dead stock."
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "colour": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Colour"
+          },
+          "days_of_cover": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Of Cover"
+          },
+          "demand_cv_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demand Cv Bp"
+          },
+          "gmroi_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gmroi Bp"
+          },
+          "gross_margin_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Margin Bp"
+          },
+          "gross_margin_window": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "last_sold_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sold On"
+          },
+          "lead_time_days": {
+            "title": "Lead Time Days",
+            "type": "integer"
+          },
+          "movement": {
+            "enum": [
+              "fast",
+              "normal",
+              "slow",
+              "dead",
+              "new"
+            ],
+            "title": "Movement",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "on_hand": {
+            "title": "On Hand",
+            "type": "integer"
+          },
+          "price": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "reorder_point": {
+            "title": "Reorder Point",
+            "type": "integer"
+          },
+          "revenue_window": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "safety_stock": {
+            "title": "Safety Stock",
+            "type": "integer"
+          },
+          "season": {
+            "enum": [
+              "all",
+              "summer",
+              "winter"
+            ],
+            "title": "Season",
+            "type": "string"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "stock_value": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "style": {
+            "description": "Parent style; size and colour variants share it.",
+            "title": "Style",
+            "type": "string"
+          },
+          "suggested_order_qty": {
+            "title": "Suggested Order Qty",
+            "type": "integer"
+          },
+          "turnover_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Annualised turns, in bp of 1.",
+            "title": "Turnover Bp"
+          },
+          "unit_cost": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "units_sold_window": {
+            "title": "Units Sold Window",
+            "type": "integer"
+          },
+          "xyz": {
+            "anyOf": [
+              {
+                "enum": [
+                  "X",
+                  "Y",
+                  "Z"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None when history is too short to measure variability.",
+            "title": "Xyz"
+          }
+        },
+        "required": [
+          "sku",
+          "name",
+          "category",
+          "style",
+          "season",
+          "on_hand",
+          "unit_cost",
+          "price",
+          "stock_value",
+          "units_sold_window",
+          "revenue_window",
+          "gross_margin_window",
+          "gross_margin_bp",
+          "abc",
+          "xyz",
+          "demand_cv_bp",
+          "movement",
+          "days_of_cover",
+          "last_sold_on",
+          "lead_time_days",
+          "safety_stock",
+          "reorder_point",
+          "suggested_order_qty",
+          "turnover_bp",
+          "gmroi_bp",
+          "cash_tied_up"
+        ],
+        "title": "InventoryItem",
+        "type": "object"
+      },
+      "InventoryPlan": {
+        "properties": {
+          "figures": {
+            "description": "Standard and pilot initial order, safety stock, reorder point, capital and storage caps.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Flags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "figures"
+        ],
+        "title": "InventoryPlan",
+        "type": "object"
+      },
+      "LaunchInput": {
+        "description": "An input to the model with its origin and the reasoning behind it.",
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "basis": {
+            "description": "How the value was obtained, in one sentence.",
+            "title": "Basis",
+            "type": "string"
+          },
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast__money__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "needs_verification": {
+            "default": false,
+            "title": "Needs Verification",
+            "type": "boolean"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Origin"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Evidence id (event, SKU, bill, dataset row), or a metric_id when origin is 'figure'.",
+            "title": "Ref"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "name",
+          "origin",
+          "basis"
+        ],
+        "title": "LaunchInput",
+        "type": "object"
+      },
+      "LaunchLabRequest": {
+        "properties": {
+          "allocated_overhead_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated Overhead Rate Bp"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "available_capital": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "commission_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commission Rate Bp"
+          },
+          "competitor_prices": {
+            "items": {
+              "$ref": "#/components/schemas/CompetitorPrice"
+            },
+            "title": "Competitor Prices",
+            "type": "array"
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/OwnerConstraints"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "discount_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discount Rate Bp"
+          },
+          "duty_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duty Rate Bp"
+          },
+          "expected_monthly_units": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Monthly Units"
+          },
+          "freight_per_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "horizon_months": {
+            "default": 12,
+            "maximum": 36.0,
+            "minimum": 1.0,
+            "title": "Horizon Months",
+            "type": "integer"
+          },
+          "imported_cost_share_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imported Cost Share Bp"
+          },
+          "initial_order_units": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Initial Order Units"
+          },
+          "launch_costs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "launch_month": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Launch Month"
+          },
+          "lead_time_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Time Days"
+          },
+          "marketing_monthly": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "marketplace_fee_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketplace Fee Rate Bp"
+          },
+          "monthly_fixed_costs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moq": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moq"
+          },
+          "non_recoverable_tax_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Non Recoverable Tax Rate Bp"
+          },
+          "other_variable_per_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "packaging_per_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payable_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payable Days"
+          },
+          "payment_fee_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Fee Rate Bp"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductSpec"
+          },
+          "receivable_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receivable Days"
+          },
+          "return_loss_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Loss Rate Bp"
+          },
+          "return_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Rate Bp"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "simulation_runs": {
+            "anyOf": [
+              {
+                "maximum": 50000.0,
+                "minimum": 200.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simulation Runs"
+          },
+          "storage_capacity_units": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storage Capacity Units"
+          },
+          "storage_cost_per_unit_month": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unit_cost": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unsold_recovery_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unsold Recovery Rate Bp"
+          },
+          "variable_labour_per_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wastage_rate_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wastage Rate Bp"
+          },
+          "what_ifs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WhatIf"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None: a standard set of what-ifs.",
+            "title": "What Ifs"
+          }
+        },
+        "required": [
+          "currency",
+          "product"
+        ],
+        "title": "LaunchLabRequest",
+        "type": "object"
+      },
+      "LaunchLabResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "cost_lines": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Cost Lines",
+            "type": "array"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "data_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/DataGap"
+            },
+            "title": "Data Gaps",
+            "type": "array"
+          },
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "explain": {
+            "$ref": "#/components/schemas/Explain"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "headline": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Headline",
+            "type": "array"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/LaunchInput"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "inputs_hash": {
+            "title": "Inputs Hash",
+            "type": "string"
+          },
+          "inventory_plan": {
+            "$ref": "#/components/schemas/InventoryPlan"
+          },
+          "levers": {
+            "items": {
+              "$ref": "#/components/schemas/Lever"
+            },
+            "title": "Levers",
+            "type": "array"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanSummary"
+            },
+            "title": "Plans",
+            "type": "array"
+          },
+          "policy": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Threshold"
+            },
+            "title": "Policy",
+            "type": "array"
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/Pricing"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductSpec"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioResult"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "sensitivity": {
+            "items": {
+              "$ref": "#/components/schemas/SensitivityRow"
+            },
+            "title": "Sensitivity",
+            "type": "array"
+          },
+          "simulation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Simulation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "unit_economics": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Unit Economics",
+            "type": "array"
+          },
+          "unviable_thresholds": {
+            "items": {
+              "$ref": "#/components/schemas/UnviableThreshold"
+            },
+            "title": "Unviable Thresholds",
+            "type": "array"
+          },
+          "what_ifs": {
+            "items": {
+              "$ref": "#/components/schemas/WhatIfResult"
+            },
+            "title": "What Ifs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "run_id",
+          "inputs_hash",
+          "engine_version",
+          "currency",
+          "as_of",
+          "product",
+          "recommendation",
+          "headline",
+          "inputs",
+          "data_gaps",
+          "policy",
+          "unit_economics",
+          "cost_lines",
+          "scenarios",
+          "simulation",
+          "sensitivity",
+          "unviable_thresholds",
+          "pricing",
+          "inventory_plan",
+          "plans",
+          "levers",
+          "what_ifs",
+          "explain"
+        ],
+        "title": "LaunchLabResponse",
+        "type": "object"
+      },
+      "Lever": {
+        "properties": {
+          "change": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__FigureInput"
+          },
+          "feasibility": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Feasibility",
+            "type": "string"
+          },
+          "figures": {
+            "description": "Change in profit, peak cash, P(loss) and break-even units.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "fixes_label": {
+            "title": "Fixes Label",
+            "type": "boolean"
+          },
+          "lever_id": {
+            "title": "Lever Id",
+            "type": "string"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "urgency": {
+            "enum": [
+              "before_order",
+              "before_launch",
+              "after_launch"
+            ],
+            "title": "Urgency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lever_id",
+          "change",
+          "feasibility",
+          "urgency",
+          "figures",
+          "fixes_label",
+          "rank"
+        ],
+        "title": "Lever",
+        "type": "object"
+      },
+      "Money-Input": {
+        "description": "`{ \"minor\": 18450000, \"currency\": \"PKR\" }`. Floats are rejected, never coerced.",
+        "properties": {
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "minor": {
+            "title": "Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "minor",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "MonthRow": {
+        "properties": {
+          "cash_flow": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "cogs": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "contribution": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "cumulative_cash": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "demand_units": {
+            "title": "Demand Units",
+            "type": "integer"
+          },
+          "ending_stock_units": {
+            "title": "Ending Stock Units",
+            "type": "integer"
+          },
+          "gross_profit": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "lost_units": {
+            "title": "Lost Units",
+            "type": "integer"
+          },
+          "month": {
+            "pattern": "^\\d{4}-\\d{2}$",
+            "title": "Month",
+            "type": "string"
+          },
+          "purchased_units": {
+            "title": "Purchased Units",
+            "type": "integer"
+          },
+          "revenue": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "sold_units": {
+            "title": "Sold Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "month",
+          "demand_units",
+          "sold_units",
+          "lost_units",
+          "purchased_units",
+          "ending_stock_units",
+          "revenue",
+          "cogs",
+          "gross_profit",
+          "contribution",
+          "cash_flow",
+          "cumulative_cash"
+        ],
+        "title": "MonthRow",
+        "type": "object"
+      },
+      "OwnerConstraints": {
+        "properties": {
+          "breakeven_horizon_months": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breakeven Horizon Months"
+          },
+          "launch_min_prob_breakeven_bp": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Launch Min Prob Breakeven Bp"
+          },
+          "max_investment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_loss_probability_bp": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Loss Probability Bp"
+          },
+          "min_cash_reserve": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "min_contribution_margin_bp": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Contribution Margin Bp"
+          },
+          "target_profit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "OwnerConstraints",
+        "type": "object"
+      },
+      "PaymentTimingRequest": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "bill_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None: every open supplier bill.",
+            "title": "Bill Ids"
+          },
+          "cost_of_money_annual_bp": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Of Money Annual Bp"
+          },
+          "horizon_weeks": {
+            "default": 13,
+            "maximum": 26.0,
+            "minimum": 1.0,
+            "title": "Horizon Weeks",
+            "type": "integer"
+          }
+        },
+        "title": "PaymentTimingRequest",
+        "type": "object"
+      },
+      "PaymentTimingResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date",
+            "title": "As Of",
+            "type": "string"
+          },
+          "bills": {
+            "items": {
+              "$ref": "#/components/schemas/BillTiming"
+            },
+            "title": "Bills",
+            "type": "array"
+          },
+          "buffer": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "cost_of_money": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "insufficient_data": {
+            "items": {
+              "$ref": "#/components/schemas/InsufficientData"
+            },
+            "title": "Insufficient Data",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Totals",
+            "type": "array"
+          },
+          "weeks": {
+            "items": {
+              "$ref": "#/components/schemas/TimingWeek"
+            },
+            "title": "Weeks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "run_id",
+          "currency",
+          "as_of",
+          "cost_of_money",
+          "buffer",
+          "bills",
+          "weeks",
+          "totals"
+        ],
+        "title": "PaymentTimingResponse",
+        "type": "object"
+      },
+      "Period": {
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "Period",
+        "type": "object"
+      },
+      "PlanSummary": {
+        "properties": {
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "initial_order_units": {
+            "title": "Initial Order Units",
+            "type": "integer"
+          },
+          "plan": {
+            "enum": [
+              "proposed",
+              "pilot"
+            ],
+            "title": "Plan",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan",
+          "initial_order_units",
+          "figures"
+        ],
+        "title": "PlanSummary",
+        "type": "object"
+      },
+      "PriceOutcome": {
+        "properties": {
+          "elasticity_scenario": {
+            "title": "Elasticity Scenario",
+            "type": "string"
+          },
+          "profit": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "elasticity_scenario",
+          "units",
+          "profit"
+        ],
+        "title": "PriceOutcome",
+        "type": "object"
+      },
+      "PricePoint": {
+        "properties": {
+          "contribution_margin_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contribution Margin Bp"
+          },
+          "outcomes": {
+            "items": {
+              "$ref": "#/components/schemas/PriceOutcome"
+            },
+            "title": "Outcomes",
+            "type": "array"
+          },
+          "price": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "price",
+          "contribution_margin_bp",
+          "outcomes"
+        ],
+        "title": "PricePoint",
+        "type": "object"
+      },
+      "PriceRange": {
+        "properties": {
+          "high": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "low": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          }
+        },
+        "required": [
+          "low",
+          "high"
+        ],
+        "title": "PriceRange",
+        "type": "object"
+      },
+      "Pricing": {
+        "properties": {
+          "competitor_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompetitorRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "elasticity_origin": {
+            "enum": [
+              "ledger_derived",
+              "assumption_unverified"
+            ],
+            "title": "Elasticity Origin",
+            "type": "string"
+          },
+          "figures": {
+            "description": "Current price, break-even price, price for the minimum margin.",
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "grid": {
+            "items": {
+              "$ref": "#/components/schemas/PricePoint"
+            },
+            "title": "Grid",
+            "type": "array"
+          },
+          "note_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Note Codes",
+            "type": "array"
+          },
+          "recommended_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "figures",
+          "competitor_range",
+          "recommended_range",
+          "elasticity_origin",
+          "grid"
+        ],
+        "title": "Pricing",
+        "type": "object"
+      },
+      "ProductSpec": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "comparable_skus": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Comparable Skus",
+            "type": "array"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. PK-KHI; defaults to the tenant's country.",
+            "title": "Region"
+          },
+          "sales_channels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sales Channels",
+            "type": "array"
+          },
+          "target_customers": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Customers"
+          },
+          "target_market": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Market"
+          }
+        },
+        "required": [
+          "name",
+          "category"
+        ],
+        "title": "ProductSpec",
+        "type": "object"
+      },
+      "RatiosResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "data_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Note"
+          },
+          "data_source": {
+            "enum": [
+              "stub",
+              "ledger",
+              "request"
+            ],
+            "title": "Data Source",
+            "type": "string"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__analysis___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "data_source",
+          "figures"
+        ],
+        "title": "RatiosResponse",
+        "type": "object"
+      },
+      "Recommendation": {
+        "properties": {
+          "label": {
+            "enum": [
+              "LAUNCH",
+              "PILOT_FIRST",
+              "REVISE",
+              "HOLD",
+              "NOT_RECOMMENDED"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "levers_that_fix": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Levers That Fix",
+            "type": "array"
+          },
+          "plan": {
+            "enum": [
+              "proposed",
+              "pilot",
+              "none"
+            ],
+            "title": "Plan",
+            "type": "string"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          },
+          "rule_trace": {
+            "items": {
+              "$ref": "#/components/schemas/RuleCheck"
+            },
+            "title": "Rule Trace",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "plan",
+          "rule_trace",
+          "reason_codes"
+        ],
+        "title": "Recommendation",
+        "type": "object"
+      },
+      "RuleCheck": {
+        "description": "One transparent decision rule and how this case fared against it.",
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "hard": {
+            "default": true,
+            "description": "Hard rules gate the decision; soft rules set confidence.",
+            "title": "Hard",
+            "type": "boolean"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "None when the figure could not be computed.",
+            "title": "Passed"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "threshold": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Threshold"
+          }
+        },
+        "required": [
+          "rule_id",
+          "description",
+          "metric_id",
+          "threshold",
+          "passed"
+        ],
+        "title": "RuleCheck",
+        "type": "object"
+      },
+      "ScenarioResult": {
+        "properties": {
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/LaunchInput"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/MonthRow"
+            },
+            "title": "Months",
+            "type": "array"
+          },
+          "name": {
+            "enum": [
+              "low",
+              "base",
+              "high"
+            ],
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "assumptions",
+          "figures",
+          "months"
+        ],
+        "title": "ScenarioResult",
+        "type": "object"
+      },
+      "SensitivityRow": {
+        "properties": {
+          "driver": {
+            "title": "Driver",
+            "type": "string"
+          },
+          "profit_high": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "profit_low": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "spread": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "swing_bp": {
+            "title": "Swing Bp",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "driver",
+          "swing_bp",
+          "profit_low",
+          "profit_high",
+          "spread",
+          "rank"
+        ],
+        "title": "SensitivityRow",
+        "type": "object"
+      },
+      "Simulation": {
+        "properties": {
+          "demand_evidence": {
+            "enum": [
+              "own_history",
+              "comparable_history",
+              "user_estimate",
+              "none"
+            ],
+            "title": "Demand Evidence",
+            "type": "string"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "interpretation": {
+            "const": "model_based_not_calibrated",
+            "default": "model_based_not_calibrated",
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "profit_histogram": {
+            "items": {
+              "$ref": "#/components/schemas/HistogramBin"
+            },
+            "title": "Profit Histogram",
+            "type": "array"
+          },
+          "runs": {
+            "title": "Runs",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "runs",
+          "seed",
+          "demand_evidence",
+          "figures",
+          "profit_histogram"
+        ],
+        "title": "Simulation",
+        "type": "object"
+      },
+      "SizeShare": {
+        "properties": {
+          "share_bp": {
+            "title": "Share Bp",
+            "type": "integer"
+          },
+          "size": {
+            "title": "Size",
+            "type": "string"
+          }
+        },
+        "required": [
+          "size",
+          "share_bp"
+        ],
+        "title": "SizeShare",
+        "type": "object"
+      },
+      "SourceStatus": {
+        "description": "Whether each producing engine contributed, so one failure never hides the others.",
+        "properties": {
+          "generated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "source": {
+            "enum": [
+              "forecast",
+              "inventory",
+              "launch_lab",
+              "decisions",
+              "financing"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "stale",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "status"
+        ],
+        "title": "SourceStatus",
+        "type": "object"
+      },
+      "StageResponse": {
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "data_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Note"
+          },
+          "data_source": {
+            "enum": [
+              "stub",
+              "ledger",
+              "request"
+            ],
+            "title": "Data Source",
+            "type": "string"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "mock",
+              "live"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/StageResult"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "tenant_id",
+          "generated_at",
+          "data_source",
+          "result"
+        ],
+        "title": "StageResponse",
+        "type": "object"
+      },
+      "StageResult": {
+        "properties": {
+          "confidence": {
+            "enum": [
+              "high",
+              "medium",
+              "low",
+              "none"
+            ],
+            "title": "Confidence",
+            "type": "string"
+          },
+          "consistency": {
+            "enum": [
+              "stable",
+              "transition",
+              "single_window",
+              "none"
+            ],
+            "title": "Consistency",
+            "type": "string"
+          },
+          "contradictions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Contradictions",
+            "type": "array"
+          },
+          "disagreement": {
+            "title": "Disagreement",
+            "type": "boolean"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__analysis___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "owner_stated_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Stated Stage"
+          },
+          "pattern_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pattern Id"
+          },
+          "rules_applied": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rules Applied",
+            "type": "array"
+          },
+          "stage": {
+            "enum": [
+              "introduction",
+              "growth",
+              "mature",
+              "shake_out",
+              "decline",
+              "not_classifiable"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "windows": {
+            "items": {
+              "$ref": "#/components/schemas/WindowStage"
+            },
+            "title": "Windows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stage",
+          "confidence",
+          "pattern_id",
+          "consistency",
+          "windows",
+          "owner_stated_stage",
+          "disagreement",
+          "explanation"
+        ],
+        "title": "StageResult",
+        "type": "object"
+      },
+      "StyleRollup": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "on_hand": {
+            "title": "On Hand",
+            "type": "integer"
+          },
+          "size_curve": {
+            "items": {
+              "$ref": "#/components/schemas/SizeShare"
+            },
+            "title": "Size Curve",
+            "type": "array"
+          },
+          "skus": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skus",
+            "type": "array"
+          },
+          "stock_value": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "strongest_sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strongest Sku"
+          },
+          "style": {
+            "title": "Style",
+            "type": "string"
+          },
+          "units_sold_window": {
+            "title": "Units Sold Window",
+            "type": "integer"
+          },
+          "weakest_sku": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weakest Sku"
+          }
+        },
+        "required": [
+          "style",
+          "name",
+          "skus",
+          "on_hand",
+          "stock_value",
+          "units_sold_window",
+          "size_curve",
+          "strongest_sku",
+          "weakest_sku"
+        ],
+        "title": "StyleRollup",
+        "type": "object"
+      },
+      "SupplierDiscount": {
+        "properties": {
+          "discount_bp": {
+            "exclusiveMaximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Discount Bp",
+            "type": "integer"
+          },
+          "net_days": {
+            "exclusiveMinimum": 0.0,
+            "title": "Net Days",
+            "type": "integer"
+          },
+          "within_days": {
+            "minimum": 0.0,
+            "title": "Within Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "discount_bp",
+          "within_days",
+          "net_days"
+        ],
+        "title": "SupplierDiscount",
+        "type": "object"
+      },
+      "TimingWeek": {
+        "properties": {
+          "below_buffer": {
+            "title": "Below Buffer",
+            "type": "boolean"
+          },
+          "closing_after": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "closing_before": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "payments": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          },
+          "week": {
+            "minimum": 1.0,
+            "title": "Week",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "week",
+          "start",
+          "end",
+          "payments",
+          "closing_before",
+          "closing_after",
+          "below_buffer"
+        ],
+        "title": "TimingWeek",
+        "type": "object"
+      },
+      "Unit": {
+        "enum": [
+          "minor",
+          "bp",
+          "units",
+          "days",
+          "weeks",
+          "months",
+          "count"
+        ],
+        "title": "Unit",
+        "type": "string"
+      },
+      "UnviableThreshold": {
+        "properties": {
+          "current": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+          },
+          "driver": {
+            "title": "Driver",
+            "type": "string"
+          },
+          "headroom_bp": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headroom Bp"
+          },
+          "threshold": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Figure",
+            "description": "Value at which horizon profit reaches zero."
+          }
+        },
+        "required": [
+          "driver",
+          "current",
+          "threshold",
+          "headroom_bp"
+        ],
+        "title": "UnviableThreshold",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WhatIf": {
+        "properties": {
+          "apply_elasticity": {
+            "default": true,
+            "title": "Apply Elasticity",
+            "type": "boolean"
+          },
+          "delivery_delay_days": {
+            "default": 0,
+            "maximum": 365.0,
+            "minimum": 0.0,
+            "title": "Delivery Delay Days",
+            "type": "integer"
+          },
+          "demand_change_bp": {
+            "default": 0,
+            "minimum": -10000.0,
+            "title": "Demand Change Bp",
+            "type": "integer"
+          },
+          "extra_discount_bp": {
+            "default": 0,
+            "exclusiveMaximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Extra Discount Bp",
+            "type": "integer"
+          },
+          "fx_change_bp": {
+            "default": 0,
+            "title": "Fx Change Bp",
+            "type": "integer"
+          },
+          "initial_order_units": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Initial Order Units"
+          },
+          "marketing_multiplier_bp": {
+            "default": 10000,
+            "minimum": 0.0,
+            "title": "Marketing Multiplier Bp",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price_change_bp": {
+            "default": 0,
+            "exclusiveMinimum": -10000.0,
+            "title": "Price Change Bp",
+            "type": "integer"
+          },
+          "receivable_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receivable Days"
+          },
+          "return_rate_bp": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Rate Bp"
+          },
+          "unit_cost_change_bp": {
+            "default": 0,
+            "title": "Unit Cost Change Bp",
+            "type": "integer"
+          },
+          "unsold_share_bp": {
+            "default": 0,
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Unsold Share Bp",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "WhatIf",
+        "type": "object"
+      },
+      "WhatIfResult": {
+        "properties": {
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "enum": [
+                  "LAUNCH",
+                  "PILOT_FIRST",
+                  "REVISE",
+                  "HOLD",
+                  "NOT_RECOMMENDED"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "what_if": {
+            "$ref": "#/components/schemas/WhatIf"
+          }
+        },
+        "required": [
+          "what_if",
+          "figures"
+        ],
+        "title": "WhatIfResult",
+        "type": "object"
+      },
+      "Window": {
+        "description": "One 12-month window: income and cash flows for the window, balances at both ends.",
+        "properties": {
+          "cash_flows": {
+            "$ref": "#/components/schemas/CashFlows"
+          },
+          "closing": {
+            "$ref": "#/components/schemas/BalanceSheet"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "income": {
+            "$ref": "#/components/schemas/IncomeStatement"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "months_of_data": {
+            "default": 12,
+            "title": "Months Of Data",
+            "type": "integer"
+          },
+          "opening": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BalanceSheet"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "start",
+          "end",
+          "currency",
+          "income",
+          "closing",
+          "cash_flows"
+        ],
+        "title": "Window",
+        "type": "object"
+      },
+      "WindowStage": {
+        "properties": {
+          "alternatives": {
+            "items": {
+              "enum": [
+                "introduction",
+                "growth",
+                "mature",
+                "shake_out",
+                "decline",
+                "not_classifiable"
+              ],
+              "type": "string"
+            },
+            "title": "Alternatives",
+            "type": "array"
+          },
+          "distortions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Distortions",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "pattern_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pattern Id"
+          },
+          "signs": {
+            "additionalProperties": {
+              "enum": [
+                "pos",
+                "neg",
+                "near_zero"
+              ],
+              "type": "string"
+            },
+            "title": "Signs",
+            "type": "object"
+          },
+          "stage": {
+            "enum": [
+              "introduction",
+              "growth",
+              "mature",
+              "shake_out",
+              "decline",
+              "not_classifiable"
+            ],
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "signs",
+          "stage",
+          "pattern_id"
+        ],
+        "title": "WindowStage",
+        "type": "object"
+      },
+      "engine__analysis___contracts__Figure": {
+        "properties": {
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/engine__analysis___contracts__FigureInput"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__analysis___contracts__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "status": {
+            "default": "ok",
+            "enum": [
+              "ok",
+              "insufficient_data",
+              "not_applicable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "thresholds": {
+            "items": {
+              "$ref": "#/components/schemas/engine__analysis___contracts__Threshold"
+            },
+            "title": "Thresholds",
+            "type": "array"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "metric_id",
+          "label"
+        ],
+        "title": "Figure",
+        "type": "object"
+      },
+      "engine__analysis___contracts__FigureInput": {
+        "properties": {
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__analysis___contracts__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/engine__analysis___contracts__Origin"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "name",
+          "origin"
+        ],
+        "title": "FigureInput",
+        "type": "object"
+      },
+      "engine__analysis___contracts__Money": {
+        "properties": {
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "minor": {
+            "title": "Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "minor",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "engine__analysis___contracts__Origin": {
+        "enum": [
+          "user_provided",
+          "ledger_derived",
+          "market_observed",
+          "engine_estimate",
+          "assumption_unverified",
+          "figure",
+          "stub",
+          "tenant_policy",
+          "rulebook",
+          "owner",
+          "draft_default"
+        ],
+        "title": "Origin",
+        "type": "string"
+      },
+      "engine__analysis___contracts__Threshold": {
+        "properties": {
+          "comparison": {
+            "enum": [
+              ">=",
+              "<=",
+              ">",
+              "<"
+            ],
+            "title": "Comparison",
+            "type": "string"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__analysis___contracts__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/engine__analysis___contracts__Origin"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "name",
+          "origin",
+          "comparison"
+        ],
+        "title": "Threshold",
+        "type": "object"
+      },
+      "engine__forecast___contracts__Figure": {
+        "description": "One number the product shows, with everything needed to explain it.",
+        "properties": {
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__FigureInput"
+            },
+            "title": "Inputs",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "description": "Key in rulebook/metrics.yaml, e.g. 'launch.contribution_per_unit'.",
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "missing": {
+            "description": "Data that would make an insufficient_data figure computable.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast__money__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "source_refs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Refs",
+            "type": "array"
+          },
+          "status": {
+            "default": "ok",
+            "enum": [
+              "ok",
+              "insufficient_data",
+              "not_applicable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "thresholds": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Threshold"
+            },
+            "title": "Thresholds",
+            "type": "array"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "metric_id",
+          "label"
+        ],
+        "title": "Figure",
+        "type": "object"
+      },
+      "engine__forecast___contracts__FigureInput": {
+        "properties": {
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast__money__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Origin"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Evidence id (event, SKU, bill, dataset row), or a metric_id when origin is 'figure'.",
+            "title": "Ref"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "name",
+          "origin"
+        ],
+        "title": "FigureInput",
+        "type": "object"
+      },
+      "engine__forecast___contracts__Origin": {
+        "description": "Where an input or threshold came from.",
+        "enum": [
+          "user_provided",
+          "ledger_derived",
+          "market_observed",
+          "engine_estimate",
+          "assumption_unverified",
+          "figure",
+          "stub",
+          "tenant_policy",
+          "rulebook",
+          "owner",
+          "draft_default"
+        ],
+        "title": "Origin",
+        "type": "string"
+      },
+      "engine__forecast___contracts__Threshold": {
+        "properties": {
+          "comparison": {
+            "enum": [
+              ">=",
+              "<=",
+              ">",
+              "<"
+            ],
+            "title": "Comparison",
+            "type": "string"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast__money__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/engine__forecast___contracts__Origin"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "unit",
+          "name",
+          "origin",
+          "comparison"
+        ],
+        "title": "Threshold",
+        "type": "object"
+      },
+      "engine__forecast__money__Money": {
+        "description": "`{ \"minor\": 18450000, \"currency\": \"PKR\" }`. Floats are rejected, never coerced.",
+        "properties": {
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "minor": {
+            "title": "Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "minor",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Fiona engine",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Healthz Healthz Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Healthz",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/analysis/health": {
+      "get": {
+        "operationId": "get_health_v1_analysis_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Health",
+        "tags": [
+          "analysis"
+        ]
+      },
+      "post": {
+        "operationId": "post_health_v1_analysis_health_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Health",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/v1/analysis/ratios": {
+      "get": {
+        "operationId": "get_ratios_v1_analysis_ratios_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatiosResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Ratios",
+        "tags": [
+          "analysis"
+        ]
+      },
+      "post": {
+        "operationId": "post_ratios_v1_analysis_ratios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RatiosResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Ratios",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/v1/analysis/stage": {
+      "post": {
+        "operationId": "post_stage_v1_analysis_stage_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Stage",
+        "tags": [
+          "analysis"
+        ]
+      }
+    },
+    "/v1/decisions/debt-equity": {
+      "post": {
+        "operationId": "debt_equity_v1_decisions_debt_equity_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebtEquityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Debt Equity",
+        "tags": [
+          "decisions"
+        ]
+      }
+    },
+    "/v1/decisions/dividend": {
+      "post": {
+        "operationId": "dividend_v1_decisions_dividend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DividendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dividend",
+        "tags": [
+          "decisions"
+        ]
+      }
+    },
+    "/v1/decisions/payment-timing": {
+      "post": {
+        "operationId": "payment_timing_v1_decisions_payment_timing_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentTimingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentTimingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Payment Timing",
+        "tags": [
+          "decisions"
+        ]
+      }
+    },
+    "/v1/financing/match": {
+      "post": {
+        "operationId": "financing_match_v1_financing_match_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinancingMatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancingMatchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Financing Match",
+        "tags": [
+          "financing"
+        ]
+      }
+    },
+    "/v1/forecast/cash": {
+      "get": {
+        "operationId": "cash_forecast_v1_forecast_cash_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "weeks",
+            "required": false,
+            "schema": {
+              "default": 13,
+              "maximum": 26,
+              "minimum": 1,
+              "title": "Weeks",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashForecastResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cash Forecast",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/v1/forecast/findings": {
+      "get": {
+        "description": "Cash findings from the Y1 engine; inventory and Launch Lab stay mocks until Y3/Y5.",
+        "operationId": "findings_v1_forecast_findings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Findings",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/v1/inventory/analysis": {
+      "get": {
+        "operationId": "inventory_analysis_v1_inventory_analysis_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inventory Analysis",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/v1/launch-lab/simulate": {
+      "post": {
+        "description": "Mock mode returns the winter-shawl run for any valid request, stamped now.",
+        "operationId": "launch_lab_simulate_v1_launch_lab_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaunchLabRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaunchLabResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Launch Lab Simulate",
+        "tags": [
+          "forecast"
+        ]
+      }
+    },
+    "/v1/stage": {
+      "get": {
+        "operationId": "get_stage_v1_stage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Stage",
+        "tags": [
+          "analysis"
+        ]
+      }
+    }
+  }
+}

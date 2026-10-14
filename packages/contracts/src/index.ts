@@ -1,4 +1,15 @@
-// Placeholder until A2 (Wed 14 Oct): the JSON Schemas, the generated types, Zod schemas and
-// the typed client land here. Every response in the system carries this version (R5).
-export const API_VERSION = "v1" as const;
-export type ApiVersion = typeof API_VERSION;
+// Fiona contracts v1: the only surface shared across boxes (R1).
+// Types are generated from schemas/*.yaml; run `pnpm gen` after editing a schema.
+export type * from "../generated/ts/types";
+export { API_VERSION, type ApiVersionString } from "./version";
+export type { ContractName } from "./names";
+export { check, validate, ContractError, type ContractIssue } from "./validate";
+export { canonicalJson, verdictHash } from "./hash";
+export {
+  createEngineClient,
+  contractGuard,
+  FionaApiError,
+  type ClientOptions,
+  type EngineClient,
+  type EnginePaths,
+} from "./client";

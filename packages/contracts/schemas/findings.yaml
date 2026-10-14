@@ -1,0 +1,43 @@
+# Findings: what each module publishes; the briefing ranks them into cards (Blueprint §Finding,
+# plus Yahya's additive fields).
+$defs:
+  Severity:
+    type: string
+    enum: [high, medium, low]
+
+  FindingSource:
+    type: string
+    enum:
+      - ledger
+      - reconciliation
+      - pos
+      - invoices
+      - forecast
+      - inventory
+      - launch_lab
+      - decisions
+      - financing
+      - stage
+      - frameworks
+      - guardian
+
+  Finding:
+    type: object
+    additionalProperties: false
+    required: [id, source, type, severity, title, money_at_stake, evidence, actions, created_at, dedupe_key]
+    properties:
+      id: { $ref: "#/$defs/FindingId" }
+      source: { $ref: "#/$defs/FindingSource" }
+      type: { type: string, minLength: 1, description: "Module-specific kind, e.g. cash_below_buffer, dead_stock, duplicate_bill." }
+      severity: { $ref: "#/$defs/Severity" }
+      title: { type: string, minLength: 1 }
+      detail: { type: [string, "null"] }
+      money_at_stake:
+        description: What is at stake, used to rank the briefing. null when the finding has no money attached (it then ranks after those with money).
+        anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }]
+      evidence: { type: array, minItems: 1, items: { $ref: "#/$defs/Evidence" } }
+      actions: { type: array, items: { $ref: "#/$defs/Action" } }
+      period: { anyOf: [{ $ref: "#/$defs/Period" }, { type: "null" }] }
+      created_at: { $ref: "#/$defs/Timestamp" }
+      dedupe_key: { type: string, minLength: 1, description: "Stable key so a re-run doesn't duplicate the same finding." }
+      figures: { type: array, items: { $ref: "#/$defs/Figure" }, default: [] }

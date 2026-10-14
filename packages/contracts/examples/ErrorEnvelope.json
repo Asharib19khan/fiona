@@ -1,0 +1,9 @@
+{
+  "api_version": "v1",
+  "error": {
+    "code": "not_implemented",
+    "message": "/v1/forecast/cash is in the contract, but the forecast module does not serve it yet.",
+    "details": { "module": "forecast" },
+    "request_id": "req_9f2c41aa01b2c3d4"
+  }
+}

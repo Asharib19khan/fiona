@@ -1,0 +1,93 @@
+{
+  "description": "Demo moment 6. A genuine supplier payment above the treasurer's per-payment cap escalates to the owner's phone; the owner approves with a passkey.",
+  "proposal": {
+    "id": "prop_01JC9B0002",
+    "tenant_id": "ten_karachi_apparel",
+    "status": "needs_owner",
+    "created_at": "2026-10-22T09:18:00Z",
+    "agent": "treasurer",
+    "type": "payment",
+    "summary": "Pay Indus Fabrics bill INV-7781 on 24 October",
+    "amount": {
+      "minor": 16500000,
+      "currency": "PKR"
+    },
+    "payload": {
+      "payee_id": "sup_021",
+      "bill_id": "bill_2245",
+      "pay_on": "2026-10-24",
+      "channel": "wallet",
+      "category": "inventory_supplier"
+    },
+    "evidence": [
+      {
+        "kind": "bill",
+        "ref": "bill_2245"
+      },
+      {
+        "kind": "tool_result",
+        "ref": "tr_0005"
+      }
+    ],
+    "reasoning": "Due on 25 October; paying a day early keeps the supplier's 2 percent discount [tr_0005].",
+    "mandate_ref": "mnd_treasurer_v1",
+    "created_by": {
+      "kind": "agent",
+      "id": "treasurer"
+    },
+    "verdict_id": "vrd_01JC9B0002"
+  },
+  "verdict": {
+    "id": "vrd_01JC9B0002",
+    "proposal_id": "prop_01JC9B0002",
+    "outcome": "escalate",
+    "checks": [
+      {
+        "name": "policy",
+        "rule": "G-01",
+        "result": "fail",
+        "outcome": "escalate",
+        "detail": "Payment of PKR 165,000.00 is above the treasurer's cap of PKR 150,000.00 per payment."
+      },
+      {
+        "name": "policy",
+        "rule": "G-02",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Indus Fabrics is on the allow-list."
+      },
+      {
+        "name": "policy",
+        "rule": "G-03",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "No bank-detail change in the cooling-off period."
+      },
+      {
+        "name": "policy",
+        "rule": "G-08",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Cash stays above the buffer after this payment."
+      },
+      {
+        "name": "evidence",
+        "rule": "G-09",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Every claim cites a row or a tool result."
+      },
+      {
+        "name": "adversarial",
+        "rule": "G-12",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "No concern found."
+      }
+    ],
+    "conditions": [],
+    "decided_at": "2026-10-22T09:18:03Z",
+    "policy_version": "1.0.0",
+    "verdict_hash": "sha256:95d1b6ce02e1763b07df44eab2551eeaa0cd671f905fccdb9761675bc88ad19b"
+  }
+}

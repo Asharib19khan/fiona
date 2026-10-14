@@ -1,0 +1,163 @@
+# Common building blocks for every Fiona contract (JSON Schema 2020-12, authored as YAML).
+# Conventions (Blueprint §Contracts): money is integer minor units plus an ISO 4217 code, never a
+# float; timestamps are ISO 8601 UTC with a trailing Z; identifiers carry a type prefix; every
+# response carries api_version "v1".
+$defs:
+  ApiVersion:
+    description: Every response carries api_version "v1" (R5).
+    type: string
+    const: v1
+
+  Mode:
+    description: Whether a response was produced from fixtures (mock) or real data (live).
+    type: string
+    enum: [mock, live]
+
+  Currency:
+    description: ISO 4217 currency code, upper case.
+    type: string
+    pattern: "^[A-Z]{3}$"
+
+  Money:
+    description: An amount in integer minor units (PKR 1 = 100 minor) plus its ISO 4217 code. Never a float (R3).
+    type: object
+    additionalProperties: false
+    required: [minor, currency]
+    properties:
+      minor:
+        type: integer
+        description: Integer minor units. Negative only where the field says so.
+      currency: { $ref: "#/$defs/Currency" }
+
+  Timestamp:
+    description: ISO 8601 instant in UTC with a trailing Z, e.g. 2026-10-22T09:15:00Z (R4).
+    type: string
+    pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$"
+
+  Date:
+    description: A calendar date (YYYY-MM-DD), the business date in the tenant's time zone.
+    type: string
+    pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+
+  # ---- Identifiers (R6). Readable fixture slugs and ULIDs both fit the suffix patterns. ----
+  TenantId: { type: string, pattern: "^ten_[a-z0-9_]+$" }
+  UserId: { type: string, pattern: "^usr_[A-Za-z0-9_]+$" }
+  ProposalId: { type: string, pattern: "^prop_[A-Za-z0-9_]+$" }
+  VerdictId: { type: string, pattern: "^vrd_[A-Za-z0-9_]+$" }
+  FindingId: { type: string, pattern: "^fnd_[A-Za-z0-9_]+$" }
+  MandateId: { type: string, pattern: "^mnd_[a-z_]+_v[0-9]+$" }
+  EventId: { type: string, pattern: "^evt_[A-Za-z0-9]+$" }
+  BankLineId: { type: string, pattern: "^bln_[A-Za-z0-9]+$" }
+  BillId: { type: string, pattern: "^bill_[A-Za-z0-9_]+$" }
+  DocumentId: { type: string, pattern: "^doc_[A-Za-z0-9_]+$" }
+  PartyId:
+    description: A supplier (sup_), customer (cus_) or other party such as a landlord, utility, lender or tax authority (pty_).
+    type: string
+    pattern: "^(sup|cus|pty)_[A-Za-z0-9_]+$"
+  InvoiceId: { type: string, pattern: "^inv_[A-Za-z0-9_]+$" }
+  PurchaseOrderId: { type: string, pattern: "^po_[A-Za-z0-9_]+$" }
+  GoodsReceivedId: { type: string, pattern: "^grn_[A-Za-z0-9_]+$" }
+  PaymentId: { type: string, pattern: "^pay_[A-Za-z0-9_]+$" }
+  RunId: { type: string, pattern: "^run_[A-Za-z0-9_]+$" }
+  ToolResultId: { type: string, pattern: "^tr_[A-Za-z0-9_]+$" }
+  ForecastRunId: { type: string, pattern: "^fc_[A-Za-z0-9_]+$" }
+  Sku:
+    description: A stock-keeping unit; items use the SKU itself as their ID, e.g. KRT-M-BLU.
+    type: string
+    pattern: "^[A-Z0-9]+(-[A-Z0-9]+)*$"
+  RuleId:
+    description: A Guardian rule from rulebook/guardian.yaml (G-01 to G-15).
+    type: string
+    pattern: "^G-(0[1-9]|1[0-5])$"
+
+  AgentName:
+    description: The six members of the council.
+    type: string
+    enum: [cfo_strategist, treasurer, controller, growth_analyst, guardian, guide]
+
+  Actor:
+    description: Who did something. An agent is named by AgentName, a user by UserId, the system by a short label.
+    type: object
+    additionalProperties: false
+    required: [kind, id]
+    properties:
+      kind: { type: string, enum: [agent, user, system] }
+      id: { type: string, minLength: 1 }
+
+  EvidenceKind:
+    type: string
+    enum:
+      - ledger_event
+      - ledger_row
+      - bank_line
+      - document
+      - bill
+      - party
+      - purchase_order
+      - goods_received
+      - invoice
+      - forecast_run
+      - tool_result
+      - figure
+      - mandate
+      - rule
+      - external
+
+  Evidence:
+    description: A pointer to where a claim comes from (R10, G-09). The Window opens it in the provenance popover.
+    type: object
+    additionalProperties: false
+    required: [kind, ref]
+    properties:
+      kind: { $ref: "#/$defs/EvidenceKind" }
+      ref: { type: string, minLength: 1 }
+      note: { type: string }
+
+  Action:
+    description: A button on a card. `route` must exist in the Window's route registry.
+    type: object
+    additionalProperties: false
+    required: [label, route]
+    properties:
+      label: { type: string, minLength: 1 }
+      route: { type: string, pattern: "^/" }
+      kind: { type: string, enum: [primary, secondary] }
+
+  Period:
+    type: object
+    additionalProperties: false
+    required: [start, end]
+    properties:
+      start: { $ref: "#/$defs/Date" }
+      end: { $ref: "#/$defs/Date" }
+
+  Meta:
+    description: How an agent output or verdict was produced (CG-13). A replayed answer is always labelled in the Window (R13).
+    type: object
+    additionalProperties: false
+    required: [replayed]
+    properties:
+      replayed: { type: boolean }
+      model: { type: [string, "null"] }
+      prompt_version: { type: [string, "null"] }
+      run_id: { anyOf: [{ $ref: "#/$defs/RunId" }, { type: "null" }] }
+      recorded_at: { anyOf: [{ $ref: "#/$defs/Timestamp" }, { type: "null" }] }
+
+  ErrorBody:
+    type: object
+    additionalProperties: false
+    required: [code, message, request_id]
+    properties:
+      code: { type: string, minLength: 1, description: "Stable machine code, e.g. not_implemented, validation_error, invalid_tenant." }
+      message: { type: string, description: A human sentence. Never a stack trace. }
+      details: { type: object }
+      request_id: { type: string, minLength: 1 }
+
+  ErrorEnvelope:
+    description: The body of every error response (CG-10).
+    type: object
+    additionalProperties: false
+    required: [api_version, error]
+    properties:
+      api_version: { $ref: "#/$defs/ApiVersion" }
+      error: { $ref: "#/$defs/ErrorBody" }

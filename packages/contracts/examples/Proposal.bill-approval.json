@@ -1,0 +1,20 @@
+{
+  "id": "prop_01JC9A0005",
+  "tenant_id": "ten_karachi_apparel",
+  "status": "blocked",
+  "created_at": "2026-10-22T09:14:00Z",
+  "agent": "controller",
+  "type": "bill_approval",
+  "summary": "Approve bill INV-2231 from Mehran Garments",
+  "amount": { "minor": 18450000, "currency": "PKR" },
+  "payload": { "bill_id": "bill_2231", "supplier_id": "sup_017", "document_id": "doc_88", "due_date": "2026-10-24" },
+  "evidence": [
+    { "kind": "bill", "ref": "bill_2231" },
+    { "kind": "document", "ref": "doc_88" },
+    { "kind": "tool_result", "ref": "tr_0002" }
+  ],
+  "reasoning": "The bill check flagged a possible duplicate of INV 2231 and a bank account changed two days ago [tr_0002].",
+  "mandate_ref": "mnd_controller_v1",
+  "created_by": { "kind": "user", "id": "usr_staff_01" },
+  "verdict_id": "vrd_01JC9A0005"
+}

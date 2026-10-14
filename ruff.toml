@@ -2,9 +2,9 @@
 # A folder may override it only with its own ruff.toml, agreed with fiona-19.
 line-length = 100
 target-version = "py312"
-extend-exclude = [".venv", "**/generated/**"]
+extend-exclude = [".venv", "**/generated/**", "packages/contracts/python/fiona_contracts/models.py"]
 # First-party package roots: `engine` lives in services/, the others in their service folders.
-src = ["services", "services/agents", "services/guardian", "packages/contracts/generated/py"]
+src = ["services", "services/agents", "services/guardian", "packages/contracts/python"]
 
 [lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S"]

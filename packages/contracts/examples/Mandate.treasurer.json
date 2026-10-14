@@ -1,0 +1,25 @@
+{
+  "id": "mnd_treasurer_v1",
+  "tenant_id": "ten_karachi_apparel",
+  "agent": "treasurer",
+  "version": 1,
+  "status": "active",
+  "currency": "PKR",
+  "autonomy": { "payment": "act_within_mandate" },
+  "allowed_action_types": ["payment"],
+  "per_payment_cap_minor": 15000000,
+  "daily_cap_minor": 45000000,
+  "allowed_categories": ["inventory_supplier", "utilities", "rent", "logistics"],
+  "payee_scope": "allow_list_only",
+  "payment_windows": {
+    "days": ["mon", "tue", "wed", "thu", "fri", "sat"],
+    "local_start": "09:00",
+    "local_end": "17:00",
+    "timezone": "Asia/Karachi",
+    "exclude_public_holidays": true
+  },
+  "effective_from": "2026-08-01",
+  "effective_to": null,
+  "approved_by": "usr_owner",
+  "created_at": "2026-08-01T04:00:00Z"
+}

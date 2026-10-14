@@ -1,0 +1,16 @@
+{
+  "metric_id": "dscr_trailing",
+  "label": "Debt service coverage (trailing 12 months)",
+  "status": "ok",
+  "value": 13500,
+  "unit": "bp",
+  "formula": "operating_cash_flow / debt_service",
+  "inputs": [
+    { "name": "operating_cash_flow", "origin": "ledger_derived", "money": { "minor": 486000000, "currency": "PKR" }, "unit": "minor", "ref": "fc_0042" },
+    { "name": "debt_service", "origin": "ledger_derived", "money": { "minor": 360000000, "currency": "PKR" }, "unit": "minor", "ref": "fc_0042" }
+  ],
+  "thresholds": [
+    { "name": "minimum_dscr", "origin": "rulebook", "comparison": ">=", "value": 12500, "unit": "bp", "passed": true }
+  ],
+  "source_refs": ["fc_0042"]
+}

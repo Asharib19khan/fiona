@@ -1,0 +1,19 @@
+{
+  "id": "prop_01JC9A0003",
+  "tenant_id": "ten_karachi_apparel",
+  "status": "needs_owner",
+  "created_at": "2026-10-22T06:10:00Z",
+  "agent": "growth_analyst",
+  "type": "purchase_order",
+  "summary": "Reorder 40 blue kurtas (M) before Eid demand",
+  "amount": { "minor": 7200000, "currency": "PKR" },
+  "payload": {
+    "supplier_id": "sup_017",
+    "lines": [{ "sku": "KRT-M-BLU", "qty": 40, "unit_cost": { "minor": 180000, "currency": "PKR" } }],
+    "expected_on": "2026-10-29"
+  },
+  "evidence": [{ "kind": "tool_result", "ref": "tr_0021" }],
+  "reasoning": "Stock covers 6 days against a 7-day lead time [tr_0021].",
+  "mandate_ref": "mnd_growth_analyst_v1",
+  "created_by": { "kind": "agent", "id": "growth_analyst" }
+}

@@ -1,0 +1,95 @@
+{
+  "description": "G-08 (orchestrator ruling R4): paying early would take cash below the buffer, but a safe date exists, so the Guardian approves with a machine-checkable pay_on condition the wallet enforces.",
+  "proposal": {
+    "id": "prop_01JC9B0003",
+    "tenant_id": "ten_karachi_apparel",
+    "status": "cleared",
+    "created_at": "2026-10-22T09:30:00Z",
+    "agent": "treasurer",
+    "type": "payment",
+    "summary": "Pay rent for November",
+    "amount": {
+      "minor": 12000000,
+      "currency": "PKR"
+    },
+    "payload": {
+      "payee_id": "pty_001",
+      "bill_id": null,
+      "pay_on": "2026-10-23",
+      "channel": "wallet",
+      "category": "rent"
+    },
+    "evidence": [
+      {
+        "kind": "party",
+        "ref": "pty_001"
+      },
+      {
+        "kind": "tool_result",
+        "ref": "tr_0006"
+      }
+    ],
+    "reasoning": "Rent is due on 1 November [tr_0006].",
+    "mandate_ref": "mnd_treasurer_v1",
+    "created_by": {
+      "kind": "agent",
+      "id": "treasurer"
+    },
+    "verdict_id": "vrd_01JC9B0003"
+  },
+  "verdict": {
+    "id": "vrd_01JC9B0003",
+    "proposal_id": "prop_01JC9B0003",
+    "outcome": "approve_with_conditions",
+    "checks": [
+      {
+        "name": "policy",
+        "rule": "G-01",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "PKR 120,000.00 is within the PKR 150,000.00 cap."
+      },
+      {
+        "name": "policy",
+        "rule": "G-02",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "The landlord is on the allow-list."
+      },
+      {
+        "name": "policy",
+        "rule": "G-08",
+        "result": "fail",
+        "outcome": "approve_with_conditions",
+        "detail": "Paying on 23 Oct takes cash below the buffer in week 1; 30 Oct is the latest safe date before the due date.",
+        "condition": {
+          "kind": "pay_on",
+          "date": "2026-10-30"
+        }
+      },
+      {
+        "name": "evidence",
+        "rule": "G-09",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "Every claim cites a row or a tool result."
+      },
+      {
+        "name": "adversarial",
+        "rule": "G-12",
+        "result": "pass",
+        "outcome": "approve",
+        "detail": "No concern found."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "pay_on",
+        "date": "2026-10-30"
+      }
+    ],
+    "decided_at": "2026-10-22T09:30:04Z",
+    "policy_version": "1.0.0",
+    "verdict_hash": "sha256:03b81f3310b8fa8435e25dd3e33782b35e9040a0202753012eaac219b9be4b82"
+  }
+}

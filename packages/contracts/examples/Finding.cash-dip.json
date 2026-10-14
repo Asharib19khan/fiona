@@ -1,0 +1,16 @@
+{
+  "id": "fnd_01JC8R4K2M",
+  "source": "forecast",
+  "type": "cash_below_buffer",
+  "severity": "high",
+  "title": "Cash dips below your buffer in week 7",
+  "money_at_stake": { "minor": 42000000, "currency": "PKR" },
+  "evidence": [{ "kind": "forecast_run", "ref": "fc_0042" }],
+  "actions": [
+    { "label": "Open forecast", "route": "/forecast", "kind": "primary" },
+    { "label": "Reschedule payments", "route": "/approvals", "kind": "secondary" }
+  ],
+  "period": { "start": "2026-12-01", "end": "2026-12-07" },
+  "created_at": "2026-10-22T04:00:00Z",
+  "dedupe_key": "forecast:cash_below_buffer:2026-W49"
+}

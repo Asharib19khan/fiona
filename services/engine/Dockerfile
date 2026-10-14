@@ -7,8 +7,9 @@ FROM python:3.12-slim AS build
 COPY --from=uv /uv /usr/local/bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never
 WORKDIR /srv/services/engine
+COPY packages/contracts/python /srv/packages/contracts/python
 COPY services/engine/pyproject.toml services/engine/uv.lock ./
-RUN uv sync --locked --no-dev
+RUN uv sync --locked --no-dev --no-editable
 COPY services/engine/ ./
 
 FROM python:3.12-slim AS runtime

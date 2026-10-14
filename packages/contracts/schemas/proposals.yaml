@@ -1,0 +1,270 @@
+# Proposals: every agent action that touches money, a document going out or the ledger.
+# Agents submit a ProposalDraft; the engine stores a Proposal (adding id, tenant, status and times),
+# runs the Guardian and links the Verdict. Only the wallet moves money, and only with a cleared
+# verdict (R7). The tenant always comes from the server, never from the draft (R15).
+#
+# Each type is a flat variant discriminated by `type`. Shared fields are YAML anchors (the bundler
+# resolves them); `x-anchors` is dropped from the bundle.
+x-anchors:
+  draft-props: &draft_props
+    agent:
+      description: The proposing agent. Only these three propose; the CFO Strategist writes memos, not Proposals.
+      type: string
+      enum: [treasurer, controller, growth_analyst]
+    summary: { type: string, minLength: 1, maxLength: 200 }
+    amount:
+      description: The money involved, or null for types that move none (send_document, reconciliation_match).
+      anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }]
+    evidence: { type: array, minItems: 1, items: { $ref: "#/$defs/Evidence" } }
+    reasoning: { type: string, minLength: 1, description: "Written from tool results; figures are cited, never typed by the model (R10)." }
+    mandate_ref: { $ref: "#/$defs/MandateId" }
+    created_by:
+      description: The actor who originated the work (e.g. the user who uploaded the bill). G-04 compares it with the approver.
+      $ref: "#/$defs/Actor"
+    figures: { type: array, items: { $ref: "#/$defs/Figure" }, default: [] }
+    meta: { $ref: "#/$defs/Meta" }
+  stored-props: &stored_props
+    id: { $ref: "#/$defs/ProposalId" }
+    tenant_id: { $ref: "#/$defs/TenantId" }
+    status: { $ref: "#/$defs/ProposalStatus" }
+    created_at: { $ref: "#/$defs/Timestamp" }
+    updated_at: { $ref: "#/$defs/Timestamp" }
+    verdict_id: { anyOf: [{ $ref: "#/$defs/VerdictId" }, { type: "null" }] }
+    supersedes: { anyOf: [{ $ref: "#/$defs/ProposalId" }, { type: "null" }], description: "Set when this re-submission replaces an earlier proposal (e.g. after a block's facts changed)." }
+  draft-required: &draft_required [agent, type, summary, amount, payload, evidence, reasoning, mandate_ref, created_by]
+  stored-required: &stored_required [id, tenant_id, status, created_at, agent, type, summary, amount, payload, evidence, reasoning, mandate_ref, created_by]
+
+$defs:
+  ProposalType:
+    type: string
+    enum: [payment, bill_approval, journal_adjustment, send_document, purchase_order, reconciliation_match]
+
+  ProposalStatus:
+    type: string
+    enum: [submitted, under_review, cleared, needs_owner, blocked, approved, rejected, executed, expired, failed, superseded]
+
+  # ---------------------------------------------------------------- payloads
+  PaymentPayload:
+    type: object
+    additionalProperties: false
+    required: [payee_id, pay_on, channel]
+    properties:
+      payee_id: { $ref: "#/$defs/PartyId" }
+      bill_id: { anyOf: [{ $ref: "#/$defs/BillId" }, { type: "null" }] }
+      pay_on: { $ref: "#/$defs/Date" }
+      channel: { type: string, enum: [wallet, bank_file], description: "wallet = the simulated agent wallet; bank_file = a payment order file for the bank." }
+      category: { type: [string, "null"], description: "Mandate payment category, e.g. inventory_supplier, utilities, rent, logistics." }
+
+  BillApprovalPayload:
+    type: object
+    additionalProperties: false
+    required: [bill_id, supplier_id]
+    properties:
+      bill_id: { $ref: "#/$defs/BillId" }
+      supplier_id: { $ref: "#/$defs/PartyId" }
+      document_id: { anyOf: [{ $ref: "#/$defs/DocumentId" }, { type: "null" }] }
+      due_date: { anyOf: [{ $ref: "#/$defs/Date" }, { type: "null" }] }
+
+  JournalLine:
+    type: object
+    additionalProperties: false
+    required: [account, debit_minor, credit_minor]
+    properties:
+      account: { type: string, minLength: 1, description: "Account code from the chart of accounts." }
+      debit_minor: { type: integer, minimum: 0 }
+      credit_minor: { type: integer, minimum: 0 }
+      memo: { type: [string, "null"] }
+
+  JournalAdjustmentPayload:
+    type: object
+    additionalProperties: false
+    required: [lines, reason, effective_date]
+    properties:
+      lines: { type: array, minItems: 2, items: { $ref: "#/$defs/JournalLine" } }
+      reason: { type: string, minLength: 1 }
+      effective_date: { $ref: "#/$defs/Date" }
+      reverses_event_id: { anyOf: [{ $ref: "#/$defs/EventId" }, { type: "null" }] }
+
+  SendDocumentPayload:
+    type: object
+    additionalProperties: false
+    required: [document_kind, recipient_party_id, ref, channel]
+    properties:
+      document_kind: { type: string, enum: [customer_invoice, payment_reminder, purchase_order, statement] }
+      recipient_party_id: { $ref: "#/$defs/PartyId" }
+      ref: { type: string, minLength: 1, description: "The inv_ or po_ ID the document is about." }
+      channel: { type: string, enum: [email, whatsapp, sms, print] }
+      tone: { type: [string, "null"], enum: [polite, firm, null], description: "For reminders (D10 follow-up schedule)." }
+
+  PurchaseOrderLine:
+    type: object
+    additionalProperties: false
+    required: [sku, qty, unit_cost]
+    properties:
+      sku: { $ref: "#/$defs/Sku" }
+      qty: { type: integer, minimum: 1 }
+      unit_cost: { $ref: "#/$defs/Money" }
+
+  PurchaseOrderPayload:
+    type: object
+    additionalProperties: false
+    required: [supplier_id, lines]
+    properties:
+      supplier_id: { $ref: "#/$defs/PartyId" }
+      lines: { type: array, minItems: 1, items: { $ref: "#/$defs/PurchaseOrderLine" } }
+      expected_on: { anyOf: [{ $ref: "#/$defs/Date" }, { type: "null" }] }
+
+  ReconciliationMatchPayload:
+    type: object
+    additionalProperties: false
+    required: [bank_line_id, event_ids, kind]
+    properties:
+      bank_line_id: { $ref: "#/$defs/BankLineId" }
+      event_ids: { type: array, minItems: 1, items: { $ref: "#/$defs/EventId" } }
+      kind: { type: string, enum: [supplier_payment, customer_receipt, pos_settlement, cash_deposit] }
+      confidence_bp: { type: [integer, "null"], minimum: 0, maximum: 10000 }
+
+  # ---------------------------------------------------------------- drafts (agent -> POST /v1/proposals)
+  PaymentProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: payment }
+      payload: { $ref: "#/$defs/PaymentPayload" }
+  BillApprovalProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: bill_approval }
+      payload: { $ref: "#/$defs/BillApprovalPayload" }
+  JournalAdjustmentProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: journal_adjustment }
+      payload: { $ref: "#/$defs/JournalAdjustmentPayload" }
+  SendDocumentProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: send_document }
+      payload: { $ref: "#/$defs/SendDocumentPayload" }
+  PurchaseOrderProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: purchase_order }
+      payload: { $ref: "#/$defs/PurchaseOrderPayload" }
+  ReconciliationMatchProposalDraft:
+    type: object
+    additionalProperties: false
+    required: *draft_required
+    properties:
+      <<: *draft_props
+      type: { const: reconciliation_match }
+      payload: { $ref: "#/$defs/ReconciliationMatchPayload" }
+
+  ProposalDraft:
+    oneOf:
+      - { $ref: "#/$defs/PaymentProposalDraft" }
+      - { $ref: "#/$defs/BillApprovalProposalDraft" }
+      - { $ref: "#/$defs/JournalAdjustmentProposalDraft" }
+      - { $ref: "#/$defs/SendDocumentProposalDraft" }
+      - { $ref: "#/$defs/PurchaseOrderProposalDraft" }
+      - { $ref: "#/$defs/ReconciliationMatchProposalDraft" }
+    discriminator: { propertyName: type }
+
+  # ---------------------------------------------------------------- stored proposals
+  PaymentProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: payment }
+      payload: { $ref: "#/$defs/PaymentPayload" }
+  BillApprovalProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: bill_approval }
+      payload: { $ref: "#/$defs/BillApprovalPayload" }
+  JournalAdjustmentProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: journal_adjustment }
+      payload: { $ref: "#/$defs/JournalAdjustmentPayload" }
+  SendDocumentProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: send_document }
+      payload: { $ref: "#/$defs/SendDocumentPayload" }
+  PurchaseOrderProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: purchase_order }
+      payload: { $ref: "#/$defs/PurchaseOrderPayload" }
+  ReconciliationMatchProposal:
+    type: object
+    additionalProperties: false
+    required: *stored_required
+    properties:
+      <<: [*stored_props, *draft_props]
+      type: { const: reconciliation_match }
+      payload: { $ref: "#/$defs/ReconciliationMatchPayload" }
+
+  Proposal:
+    oneOf:
+      - { $ref: "#/$defs/PaymentProposal" }
+      - { $ref: "#/$defs/BillApprovalProposal" }
+      - { $ref: "#/$defs/JournalAdjustmentProposal" }
+      - { $ref: "#/$defs/SendDocumentProposal" }
+      - { $ref: "#/$defs/PurchaseOrderProposal" }
+      - { $ref: "#/$defs/ReconciliationMatchProposal" }
+    discriminator: { propertyName: type }
+
+  # ---------------------------------------------------------------- the owner's decision
+  DecisionRequest:
+    description: Body of POST /v1/proposals/{id}/decision. Send an Idempotency-Key header; a retry reuses it (CG-7).
+    type: object
+    additionalProperties: false
+    required: [decision]
+    properties:
+      decision: { type: string, enum: [approve, reject] }
+      note: { type: [string, "null"], maxLength: 1000 }
+      assertion: { type: [object, "null"], description: "WebAuthn assertion for passkey step-up (CG-8); stored in the audit record." }
+
+  Decision:
+    description: The recorded owner decision. Owner approval releases escalate only, never block (rulebook/guardian.yaml).
+    type: object
+    additionalProperties: false
+    required: [proposal_id, verdict_id, decision, decided_by, decided_at]
+    properties:
+      proposal_id: { $ref: "#/$defs/ProposalId" }
+      verdict_id: { $ref: "#/$defs/VerdictId" }
+      decision: { type: string, enum: [approve, reject] }
+      note: { type: [string, "null"] }
+      decided_by: { $ref: "#/$defs/UserId" }
+      decided_at: { $ref: "#/$defs/Timestamp" }
+      passkey_verified: { type: boolean, default: false }

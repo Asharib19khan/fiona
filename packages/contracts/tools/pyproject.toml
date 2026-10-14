@@ -1,0 +1,9 @@
+[project]
+name = "fiona-contracts-tools"
+version = "0.1.0"
+description = "Code generators for packages/contracts (not shipped)."
+requires-python = ">=3.12"
+dependencies = ["datamodel-code-generator==0.83.0", "jsonschema==4.26.0"]
+
+[tool.uv]
+package = false

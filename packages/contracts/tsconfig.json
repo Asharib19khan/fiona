@@ -1,4 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/**/*.ts"]
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "generated/ts/**/*.ts", "test/**/*.ts", "generated/fiona.schema.json"]
 }

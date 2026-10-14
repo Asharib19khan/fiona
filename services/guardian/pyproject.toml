@@ -7,6 +7,7 @@ dependencies = [
   "fastapi>=0.143.0",
   "uvicorn[standard]>=0.54.0",
   "pydantic>=2.14.1",
+  "fiona-contracts",
 ]
 
 [dependency-groups]
@@ -22,6 +23,9 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-root = ""
+
+[tool.uv.sources]
+fiona-contracts = { path = "../../packages/contracts/python", editable = true }
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
