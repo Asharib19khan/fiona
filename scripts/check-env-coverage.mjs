@@ -22,7 +22,7 @@ const PATTERNS = [
 
 function* walk(dir) {
   for (const name of readdirSync(dir)) {
-    if (SKIP_DIRS.has(name)) continue;
+    if (SKIP_DIRS.has(name) || name.startsWith(".pytest-")) continue;
     const full = path.join(dir, name);
     const st = statSync(full);
     if (st.isDirectory()) yield* walk(full);

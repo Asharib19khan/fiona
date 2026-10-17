@@ -176,6 +176,8 @@ export type Threshold = {
   unit: Unit;
 };
 export type RunId = string;
+export type FindingId = string;
+export type Severity = "high" | "medium" | "low";
 /**
  * One rule's result. `outcome` is what this rule contributes (a rule can map to different outcomes, e.g. G-13 block or escalate); a pass contributes approve.
  *
@@ -229,7 +231,6 @@ export type InvoiceId = string;
 export type Sku = string;
 export type UserId = string;
 export type FigureStatus = "ok" | "insufficient_data" | "not_applicable";
-export type FindingId = string;
 export type FindingSource =
   | "ledger"
   | "reconciliation"
@@ -243,7 +244,6 @@ export type FindingSource =
   | "stage"
   | "frameworks"
   | "guardian";
-export type Severity = "high" | "medium" | "low";
 export type ForecastRunId = string;
 export type GoodsReceivedId = string;
 export type LedgerEvent =
@@ -491,6 +491,135 @@ export interface BillApprovalProposalDraft {
 export interface Actor2 {
   kind: "agent" | "user" | "system";
   id: string;
+}
+export interface BillExtraction {
+  api_version: ApiVersion;
+  document: {
+    id: DocumentId;
+    sha256: string;
+    media_type: "application/pdf" | "image/jpeg" | "image/png" | "image/webp";
+    pages: number;
+  };
+  bill: {
+    supplier_name: SourcedText;
+    supplier_tax_id: SourcedText;
+    supplier_address: SourcedText;
+    invoice_number: SourcedText;
+    issue_date: SourcedDate;
+    due_date: SourcedDate;
+    currency: SourcedText;
+    purchase_order_ref: SourcedText;
+    /**
+     * @maxItems 500
+     */
+    lines: ExtractedBillLine[];
+    subtotal: SourcedMoney;
+    tax_total: SourcedMoney;
+    total: SourcedMoney;
+    bank_account: SourcedBankAccount;
+  };
+  checks: {
+    arithmetic_mismatch: boolean;
+    difference: Money | null;
+    currency_mismatch: boolean;
+  };
+  flags: {
+    embedded_instructions: {
+      quote: string;
+      page: number;
+    }[];
+    low_confidence_fields: string[];
+    unreadable_regions: string[];
+  };
+  meta: Meta;
+}
+export interface SourcedText {
+  value: string | null;
+  source: SourceSpan | null;
+  confidence: "low" | "medium" | "high";
+}
+export interface SourceSpan {
+  page: number;
+  quote: string;
+  /**
+   * @minItems 4
+   * @maxItems 4
+   */
+  bbox?: [number, number, number, number] | null;
+  verified_in_text?: boolean | null;
+}
+export interface SourcedDate {
+  value: Date | null;
+  source: SourceSpan | null;
+  confidence: "low" | "medium" | "high";
+}
+export interface ExtractedBillLine {
+  description: string;
+  quantity: string | null;
+  unit_price: SourcedMoney;
+  tax_rate: SourcedText;
+  line_total: SourcedMoney;
+  source: SourceSpan;
+}
+export interface SourcedMoney {
+  value: Money | null;
+  source: SourceSpan | null;
+  confidence: "low" | "medium" | "high";
+}
+export interface SourcedBankAccount {
+  value: ExtractedBankAccount | null;
+  source: SourceSpan | null;
+  confidence: "low" | "medium" | "high";
+}
+export interface ExtractedBankAccount {
+  holder: string | null;
+  bank: string | null;
+  account_number: string | null;
+  iban: string | null;
+}
+/**
+ * This interface was referenced by `FionaContracts`'s JSON-Schema
+ * via the `definition` "Briefing".
+ *
+ * This interface was referenced by `FionaContracts`'s JSON-Schema
+ * via the `definition` "BriefingResponse".
+ */
+export interface BriefingResponse {
+  api_version: ApiVersion;
+  tenant_id: TenantId;
+  generated_at: Timestamp;
+  greeting: BriefingGreeting;
+  stage: BriefingStage;
+  cards: BriefingCard[];
+  degraded: BriefingDegradedSource[];
+  meta: Meta;
+}
+export interface BriefingGreeting {
+  text: string;
+  needs_owner_count: number;
+}
+export interface BriefingStage {
+  label: string;
+  ref: string;
+}
+export interface BriefingCard {
+  id: string;
+  rank: number;
+  kind: "finding" | "guardian";
+  finding_id: FindingId | null;
+  proposal_id: ProposalId | null;
+  severity: Severity;
+  needs_owner: boolean;
+  title: string;
+  detail: string | null;
+  source_label: string;
+  money_at_stake: Money | null;
+  evidence: Evidence[];
+  actions: Action[];
+}
+export interface BriefingDegradedSource {
+  source: string;
+  detail: string;
 }
 export interface PayOnCondition {
   kind: "pay_on";
@@ -893,6 +1022,62 @@ export interface PaymentWindow {
    */
   timezone: string;
   exclude_public_holidays?: boolean;
+}
+export interface ModelBillExtraction {
+  bill: ModelExtractedBill;
+  /**
+   * @maxItems 100
+   */
+  embedded_instructions: {
+    quote: string;
+    page: number;
+  }[];
+  /**
+   * @maxItems 100
+   */
+  low_confidence_fields: string[];
+  /**
+   * @maxItems 100
+   */
+  unreadable_regions: string[];
+}
+export interface ModelExtractedBill {
+  supplier_name: SourcedText;
+  supplier_tax_id: SourcedText;
+  supplier_address: SourcedText;
+  invoice_number: SourcedText;
+  issue_date: SourcedDate;
+  due_date: SourcedDate;
+  currency: SourcedText;
+  purchase_order_ref: SourcedText;
+  /**
+   * @maxItems 500
+   */
+  lines: ModelBillLine[];
+  subtotal: ModelMoney;
+  tax_total: ModelMoney;
+  total: ModelMoney;
+  bank_account: SourcedBankAccount;
+}
+export interface ModelBillLine {
+  description: string;
+  quantity: string | null;
+  unit_price: ModelMoney;
+  tax_rate: string | null;
+  line_total: ModelMoney;
+  source: SourceSpan;
+}
+/**
+ * Raw model output; never use for accounting before normalization and checks.
+ *
+ * This interface was referenced by `FionaContracts`'s JSON-Schema
+ * via the `definition` "ModelMoney".
+ */
+export interface ModelMoney {
+  amount: string | null;
+  currency: Currency | null;
+  source: SourceSpan | null;
+  confidence: "low" | "medium" | "high";
 }
 export interface PaymentPayload {
   payee_id: PartyId;

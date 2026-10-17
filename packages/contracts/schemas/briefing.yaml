@@ -1,0 +1,64 @@
+# Morning briefing: an agent-composed, deterministic ranking of findings and proposal outcomes.
+# The ranking itself is pure code; this contract is the Window's stable read model.
+$defs:
+  # The stable contract name for fixtures and validator callers. The response-shaped name stays
+  # available for API typing, while Briefing matches the persisted briefing read model.
+  Briefing:
+    $ref: "#/$defs/BriefingResponse"
+
+  BriefingGreeting:
+    type: object
+    additionalProperties: false
+    required: [text, needs_owner_count]
+    properties:
+      text: { type: string, minLength: 1 }
+      needs_owner_count: { type: integer, minimum: 0 }
+
+  BriefingStage:
+    type: object
+    additionalProperties: false
+    required: [label, ref]
+    properties:
+      label: { type: string, minLength: 1 }
+      ref: { type: string, minLength: 1 }
+
+  BriefingCard:
+    type: object
+    additionalProperties: false
+    required: [id, rank, kind, finding_id, proposal_id, severity, needs_owner, title, detail, source_label, money_at_stake, evidence, actions]
+    properties:
+      id: { type: string, minLength: 1 }
+      rank: { type: integer, minimum: 1 }
+      kind: { type: string, enum: [finding, guardian] }
+      finding_id: { anyOf: [{ $ref: "#/$defs/FindingId" }, { type: "null" }] }
+      proposal_id: { anyOf: [{ $ref: "#/$defs/ProposalId" }, { type: "null" }] }
+      severity: { $ref: "#/$defs/Severity" }
+      needs_owner: { type: boolean }
+      title: { type: string, minLength: 1 }
+      detail: { type: [string, "null"] }
+      source_label: { type: string, minLength: 1 }
+      money_at_stake: { anyOf: [{ $ref: "#/$defs/Money" }, { type: "null" }] }
+      evidence: { type: array, items: { $ref: "#/$defs/Evidence" } }
+      actions: { type: array, items: { $ref: "#/$defs/Action" } }
+
+  BriefingDegradedSource:
+    type: object
+    additionalProperties: false
+    required: [source, detail]
+    properties:
+      source: { type: string, minLength: 1 }
+      detail: { type: string, minLength: 1 }
+
+  BriefingResponse:
+    type: object
+    additionalProperties: false
+    required: [api_version, tenant_id, generated_at, greeting, stage, cards, degraded, meta]
+    properties:
+      api_version: { $ref: "#/$defs/ApiVersion" }
+      tenant_id: { $ref: "#/$defs/TenantId" }
+      generated_at: { $ref: "#/$defs/Timestamp" }
+      greeting: { $ref: "#/$defs/BriefingGreeting" }
+      stage: { $ref: "#/$defs/BriefingStage" }
+      cards: { type: array, items: { $ref: "#/$defs/BriefingCard" } }
+      degraded: { type: array, items: { $ref: "#/$defs/BriefingDegradedSource" } }
+      meta: { $ref: "#/$defs/Meta" }

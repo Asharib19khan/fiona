@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./fixtures": "./src/fixtures.ts"
   },
   "scripts": {
     "gen": "node tools/gen.mjs",

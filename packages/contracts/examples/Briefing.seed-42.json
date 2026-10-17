@@ -1,0 +1,56 @@
+{
+  "api_version": "v1",
+  "tenant_id": "ten_karachi_apparel",
+  "generated_at": "2026-10-22T04:00:00Z",
+  "greeting": { "text": "Good morning. Three things need you today.", "needs_owner_count": 1 },
+  "stage": { "label": "Growth", "ref": "stg_seed_42" },
+  "cards": [
+    {
+      "id": "card_cash_week_7",
+      "rank": 1,
+      "kind": "finding",
+      "finding_id": "fnd_01JC8R4K2M",
+      "proposal_id": null,
+      "severity": "high",
+      "needs_owner": false,
+      "title": "Cash dips below your buffer in week 7",
+      "detail": "Winter stock bills in weeks 5 to 7 overlap payroll, rent and the loan instalment.",
+      "source_label": "Treasurer · 13-week cash forecast",
+      "money_at_stake": { "minor": 175388100, "currency": "PKR" },
+      "evidence": [{ "kind": "forecast_run", "ref": "fc_0042" }],
+      "actions": [{ "label": "Open forecast", "route": "/forecast", "kind": "primary" }]
+    },
+    {
+      "id": "card_slow_stock",
+      "rank": 2,
+      "kind": "finding",
+      "finding_id": "fnd_demo_slow_stock",
+      "proposal_id": null,
+      "severity": "medium",
+      "needs_owner": false,
+      "title": "Summer lawn suits cover more than a year of sales",
+      "detail": "Slow-moving stock is tying up working capital. Review the synthetic inventory sample before placing more orders.",
+      "source_label": "Growth Analyst · inventory sample",
+      "money_at_stake": { "minor": 53300000, "currency": "PKR" },
+      "evidence": [{ "kind": "ledger_row", "ref": "inventory_seed_42" }],
+      "actions": [{ "label": "Open inventory", "route": "/inventory", "kind": "primary" }]
+    },
+    {
+      "id": "card_reorder",
+      "rank": 3,
+      "kind": "finding",
+      "finding_id": "fnd_demo_reorder",
+      "proposal_id": null,
+      "severity": "medium",
+      "needs_owner": false,
+      "title": "Wool shawls may run out before the next delivery",
+      "detail": "The example reorder estimate is a draft suggestion. It does not create a purchase order.",
+      "source_label": "Growth Analyst · reorder estimate",
+      "money_at_stake": { "minor": 12730000, "currency": "PKR" },
+      "evidence": [{ "kind": "figure", "ref": "inventory.reorder_point" }],
+      "actions": [{ "label": "Review estimate", "route": "/inventory", "kind": "primary" }]
+    }
+  ],
+  "degraded": [],
+  "meta": { "replayed": false, "model": null, "prompt_version": "briefing/rank/v1", "run_id": null, "recorded_at": null }
+}

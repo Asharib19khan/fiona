@@ -467,9 +467,399 @@
         }
       }
     },
+    "BillExtraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_version",
+        "document",
+        "bill",
+        "checks",
+        "flags",
+        "meta"
+      ],
+      "properties": {
+        "api_version": {
+          "$ref": "#/$defs/ApiVersion"
+        },
+        "document": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "sha256",
+            "media_type",
+            "pages"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/DocumentId"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "media_type": {
+              "type": "string",
+              "enum": [
+                "application/pdf",
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+              ]
+            },
+            "pages": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "bill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "supplier_name",
+            "supplier_tax_id",
+            "supplier_address",
+            "invoice_number",
+            "issue_date",
+            "due_date",
+            "currency",
+            "purchase_order_ref",
+            "lines",
+            "subtotal",
+            "tax_total",
+            "total",
+            "bank_account"
+          ],
+          "properties": {
+            "supplier_name": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "supplier_tax_id": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "supplier_address": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "invoice_number": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "issue_date": {
+              "$ref": "#/$defs/SourcedDate"
+            },
+            "due_date": {
+              "$ref": "#/$defs/SourcedDate"
+            },
+            "currency": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "purchase_order_ref": {
+              "$ref": "#/$defs/SourcedText"
+            },
+            "lines": {
+              "type": "array",
+              "maxItems": 500,
+              "items": {
+                "$ref": "#/$defs/ExtractedBillLine"
+              }
+            },
+            "subtotal": {
+              "$ref": "#/$defs/SourcedMoney"
+            },
+            "tax_total": {
+              "$ref": "#/$defs/SourcedMoney"
+            },
+            "total": {
+              "$ref": "#/$defs/SourcedMoney"
+            },
+            "bank_account": {
+              "$ref": "#/$defs/SourcedBankAccount"
+            }
+          }
+        },
+        "checks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "arithmetic_mismatch",
+            "difference",
+            "currency_mismatch"
+          ],
+          "properties": {
+            "arithmetic_mismatch": {
+              "type": "boolean"
+            },
+            "difference": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Money"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "currency_mismatch": {
+              "type": "boolean"
+            }
+          }
+        },
+        "flags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "embedded_instructions",
+            "low_confidence_fields",
+            "unreadable_regions"
+          ],
+          "properties": {
+            "embedded_instructions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "quote",
+                  "page"
+                ],
+                "properties": {
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            },
+            "low_confidence_fields": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "unreadable_regions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
     "BillId": {
       "type": "string",
       "pattern": "^bill_[A-Za-z0-9_]+$"
+    },
+    "Briefing": {
+      "$ref": "#/$defs/BriefingResponse"
+    },
+    "BriefingCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rank",
+        "kind",
+        "finding_id",
+        "proposal_id",
+        "severity",
+        "needs_owner",
+        "title",
+        "detail",
+        "source_label",
+        "money_at_stake",
+        "evidence",
+        "actions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "finding",
+            "guardian"
+          ]
+        },
+        "finding_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FindingId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "proposal_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProposalId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "needs_owner": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "money_at_stake": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Money"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        }
+      }
+    },
+    "BriefingDegradedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "detail"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "BriefingGreeting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "needs_owner_count"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "needs_owner_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "BriefingResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_version",
+        "tenant_id",
+        "generated_at",
+        "greeting",
+        "stage",
+        "cards",
+        "degraded",
+        "meta"
+      ],
+      "properties": {
+        "api_version": {
+          "$ref": "#/$defs/ApiVersion"
+        },
+        "tenant_id": {
+          "$ref": "#/$defs/TenantId"
+        },
+        "generated_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "greeting": {
+          "$ref": "#/$defs/BriefingGreeting"
+        },
+        "stage": {
+          "$ref": "#/$defs/BriefingStage"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BriefingCard"
+          }
+        },
+        "degraded": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BriefingDegradedSource"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      }
+    },
+    "BriefingStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "ref"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
     "Check": {
       "description": "One rule's result. `outcome` is what this rule contributes (a rule can map to different outcomes, e.g. G-13 block or escalate); a pass contributes approve.",
@@ -967,6 +1357,84 @@
         "rule",
         "external"
       ]
+    },
+    "ExtractedBankAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "holder",
+        "bank",
+        "account_number",
+        "iban"
+      ],
+      "properties": {
+        "holder": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "bank": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "account_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 100
+        },
+        "iban": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        }
+      }
+    },
+    "ExtractedBillLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "quantity",
+        "unit_price",
+        "tax_rate",
+        "line_total",
+        "source"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "quantity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "unit_price": {
+          "$ref": "#/$defs/SourcedMoney"
+        },
+        "tax_rate": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "line_total": {
+          "$ref": "#/$defs/SourcedMoney"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSpan"
+        }
+      }
     },
     "Figure": {
       "description": "A number with its provenance. status ok requires money or value. Any other status carries no value, and insufficient_data lists what is missing (\"insufficient data, need X\" instead of guessing).\n",
@@ -1946,6 +2414,217 @@
         "mock",
         "live"
       ]
+    },
+    "ModelBillExtraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bill",
+        "embedded_instructions",
+        "low_confidence_fields",
+        "unreadable_regions"
+      ],
+      "properties": {
+        "bill": {
+          "$ref": "#/$defs/ModelExtractedBill"
+        },
+        "embedded_instructions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "quote",
+              "page"
+            ],
+            "properties": {
+              "quote": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "low_confidence_fields": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "unreadable_regions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "ModelBillLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "quantity",
+        "unit_price",
+        "tax_rate",
+        "line_total",
+        "source"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "quantity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "unit_price": {
+          "$ref": "#/$defs/ModelMoney"
+        },
+        "tax_rate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 40
+        },
+        "line_total": {
+          "$ref": "#/$defs/ModelMoney"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSpan"
+        }
+      }
+    },
+    "ModelExtractedBill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supplier_name",
+        "supplier_tax_id",
+        "supplier_address",
+        "invoice_number",
+        "issue_date",
+        "due_date",
+        "currency",
+        "purchase_order_ref",
+        "lines",
+        "subtotal",
+        "tax_total",
+        "total",
+        "bank_account"
+      ],
+      "properties": {
+        "supplier_name": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "supplier_tax_id": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "supplier_address": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "invoice_number": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "issue_date": {
+          "$ref": "#/$defs/SourcedDate"
+        },
+        "due_date": {
+          "$ref": "#/$defs/SourcedDate"
+        },
+        "currency": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "purchase_order_ref": {
+          "$ref": "#/$defs/SourcedText"
+        },
+        "lines": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/ModelBillLine"
+          }
+        },
+        "subtotal": {
+          "$ref": "#/$defs/ModelMoney"
+        },
+        "tax_total": {
+          "$ref": "#/$defs/ModelMoney"
+        },
+        "total": {
+          "$ref": "#/$defs/ModelMoney"
+        },
+        "bank_account": {
+          "$ref": "#/$defs/SourcedBankAccount"
+        }
+      }
+    },
+    "ModelMoney": {
+      "description": "Raw model output; never use for accounting before normalization and checks.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "currency",
+        "source",
+        "confidence"
+      ],
+      "properties": {
+        "amount": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Currency"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
     },
     "Money": {
       "description": "An amount in integer minor units (PKR 1 = 100 minor) plus its ISO 4217 code. Never a float (R3).",
@@ -3371,6 +4050,197 @@
       "description": "A stock-keeping unit; items use the SKU itself as their ID, e.g. KRT-M-BLU.",
       "type": "string",
       "pattern": "^[A-Z0-9]+(-[A-Z0-9]+)*$"
+    },
+    "SourceSpan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "quote"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "bbox": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "verified_in_text": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "SourcedBankAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtractedBankAccount"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
+    },
+    "SourcedDate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
+    },
+    "SourcedMoney": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Money"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
+    },
+    "SourcedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "source",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceSpan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        }
+      }
     },
     "StockMovementEvent": {
       "type": "object",

@@ -27,6 +27,9 @@ export const ENV_SPEC = [
   { name: "NEXT_PUBLIC_API_MODE", group: "Modes", usedBy: "web", secret: false, required: [], default: "mock", deployedIn: "Vercel", validate: oneOf("mock", "live"), note: "Inlined at build time. Previews build in mock mode; the demo build is live." },
   { name: "FIONA_MODE", group: "Modes", usedBy: "engine", secret: false, required: [], default: "mock", deployedIn: "Fly (fiona-engine)", validate: oneOf("mock", "live") },
   { name: "GUARDIAN_CHECKS_IMPL", group: "Modes", usedBy: "guardian", secret: false, required: [], default: "stub", deployedIn: "Fly (fiona-guardian)", validate: oneOf("stub", "library"), note: "stub = scenario fixtures until D5 lands." },
+  { name: "FIONA_LLM_PROVIDER", group: "Modes", usedBy: "agents, guardian", secret: false, required: [], default: "replay", deployedIn: "Fly", validate: oneOf("replay", "claude_cli", "anthropic_api"), note: "anthropic_api currently enables only bill extraction; other agent roles and Guardian stay replay-only. Live calls need signed BFF auth and account/runtime spend controls." },
+  { name: "MOCK_API_PORT", group: "Modes", usedBy: "mock API script", secret: false, required: [], default: "8300", deployedIn: "local only", validate: nonNegativeInt, note: "Port for pnpm mock:api; it serves synthetic fixtures only." },
+  { name: "FIONA_GEN_TUNE", group: "Modes", usedBy: "fixture generator", secret: false, required: [], default: "0", deployedIn: "local only", validate: flag, note: "Allows generator tuning runs to cross its normal non-negative bank-balance guard." },
 
   // Database and Supabase
   { name: "DATABASE_URL", group: "Database", usedBy: "engine", secret: true, required: [], deployedIn: "Fly (fiona-engine)", validate: postgresUrl, note: "Unset locally = Daniyal's portable Postgres 17 (engine.ledger.db)." },
@@ -70,6 +73,7 @@ export const ENV_SPEC = [
 
   // Demo and auth
   { name: "DEMO_TENANT_ID", group: "Demo", usedBy: "web, scripts", secret: false, required: [], default: "ten_karachi_apparel", deployedIn: "Vercel", validate: (v) => (/^ten_[a-z0-9_]+$/.test(v) ? null : "must look like ten_…") },
+  { name: "DEMO_USER_ID", group: "Demo", usedBy: "web BFF", secret: false, required: [], default: "usr_owner_karachi", deployedIn: "Vercel", validate: (v) => (/^usr_[a-z0-9_]+$/.test(v) ? null : "must look like usr_…"), note: "Default demo owner user ID in web BFF." },
   { name: "DEMO_PRESENTER_KEY", group: "Demo", usedBy: "web (/demo page)", secret: true, required: [], deployedIn: "Vercel (demo only)", validate: minLength(16) },
   { name: "WEBAUTHN_RP_ID", group: "Demo", usedBy: "web BFF", secret: false, required: [], default: "localhost", deployedIn: "Vercel", note: "Passkeys are bound to this domain." },
   { name: "WEBAUTHN_ORIGIN", group: "Demo", usedBy: "web BFF", secret: false, required: [], default: "http://localhost:3000", deployedIn: "Vercel", validate: url },

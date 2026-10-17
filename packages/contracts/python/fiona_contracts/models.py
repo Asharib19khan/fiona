@@ -34,8 +34,56 @@ class Actor(BaseModel):
     id: Annotated[str, Field(min_length=1)]
 
 
+class EmbeddedInstruction(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    quote: Annotated[str, Field(max_length=500, min_length=1)]
+    page: Annotated[int, Field(ge=1)]
+
+
+class Flags(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    embedded_instructions: list[EmbeddedInstruction]
+    low_confidence_fields: list[str]
+    unreadable_regions: list[str]
+
+
 class BillId(RootModel[str]):
     root: Annotated[str, Field(pattern="^bill_[A-Za-z0-9_]+$")]
+
+
+class BriefingDegradedSource(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    source: Annotated[str, Field(min_length=1)]
+    detail: Annotated[str, Field(min_length=1)]
+
+
+class BriefingGreeting(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    text: Annotated[str, Field(min_length=1)]
+    needs_owner_count: Annotated[int, Field(ge=0)]
+
+
+class BriefingStage(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    label: Annotated[str, Field(min_length=1)]
+    ref: Annotated[str, Field(min_length=1)]
+
+
+class Currency(RootModel[str]):
+    root: Annotated[
+        str,
+        Field(description="ISO 4217 currency code, upper case.", pattern="^[A-Z]{3}$"),
+    ]
 
 
 class Date(RootModel[str]):
@@ -107,12 +155,26 @@ class EventSource(BaseModel):
     key: Annotated[str, Field(min_length=1)]
 
 
+class ExtractedBankAccount(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    holder: Annotated[str | None, Field(max_length=200)]
+    bank: Annotated[str | None, Field(max_length=200)]
+    account_number: Annotated[str | None, Field(max_length=100)]
+    iban: Annotated[str | None, Field(max_length=64)]
+
+
 class SourceRef(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
 
 
 class MissingItem(RootModel[str]):
     root: Annotated[str, Field(min_length=1)]
+
+
+class FindingId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^fnd_[A-Za-z0-9_]+$")]
 
 
 class ForecastRunId(RootModel[str]):
@@ -164,6 +226,14 @@ class Mode(RootModel[Literal["mock", "live"]]):
             description="Whether a response was produced from fixtures (mock) or real data (live)."
         ),
     ]
+
+
+class LowConfidenceField(RootModel[str]):
+    root: Annotated[str, Field(max_length=100, min_length=1)]
+
+
+class UnreadableRegion(RootModel[str]):
+    root: Annotated[str, Field(max_length=300, min_length=1)]
 
 
 class Money(BaseModel):
@@ -328,6 +398,56 @@ class Sku(RootModel[str]):
     ]
 
 
+class BboxItem(RootModel[float]):
+    root: Annotated[float, Field(ge=0.0, le=1.0)]
+
+
+class SourceSpan(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    page: Annotated[int, Field(ge=1)]
+    quote: Annotated[str, Field(max_length=500, min_length=1)]
+    bbox: Annotated[list[BboxItem] | None, Field(max_length=4, min_length=4)] = None
+    verified_in_text: bool | None = None
+
+
+class SourcedBankAccount(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    value: ExtractedBankAccount | None
+    source: SourceSpan | None
+    confidence: Literal["low", "medium", "high"]
+
+
+class SourcedDate(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    value: Date | None
+    source: SourceSpan | None
+    confidence: Literal["low", "medium", "high"]
+
+
+class SourcedMoney(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    value: Money | None
+    source: SourceSpan | None
+    confidence: Literal["low", "medium", "high"]
+
+
+class SourcedText(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    value: Annotated[str | None, Field(max_length=500)]
+    source: SourceSpan | None
+    confidence: Literal["low", "medium", "high"]
+
+
 class TenantPolicies(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -464,6 +584,25 @@ class BillApprovalPayload(BaseModel):
     due_date: Date | None = None
 
 
+class Document(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[str, Field(pattern="^doc_[A-Za-z0-9_]+$")]
+    sha256: Annotated[str, Field(pattern="^[0-9a-f]{64}$")]
+    media_type: Literal["application/pdf", "image/jpeg", "image/png", "image/webp"]
+    pages: Annotated[int, Field(ge=1)]
+
+
+class Checks(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    arithmetic_mismatch: bool
+    difference: Money | None
+    currency_mismatch: bool
+
+
 class CustomerReceiptEvent(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -541,6 +680,18 @@ class Evidence(BaseModel):
     note: str | None = None
 
 
+class ExtractedBillLine(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    description: Annotated[str, Field(max_length=500, min_length=1)]
+    quantity: Annotated[str | None, Field(pattern="^[0-9]+(?:\\.[0-9]+)?$")]
+    unit_price: SourcedMoney
+    tax_rate: SourcedText
+    line_total: SourcedMoney
+    source: SourceSpan
+
+
 class FigureInput(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -616,6 +767,16 @@ class Meta(BaseModel):
     prompt_version: str | None = None
     run_id: RunId | None = None
     recorded_at: Timestamp | None = None
+
+
+class ModelMoney(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    amount: Annotated[str | None, Field(pattern="^-?[0-9]+(?:\\.[0-9]+)?$")]
+    currency: Currency | None
+    source: SourceSpan | None
+    confidence: Literal["low", "medium", "high"]
 
 
 class PaymentWindow(BaseModel):
@@ -842,6 +1003,82 @@ class Threshold(BaseModel):
     money: Money | None = None
     value: int | None = None
     unit: Literal["minor", "bp", "units", "days", "weeks", "months", "count"]
+
+
+class Bill(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    supplier_name: SourcedText
+    supplier_tax_id: SourcedText
+    supplier_address: SourcedText
+    invoice_number: SourcedText
+    issue_date: SourcedDate
+    due_date: SourcedDate
+    currency: SourcedText
+    purchase_order_ref: SourcedText
+    lines: Annotated[list[ExtractedBillLine], Field(max_length=500)]
+    subtotal: SourcedMoney
+    tax_total: SourcedMoney
+    total: SourcedMoney
+    bank_account: SourcedBankAccount
+
+
+class BillExtraction(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    api_version: Annotated[
+        Literal["v1"],
+        Field(description='Every response carries api_version "v1" (R5).'),
+    ]
+    document: Document
+    bill: Bill
+    checks: Checks
+    flags: Flags
+    meta: Meta
+
+
+class BriefingCard(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    id: Annotated[str, Field(min_length=1)]
+    rank: Annotated[int, Field(ge=1)]
+    kind: Literal["finding", "guardian"]
+    finding_id: FindingId | None
+    proposal_id: ProposalId | None
+    severity: Literal["high", "medium", "low"]
+    needs_owner: bool
+    title: Annotated[str, Field(min_length=1)]
+    detail: str | None
+    source_label: Annotated[str, Field(min_length=1)]
+    money_at_stake: Money | None
+    evidence: list[Evidence]
+    actions: list[Action]
+
+
+class BriefingResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    api_version: Annotated[
+        Literal["v1"],
+        Field(description='Every response carries api_version "v1" (R5).'),
+    ]
+    tenant_id: Annotated[str, Field(pattern="^ten_[a-z0-9_]+$")]
+    generated_at: Annotated[
+        str,
+        Field(
+            description="ISO 8601 instant in UTC with a trailing Z, e.g. 2026-10-22T09:15:00Z (R4).",
+            pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+        ),
+    ]
+    greeting: BriefingGreeting
+    stage: BriefingStage
+    cards: list[BriefingCard]
+    degraded: list[BriefingDegradedSource]
+    meta: Meta
 
 
 class Check(BaseModel):
@@ -1149,6 +1386,37 @@ class Mandate(BaseModel):
             pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
         ),
     ]
+
+
+class ModelBillLine(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    description: Annotated[str, Field(max_length=500, min_length=1)]
+    quantity: Annotated[str | None, Field(pattern="^[0-9]+(?:\\.[0-9]+)?$")]
+    unit_price: ModelMoney
+    tax_rate: Annotated[str | None, Field(max_length=40)]
+    line_total: ModelMoney
+    source: SourceSpan
+
+
+class ModelExtractedBill(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    supplier_name: SourcedText
+    supplier_tax_id: SourcedText
+    supplier_address: SourcedText
+    invoice_number: SourcedText
+    issue_date: SourcedDate
+    due_date: SourcedDate
+    currency: SourcedText
+    purchase_order_ref: SourcedText
+    lines: Annotated[list[ModelBillLine], Field(max_length=500)]
+    subtotal: ModelMoney
+    tax_total: ModelMoney
+    total: ModelMoney
+    bank_account: SourcedBankAccount
 
 
 class PaymentProposal(BaseModel):
@@ -1719,6 +1987,10 @@ class BillApprovalProposalDraft(BaseModel):
     payload: BillApprovalPayload
 
 
+class Briefing(RootModel[BriefingResponse]):
+    root: BriefingResponse
+
+
 class LedgerEvent(
     RootModel[
         SaleEvent
@@ -1736,6 +2008,16 @@ class LedgerEvent(
         SaleEvent | PurchaseBillEvent | SupplierPaymentEvent | CustomerInvoiceEvent | CustomerReceiptEvent | BankLineEvent | StockMovementEvent | BankDetailChangeEvent | JournalAdjustmentEvent,
         Field(discriminator="event"),
     ]
+
+
+class ModelBillExtraction(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    bill: ModelExtractedBill
+    embedded_instructions: Annotated[list[EmbeddedInstruction], Field(max_length=100)]
+    low_confidence_fields: Annotated[list[LowConfidenceField], Field(max_length=100)]
+    unreadable_regions: Annotated[list[UnreadableRegion], Field(max_length=100)]
 
 
 class Proposal(
@@ -1776,27 +2058,44 @@ __all__ = [
     "AllowedCategory",
     "BankDetailChangeEvent",
     "BankLineEvent",
+    "BboxItem",
     "BeforeTimeCondition",
+    "Bill",
     "BillApprovalPayload",
     "BillApprovalProposal",
     "BillApprovalProposalDraft",
+    "BillExtraction",
     "BillId",
+    "Briefing",
+    "BriefingCard",
+    "BriefingDegradedSource",
+    "BriefingGreeting",
+    "BriefingResponse",
+    "BriefingStage",
     "Check",
+    "Checks",
+    "Currency",
     "CustomerInvoiceEvent",
     "CustomerReceiptEvent",
     "Date",
     "Decision",
     "DecisionRequest",
+    "Document",
     "DocumentId",
     "DocumentLine",
+    "EmbeddedInstruction",
     "ErrorBody",
     "ErrorEnvelope",
     "EventId",
     "EventSource",
     "Evidence",
+    "ExtractedBankAccount",
+    "ExtractedBillLine",
     "Figure",
     "FigureInput",
     "Finding",
+    "FindingId",
+    "Flags",
     "ForecastRunId",
     "GoodsReceivedId",
     "InvoiceId",
@@ -1807,11 +2106,16 @@ __all__ = [
     "JournalLine",
     "LedgerEvent",
     "LedgerEventType",
+    "LowConfidenceField",
     "Mandate",
     "MaxAmountCondition",
     "Meta",
     "MissingItem",
     "Mode",
+    "ModelBillExtraction",
+    "ModelBillLine",
+    "ModelExtractedBill",
+    "ModelMoney",
     "Money",
     "PartyId",
     "PayOnCondition",
@@ -1842,12 +2146,18 @@ __all__ = [
     "SendDocumentProposalDraft",
     "Sku",
     "SourceRef",
+    "SourceSpan",
+    "SourcedBankAccount",
+    "SourcedDate",
+    "SourcedMoney",
+    "SourcedText",
     "StockMovementEvent",
     "SupplierPaymentEvent",
     "TenantPolicies",
     "Threshold",
     "Timestamp",
     "ToolResultId",
+    "UnreadableRegion",
     "Verdict",
     "VerdictId",
 ]
