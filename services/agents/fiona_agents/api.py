@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -228,9 +229,11 @@ def ask(body: AskRequest) -> dict[str, Any]:
                     "meta": response["meta"],
                 }
                 return response
-            except Exception:
+            except Exception as exc:
                 # Fallback gracefully to replay if CLI call encounters timeout/network glitch
-                pass
+                logging.getLogger("fiona_agents.api").warning(
+                    "Claude CLI execution failed, falling back to replay: %s", exc
+                )
 
     if provider not in ("replay", "claude_cli"):
         raise HTTPException(

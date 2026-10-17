@@ -91,6 +91,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/audit/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Audit Export
+         * @description Download a tenant-scoped, verified execution-evidence bundle.
+         */
+        get: operations["audit_export_v1_audit_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bills/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bill Check
+         * @description Run the read-only Guardian duplicate-bill check (G-05) for an imported bill.
+         */
+        post: operations["bill_check_v1_bills_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/decisions/debt-equity": {
         parameters: {
             query?: never;
@@ -275,7 +315,7 @@ export interface paths {
         put?: never;
         /**
          * Launch Lab Simulate
-         * @description Mock mode returns the winter-shawl run for any valid request, stamped now.
+         * @description Simulate a product launch using resolved ledger history and market benchmarks (Y5).
          */
         post: operations["launch_lab_simulate_v1_launch_lab_simulate_post"];
         delete?: never;
@@ -295,6 +335,187 @@ export interface paths {
         get: operations["ledger_events_v1_ledger_events_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/participation/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run Participation
+         * @description Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.
+         */
+        post: operations["run_participation_v1_participation_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Proposals
+         * @description List proposals for the tenant, projected with current status and verdict.
+         */
+        get: operations["list_proposals_v1_proposals_get"];
+        put?: never;
+        /**
+         * Create Proposal
+         * @description Store an agent proposal, run Guardian checks, and append to audit log.
+         */
+        post: operations["create_proposal_v1_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Proposal
+         * @description Get single proposal by ID with its verdict and decision history.
+         */
+        get: operations["get_proposal_v1_proposals__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Proposal
+         * @description Record an owner decision (approve or reject) for an escalated proposal.
+         */
+        post: operations["decide_proposal_v1_proposals__proposal_id__decide_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Decide Proposal
+         * @description Record an owner decision (approve or reject) for an escalated proposal.
+         */
+        post: operations["decide_proposal_v1_proposals__proposal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reconcile/findings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reconcile Findings
+         * @description Read-only findings for bank lines that still need reconciliation review.
+         */
+        get: operations["reconcile_findings_v1_reconcile_findings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reconcile/matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reconcile Matches */
+        get: operations["reconcile_matches_v1_reconcile_matches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reconcile/pos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Pos
+         * @description Run POS sales register reconciliation against cash deposits and acquirer settlements.
+         */
+        post: operations["reconcile_pos_v1_reconcile_pos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reconcile/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Run
+         * @description Run conservative deterministic matching; proposals require review before posting.
+         */
+        post: operations["reconcile_run_v1_reconcile_run_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -338,17 +559,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/whoami": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whoami */
+        get: operations["whoami_v1_whoami_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Action */
-        Action: {
-            /** Label */
-            label: string;
-            /** Route */
-            route: string;
-        };
         /** AmortisationRow */
         AmortisationRow: {
             balance: components["schemas"]["engine__forecast__money__Money"];
@@ -462,6 +693,25 @@ export interface components {
              * @default 0
              */
             trade_receivables: number;
+        };
+        /** BillCheckRequest */
+        BillCheckRequest: {
+            /** Bill Id */
+            bill_id: string;
+        };
+        /** BillCheckResponse */
+        BillCheckResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Bill Id */
+            bill_id: string;
+            /** Check */
+            check: {
+                [key: string]: unknown;
+            };
         };
         /** BillsImport */
         BillsImport: {
@@ -615,7 +865,7 @@ export interface components {
              * Findings
              * @description Alert findings raised by this run.
              */
-            findings?: components["schemas"]["Finding"][];
+            findings?: components["schemas"]["engine__forecast___contracts__Finding"][];
             /** First Week Below Buffer */
             first_week_below_buffer: number | null;
             /**
@@ -829,6 +1079,23 @@ export interface components {
             /** Rule Trace */
             rule_trace: components["schemas"]["RuleCheck"][];
         };
+        /** DecisionRequest */
+        DecisionRequest: {
+            /**
+             * Assertion
+             * @description WebAuthn assertion for passkey step-up (CG-8); stored in the audit record.
+             */
+            assertion?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject";
+            /** Note */
+            note?: string | null;
+        };
         /** DecisionResponse */
         DecisionResponse: {
             /**
@@ -932,6 +1199,21 @@ export interface components {
             supplier_id: string;
             total: components["schemas"]["engine__forecast__money__Money"];
         };
+        /** DrawerReconcileRow */
+        DrawerReconcileRow: {
+            /** Branch Id */
+            branch_id: string;
+            /** Business Date */
+            business_date: string;
+            /** Cash Deposited Minor */
+            cash_deposited_minor: number;
+            /** Cash Sales Minor */
+            cash_sales_minor: number;
+            /** Status */
+            status: string;
+            /** Variance Minor */
+            variance_minor: number;
+        };
         /** EarlyPaymentTerms */
         EarlyPaymentTerms: {
             /** Discount Bp */
@@ -1018,6 +1300,20 @@ export interface components {
             /** Value */
             value?: number | null;
         };
+        /** Action */
+        engine__forecast___contracts__Action: {
+            /** Label */
+            label: string;
+            /** Route */
+            route: string;
+        };
+        /** Evidence */
+        engine__forecast___contracts__Evidence: {
+            /** Kind */
+            kind: string;
+            /** Ref */
+            ref: string;
+        };
         /**
          * Figure
          * @description One number the product shows, with everything needed to explain it.
@@ -1074,11 +1370,66 @@ export interface components {
             value?: number | null;
         };
         /**
+         * Finding
+         * @description Blueprint Finding; the fields after `actions` are the proposed additive fields.
+         */
+        engine__forecast___contracts__Finding: {
+            /** Actions */
+            actions: components["schemas"]["engine__forecast___contracts__Action"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Dedupe Key
+             * @description Stable across runs, so the briefing never repeats an alert.
+             */
+            dedupe_key: string;
+            /** Detail */
+            detail?: string | null;
+            /** Evidence */
+            evidence: components["schemas"]["engine__forecast___contracts__Evidence"][];
+            /** Figures */
+            figures?: components["schemas"]["engine__forecast___contracts__Figure"][];
+            /** Id */
+            id: string;
+            money_at_stake: components["schemas"]["engine__forecast__money__Money"];
+            period?: components["schemas"]["engine__forecast___contracts__Period"] | null;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "high" | "medium" | "low";
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "forecast" | "inventory" | "launch_lab" | "decisions" | "financing";
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /**
          * Origin
          * @description Where an input or threshold came from.
          * @enum {string}
          */
         engine__forecast___contracts__Origin: "user_provided" | "ledger_derived" | "market_observed" | "engine_estimate" | "assumption_unverified" | "figure" | "stub" | "tenant_policy" | "rulebook" | "owner" | "draft_default";
+        /** Period */
+        engine__forecast___contracts__Period: {
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+        };
         /** Threshold */
         engine__forecast___contracts__Threshold: {
             /**
@@ -1129,13 +1480,6 @@ export interface components {
             }[];
             /** Next Offset */
             next_offset: number | null;
-        };
-        /** Evidence */
-        Evidence: {
-            /** Kind */
-            kind: string;
-            /** Ref */
-            ref: string;
         };
         /**
          * Explain
@@ -1292,48 +1636,6 @@ export interface components {
              */
             verification: "primary" | "secondary" | "assumption" | "unverified" | "indicative_range";
         };
-        /**
-         * Finding
-         * @description Blueprint Finding; the fields after `actions` are the proposed additive fields.
-         */
-        Finding: {
-            /** Actions */
-            actions: components["schemas"]["Action"][];
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Dedupe Key
-             * @description Stable across runs, so the briefing never repeats an alert.
-             */
-            dedupe_key: string;
-            /** Detail */
-            detail?: string | null;
-            /** Evidence */
-            evidence: components["schemas"]["Evidence"][];
-            /** Figures */
-            figures?: components["schemas"]["engine__forecast___contracts__Figure"][];
-            /** Id */
-            id: string;
-            money_at_stake: components["schemas"]["engine__forecast__money__Money"];
-            period?: components["schemas"]["Period"] | null;
-            /**
-             * Severity
-             * @enum {string}
-             */
-            severity: "high" | "medium" | "low";
-            /**
-             * Source
-             * @enum {string}
-             */
-            source: "forecast" | "inventory" | "launch_lab" | "decisions" | "financing";
-            /** Title */
-            title: string;
-            /** Type */
-            type: string;
-        };
         /** FindingsResponse */
         FindingsResponse: {
             /**
@@ -1346,7 +1648,7 @@ export interface components {
              * Findings
              * @description Highest money at stake first; severity breaks ties.
              */
-            findings: components["schemas"]["Finding"][];
+            findings: components["schemas"]["engine__forecast___contracts__Finding"][];
             /**
              * Generated At
              * Format: date-time
@@ -1368,6 +1670,198 @@ export interface components {
             /** Tenant Id */
             tenant_id: string;
         };
+        /** Action */
+        fiona_contracts__models__Action: {
+            /** Kind */
+            kind?: ("primary" | "secondary") | null;
+            /** Label */
+            label: string;
+            /** Route */
+            route: string;
+        };
+        /** Evidence */
+        fiona_contracts__models__Evidence: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ledger_event" | "ledger_row" | "bank_line" | "document" | "bill" | "party" | "purchase_order" | "goods_received" | "invoice" | "forecast_run" | "tool_result" | "figure" | "mandate" | "rule" | "external";
+            /** Note */
+            note?: string | null;
+            /** Ref */
+            ref: string;
+        };
+        /** Figure */
+        fiona_contracts__models__Figure: {
+            /** Formula */
+            formula?: string | null;
+            /**
+             * Inputs
+             * @default []
+             */
+            inputs: components["schemas"]["fiona_contracts__models__FigureInput"][] | null;
+            /** Label */
+            label: string;
+            /**
+             * Metric Id
+             * @description ID in rulebook/metrics.yaml.
+             */
+            metric_id: string;
+            /**
+             * Missing
+             * @default []
+             */
+            missing: components["schemas"]["MissingItem"][] | null;
+            money?: components["schemas"]["fiona_contracts__models__Money"] | null;
+            /** Note */
+            note?: string | null;
+            /**
+             * Source Refs
+             * @default []
+             */
+            source_refs: components["schemas"]["SourceRef"][] | null;
+            /**
+             * Status
+             * @default ok
+             */
+            status: ("ok" | "insufficient_data" | "not_applicable") | null;
+            /**
+             * Thresholds
+             * @default []
+             */
+            thresholds: components["schemas"]["fiona_contracts__models__Threshold"][] | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "minor" | "bp" | "units" | "days" | "weeks" | "months" | "count";
+            /** Value */
+            value?: number | null;
+        };
+        /** FigureInput */
+        fiona_contracts__models__FigureInput: {
+            /** Metric Id */
+            metric_id?: string | null;
+            money?: components["schemas"]["fiona_contracts__models__Money"] | null;
+            /** Name */
+            name: string;
+            /**
+             * Origin
+             * @description Where a number or assumption comes from.
+             * @enum {string}
+             */
+            origin: "user_provided" | "ledger_derived" | "market_observed" | "engine_estimate" | "assumption_unverified" | "figure" | "stub" | "tenant_policy" | "rulebook" | "owner" | "draft_default";
+            /**
+             * Ref
+             * @description An evidence ID, or a metric_id when origin is figure.
+             */
+            ref?: string | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "minor" | "bp" | "units" | "days" | "weeks" | "months" | "count";
+            /** Value */
+            value?: number | null;
+        };
+        /** Finding */
+        fiona_contracts__models__Finding: {
+            /** Actions */
+            actions: components["schemas"]["fiona_contracts__models__Action"][];
+            /**
+             * Created At
+             * @description ISO 8601 instant in UTC with a trailing Z, e.g. 2026-10-22T09:15:00Z (R4).
+             */
+            created_at: string;
+            /**
+             * Dedupe Key
+             * @description Stable key so a re-run doesn't duplicate the same finding.
+             */
+            dedupe_key: string;
+            /** Detail */
+            detail?: string | null;
+            /** Evidence */
+            evidence: components["schemas"]["fiona_contracts__models__Evidence"][];
+            /**
+             * Figures
+             * @default []
+             */
+            figures: components["schemas"]["fiona_contracts__models__Figure"][] | null;
+            /** Id */
+            id: string;
+            /** @description What is at stake, used to rank the briefing. null when the finding has no money attached (it then ranks after those with money). */
+            money_at_stake: components["schemas"]["fiona_contracts__models__Money"] | null;
+            period?: components["schemas"]["fiona_contracts__models__Period"] | null;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "high" | "medium" | "low";
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "ledger" | "reconciliation" | "pos" | "invoices" | "forecast" | "inventory" | "launch_lab" | "decisions" | "financing" | "stage" | "frameworks" | "guardian";
+            /** Title */
+            title: string;
+            /**
+             * Type
+             * @description Module-specific kind, e.g. cash_below_buffer, dead_stock, duplicate_bill.
+             */
+            type: string;
+        };
+        /** Money */
+        fiona_contracts__models__Money: {
+            /**
+             * Currency
+             * @description ISO 4217 currency code, upper case.
+             */
+            currency: string;
+            /**
+             * Minor
+             * @description Integer minor units. Negative only where the field says so.
+             */
+            minor: number;
+        };
+        /** Period */
+        fiona_contracts__models__Period: {
+            /**
+             * End
+             * @description A calendar date (YYYY-MM-DD), the business date in the tenant's time zone.
+             */
+            end: string;
+            /**
+             * Start
+             * @description A calendar date (YYYY-MM-DD), the business date in the tenant's time zone.
+             */
+            start: string;
+        };
+        /** Threshold */
+        fiona_contracts__models__Threshold: {
+            /**
+             * Comparison
+             * @enum {string}
+             */
+            comparison: ">=" | "<=" | ">" | "<";
+            money?: components["schemas"]["fiona_contracts__models__Money"] | null;
+            /** Name */
+            name: string;
+            /**
+             * Origin
+             * @description Where a number or assumption comes from.
+             * @enum {string}
+             */
+            origin: "user_provided" | "ledger_derived" | "market_observed" | "engine_estimate" | "assumption_unverified" | "figure" | "stub" | "tenant_policy" | "rulebook" | "owner" | "draft_default";
+            /** Passed */
+            passed?: boolean | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "minor" | "bp" | "units" | "days" | "weeks" | "months" | "count";
+            /** Value */
+            value?: number | null;
+        };
         /** ForecastMethod */
         ForecastMethod: {
             /** Backtest */
@@ -1379,7 +1873,7 @@ export interface components {
             band: string;
             /** Description */
             description: string;
-            history?: components["schemas"]["Period"] | null;
+            history?: components["schemas"]["engine__forecast___contracts__Period"] | null;
             /** Name */
             name: string;
         };
@@ -1411,7 +1905,7 @@ export interface components {
              * Data Source
              * @enum {string}
              */
-            data_source: "stub" | "ledger" | "request";
+            data_source: "ledger" | "request";
             /**
              * Generated At
              * Format: date-time
@@ -1543,7 +2037,7 @@ export interface components {
             /** Draft Purchase Orders */
             draft_purchase_orders: components["schemas"]["DraftPurchaseOrder"][];
             /** Findings */
-            findings?: components["schemas"]["Finding"][];
+            findings?: components["schemas"]["engine__forecast___contracts__Finding"][];
             /**
              * Generated At
              * Format: date-time
@@ -1568,7 +2062,7 @@ export interface components {
             summary: components["schemas"]["engine__forecast___contracts__Figure"][];
             /** Tenant Id */
             tenant_id: string;
-            window: components["schemas"]["Period"];
+            window: components["schemas"]["engine__forecast___contracts__Period"];
         };
         /** InventoryItem */
         InventoryItem: {
@@ -1785,7 +2279,7 @@ export interface components {
             engine_version: string;
             explain: components["schemas"]["Explain"];
             /** Findings */
-            findings?: components["schemas"]["Finding"][];
+            findings?: components["schemas"]["engine__forecast___contracts__Finding"][];
             /**
              * Generated At
              * Format: date-time
@@ -1855,6 +2349,8 @@ export interface components {
              */
             urgency: "before_order" | "before_launch" | "after_launch";
         };
+        /** MissingItem */
+        MissingItem: string;
         /**
          * Money
          * @description `{ "minor": 18450000, "currency": "PKR" }`. Floats are rejected, never coerced.
@@ -1998,19 +2494,6 @@ export interface components {
             /** Wallet Ref */
             wallet_ref?: string | null;
         };
-        /** Period */
-        Period: {
-            /**
-             * End
-             * Format: date
-             */
-            end: string;
-            /**
-             * Start
-             * Format: date
-             */
-            start: string;
-        };
         /** PlanSummary */
         PlanSummary: {
             /** Figures */
@@ -2022,6 +2505,63 @@ export interface components {
              * @enum {string}
              */
             plan: "proposed" | "pilot";
+        };
+        /** POSDiscrepancy */
+        POSDiscrepancy: {
+            /** Amount Minor */
+            amount_minor: number;
+            /** Branch Id */
+            branch_id: string;
+            /** Business Date */
+            business_date: string;
+            /** Category */
+            category: string;
+            /** Description */
+            description: string;
+            /** Severity */
+            severity: string;
+        };
+        /** POSReconcileResponse */
+        POSReconcileResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** As Of */
+            as_of: string;
+            /** Drawer Reconciliations */
+            drawer_reconciliations: components["schemas"]["DrawerReconcileRow"][];
+            /** Exceptions */
+            exceptions: components["schemas"]["POSDiscrepancy"][];
+            /** Run Id */
+            run_id: string;
+            /** Settlement Batches */
+            settlement_batches: components["schemas"]["SettlementBatchRow"][];
+            summary: components["schemas"]["POSReconcileSummary"];
+            /** Tenant Id */
+            tenant_id: string;
+        };
+        /** POSReconcileSummary */
+        POSReconcileSummary: {
+            /** Net Drawer Variance Minor */
+            net_drawer_variance_minor: number;
+            /** Total Card Sales Minor */
+            total_card_sales_minor: number;
+            /** Total Card Settled Minor */
+            total_card_settled_minor: number;
+            /** Total Cash Deposited Minor */
+            total_cash_deposited_minor: number;
+            /** Total Cash Sales Minor */
+            total_cash_sales_minor: number;
+            /** Total Merchant Fees Minor */
+            total_merchant_fees_minor: number;
+            /** Total Net Sales Minor */
+            total_net_sales_minor: number;
+            /** Total Pos Gross Minor */
+            total_pos_gross_minor: number;
+            /** Total Refunds Minor */
+            total_refunds_minor: number;
         };
         /** PriceOutcome */
         PriceOutcome: {
@@ -2099,7 +2639,7 @@ export interface components {
              * Data Source
              * @enum {string}
              */
-            data_source: "stub" | "ledger" | "request";
+            data_source: "ledger" | "request";
             /** Figures */
             figures: components["schemas"]["engine__analysis___contracts__Figure"][];
             /**
@@ -2133,6 +2673,71 @@ export interface components {
             reason_codes: string[];
             /** Rule Trace */
             rule_trace: components["schemas"]["RuleCheck"][];
+        };
+        /** ReconcileFindingsResponse */
+        ReconcileFindingsResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Findings */
+            findings: components["schemas"]["fiona_contracts__models__Finding"][];
+            /**
+             * Ranked By
+             * @default money_at_stake
+             */
+            ranked_by: string;
+        };
+        /** ReconcileMatch */
+        ReconcileMatch: {
+            /** Bank Line Id */
+            bank_line_id: string;
+            /** Confidence */
+            confidence: number;
+            /** Event Ids */
+            event_ids: string[];
+            /** Match Id */
+            match_id: string;
+            /** Pass Name */
+            pass_name: string;
+            /** Status */
+            status: string;
+        };
+        /** ReconcileMatchesResponse */
+        ReconcileMatchesResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Matches */
+            matches: components["schemas"]["ReconcileMatch"][];
+        };
+        /** ReconcileRunResponse */
+        ReconcileRunResponse: {
+            /**
+             * Api Version
+             * @default v1
+             */
+            api_version: string;
+            /** Exact */
+            exact: number;
+            /**
+             * Fuzzy
+             * @default 0
+             */
+            fuzzy: number;
+            /** Matched Bank Lines */
+            matched_bank_lines: number;
+            /** One To Many */
+            one_to_many: number;
+            /** Rule */
+            rule: number;
+            /** Run Id */
+            run_id: string;
+            /** Unmatched Bank Lines */
+            unmatched_bank_lines: number;
         };
         /**
          * RuleCheck
@@ -2184,6 +2789,27 @@ export interface components {
             /** Swing Bp */
             swing_bp: number;
         };
+        /** SettlementBatchRow */
+        SettlementBatchRow: {
+            /** Bank Line Id */
+            bank_line_id: string | null;
+            /** Branch Id */
+            branch_id: string;
+            /** Business Date */
+            business_date: string;
+            /** Fee Minor */
+            fee_minor: number;
+            /** Fee Rate Bp */
+            fee_rate_bp: number;
+            /** Gross Pos Minor */
+            gross_pos_minor: number;
+            /** Payment Method */
+            payment_method: string;
+            /** Settled Amount Minor */
+            settled_amount_minor: number;
+            /** Status */
+            status: string;
+        };
         /** Simulation */
         Simulation: {
             /**
@@ -2213,6 +2839,8 @@ export interface components {
             /** Size */
             size: string;
         };
+        /** SourceRef */
+        SourceRef: string;
         /**
          * SourceStatus
          * @description Whether each producing engine contributed, so one failure never hides the others.
@@ -2249,7 +2877,7 @@ export interface components {
              * Data Source
              * @enum {string}
              */
-            data_source: "stub" | "ledger" | "request";
+            data_source: "ledger" | "request";
             /**
              * Generated At
              * Format: date-time
@@ -2709,6 +3337,66 @@ export interface operations {
             };
         };
     };
+    audit_export_v1_audit_export_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bill_check_v1_bills_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BillCheckRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillCheckResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     debt_equity_v1_decisions_debt_equity_post: {
         parameters: {
             query?: never;
@@ -3093,6 +3781,344 @@ export interface operations {
             };
         };
     };
+    run_participation_v1_participation_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_proposals_v1_proposals_get: {
+        parameters: {
+            query?: {
+                needs_owner?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_proposal_v1_proposals_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_proposal_v1_proposals__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_proposal_v1_proposals__proposal_id__decide_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+                "x-user-id"?: string;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_proposal_v1_proposals__proposal_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+                "x-user-id"?: string;
+            };
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_findings_v1_reconcile_findings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconcileFindingsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_matches_v1_reconcile_matches_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconcileMatchesResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_pos_v1_reconcile_pos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["POSReconcileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_run_v1_reconcile_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconcileRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_stage_v1_stage_get: {
         parameters: {
             query?: never;
@@ -3142,6 +4168,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PayResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    whoami_v1_whoami_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */

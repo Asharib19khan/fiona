@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, MoneyText, OutcomeBadge } from "@fiona/ui";
+import { Card, MoneyText } from "@fiona/ui";
 
 export interface InventoryItemData {
   sku: string;

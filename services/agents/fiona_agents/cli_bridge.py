@@ -12,7 +12,6 @@ import os
 import shutil
 import subprocess
 import time
-from typing import Any
 
 log = logging.getLogger("fiona.cli_bridge")
 

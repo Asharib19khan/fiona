@@ -110,7 +110,7 @@ write(modelsPath, py);
 const openapiPath = path.join(PKG, "openapi", "engine.v1.json");
 const exportDir = mkdtempSync(path.join(os.tmpdir(), "fiona-openapi-"));
 try {
-  const tarball = spawnSync("git", ["archive", "--format=tar", "HEAD", "services/engine", "packages/contracts/python"], {
+  const tarball = spawnSync("git", ["archive", "--format=tar", "HEAD", "services/engine", "packages/contracts/python", "rulebook"], {
     cwd: REPO,
     maxBuffer: 1 << 30,
   });

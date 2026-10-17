@@ -1,24 +1,6 @@
 {
   "components": {
     "schemas": {
-      "Action": {
-        "properties": {
-          "label": {
-            "title": "Label",
-            "type": "string"
-          },
-          "route": {
-            "title": "Route",
-            "type": "string"
-          }
-        },
-        "required": [
-          "label",
-          "route"
-        ],
-        "title": "Action",
-        "type": "object"
-      },
       "AmortisationRow": {
         "properties": {
           "balance": {
@@ -249,6 +231,44 @@
           "equity"
         ],
         "title": "BalanceSheet",
+        "type": "object"
+      },
+      "BillCheckRequest": {
+        "properties": {
+          "bill_id": {
+            "minLength": 1,
+            "title": "Bill Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bill_id"
+        ],
+        "title": "BillCheckRequest",
+        "type": "object"
+      },
+      "BillCheckResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "bill_id": {
+            "title": "Bill Id",
+            "type": "string"
+          },
+          "check": {
+            "additionalProperties": true,
+            "title": "Check",
+            "type": "object"
+          }
+        },
+        "required": [
+          "bill_id",
+          "check"
+        ],
+        "title": "BillCheckResponse",
         "type": "object"
       },
       "BillTiming": {
@@ -593,7 +613,7 @@
           "findings": {
             "description": "Alert findings raised by this run.",
             "items": {
-              "$ref": "#/components/schemas/Finding"
+              "$ref": "#/components/schemas/engine__forecast___contracts__Finding"
             },
             "title": "Findings",
             "type": "array"
@@ -1186,6 +1206,49 @@
         "title": "DecisionRecommendation",
         "type": "object"
       },
+      "DecisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "assertion": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "WebAuthn assertion for passkey step-up (CG-8); stored in the audit record.",
+            "title": "Assertion"
+          },
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "DecisionRequest",
+        "type": "object"
+      },
       "DecisionResponse": {
         "properties": {
           "api_version": {
@@ -1451,6 +1514,45 @@
         "title": "DraftPurchaseOrder",
         "type": "object"
       },
+      "DrawerReconcileRow": {
+        "additionalProperties": false,
+        "properties": {
+          "branch_id": {
+            "title": "Branch Id",
+            "type": "string"
+          },
+          "business_date": {
+            "title": "Business Date",
+            "type": "string"
+          },
+          "cash_deposited_minor": {
+            "title": "Cash Deposited Minor",
+            "type": "integer"
+          },
+          "cash_sales_minor": {
+            "title": "Cash Sales Minor",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "variance_minor": {
+            "title": "Variance Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "business_date",
+          "branch_id",
+          "cash_sales_minor",
+          "cash_deposited_minor",
+          "variance_minor",
+          "status"
+        ],
+        "title": "DrawerReconcileRow",
+        "type": "object"
+      },
       "EarlyPaymentTerms": {
         "properties": {
           "discount_bp": {
@@ -1573,24 +1675,6 @@
           "next_offset"
         ],
         "title": "EventsResponse",
-        "type": "object"
-      },
-      "Evidence": {
-        "properties": {
-          "kind": {
-            "title": "Kind",
-            "type": "string"
-          },
-          "ref": {
-            "title": "Ref",
-            "type": "string"
-          }
-        },
-        "required": [
-          "kind",
-          "ref"
-        ],
-        "title": "Evidence",
         "type": "object"
       },
       "Explain": {
@@ -1976,112 +2060,6 @@
         "title": "FinancingOption",
         "type": "object"
       },
-      "Finding": {
-        "description": "Blueprint Finding; the fields after `actions` are the proposed additive fields.",
-        "properties": {
-          "actions": {
-            "items": {
-              "$ref": "#/components/schemas/Action"
-            },
-            "title": "Actions",
-            "type": "array"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "dedupe_key": {
-            "description": "Stable across runs, so the briefing never repeats an alert.",
-            "title": "Dedupe Key",
-            "type": "string"
-          },
-          "detail": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Detail"
-          },
-          "evidence": {
-            "items": {
-              "$ref": "#/components/schemas/Evidence"
-            },
-            "title": "Evidence",
-            "type": "array"
-          },
-          "figures": {
-            "items": {
-              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
-            },
-            "title": "Figures",
-            "type": "array"
-          },
-          "id": {
-            "title": "Id",
-            "type": "string"
-          },
-          "money_at_stake": {
-            "$ref": "#/components/schemas/engine__forecast__money__Money"
-          },
-          "period": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Period"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "severity": {
-            "enum": [
-              "high",
-              "medium",
-              "low"
-            ],
-            "title": "Severity",
-            "type": "string"
-          },
-          "source": {
-            "enum": [
-              "forecast",
-              "inventory",
-              "launch_lab",
-              "decisions",
-              "financing"
-            ],
-            "title": "Source",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "type": {
-            "title": "Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "source",
-          "severity",
-          "title",
-          "money_at_stake",
-          "evidence",
-          "actions",
-          "type",
-          "created_at",
-          "dedupe_key"
-        ],
-        "title": "Finding",
-        "type": "object"
-      },
       "FindingsResponse": {
         "properties": {
           "api_version": {
@@ -2093,7 +2071,7 @@
           "findings": {
             "description": "Highest money at stake first; severity breaks ties.",
             "items": {
-              "$ref": "#/components/schemas/Finding"
+              "$ref": "#/components/schemas/engine__forecast___contracts__Finding"
             },
             "title": "Findings",
             "type": "array"
@@ -2160,7 +2138,7 @@
           "history": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/Period"
+                "$ref": "#/components/schemas/engine__forecast___contracts__Period"
               },
               {
                 "type": "null"
@@ -2252,7 +2230,6 @@
           },
           "data_source": {
             "enum": [
-              "stub",
               "ledger",
               "request"
             ],
@@ -2499,7 +2476,7 @@
           },
           "findings": {
             "items": {
-              "$ref": "#/components/schemas/Finding"
+              "$ref": "#/components/schemas/engine__forecast___contracts__Finding"
             },
             "title": "Findings",
             "type": "array"
@@ -2561,7 +2538,7 @@
             "type": "string"
           },
           "window": {
-            "$ref": "#/components/schemas/Period"
+            "$ref": "#/components/schemas/engine__forecast___contracts__Period"
           }
         },
         "required": [
@@ -3398,7 +3375,7 @@
           },
           "findings": {
             "items": {
-              "$ref": "#/components/schemas/Finding"
+              "$ref": "#/components/schemas/engine__forecast___contracts__Finding"
             },
             "title": "Findings",
             "type": "array"
@@ -3615,6 +3592,11 @@
         "title": "Lever",
         "type": "object"
       },
+      "MissingItem": {
+        "minLength": 1,
+        "title": "MissingItem",
+        "type": "string"
+      },
       "Money-Input": {
         "description": "`{ \"minor\": 18450000, \"currency\": \"PKR\" }`. Floats are rejected, never coerced.",
         "properties": {
@@ -3783,6 +3765,156 @@
           }
         },
         "title": "OwnerConstraints",
+        "type": "object"
+      },
+      "POSDiscrepancy": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_minor": {
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "branch_id": {
+            "title": "Branch Id",
+            "type": "string"
+          },
+          "business_date": {
+            "title": "Business Date",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "branch_id",
+          "business_date",
+          "category",
+          "description",
+          "amount_minor"
+        ],
+        "title": "POSDiscrepancy",
+        "type": "object"
+      },
+      "POSReconcileResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "as_of": {
+            "title": "As Of",
+            "type": "string"
+          },
+          "drawer_reconciliations": {
+            "items": {
+              "$ref": "#/components/schemas/DrawerReconcileRow"
+            },
+            "title": "Drawer Reconciliations",
+            "type": "array"
+          },
+          "exceptions": {
+            "items": {
+              "$ref": "#/components/schemas/POSDiscrepancy"
+            },
+            "title": "Exceptions",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "settlement_batches": {
+            "items": {
+              "$ref": "#/components/schemas/SettlementBatchRow"
+            },
+            "title": "Settlement Batches",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/POSReconcileSummary"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "as_of",
+          "tenant_id",
+          "summary",
+          "drawer_reconciliations",
+          "settlement_batches",
+          "exceptions"
+        ],
+        "title": "POSReconcileResponse",
+        "type": "object"
+      },
+      "POSReconcileSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "net_drawer_variance_minor": {
+            "title": "Net Drawer Variance Minor",
+            "type": "integer"
+          },
+          "total_card_sales_minor": {
+            "title": "Total Card Sales Minor",
+            "type": "integer"
+          },
+          "total_card_settled_minor": {
+            "title": "Total Card Settled Minor",
+            "type": "integer"
+          },
+          "total_cash_deposited_minor": {
+            "title": "Total Cash Deposited Minor",
+            "type": "integer"
+          },
+          "total_cash_sales_minor": {
+            "title": "Total Cash Sales Minor",
+            "type": "integer"
+          },
+          "total_merchant_fees_minor": {
+            "title": "Total Merchant Fees Minor",
+            "type": "integer"
+          },
+          "total_net_sales_minor": {
+            "title": "Total Net Sales Minor",
+            "type": "integer"
+          },
+          "total_pos_gross_minor": {
+            "title": "Total Pos Gross Minor",
+            "type": "integer"
+          },
+          "total_refunds_minor": {
+            "title": "Total Refunds Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total_pos_gross_minor",
+          "total_refunds_minor",
+          "total_net_sales_minor",
+          "total_cash_sales_minor",
+          "total_cash_deposited_minor",
+          "total_card_sales_minor",
+          "total_card_settled_minor",
+          "total_merchant_fees_minor",
+          "net_drawer_variance_minor"
+        ],
+        "title": "POSReconcileSummary",
         "type": "object"
       },
       "PayRequest": {
@@ -4035,26 +4167,6 @@
           "totals"
         ],
         "title": "PaymentTimingResponse",
-        "type": "object"
-      },
-      "Period": {
-        "properties": {
-          "end": {
-            "format": "date",
-            "title": "End",
-            "type": "string"
-          },
-          "start": {
-            "format": "date",
-            "title": "Start",
-            "type": "string"
-          }
-        },
-        "required": [
-          "start",
-          "end"
-        ],
-        "title": "Period",
         "type": "object"
       },
       "PlanSummary": {
@@ -4320,7 +4432,6 @@
           },
           "data_source": {
             "enum": [
-              "stub",
               "ledger",
               "request"
             ],
@@ -4413,6 +4524,142 @@
           "reason_codes"
         ],
         "title": "Recommendation",
+        "type": "object"
+      },
+      "ReconcileFindingsResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/fiona_contracts__models__Finding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "ranked_by": {
+            "default": "money_at_stake",
+            "title": "Ranked By",
+            "type": "string"
+          }
+        },
+        "required": [
+          "findings"
+        ],
+        "title": "ReconcileFindingsResponse",
+        "type": "object"
+      },
+      "ReconcileMatch": {
+        "properties": {
+          "bank_line_id": {
+            "title": "Bank Line Id",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "event_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Event Ids",
+            "type": "array"
+          },
+          "match_id": {
+            "title": "Match Id",
+            "type": "string"
+          },
+          "pass_name": {
+            "title": "Pass Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "match_id",
+          "bank_line_id",
+          "event_ids",
+          "pass_name",
+          "confidence",
+          "status"
+        ],
+        "title": "ReconcileMatch",
+        "type": "object"
+      },
+      "ReconcileMatchesResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/ReconcileMatch"
+            },
+            "title": "Matches",
+            "type": "array"
+          }
+        },
+        "required": [
+          "matches"
+        ],
+        "title": "ReconcileMatchesResponse",
+        "type": "object"
+      },
+      "ReconcileRunResponse": {
+        "properties": {
+          "api_version": {
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "exact": {
+            "title": "Exact",
+            "type": "integer"
+          },
+          "fuzzy": {
+            "default": 0,
+            "title": "Fuzzy",
+            "type": "integer"
+          },
+          "matched_bank_lines": {
+            "title": "Matched Bank Lines",
+            "type": "integer"
+          },
+          "one_to_many": {
+            "title": "One To Many",
+            "type": "integer"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "unmatched_bank_lines": {
+            "title": "Unmatched Bank Lines",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "matched_bank_lines",
+          "unmatched_bank_lines",
+          "exact",
+          "rule",
+          "one_to_many"
+        ],
+        "title": "ReconcileRunResponse",
         "type": "object"
       },
       "RuleCheck": {
@@ -4539,6 +4786,67 @@
         "title": "SensitivityRow",
         "type": "object"
       },
+      "SettlementBatchRow": {
+        "additionalProperties": false,
+        "properties": {
+          "bank_line_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Line Id"
+          },
+          "branch_id": {
+            "title": "Branch Id",
+            "type": "string"
+          },
+          "business_date": {
+            "title": "Business Date",
+            "type": "string"
+          },
+          "fee_minor": {
+            "title": "Fee Minor",
+            "type": "integer"
+          },
+          "fee_rate_bp": {
+            "title": "Fee Rate Bp",
+            "type": "integer"
+          },
+          "gross_pos_minor": {
+            "title": "Gross Pos Minor",
+            "type": "integer"
+          },
+          "payment_method": {
+            "title": "Payment Method",
+            "type": "string"
+          },
+          "settled_amount_minor": {
+            "title": "Settled Amount Minor",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "business_date",
+          "branch_id",
+          "payment_method",
+          "gross_pos_minor",
+          "settled_amount_minor",
+          "fee_minor",
+          "fee_rate_bp",
+          "bank_line_id",
+          "status"
+        ],
+        "title": "SettlementBatchRow",
+        "type": "object"
+      },
       "Simulation": {
         "properties": {
           "demand_evidence": {
@@ -4607,6 +4915,11 @@
         ],
         "title": "SizeShare",
         "type": "object"
+      },
+      "SourceRef": {
+        "minLength": 1,
+        "title": "SourceRef",
+        "type": "string"
       },
       "SourceStatus": {
         "description": "Whether each producing engine contributed, so one failure never hides the others.",
@@ -4694,7 +5007,6 @@
           },
           "data_source": {
             "enum": [
-              "stub",
               "ledger",
               "request"
             ],
@@ -5614,6 +5926,42 @@
         "title": "Threshold",
         "type": "object"
       },
+      "engine__forecast___contracts__Action": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "route"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
+      "engine__forecast___contracts__Evidence": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
       "engine__forecast___contracts__Figure": {
         "description": "One number the product shows, with everything needed to explain it.",
         "properties": {
@@ -5785,6 +6133,112 @@
         "title": "FigureInput",
         "type": "object"
       },
+      "engine__forecast___contracts__Finding": {
+        "description": "Blueprint Finding; the fields after `actions` are the proposed additive fields.",
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Action"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "dedupe_key": {
+            "description": "Stable across runs, so the briefing never repeats an alert.",
+            "title": "Dedupe Key",
+            "type": "string"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "figures": {
+            "items": {
+              "$ref": "#/components/schemas/engine__forecast___contracts__Figure"
+            },
+            "title": "Figures",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "money_at_stake": {
+            "$ref": "#/components/schemas/engine__forecast__money__Money"
+          },
+          "period": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/engine__forecast___contracts__Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "severity": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "forecast",
+              "inventory",
+              "launch_lab",
+              "decisions",
+              "financing"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "severity",
+          "title",
+          "money_at_stake",
+          "evidence",
+          "actions",
+          "type",
+          "created_at",
+          "dedupe_key"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
       "engine__forecast___contracts__Origin": {
         "description": "Where an input or threshold came from.",
         "enum": [
@@ -5802,6 +6256,26 @@
         ],
         "title": "Origin",
         "type": "string"
+      },
+      "engine__forecast___contracts__Period": {
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "Period",
+        "type": "object"
       },
       "engine__forecast___contracts__Threshold": {
         "properties": {
@@ -5884,6 +6358,610 @@
           "currency"
         ],
         "title": "Money",
+        "type": "object"
+      },
+      "fiona_contracts__models__Action": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "primary",
+                  "secondary"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "route": {
+            "pattern": "^/",
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "route"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
+      "fiona_contracts__models__Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "ledger_event",
+              "ledger_row",
+              "bank_line",
+              "document",
+              "bill",
+              "party",
+              "purchase_order",
+              "goods_received",
+              "invoice",
+              "forecast_run",
+              "tool_result",
+              "figure",
+              "mandate",
+              "rule",
+              "external"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "ref": {
+            "minLength": 1,
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "fiona_contracts__models__Figure": {
+        "additionalProperties": false,
+        "properties": {
+          "formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula"
+          },
+          "inputs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/fiona_contracts__models__FigureInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Inputs"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "metric_id": {
+            "description": "ID in rulebook/metrics.yaml.",
+            "minLength": 1,
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "missing": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MissingItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Missing"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/fiona_contracts__models__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "source_refs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SourceRef"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Source Refs"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ok",
+                  "insufficient_data",
+                  "not_applicable"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "ok",
+            "title": "Status"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/fiona_contracts__models__Threshold"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Thresholds"
+          },
+          "unit": {
+            "enum": [
+              "minor",
+              "bp",
+              "units",
+              "days",
+              "weeks",
+              "months",
+              "count"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "metric_id",
+          "label",
+          "unit"
+        ],
+        "title": "Figure",
+        "type": "object"
+      },
+      "fiona_contracts__models__FigureInput": {
+        "additionalProperties": false,
+        "properties": {
+          "metric_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Id"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/fiona_contracts__models__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "description": "Where a number or assumption comes from.",
+            "enum": [
+              "user_provided",
+              "ledger_derived",
+              "market_observed",
+              "engine_estimate",
+              "assumption_unverified",
+              "figure",
+              "stub",
+              "tenant_policy",
+              "rulebook",
+              "owner",
+              "draft_default"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "An evidence ID, or a metric_id when origin is figure.",
+            "title": "Ref"
+          },
+          "unit": {
+            "enum": [
+              "minor",
+              "bp",
+              "units",
+              "days",
+              "weeks",
+              "months",
+              "count"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "name",
+          "origin",
+          "unit"
+        ],
+        "title": "FigureInput",
+        "type": "object"
+      },
+      "fiona_contracts__models__Finding": {
+        "additionalProperties": false,
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/fiona_contracts__models__Action"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "created_at": {
+            "description": "ISO 8601 instant in UTC with a trailing Z, e.g. 2026-10-22T09:15:00Z (R4).",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+            "title": "Created At",
+            "type": "string"
+          },
+          "dedupe_key": {
+            "description": "Stable key so a re-run doesn't duplicate the same finding.",
+            "minLength": 1,
+            "title": "Dedupe Key",
+            "type": "string"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/fiona_contracts__models__Evidence"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "figures": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/fiona_contracts__models__Figure"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": [],
+            "title": "Figures"
+          },
+          "id": {
+            "pattern": "^fnd_[A-Za-z0-9_]+$",
+            "title": "Id",
+            "type": "string"
+          },
+          "money_at_stake": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/fiona_contracts__models__Money"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What is at stake, used to rank the briefing. null when the finding has no money attached (it then ranks after those with money)."
+          },
+          "period": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/fiona_contracts__models__Period"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "severity": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "ledger",
+              "reconciliation",
+              "pos",
+              "invoices",
+              "forecast",
+              "inventory",
+              "launch_lab",
+              "decisions",
+              "financing",
+              "stage",
+              "frameworks",
+              "guardian"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "description": "Module-specific kind, e.g. cash_below_buffer, dead_stock, duplicate_bill.",
+            "minLength": 1,
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "type",
+          "severity",
+          "title",
+          "money_at_stake",
+          "evidence",
+          "actions",
+          "created_at",
+          "dedupe_key"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
+      "fiona_contracts__models__Money": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "description": "ISO 4217 currency code, upper case.",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "minor": {
+            "description": "Integer minor units. Negative only where the field says so.",
+            "title": "Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "minor",
+          "currency"
+        ],
+        "title": "Money",
+        "type": "object"
+      },
+      "fiona_contracts__models__Period": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "description": "A calendar date (YYYY-MM-DD), the business date in the tenant's time zone.",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "description": "A calendar date (YYYY-MM-DD), the business date in the tenant's time zone.",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "Period",
+        "type": "object"
+      },
+      "fiona_contracts__models__Threshold": {
+        "additionalProperties": false,
+        "properties": {
+          "comparison": {
+            "enum": [
+              ">=",
+              "<=",
+              ">",
+              "<"
+            ],
+            "title": "Comparison",
+            "type": "string"
+          },
+          "money": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/fiona_contracts__models__Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "description": "Where a number or assumption comes from.",
+            "enum": [
+              "user_provided",
+              "ledger_derived",
+              "market_observed",
+              "engine_estimate",
+              "assumption_unverified",
+              "figure",
+              "stub",
+              "tenant_policy",
+              "rulebook",
+              "owner",
+              "draft_default"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "unit": {
+            "enum": [
+              "minor",
+              "bp",
+              "units",
+              "days",
+              "weeks",
+              "months",
+              "count"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "name",
+          "origin",
+          "comparison",
+          "unit"
+        ],
+        "title": "Threshold",
         "type": "object"
       }
     }
@@ -6145,6 +7223,73 @@
           }
         },
         "summary": "Audit",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/audit/export": {
+      "get": {
+        "description": "Download a tenant-scoped, verified execution-evidence bundle.",
+        "operationId": "audit_export_v1_audit_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Audit Export",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/bills/check": {
+      "post": {
+        "description": "Run the read-only Guardian duplicate-bill check (G-05) for an imported bill.",
+        "operationId": "bill_check_v1_bills_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BillCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillCheckResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Bill Check",
         "tags": [
           "ledger"
         ]
@@ -6551,7 +7696,7 @@
     },
     "/v1/launch-lab/simulate": {
       "post": {
-        "description": "Mock mode returns the winter-shawl run for any valid request, stamped now.",
+        "description": "Simulate a product launch using resolved ledger history and market benchmarks (Y5).",
         "operationId": "launch_lab_simulate_v1_launch_lab_simulate_post",
         "requestBody": {
           "content": {
@@ -6697,6 +7842,494 @@
         ]
       }
     },
+    "/v1/participation/run": {
+      "post": {
+        "description": "Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.",
+        "operationId": "run_participation_v1_participation_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Run Participation V1 Participation Run Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Participation",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals": {
+      "get": {
+        "description": "List proposals for the tenant, projected with current status and verdict.",
+        "operationId": "list_proposals_v1_proposals_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "needs_owner",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Needs Owner",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Proposals V1 Proposals Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Proposals",
+        "tags": [
+          "ledger"
+        ]
+      },
+      "post": {
+        "description": "Store an agent proposal, run Guardian checks, and append to audit log.",
+        "operationId": "create_proposal_v1_proposals_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Proposal V1 Proposals Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Proposal",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}": {
+      "get": {
+        "description": "Get single proposal by ID with its verdict and decision history.",
+        "operationId": "get_proposal_v1_proposals__proposal_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Proposal V1 Proposals  Proposal Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Proposal",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/decide": {
+      "post": {
+        "description": "Record an owner decision (approve or reject) for an escalated proposal.",
+        "operationId": "decide_proposal_v1_proposals__proposal_id__decide_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "default": "usr_owner",
+              "title": "X-User-Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Decide Proposal V1 Proposals  Proposal Id  Decide Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide Proposal",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/decision": {
+      "post": {
+        "description": "Record an owner decision (approve or reject) for an escalated proposal.",
+        "operationId": "decide_proposal_v1_proposals__proposal_id__decision_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "default": "usr_owner",
+              "title": "X-User-Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Decide Proposal V1 Proposals  Proposal Id  Decision Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide Proposal",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/reconcile/findings": {
+      "get": {
+        "description": "Read-only findings for bank lines that still need reconciliation review.",
+        "operationId": "reconcile_findings_v1_reconcile_findings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconcileFindingsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reconcile Findings",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/reconcile/matches": {
+      "get": {
+        "operationId": "reconcile_matches_v1_reconcile_matches_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconcileMatchesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reconcile Matches",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/reconcile/pos": {
+      "post": {
+        "description": "Run POS sales register reconciliation against cash deposits and acquirer settlements.",
+        "operationId": "reconcile_pos_v1_reconcile_pos_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/POSReconcileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reconcile Pos",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/reconcile/run": {
+      "post": {
+        "description": "Run conservative deterministic matching; proposals require review before posting.",
+        "operationId": "reconcile_run_v1_reconcile_run_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconcileRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reconcile Run",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/stage": {
       "get": {
         "operationId": "get_stage_v1_stage_get",
@@ -6767,6 +8400,41 @@
         "summary": "Wallet Pay",
         "tags": [
           "ledger"
+        ]
+      }
+    },
+    "/v1/whoami": {
+      "get": {
+        "operationId": "whoami_v1_whoami_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Whoami V1 Whoami Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Whoami",
+        "tags": [
+          "meta"
         ]
       }
     }

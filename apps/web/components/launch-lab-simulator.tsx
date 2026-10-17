@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, MoneyText, OutcomeBadge } from "@fiona/ui";
+import { Card, OutcomeBadge } from "@fiona/ui";
 
 interface LaunchLabSimulatorProps {
   initialCurrency?: string;
@@ -9,17 +9,16 @@ interface LaunchLabSimulatorProps {
 }
 
 export function LaunchLabSimulator({
-  initialCurrency = "PKR",
   defaultCapitalMinor = 180_000_000, // PKR 1.8m
 }: LaunchLabSimulatorProps) {
   // Base scenario defaults (Winter Shawl)
-  const [baseUnitCost, setBaseUnitCost] = useState<number>(3500); // PKR
-  const [basePrice, setBasePrice] = useState<number>(7500); // PKR
-  const [baseDemand, setBaseDemand] = useState<number>(1200); // units over 6 months
-  const [marketingBudget, setMarketingBudget] = useState<number>(350_000); // PKR total
-  const [monthlyOverhead, setMonthlyOverhead] = useState<number>(85_000); // PKR / month
+  const baseUnitCost = 3500; // PKR
+  const basePrice = 7500; // PKR
+  const baseDemand = 1200; // units over 6 months
+  const marketingBudget = 350_000; // PKR total
+  const monthlyOverhead = 85_000; // PKR / month
   const [availableCapital, setAvailableCapital] = useState<number>(defaultCapitalMinor / 100); // PKR 1.8m
-  const [horizonMonths, setHorizonMonths] = useState<number>(6); // months
+  const horizonMonths = 6; // months
 
   // Interactive What-If adjustments
   const [priceShiftPct, setPriceShiftPct] = useState<number>(0); // -30% to +50%

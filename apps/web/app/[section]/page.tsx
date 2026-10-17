@@ -11,7 +11,7 @@ import {
   StateChip,
   VerdictPanel,
 } from "@fiona/ui";
-import { getMockProposals, screenPreviews } from "@/lib/mock-api";
+import { getMockProposals } from "@/lib/mock-api";
 import { demoCashWeeks, demoFinanceSnapshot } from "@/lib/tier-one-data";
 import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/server-read";
 import { routes } from "@/lib/routes";
@@ -399,12 +399,6 @@ function WalletScreen() {
       </Card>
     </div>
   );
-}
-
-function PreviewScreen({ section }: { section: keyof typeof screenPreviews }) {
-  const preview = screenPreviews[section];
-  const route = routes[section];
-  return <div className="section-page"><Heading section={section} /><DataSource connected={false} fallback="This section is a fixture-backed demo preview." /><Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">{preview.eyebrow}</span><h2>{preview.title}</h2></div><span className="placeholder-tag">SYNTHETIC FIXTURE</span></div><p className="proposal-reasoning">{preview.detail}</p>{preview.amountMinor > 0 && <div className="preview-amount"><span className="eyebrow">{preview.amountLabel}</span><strong><MoneyText amountMinor={preview.amountMinor} /></strong></div>}<p className="proposal-reasoning">{preview.note}</p>{section === "council" && <p className="proposal-reasoning">The replay preserves the financing recommendation and dissent. It does not represent a live agent deliberation.</p>}</Card><p className="footnote">{route.description} No external service or financial action is triggered by this page.</p></div>;
 }
 
 export function generateStaticParams() {
