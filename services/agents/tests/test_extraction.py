@@ -139,7 +139,9 @@ def test_internal_token_requires_valid_signature_audience_and_short_lifetime(
     with pytest.raises(TokenError, match="tenant"):
         verify_agents_token(signed_token(secret, tenant_id="ten_OTHER"))
     with pytest.raises(TokenError):
-        verify_agents_token(signed_token(secret)[:-1] + "A")
+        valid_tok = signed_token(secret)
+        tampered_tok = valid_tok[:-5] + ("00000" if valid_tok[-5:] != "00000" else "11111")
+        verify_agents_token(tampered_tok)
 
 
 def test_normalization_uses_decimal_minor_units_and_emits_a_contract_valid_response() -> None:
