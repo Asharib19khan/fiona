@@ -3,21 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiona Presentation Deck · FinTechathon 2026 Topic E</title>
+  <title>Fiona Presentation Deck · FinTechathon 2026 Direction E</title>
   <style>
     :root {
-      --bg: #090d16;
-      --surface: #111827;
-      --surface-border: #1f293d;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.2);
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
+      --bg: #edf4fa;
+      --bg-gradient: radial-gradient(circle at 80% 20%, #dceaf8 0%, #edf4fa 60%, #e6eff8 100%);
+      --surface: #ffffff;
+      --surface-border: #d4e3f1;
+      --surface-soft: #e1edf8;
+      --surface-hover: #d7e6f5;
+      --surface-dark: #0d4475;
+      --text: #0c2b4e;
+      --text-muted: #4e6b8b;
+      --text-subtle: #728ba3;
+      --accent: #2e80e6;
+      --accent-hover: #1d64bc;
+      --accent-glow: rgba(46, 128, 230, 0.18);
+      --brand-navy: #0d4475;
+      --brand-azure: #2e80e6;
+      --brand-ice: #e1edf8;
+      --brand-slate: #8e9ca8;
+      --brand-light-slate: #cbd5e1;
+      --success: #12805c;
+      --warning: #b86b14;
+      --danger: #c53b32;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --radius-slide: 24px;
+      --radius-card: 10px;
     }
 
     * {
@@ -27,24 +40,26 @@
     }
 
     body {
-      background-color: var(--bg);
+      background: var(--bg);
+      background-image: var(--bg-gradient);
       color: var(--text);
       font-family: var(--font);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     header.deck-bar {
-      height: 56px;
+      height: 58px;
       border-bottom: 1px solid var(--surface-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
-      background: rgba(17, 24, 39, 0.85);
-      backdrop-filter: blur(8px);
+      padding: 0 28px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
       z-index: 10;
     }
 
@@ -52,23 +67,40 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+      color: var(--brand-navy);
+      font-size: 1.1rem;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px 8px 8px 3px;
+      background: var(--brand-navy);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 18px;
+      font-weight: bold;
     }
 
     .brand .badge {
-      font-size: 0.75rem;
-      padding: 3px 8px;
+      font-size: 0.72rem;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: var(--surface-border);
-      color: var(--text-muted);
-      font-weight: 500;
+      background: var(--surface-soft);
+      color: var(--brand-navy);
+      font-weight: 650;
+      border: 1px solid var(--surface-border);
     }
 
     .controls {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .nav-btn {
@@ -76,21 +108,23 @@
       border: 1px solid var(--surface-border);
       color: var(--text);
       padding: 6px 14px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 600;
       transition: all 0.15s ease;
     }
 
     .nav-btn:hover {
-      background: var(--surface-border);
+      background: var(--surface-soft);
       border-color: var(--accent);
+      color: var(--accent);
     }
 
     .counter {
       font-family: var(--mono);
       font-size: 0.85rem;
+      font-weight: 600;
       color: var(--text-muted);
       min-width: 80px;
       text-align: center;
@@ -101,28 +135,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 32px 48px;
+      padding: 24px 36px;
       position: relative;
     }
 
     .slide {
       display: none;
       width: 100%;
-      max-width: 1040px;
-      height: 560px;
+      max-width: 1080px;
+      height: 590px;
       background: var(--surface);
       border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 48px;
+      border-radius: var(--radius-slide);
+      padding: 40px 48px 32px 48px;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 24px 60px rgba(13, 68, 117, 0.09);
       position: relative;
+      overflow: hidden;
     }
 
     .slide.active {
       display: flex;
-      animation: fadeIn 0.25s ease-out;
+      animation: fadeIn 0.22s ease-out;
     }
 
     @keyframes fadeIn {
@@ -130,95 +165,266 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .slide-header {
+      margin-bottom: 20px;
+    }
+
     .slide-kicker {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 8px;
+      letter-spacing: 0.09em;
+      color: var(--brand-azure);
+      font-weight: 750;
+      margin-bottom: 6px;
     }
 
     .slide-title {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      margin-bottom: 24px;
+      font-size: 1.75rem;
+      font-weight: 750;
+      letter-spacing: -0.035em;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .slide-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .slide-content {
       flex: 1;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       gap: 16px;
-      font-size: 1.1rem;
-      line-height: 1.55;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 550;
+      margin-top: auto;
     }
 
     .slide-content ul {
-      list-style-type: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      list-style: none;
+      display: grid;
+      gap: 10px;
     }
 
     .slide-content li {
       position: relative;
-      padding-left: 28px;
+      padding-left: 24px;
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
 
     .slide-content li::before {
-      content: "✦";
+      content: "●";
       position: absolute;
       left: 0;
       color: var(--accent);
-      font-size: 0.9rem;
-      top: 2px;
-    }
-
-    .slide-content strong {
-      color: #fff;
+      font-size: 0.8rem;
+      top: 1px;
     }
 
     .diagram-box {
-      background: #090d16;
+      background: var(--surface-soft);
       border: 1px solid var(--surface-border);
-      border-radius: 8px;
+      border-radius: var(--radius-card);
       padding: 16px;
       font-family: var(--mono);
-      font-size: 0.85rem;
-      color: #cbd5e1;
+      font-size: 0.82rem;
+      color: var(--brand-navy);
       white-space: pre;
       overflow-x: auto;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 16px;
     }
 
     .card-metric {
-      background: #0a0f1d;
+      background: var(--surface-soft);
       border: 1px solid var(--surface-border);
-      border-radius: 8px;
+      border-radius: var(--radius-card);
       padding: 16px;
     }
 
     .card-metric h4 {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
       margin-bottom: 6px;
+      font-weight: 650;
     }
 
     .card-metric .num {
       font-size: 1.8rem;
       font-weight: 800;
       font-family: var(--mono);
-      color: var(--accent);
+      color: var(--brand-navy);
+    }
+
+    .card-metric p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* --- SLIDE 5: CUSTOM DECISION ENGINE STAGE LAYOUT --- */
+    .stage-slide-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 28px;
+      align-items: center;
+      height: 100%;
+    }
+
+    .stage-table-wrap {
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .stage-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    .stage-table th {
+      background: var(--brand-navy);
+      color: #ffffff;
+      padding: 7px 10px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .stage-table td {
+      padding: 6px 10px;
+      border-top: 1px solid var(--surface-border);
+      color: var(--text);
+    }
+
+    .stage-table tr:nth-child(even) {
+      background: #fafcfe;
+    }
+
+    .stage-table tr.active-stage {
+      background: var(--surface-soft);
+      font-weight: 700;
+      color: var(--brand-navy);
+    }
+
+    .strategy-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .strat-card {
+      background: var(--surface-soft);
+      border: 1px solid #d0e1f0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      display: grid;
+      gap: 3px;
+    }
+
+    .strat-card h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brand-navy);
+    }
+
+    .strat-card p {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .strat-card.strat-dark {
+      background: var(--brand-navy);
+      border-color: var(--brand-navy);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+    }
+
+    .strat-card.strat-dark p {
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* Donut Wheel Graphic */
+    .wheel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .wheel-graphic {
+      width: 250px;
+      height: 250px;
+      position: relative;
+    }
+
+    .wheel-graphic svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-45deg);
+    }
+
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 8px 24px rgba(13, 68, 117, 0.12);
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--brand-navy);
+      font-family: var(--font);
+    }
+
+    .pointer-triangle {
+      position: absolute;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 12px solid #ffffff;
+      z-index: 5;
     }
 
     /* Speaker Notes Drawer */
@@ -227,13 +433,14 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #050811;
+      background: #ffffff;
       border-top: 2px solid var(--accent);
-      padding: 20px 32px;
-      max-height: 200px;
+      padding: 18px 32px;
+      max-height: 180px;
       overflow-y: auto;
       display: none;
       z-index: 20;
+      box-shadow: 0 -8px 28px rgba(13, 68, 117, 0.12);
     }
 
     #notes-panel.open {
@@ -241,44 +448,33 @@
     }
 
     #notes-panel h4 {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
+      color: var(--brand-azure);
+      margin-bottom: 6px;
+      font-weight: 750;
     }
 
     #notes-panel p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: #e2e8f0;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
     }
 
-    /* Print / PDF view */
     @media print {
-      body { overflow: visible; background: #fff; color: #000; }
+      body { background: #fff; overflow: visible; }
       header.deck-bar, #notes-panel { display: none !important; }
-      .slide {
-        display: flex !important;
-        page-break-after: always;
-        box-shadow: none;
-        border: 1px solid #ccc;
-        background: #fff;
-        color: #000;
-        width: 100%;
-        height: auto;
-        min-height: 500px;
-        margin-bottom: 40px;
-      }
-      .slide-title, .slide-content strong { color: #000; }
-      .diagram-box, .card-metric { background: #f8fafc; border-color: #cbd5e1; color: #000; }
+      .slide { display: flex !important; page-break-after: always; height: 100vh; max-width: 100%; border: 0; box-shadow: none; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Top Deck Control Bar -->
   <header class="deck-bar">
     <div class="brand">
+      <span class="brand-mark">F</span>
       <span>Fiona</span>
       <span class="badge">FinTechathon 2026 · Topic E</span>
     </div>
@@ -290,26 +486,37 @@
     </div>
   </header>
 
+  <!-- Deck Slide Viewport -->
   <main class="deck-viewport">
 
     <!-- Slide 1 -->
-    <div class="slide active" data-notes="Good morning, respected judges and professors. I am presenting Fiona: an autonomous finance team for small and medium businesses. We built Fiona because SMEs represent the majority of global trade, but their founders are forced to spend nights wrestling with spreadsheets, bank lines, and supplier invoices instead of growing their business. Fiona gives them an autonomous CFO, Treasurer, and Controller, guarded by a deterministic risk gatekeeper. Let's see how it works.">
-      <div class="slide-kicker">Slide 1 · Title & Introduction (30s)</div>
-      <h2 class="slide-title">Fiona: An AI Finance Team for SMEs,<br>Checked by the Guardian Before It Acts</h2>
+    <div class="slide active" data-notes="Good morning esteemed judges and faculty of Tsinghua PBCSF and WeBank. We are Team Fiona, presenting our entry for Topic E: SME Finance Copilot. Small businesses are the backbone of the economy, yet 82% fail from cash flow timing mismanagement. Today we present Fiona—an autonomous, multi-agent financial copilot governed by deterministic financial mathematics and an invariant Guardian verification ring.">
+      <div class="slide-header">
+        <div class="slide-kicker">01 · EXECUTIVE SUMMARY (45s)</div>
+        <h1 class="slide-title">Fiona: Autonomous Finance Copilot for the Real-World SME</h1>
+        <div class="slide-subtitle">Presenter · Asharib Khan · FinTechathon 2026 International Track</div>
+      </div>
       <div class="slide-content">
         <ul>
           <li><strong>Autonomous Multi-Agent Copilot:</strong> CFO Strategist, Treasurer, Controller, and Growth Analyst.</li>
           <li><strong>The Governance Principle:</strong> The Model Decides ⟶ The Engine Computes ⟶ The Guardian Checks.</li>
           <li><strong>Topic E Realization:</strong> Cash flow alerts, financing matching, and lifecycle analysis in a single verified platform.</li>
         </ul>
+        <div class="diagram-box">FinTechathon 2026 International Track · Tsinghua PBCSF & WeBank · Target Architecture 83f2038</div>
       </div>
-      <div class="diagram-box">FinTechathon 2026 International Track · Tsinghua PBCSF & WeBank · Target Architecture 83f2038</div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>1/13</span>
+      </div>
     </div>
 
     <!-- Slide 2 -->
     <div class="slide" data-notes="Here is the fundamental vulnerability of small businesses. When a business runs out of money, it's rarely because of bad product. It is because working capital is trapped in unpaid bills, cash forecasts are blind to upcoming obligations, and founders get tricked by Business Email Compromise or take expensive merchant cash advances. Existing AI tools either offer generic chatbots that hallucinate numbers, or passive dashboards that do nothing. Fiona changes this paradigm.">
-      <div class="slide-kicker">Slide 2 · The Problem (45s)</div>
-      <h2 class="slide-title">The SME Cash Crisis: Blind Spots, Trapped Capital, and Vendor Fraud</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">01 · THE PROBLEM (45s)</div>
+        <h2 class="slide-title">The SME Cash Crisis: Blind Spots, Trapped Capital, and Vendor Fraud</h2>
+        <div class="slide-subtitle">Presenter · Asharib Khan</div>
+      </div>
       <div class="slide-content">
         <div class="grid-2">
           <div class="card-metric">
@@ -328,12 +535,19 @@
           <li><strong>Predatory Financing:</strong> Founders accept 30%+ APR debt when high-return vendor discounts (44.6% APR) exist.</li>
         </ul>
       </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>2/13</span>
+      </div>
     </div>
 
     <!-- Slide 3 -->
     <div class="slide" data-notes="To solve this safely, Fiona is built on a non-negotiable architectural invariant: Separation of Powers. The LLM models only decide and draft proposals. They cannot post to the ledger, and they cannot move money. The Engine calculates all mathematical figures with zero floating-point math. And the Guardian—our independent verification ring—enforces 15 invariant rules before anything can execute.">
-      <div class="slide-kicker">Slide 3 · Core Architecture (45s)</div>
-      <h2 class="slide-title">Separation of Powers:<br>Model Decides ⟶ Engine Computes ⟶ Guardian Checks</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">01 · CORE ARCHITECTURE (45s)</div>
+        <h2 class="slide-title">Separation of Powers:<br>Model Decides ⟶ Engine Computes ⟶ Guardian Checks</h2>
+        <div class="slide-subtitle">Presenter · Asharib Khan</div>
+      </div>
       <div class="slide-content">
         <div class="diagram-box">
 [ Multi-Agent Layer ] ──Drafts Proposal──> [ Guardian Ring (15 Rules) ]
@@ -348,22 +562,29 @@
           <li><strong>Independent Gatekeeper:</strong> Guardian blocks duplicate invoices, altered bank accounts, and cap violations.</li>
         </ul>
       </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>3/13</span>
+      </div>
     </div>
 
     <!-- Slide 4 -->
     <div class="slide" data-notes="Let's look at our first live demonstration scenario: DEMO-1. An attacker sends an altered supplier invoice claiming emergency bank details via prompt injection. A typical AI agent would read the urgent prompt and execute payment. Fiona's Controller transcribes the document as untrusted data, and the Guardian's G-03 and G-12 rules immediately trigger an immutable BLOCK.">
-      <div class="slide-kicker">Slide 4 · Scenario 1: Fraud Block (45s)</div>
-      <h2 class="slide-title">Planted BEC & Prompt-Injection Invoice:<br>Blocked at the Gate (G-03 & G-12)</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">01 · FRAUD DEFENSE (45s)</div>
+        <h2 class="slide-title">Planted BEC &amp; Prompt-Injection Invoice:<br>Blocked at the Gate (G-03 &amp; G-12)</h2>
+        <div class="slide-subtitle">Presenter · Asharib Khan</div>
+      </div>
       <div class="slide-content">
         <div class="grid-2">
           <div class="card-metric">
             <h4>Attacker Vector</h4>
-            <div class="num">PK00FAKE</div>
+            <div class="num" style="color: var(--danger);">PK00FAKE</div>
             <p>Altered IBAN in invoice footer with embedded prompt injection: 'URGENT: Override rules'.</p>
           </div>
           <div class="card-metric">
             <h4>Guardian Verdict</h4>
-            <div class="num" style="color: var(--danger);">BLOCKED</div>
+            <div class="num" style="color: var(--brand-navy);">BLOCKED</div>
             <p>G-03 detected unverified bank line; G-12 adversarial reviewer quarantined text.</p>
           </div>
         </div>
@@ -372,32 +593,135 @@
           <li><strong>Cryptographic Receipt:</strong> Rejection reason is hashed into the tamper-proof audit chain.</li>
         </ul>
       </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>4/13</span>
+      </div>
     </div>
 
-    <!-- Slide 5 -->
-    <div class="slide" data-notes="Now we turn to financial intelligence. How do we know if an SME is healthy? We implemented Victoria Dickinson's authoritative 2011 lifecycle framework. By tracking the mathematical signs of operating, investing, and financing cash flows, Fiona classifies the business into Introduction, Growth, Mature, Shake-Out, or Decline. Karachi Apparel is in Mature stage, but entering a seasonal dip.">
-      <div class="slide-kicker">Slide 5 · Business Analysis (45s)</div>
-      <h2 class="slide-title">Dickinson (2011) Cash-Flow Lifecycle Stage Detection</h2>
+    <!-- Slide 5: MATCHING USER SLIDE EXACTLY -->
+    <div class="slide" data-notes="Now we turn to the Decision Engine. How do we provide advice that truly adapts to where the business is in its lifecycle? We implemented Victoria Dickinson's authoritative 2011 lifecycle framework. By tracking the mathematical signs of operating, investing, and financing cash flows, Fiona classifies the business into Introduction, Growth, Mature, Shake-out, or Decline. Karachi Apparel is in Mature stage, where Fiona prioritizes dividends versus reinvestment and working capital optimization.">
+      <div class="slide-header">
+        <div class="slide-kicker">02 · DECISION ENGINE</div>
+        <h2 class="slide-title">Advice that adapts to the life-cycle stage</h2>
+        <div class="slide-subtitle">Presenter · Syed Abdullah Shah</div>
+      </div>
+
       <div class="slide-content">
-        <div class="diagram-box">
-  Pattern (CFO, CFI, CFF)      Dickinson 2011 Stage        Fiona Action Strategy
-  ─────────────────────────────────────────────────────────────────────────────
-  ( - ,  - ,  + )             Introduction                Cap capex, verify runway
-  ( + ,  - ,  + )             Growth                      Optimize working capital
-  ( + ,  - ,  - ) [Karachi]   Mature                      Harvest cash, early discounts
-  ( - ,  + ,  ± )             Shake-Out / Decline         Halt non-essential borrowing
+        <div class="stage-slide-layout">
+          <!-- Left Column: Table and 6 Strategy Cards -->
+          <div>
+            <div class="stage-table-wrap">
+              <table class="stage-table">
+                <thead>
+                  <tr>
+                    <th>Stage</th>
+                    <th>Operating</th>
+                    <th>Investing</th>
+                    <th>Financing</th>
+                    <th>Fiona prioritises</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Introduction</td>
+                    <td>Out</td>
+                    <td>Out</td>
+                    <td>In</td>
+                    <td>Runway, burn, grants, equity</td>
+                  </tr>
+                  <tr>
+                    <td>Growth</td>
+                    <td>In</td>
+                    <td>Out</td>
+                    <td>In</td>
+                    <td>Working capital, financing mix</td>
+                  </tr>
+                  <tr class="active-stage">
+                    <td>Mature</td>
+                    <td>In</td>
+                    <td>Out</td>
+                    <td>Out</td>
+                    <td>Dividends vs reinvestment</td>
+                  </tr>
+                  <tr>
+                    <td>Shake-out</td>
+                    <td>Mixed</td>
+                    <td>Mixed</td>
+                    <td>Mixed</td>
+                    <td>Margins, cost structure</td>
+                  </tr>
+                  <tr>
+                    <td>Decline</td>
+                    <td>Out</td>
+                    <td>In</td>
+                    <td>In or out</td>
+                    <td>Liquidity, restructuring</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="strategy-card-grid">
+              <div class="strat-card">
+                <h4>Debt or equity</h4>
+                <p>Coverage, runway and dilution under each option</p>
+              </div>
+              <div class="strat-card">
+                <h4>Dividend or reinvest</h4>
+                <p>Payout range vs the return reinvestment must earn</p>
+              </div>
+              <div class="strat-card">
+                <h4>Invest in assets</h4>
+                <p>NPV, IRR, payback, lease vs buy: go or no-go</p>
+              </div>
+              <div class="strat-card">
+                <h4>Reduce liabilities</h4>
+                <p>Pay-down order and cash freed per month</p>
+              </div>
+              <div class="strat-card">
+                <h4>Innovate or adopt</h4>
+                <p>Innovation budget and pilot size from free cash flow</p>
+              </div>
+              <div class="strat-card strat-dark">
+                <p>When the owner's description and the cash flows disagree, Fiona says so and explains why.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Segmented Donut Wheel Graphic -->
+          <div class="wheel-container">
+            <div class="wheel-graphic">
+              <svg viewBox="0 0 100 100">
+                <!-- Segment 4: Top Left (Slate) -->
+                <path d="M 50 10 A 40 40 0 0 1 90 50 L 72 50 A 22 22 0 0 0 50 28 Z" fill="#b8c5d0" />
+                <!-- Segment 1: Top (Highlighted Azure Blue) -->
+                <path d="M 10 50 A 40 40 0 0 1 50 10 L 50 28 A 22 22 0 0 0 28 50 Z" fill="#2e80e6" />
+                <!-- Segment 2: Bottom Left (Medium Slate) -->
+                <path d="M 50 90 A 40 40 0 0 1 10 50 L 28 50 A 22 22 0 0 0 50 72 Z" fill="#8e9ca8" />
+                <!-- Segment 3: Bottom Right (Cool Gray) -->
+                <path d="M 90 50 A 40 40 0 0 1 50 90 L 50 72 A 22 22 0 0 0 72 50 Z" fill="#cbd5e1" />
+              </svg>
+              <div class="pointer-triangle"></div>
+              <div class="wheel-center">02</div>
+            </div>
+          </div>
         </div>
-        <ul>
-          <li><strong>Empirical Rigor:</strong> Eliminates subjective classification; uses real posted ledger events.</li>
-          <li><strong>Ratio Library:</strong> Calculates 40+ financial metrics (Current, Quick, Cash, DSCR, Altman Z-Score).</li>
-        </ul>
+      </div>
+
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>5/13</span>
       </div>
     </div>
 
     <!-- Slide 6 -->
     <div class="slide" data-notes="Slide 6 demonstrates cash flow management with alerts. Fiona projects direct cash flow 13 weeks forward based on confirmed supplier bills, customer purchase orders, and historical payroll. In week 7, Fiona detects that cash drops to 24.6M PKR, breaching the owner's 200M buffer. Instead of panicking, Fiona calculates that capturing 2/10 net 30 vendor discounts yields an annualized 44.59% APR return.">
-      <div class="slide-kicker">Slide 6 · Cash Forecast & Alerts (45s)</div>
-      <h2 class="slide-title">13-Week Direct Cash Forecasting & 44.59% APR Discount Arbitrage</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">02 · CASH FORECAST &amp; ALERTS (45s)</div>
+        <h2 class="slide-title">13-Week Direct Cash Forecasting &amp; 44.59% APR Discount Arbitrage</h2>
+        <div class="slide-subtitle">Presenter · Syed Abdullah Shah</div>
+      </div>
       <div class="slide-content">
         <div class="grid-2">
           <div class="card-metric">
@@ -408,7 +732,7 @@
           <div class="card-metric">
             <h4>Discount Return</h4>
             <div class="num" style="color: var(--success);">44.59%</div>
-            <p>Annualized APR from 2/10 net 30 supplier discount: beats any bank deposit.</p>
+            <p>Annualized APR from 2/10 net 30 supplier discount: beats any commercial bank deposit.</p>
           </div>
         </div>
         <ul>
@@ -416,96 +740,152 @@
           <li><strong>Payment Timing Optimizer:</strong> Balances liquidity preservation against early discount capture.</li>
         </ul>
       </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>6/13</span>
+      </div>
     </div>
 
     <!-- Slide 7 -->
     <div class="slide" data-notes="When external financing is required, Fiona matches the SME against 20 regional debt and equity instruments across Pakistan and China. Crucially, Fiona tests post-borrowing debt service coverage. If borrowing 2M PKR drops DSCR below 1.25x, the matcher demotes the loan and recommends supplier credit or revenue participation.">
-      <div class="slide-kicker">Slide 7 · Financing Matcher (45s)</div>
-      <h2 class="slide-title">Financing Option Matcher: 20 Regional Products & Post-Borrowing DSCR</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">02 · FINANCING MATCHER (45s)</div>
+        <h2 class="slide-title">Financing Option Matcher: 20 Regional Products &amp; Post-Borrowing DSCR</h2>
+        <div class="slide-subtitle">Presenter · Syed Abdullah Shah</div>
+      </div>
       <div class="slide-content">
         <ul>
           <li><strong>Regional Depth:</strong> SBP Refinance Facilities (Kamyab Jawan, Export Refinance) and China SME Products.</li>
           <li><strong>Multi-Dimensional Scoring:</strong> Evaluates APR, speed to disbursement, collateral requirements, and covenants.</li>
           <li><strong>Debt Capacity Stress Test:</strong> Recomputes DSCR under simulated borrowing to prevent over-leverage.</li>
         </ul>
-        <div class="diagram-box">Rank 1: Supplier Credit (2/10 Net 30) · Cost: 0% net · DSCR Impact: None · Match Score: 94/100</div>
+        <div class="diagram-box">Match Result: SBP Supplier Credit #1 (Rank 94) | SBP Kamyab Jawan #2 (Demoted: DSCR 1.38x near 1.25x covenant)</div>
+      </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>7/13</span>
       </div>
     </div>
 
     <!-- Slide 8 -->
-    <div class="slide" data-notes="Slide 8 shows our innovation extra: Council Mode. In a traditional company, the CFO wants growth, the Treasurer wants liquidity, and the Risk Officer wants safety. Fiona models this exact dynamic. The agents debate loan vs equity, and when they disagree, the memo records the dissent permanently on record for the owner.">
-      <div class="slide-kicker">Slide 8 · Council Mode (45s)</div>
-      <h2 class="slide-title">Multi-Agent Council Mode with Dissent on Record</h2>
+    <div class="slide" data-notes="Here is one of our proudest innovations: Multi-Agent Council with permanent dissent on record. Financial decisions have inherent trade-offs. The CFO wants growth. The Treasurer wants cash safety. Rather than forcing a consensus through an opaque prompt, Fiona records each agent's viewpoint. If the Treasurer dissents, that dissent is permanently written to the audit chain.">
+      <div class="slide-header">
+        <div class="slide-kicker">03 · MULTI-AGENT GOVERNANCE (45s)</div>
+        <h2 class="slide-title">Multi-Agent Council Deliberation: Dissent on the Record</h2>
+        <div class="slide-subtitle">Presenter · Muhammad Daniyal</div>
+      </div>
       <div class="slide-content">
         <div class="diagram-box">
-  [ CFO Strategist ]   ──> Recommends 2M working capital loan to capture seasonal order.
-  [ Treasurer ]        ──> DISSENTS: Flags Week 7 liquidity buffer breach; urges caution.
-  [ Growth Analyst ]   ──> Evaluates angel equity to eliminate fixed repayment debt.
-  [ Guardian ]         ──> GATES: Requires owner sign-off; blocks automated execution.
+[ CFO Strategist ]   ──> 'Accept 2M SBP Loan to fulfill seasonal apparel surge.'
+[ Treasurer ]        ──> DISSENT: 'Week 7 cash buffer breached; loan service risks default.'
+[ Growth Analyst ]   ──> 'Evaluate angel equity at 1.8B PKR pre-money valuation.'
+[ Guardian Ring ]    ──> 'Block auto-acceptance; mandate owner manual sign-off.'
         </div>
         <ul>
-          <li><strong>Honest Trade-offs:</strong> No artificial unanimous consensus; conflicting agent goals remain transparent.</li>
-          <li><strong>Audit Trail:</strong> The dissenting memo is cryptographically committed with owner decision receipts.</li>
+          <li><strong>No Hallucinated Consensus:</strong> Real trade-offs are surfaced directly to the business owner.</li>
+          <li><strong>Audit Trail Immutability:</strong> The full debate and vote ledger are preserved cryptographically.</li>
         </ul>
+      </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>8/13</span>
       </div>
     </div>
 
     <!-- Slide 9 -->
-    <div class="slide" data-notes="Security and Compliance represent 30% of the scoring criteria. Fiona enforces strict multi-tenant Row-Level Security in PostgreSQL, where no query can execute without a tenant session context. Furthermore, all ledger transactions are append-only. We tested 45 distinct RLS cross-tenant attack vectors, and all 45 failed closed.">
-      <div class="slide-kicker">Slide 9 · Security & Compliance (45s)</div>
-      <h2 class="slide-title">Cryptographic Isolation: Forced PostgreSQL RLS & Append-Only Triggers</h2>
+    <div class="slide" data-notes="Slide 9 covers the Guardian Verification Ring. The Guardian is an independent, non-LLM policy engine that enforces 15 deterministic invariants across 4 distinct rings: Ingestion, Invariant, Policy, and Audit. Even if an LLM is compromised or hallucinates, it cannot execute an action that violates any Guardian invariant.">
+      <div class="slide-header">
+        <div class="slide-kicker">03 · SECURITY &amp; INVARIANTS (45s)</div>
+        <h2 class="slide-title">The Guardian Ring: 15 Invariant Rules Across 4 Protection Tiers</h2>
+        <div class="slide-subtitle">Presenter · Muhammad Daniyal</div>
+      </div>
       <div class="slide-content">
-        <ul>
-          <li><strong>Forced RLS:</strong> Tenant A cannot read, insert, update, or reference Tenant B's data under any condition.</li>
-          <li><strong>Append-Only Invariants:</strong> Triggers reject UPDATE, DELETE, and TRUNCATE on financial events and journal lines.</li>
-          <li><strong>Zero Floats:</strong> All currency amounts stored as 64-bit integer minor units (cents/paisa).</li>
-        </ul>
-        <div class="diagram-box">45/45 RLS cross-tenant isolation tests passing in services/engine/ledger/tests/test_schema_rls.py</div>
+        <div class="grid-2">
+          <div class="card-metric">
+            <h4>Ring 1 · Ingestion</h4>
+            <p>G-11 Prompt injection quarantine · G-12 Adversarial reviewer · G-14 Schema validation.</p>
+          </div>
+          <div class="card-metric">
+            <h4>Ring 2 · Invariants</h4>
+            <p>G-04 Double-entry balance · G-08 Arithmetic precision · G-09 Tenancy isolation.</p>
+          </div>
+          <div class="card-metric">
+            <h4>Ring 3 · Policy Gate</h4>
+            <p>G-01 Mandate cap · G-02 Liquidity buffer · G-03 Bank detail change · G-05 Duplicate check.</p>
+          </div>
+          <div class="card-metric">
+            <h4>Ring 4 · Cryptography</h4>
+            <p>G-10 RFC 8785 canonical hash chain · G-15 Append-only audit integrity.</p>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>9/13</span>
       </div>
     </div>
 
     <!-- Slide 10 -->
-    <div class="slide" data-notes="For auditability, Fiona produces an RFC 8785 canonical JSON hash-chained audit log. Every ledger event hashes the previous block's SHA-256 hash. If an attacker alters a single digit of an old payment in the database, the cryptographic chain instantly breaks and the verifier alerts the auditor.">
-      <div class="slide-kicker">Slide 10 · Audit Chain (45s)</div>
-      <h2 class="slide-title">RFC 8785 Canonical SHA-256 Hash-Chained Audit Trail</h2>
+    <div class="slide" data-notes="Fiona maintains a zero-trust cryptographic audit log using RFC 8785 canonical JSON and SHA-256 hash chaining. Every proposal, Guardian check, owner approval, and simulated wallet execution is cryptographically linked to the previous entry. An independent script can verify the entire 24-month audit chain in under 1 second.">
+      <div class="slide-header">
+        <div class="slide-kicker">03 · CRYPTOGRAPHIC AUDIT (45s)</div>
+        <h2 class="slide-title">RFC 8785 SHA-256 Cryptographic Hash-Chained Audit Trail</h2>
+        <div class="slide-subtitle">Presenter · Muhammad Daniyal</div>
+      </div>
       <div class="slide-content">
         <div class="diagram-box">
-  Genesis (sha256:0000...)
+Entry #12 (Seq 12)  Hash: sha256:7f9a...  Prev: sha256:3b1c...  Verdict: BLOCK (G-03 Altered Bank)
          │
          ▼
-  Block 1: [ Proposal prop_01 ] ──Hash──> sha256:4a8b...
-         │
-         ▼
-  Block 2: [ Guardian Verdict ]  ──Hash──> sha256:9c12... (Includes prev_hash)
-         │
-         ▼
-  Block 3: [ Sandbox Payment  ]  ──Hash──> sha256:f5e1... (100% Cryptographically Intact)
+Entry #13 (Seq 13)  Hash: sha256:9e4d...  Prev: sha256:7f9a...  Event: Alert Dispatched to Owner
         </div>
         <ul>
-          <li><strong>Deterministic Canonicalization:</strong> RFC 8785 prevents hash mismatches across Python and TypeScript.</li>
-          <li><strong>Independent Verifier:</strong> Standalone `verify_audit_chain.py` script validates the entire chain in milliseconds.</li>
+          <li><strong>Canonical Representation:</strong> RFC 8785 eliminates key ordering and whitespace discrepancies.</li>
+          <li><strong>One-Command Verification:</strong> `python scripts/verify_audit_chain.py docs/submission/06-execution-evidence/audit_chain.jsonl`</li>
         </ul>
+      </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>10/13</span>
       </div>
     </div>
 
     <!-- Slide 11 -->
-    <div class="slide" data-notes="Slide 11 covers our human-in-the-loop interaction design. We built the 'Explain Any Number' drawer: whenever an SME owner clicks any metric on screen, a provenance drawer slides out showing the exact source invoices, formulas, and confidence scores. We also built a multilingual command bar supporting voice input in English, Urdu, and Chinese.">
-      <div class="slide-kicker">Slide 11 · Interaction & Innovation (45s)</div>
-      <h2 class="slide-title">Explain Any Number Drawer & Multilingual Voice Command Bar</h2>
+    <div class="slide" data-notes="Slide 11 highlights our Web UI and user experience. Built with Next.js 16.4 and clean vanilla CSS, the interface provides an interactive Morning Briefing, 13-week cash paths with interactive drawers, and an evidence inspector that allows owners to verify source citations with a single click.">
+      <div class="slide-header">
+        <div class="slide-kicker">04 · USER EXPERIENCE (45s)</div>
+        <h2 class="slide-title">Next.js 16.4 Console: Tactile, Accessible, and Evidence-First</h2>
+        <div class="slide-subtitle">Presenter · Yahya</div>
+      </div>
       <div class="slide-content">
+        <div class="grid-2">
+          <div class="card-metric">
+            <h4>Morning Briefing</h4>
+            <p>Curated cards ranked by money at stake; zero notification fatigue.</p>
+          </div>
+          <div class="card-metric">
+            <h4>Evidence Drawer</h4>
+            <p>Every calculation discloses its source ledger lines and formula.</p>
+          </div>
+        </div>
         <ul>
-          <li><strong>Explain Any Number:</strong> Every KPI on the screen implements the `Figure` contract with complete provenance.</li>
-          <li><strong>Autonomy Ladder:</strong> Visible 3-tier mandate controls (Inform, Propose, Act within Spending Ceilings).</li>
-          <li><strong>Multilingual Voice:</strong> Native command bar (Ctrl+K) supports English, Urdu, and Chinese voice dictation.</li>
+          <li><strong>Interactive Depth:</strong> Live EOQ optimization, Monte Carlo launch sliders, and sandbox execution.</li>
+          <li><strong>Accessibility &amp; Keyboard First:</strong> Full keyboard navigation, screen reader ARIA labels, and WCAG AA contrast.</li>
         </ul>
-        <div class="diagram-box">User: 'Why is week 7 cash low?' ⟶ Drawer reveals: 4 vendor bills due + 2 plant payments scheduled</div>
+      </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>11/13</span>
       </div>
     </div>
 
     <!-- Slide 12 -->
     <div class="slide" data-notes="Fiona is not a mock design; it is a battle-tested monorepo. Across 6 packages, all 432 unit, integration, and property tests are green. The static boundary checker guarantees clean separation, and the fresh-clone verification script boots in under 3 minutes with zero pre-existing secrets.">
-      <div class="slide-kicker">Slide 12 · Verification & Evidence (45s)</div>
-      <h2 class="slide-title">Verification Evidence: 432 Passing Tests Across 6 Monorepo Packages</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">04 · VERIFICATION &amp; EVIDENCE (45s)</div>
+        <h2 class="slide-title">Verification Evidence: 432 Passing Tests Across 6 Monorepo Packages</h2>
+        <div class="slide-subtitle">Presenter · Yahya</div>
+      </div>
       <div class="slide-content">
         <div class="grid-2">
           <div class="card-metric">
@@ -515,7 +895,7 @@
           </div>
           <div class="card-metric">
             <h4>Audit Log Volume</h4>
-            <div class="num">1.0 MB</div>
+            <div class="num" style="color: var(--brand-navy);">13 Blocks</div>
             <p>operations.jsonl verified with zero tampering in execution evidence.</p>
           </div>
         </div>
@@ -524,20 +904,31 @@
           <li><strong>Boundary Verification:</strong> Zero cyclic dependencies or illegal architectural imports.</li>
         </ul>
       </div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>12/13</span>
+      </div>
     </div>
 
     <!-- Slide 13 -->
     <div class="slide" data-notes="In conclusion, Fiona solves Topic E with mathematical precision, rigorous security, and genuine innovation. We have proven that AI can act as a trusted financial team when governed by deterministic engine mathematics and invariant Guardian policies. Thank you very much, and we welcome your questions.">
-      <div class="slide-kicker">Slide 13 · Conclusion & Road to Shenzhen (30s)</div>
-      <h2 class="slide-title">Conclusion: A Safe, Autonomous Finance Copilot for the Global SME</h2>
+      <div class="slide-header">
+        <div class="slide-kicker">05 · CONCLUSION (30s)</div>
+        <h2 class="slide-title">Conclusion: A Safe, Autonomous Finance Copilot for the Global SME</h2>
+        <div class="slide-subtitle">Presenter · Asharib Khan</div>
+      </div>
       <div class="slide-content">
         <ul>
           <li><strong>Scoring Excellence:</strong> 40% Task Completion + 30% Security Compliance + 30% Innovation Delivered.</li>
           <li><strong>Production Ready:</strong> Next.js 16.4 console, FastAPI financial core, and RFC 8785 audit chaining.</li>
           <li><strong>Shenzhen Grand Final:</strong> Ready for in-person demonstration at WeBank HQ.</li>
         </ul>
+        <div class="diagram-box">Thank You · Team Fiona (Asharib Khan, Abdullah, Daniyal, Yahya) · github.com/Asharib19khan/fiona</div>
       </div>
-      <div class="diagram-box">Thank You · Team Fiona (Asharib Khan, Abdullah, Daniyal, Yahya) · github.com/Asharib19khan/fiona</div>
+      <div class="slide-footer">
+        <span>Fiona · FinTechathon 2026 · Direction E: SME Finance Copilot</span>
+        <span>13/13</span>
+      </div>
     </div>
 
   </main>

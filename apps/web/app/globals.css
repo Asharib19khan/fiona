@@ -59,10 +59,10 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .team-card h3 { margin-top: 10px; }
 .team-avatars { display: flex; align-items: center; margin: 13px 0 12px; }
 .team-avatar { display: grid; width: 25px; height: 25px; place-items: center; margin-right: -5px; border: 2px solid var(--surface-raised); border-radius: 50%; color: var(--text); background: var(--surface-soft); font-size: 7px; font-weight: 760; }
-.team-avatar-1 { color: #3e7552; background: #dfeee3; }
-.team-avatar-2 { color: #83633b; background: #f2e8d6; }
-.team-avatar-3 { color: #566b96; background: #e1e8f4; }
-.team-avatar-4 { color: #765a89; background: #eee4f4; }
+.team-avatar-1 { color: #0d4475; background: #e1edf8; }
+.team-avatar-2 { color: #2e80e6; background: #edf4fa; }
+.team-avatar-3 { color: #4e6b8b; background: #e8f0f8; }
+.team-avatar-4 { color: #1e3a5a; background: #dceaf7; }
 .team-avatars > span:last-child { margin-left: 12px; color: var(--text-muted); font-size: 9px; }
 .team-card > .text-link { padding: 0; }
 .section-page { max-width: 900px; margin: 0 auto; }
@@ -76,9 +76,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 .tier-panel .data-note,.section-page > .data-note,.section-page > .degraded-banner { margin-top: 12px; }
 .tier-panel > .data-table-wrap { padding: 0 14px 14px; }
 .data-table-wrap { max-width: 100%; overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; color: var(--text); font-size: 10px; text-align: left; }
-.data-table th { padding: 10px 8px; color: var(--text-subtle); font-size: 8px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
-.data-table td { padding: 10px 8px; border-top: 1px solid var(--border); vertical-align: top; }
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; color: var(--text); font-size: 10px; text-align: left; }
+.data-table th { padding: 9px 10px; color: #ffffff; background: var(--brand-navy); font-size: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.data-table th:first-child { border-top-left-radius: 6px; }
+.data-table th:last-child { border-top-right-radius: 6px; }
+.data-table td { padding: 10px 10px; border-top: 1px solid var(--border); vertical-align: top; }
 .data-table td:first-child { font-weight: 620; }
 .money-negative { color: var(--danger); font-weight: 680; }
 .status-text { font-size: 9px; font-weight: 650; white-space: nowrap; }
