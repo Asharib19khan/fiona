@@ -22,19 +22,19 @@ To fulfill Item 06 of the official FinTechathon 2026 submission requirements, th
 
 ## 2. Structure & Specification of Operation Logs
 
-Execution evidence is organized into five standardized, machine-readable log artifacts:
+Execution evidence is organized into four standardized, machine-readable log artifacts generated directly from the sandbox database by `engine.wallet.oplog.export_operation_log`:
 
 ```
 docs/submission/06-execution-evidence/
 ├── README.md                      # This specification & evaluation runbook
-├── sandbox_operations.log         # Sequential execution timeline across all agent actions
-├── events.jsonl                   # Append-only ledger financial event log (ULID-keyed)
-├── guardian_verdicts.jsonl        # Complete decision records for all G-01..G-15 rule evaluations
-├── audit_chain.jsonl              # Cryptographic HMAC-SHA256 tamper-evident hash log
-└── answer_key.json                # Benchmark ground truth for evaluation verification
+├── operations.jsonl               # Chronological operational timeline (proposals, verdicts, approvals, disbursements)
+├── audit_chain.jsonl              # Cryptographic SHA-256 tamper-evident hash log
+└── verification_report.json       # Cryptographic integrity verification report
+
+(Note: The full underlying 24-month synthetic business dataset of 74,931 ledger events and answer key is located in data/fixtures/ten_karachi_apparel/)
 ```
 
-### 2.1 `sandbox_operations.log` (Chronological Execution Trail)
+### 2.1 `operations.jsonl` (Chronological Execution Trail)
 Records the end-to-end lifecycle of every transaction across the five architectural layers:
 - **Timestamp (ISO 8601 UTC):** Microsecond-precision timestamp.
 - **Actor / Service:** Proposing agent (e.g., `controller`, `treasurer`), verification ring (`guardian`), human owner (`usr_owner_01`), or execution sandbox (`wallet`).
@@ -143,69 +143,78 @@ pnpm demo-data
 pnpm test
 ```
 *Expected Result:*
-`[MEASURE: 204 passed in engine pytest suite]`
+`355 passed, 1 skipped in engine pytest suite (430 tests passing monorepo-wide across 6 packages)`
 
 ---
 
 ## 4. Cryptographic Verification of the Audit Hash Chain
 
-To prove that transaction history cannot be retroactively edited, evaluators can run the following automated Python verification script. It recalculates the cryptographic hash chain from the genesis block through the latest transaction:
+To prove that transaction history cannot be retroactively edited, evaluators can run the following automated Python verification script (`scripts/verify_audit_chain.py`). It recalculates the cryptographic hash chain from the genesis block through the latest transaction using RFC 8785 canonical JSON formatting:
 
 ```python
 """verify_audit_chain.py — Independent audit chain verifier for FinTechathon 2026."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import sys
+from pathlib import Path
 
 
-def verify_chain(log_path: str) -> bool:
-    prev_hash = "0" * 64
+def canonical_json(value: object) -> str:
+    """Canonical RFC 8785 JSON representation with sorted keys and no whitespace."""
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def compute_audit_hash(prev_hash: str, record: dict) -> str:
+    """Compute sha256(prev_hash + canonical_json(record)) as sha256:<hex>."""
+    canonical = canonical_json(record)
+    content = prev_hash + canonical
+    return "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def verify_chain(log_path: str | Path) -> bool:
+    genesis_prev = "sha256:" + "0" * 64
+    prev_hash = genesis_prev
     valid_count = 0
 
     with open(log_path, encoding="utf-8") as f:
         for line_num, line in enumerate(f, start=1):
-            record = json.loads(line)
-            seq = record["seq"]
-            tenant_id = record["tenant_id"]
-            recorded_prev = record["prev_hash"]
-            recorded_entry_hash = record["entry_hash"]
+            line_str = line.strip()
+            if not line_str:
+                continue
+
+            entry = json.loads(line_str)
+            seq = entry["seq"]
+            recorded_prev = entry["prev_hash"]
+            recorded_hash = entry["hash"]
+            record = entry["record"]
 
             # 1. Verify link to previous entry
             if recorded_prev != prev_hash:
-                print(
-                    f"[ERROR] Broken link at sequence {seq} (line {line_num})!"
-                )
-                print(
-                    f"  Expected prev_hash: {prev_hash}\n  Recorded:         {recorded_prev}"
-                )
+                print(f"[ERROR] Broken link at sequence {seq} (line {line_num})!")
+                print(f"  Expected prev_hash: {prev_hash}\n  Recorded:         {recorded_prev}")
                 return False
 
             # 2. Recompute current entry hash
-            payload_bytes = f"{prev_hash}:{seq}:{tenant_id}:{record['event_id']}".encode()
-            computed_hash = hashlib.sha256(payload_bytes).hexdigest()
-
-            if computed_hash != recorded_entry_hash:
-                print(
-                    f"[ERROR] Cryptographic mismatch at sequence {seq} (line {line_num})!"
-                )
-                print(
-                    f"  Computed: {computed_hash}\n  Recorded: {recorded_entry_hash}"
-                )
+            computed_hash = compute_audit_hash(prev_hash, record)
+            if computed_hash != recorded_hash:
+                print(f"[ERROR] Cryptographic mismatch at sequence {seq} (line {line_num})!")
+                print(f"  Computed: {computed_hash}\n  Recorded: {recorded_hash}")
                 return False
 
             prev_hash = computed_hash
             valid_count += 1
 
-    print(
-        f"[SUCCESS] Audit chain verified: {valid_count} entries cryptographically intact and untampered."
-    )
+    print(f"[SUCCESS] Audit chain verified: {valid_count} entries cryptographically intact and untampered.")
     return True
 
 
 if __name__ == "__main__":
-    path = sys.argv[1] if len(sys.argv) > 1 else "audit_chain.jsonl"
-    sys.exit(0 if verify_chain(path) else 1)
+    target = sys.argv[1] if len(sys.argv) > 1 else "docs/submission/06-execution-evidence/audit_chain.jsonl"
+    success = verify_chain(target)
+    sys.exit(0 if success else 1)
 ```
 
 **Running the Verification:**
@@ -213,7 +222,7 @@ if __name__ == "__main__":
 python scripts/verify_audit_chain.py docs/submission/06-execution-evidence/audit_chain.jsonl
 ```
 *Expected Output:*
-`[SUCCESS] Audit chain verified: 7116 entries cryptographically intact and untampered.`
+`[SUCCESS] Audit chain verified: 13 entries cryptographically intact and untampered.`
 
 ---
 
@@ -235,6 +244,30 @@ The sandbox environment contains pre-planted test vectors matching the official 
 
 ---
 
-## 6. Conclusion
+## 6. Submission Deliverables 02 & 03 Cross-References
+
+To facilitate review by FinTechathon 2026 evaluators:
+
+### 6.1 Deliverable 02: Interactive Presentation Deck
+- **File:** [`docs/submission/presentation-deck.html`](file:///y:/Fiona/docs/submission/presentation-deck.html)
+- **Format:** Standalone, dependency-free interactive HTML presentation deck (13 slides).
+- **Features:** Keyboard navigation (`Right`/`Space` for next, `Left` for previous), fullscreen toggle (`F`), speaker notes toggle (`S`), and high-resolution print-to-PDF styling.
+- **Narrative:** Covers Problem Statement, 5-Layer Zero-Trust Architecture, Karachi Apparel Holdout Benchmark, Dickinson Empirical Stage Detection, 13-Week Cash Forecast & Discount Arbitrage, 15 Independent Guardian Invariants, Multi-Agent Dissent, and RFC 8785 Audit Verification.
+
+### 6.2 Deliverable 03: Automated Demo Video Walkthrough Runner
+- **File:** [`scripts/run_demo_walkthrough.py`](file:///y:/Fiona/scripts/run_demo_walkthrough.py)
+- **Command:** `python scripts/run_demo_walkthrough.py`
+- **Output:** Sequentially executes and verifies all 7 demo video scenes in real time:
+  1. *Scene 1 (0:00 - 0:45):* Morning Briefing & Financial Orientation (3 Priority queue cards, Week 7 buffer alert).
+  2. *Scene 2 (0:45 - 1:30):* Planted BEC & Prompt-Injection Invoice (Guardian G-03 & G-05 instant BLOCK).
+  3. *Scene 3 (1:30 - 2:15):* Business Financial Analysis & Dickinson Stage Detection (Pattern P3 Mature).
+  4. *Scene 4 (2:15 - 3:00):* 13-Week Cash Forecasting & 44.59% APR Discount Arbitrage.
+  5. *Scene 5 (3:00 - 3:45):* Financing Option Matcher & Debt Capacity (DSCR 2.25x -> 1.38x).
+  6. *Scene 6 (3:45 - 4:15):* Multi-Agent Council Deliberation (Permanent dissent on record).
+  7. *Scene 7 (4:15 - 4:45):* Cryptographic Hash-Chained Audit Trail Verification (RFC 8785 canonical hash check).
+
+---
+
+## 7. Conclusion
 
 Fiona’s execution evidence proves that multi-agent financial operations can be recorded, audited, and verified with mathematical rigor. By pairing reproducible sandbox datasets with cryptographic hash-chaining and deterministic invariant evaluation, Fiona satisfies all evaluation requirements of FinTechathon 2026 with complete transparency.

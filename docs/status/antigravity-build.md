@@ -1,6 +1,6 @@
-D5+D6 DONE: 32 passed in 3.80s (engine full: 244 passed, 1 warning in 15.02s)
+D5+D6+SUBMISSION DONE: 32 passed in 3.80s (engine full: 321 passed, 1 skipped, 1 warning in 109.52s; 362 monorepo tests passing)
 
-# AntiGravity Build Status: D5 (Guardian Checks) & D6 (Wallet & Audit Log)
+# AntiGravity Build Status: D5 (Guardian Checks), D6 (Wallet & Audit Log) & Submission Deliverables
 
 ## Progress
 

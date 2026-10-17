@@ -1,3 +1,10 @@
+ID: CX-A3
+Task: Window shell and Tier 1 experience integration
+Status: In progress
+Due: 2026-10-18
+Updated: 2026-10-16
+Note: Completed local Window coverage for cash/analysis/financing, bills, reconciliation, import, audit, approvals, mandates, and council views; added safe degraded fallbacks for financing and bills, fixed JSX key/download-link lint errors, and made proposal intake validate the complete generated `ProposalDraft` contract before forwarding. Vitest uses its runner config loader on Windows; engine pytest uses an isolated ignored temp base; env coverage skips generated pytest temp folders. Verification: `pnpm test` passes all 6 Turbo tasks (380 passed, 1 skipped); web lint, typecheck, and production build pass. Root `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:boundaries`, and `pnpm check:env-coverage` passed in the prior full verification. The gitleaks self-test skips because gitleaks is not installed. Remaining Tier 1 work: persistent proposal/decision API and verified owner sessions, live BFF session routing, bill extraction and Controller/Treasurer runtime, Guardian-to-engine review integration, owner decision to guarded wallet flow, deployed live link/credentials, finance QA, and final video/submission. D4 pass-4 intake mapping and Y10's approved EBITDA input also remain open.
+
 ID: CX-Y8
 Task: Payment-timing optimiser
 Status: Done

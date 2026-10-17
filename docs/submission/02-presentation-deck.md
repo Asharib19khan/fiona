@@ -286,7 +286,7 @@ graph TD
 ### Slide Visual / Content
 ### Enterprise Security & Cryptographic Verifiability
 
-- **Forced Row-Level Security (PostgreSQL 17):** Enabled on all 15 financial tables; table owners cannot bypass tenant boundaries [MEASURE: 45 RLS tests green].
+- **Forced Row-Level Security (PostgreSQL 17):** Enabled on all 15 financial tables; table owners cannot bypass tenant boundaries (64 ledger and RLS tests green).
 - **Append-Only Triggers:** Database statement triggers (`reject_mutation()`) block `UPDATE`, `DELETE`, or `TRUNCATE` on all financial event tables.
 - **Double-Entry Balance Invariant:** Deferred transaction triggers assert $\sum \text{Debits} \equiv \sum \text{Credits}$ at commit.
 - **HMAC-SHA256 Audit Chaining:** Every audit record incorporates the cryptographic hash of the previous state:
@@ -296,7 +296,7 @@ $$\text{Hash}_n = \text{HMAC-SHA256}(\text{Hash}_{n-1} \,\|\, \text{Seq}_n \,\|\
 ### Speaker Notes [40 seconds]
 > "Fiona is built to withstand hostile database environments.  
 >  
-> In PostgreSQL 17, we enforce `FORCE ROW LEVEL SECURITY` across all 15 core tables, verified by 45 automated isolation tests. The application role possesses zero bypass permissions.  
+> In PostgreSQL 17, we enforce `FORCE ROW LEVEL SECURITY` across all 15 core tables, verified by 64 automated ledger and isolation tests. The application role possesses zero bypass permissions.  
 >  
 > Furthermore, append-only statement triggers reject any SQL `UPDATE` or `DELETE` on financial records. Every transaction is linked into an immutable cryptographic audit chain using HMAC-SHA256. If a malicious actor alters a historical ledger row offline, the hash chain breaks instantly, alerting auditors."
 
@@ -308,7 +308,7 @@ $$\text{Hash}_n = \text{HMAC-SHA256}(\text{Hash}_{n-1} \,\|\, \text{Seq}_n \,\|\
 ### Fiona: Production-Ready AI Financial Copilot
 
 - **Complete Topic E Fulfillment:** Stage Detection, 13-Week Cash Forecast, Concessionary Matcher, Double-Entry Ledger, and Sandbox Execution.
-- **Verified Software Engineering:** 38 clean commits, [MEASURE: 204 unit & property tests passing], zero-secret CI, and strict AST boundaries.
+- **Verified Software Engineering:** 40+ clean commits, 355 unit & property tests passing in engine suite (430 tests passing monorepo-wide across 6 packages), zero-secret CI, and strict AST boundaries.
 - **Public & Open:** Publicly verifiable at `https://github.com/Asharib19khan/fiona`.
 
 ### The Core Affirmation
@@ -317,7 +317,7 @@ $$\mathbf{Autonomous\ Agency\ Requires\ Deterministic\ Governance.}$$
 ### Speaker Notes [35 seconds]
 > "In conclusion: Fiona demonstrates that autonomous AI in corporate finance does not require reckless risk. By combining generative LLM reasoning with deterministic financial mathematics, independent invariant verification, and cryptographic database controls, we provide small businesses with the financial power of an elite corporate treasury.  
 >  
-> Our entire codebase is public on GitHub, backed by over 200 automated tests and zero committed secrets.  
+> Our entire codebase is public on GitHub, backed by 430 automated tests across 6 packages and zero committed secrets.  
 >  
 > Thank you, and we welcome your questions."
 

@@ -20,7 +20,7 @@ Fiona mitigates these risks through an uncompromising architectural axiom:
 
 Security in Fiona is not an afterthought or an advisory prompt suffix. It is enforced across five defense rings:
 1. **The Autonomy Ladder:** Rigid agent permission tiers governed by immutable, versioned tenant mandates.
-2. **The Guardian Verification Engine:** An independent verification pipeline running 13 deterministic arithmetic and policy checks alongside an adversarial LLM reviewer, evaluating every proposal before execution.
+2. **The Guardian Verification Engine:** An independent verification pipeline running 15 deterministic arithmetic and policy checks alongside an adversarial LLM reviewer, evaluating every proposal before execution.
 3. **Segregation of Duties (Maker-Checker):** Architectural isolation preventing any agent from approving or executing its own proposals or viewing the Guardian's internal evaluation state.
 4. **Enforced Row-Level Security (RLS) & Least-Privilege DB:** All 15 database tables enforce multi-tenant isolation at the engine level with zero bypass capabilities for the application role.
 5. **Tamper-Evident Ledger & Sandbox Wallet:** An append-only, hash-chained transaction audit trail where financial executions are cryptographically gated by valid Guardian verdicts.
@@ -113,8 +113,8 @@ Every action proposed by an agent (e.g., `payment`, `journal_adjustment`, `send_
 | **G-11** | Compliance | Supplier tax registration ID missing, invalid pattern, or unverified. | `escalate` | Tax non-compliance; shadow supplier penalties. | S-11 |
 | **G-12** | Adversarial | LLM adversarial reviewer flags prompt injection, social engineering, or urgency bias. | `escalate` | Prompt injection payloads hidden in invoice text/notes. | S-12, DEMO-1 |
 | **G-13** | Governance | Proposed action type outside agent mandate OR constitutes a Material Decision. | **`block`** / `escalate` | Scope transgression; unauthorized borrowing or dividend payout. | S-13 |
-| **G-14** *(T2)* | Evidence | Underlying financial statements or cash balances stale (> 48 hours old). | `escalate` | Actions taken on obsolete financial positions. | <!-- STATUS: planned, owner Abdullah, B2 --> |
-| **G-15** *(T2)* | Compliance | Payee bank coordinates match employee, owner, or internal insider registry. | `escalate` | Internal embezzlement; undisclosed self-dealing. | <!-- STATUS: planned, owner Abdullah, B2 --> |
+| **G-14** *(T2)* | Evidence | Data freshness & extraction confidence: forecast $\le 24$h, bank balance $\le 48$h, extraction confidence $\ge$ medium. | `escalate` | Actions taken on obsolete financial positions or ambiguous OCR extractions. | Verified (`test_g14_g15.py`) |
+| **G-15** *(T2)* | Compliance | Payee bank coordinates match employee, director, or internal insider registry. | `escalate` | Internal embezzlement, kickbacks, and undisclosed self-dealing. | Verified (`test_g14_g15.py`) |
 
 ### 3.2 Verdict Combiner: Strictest Outcome Wins
 
@@ -178,6 +178,17 @@ Invoices frequently contain free-form text: memo lines, delivery terms, and cust
 - Fiona isolates raw document extraction. Extracted strings are cast strictly into typed Pydantic models.
 - G-12 executes an adversarial LLM check specifically prompted to hunt for prompt injection, urgent social engineering cues, and hidden instructions.
 - If injection patterns are flagged, G-12 escalates immediately.
+ 
+#### G-14: Financial State Freshness and Extraction Confidence
+Prevents financial actions executed on obsolete balances or uncertain OCR parses:
+- Forecast baseline must be $\le 24$ hours old relative to evaluation time.
+- Bank balance snapshot must be $\le 48$ hours old.
+- Key OCR fields (total amount, payee IBAN) must meet confidence thresholds; low-confidence extractions automatically escalate to human verification (`test_g14_g15.py`).
+
+#### G-15: Insider Payee & Self-Dealing Detection
+Prevents internal embezzlement where company funds are diverted to employees or directors masquerading as external suppliers:
+- Validates payee account coordinates against the tenant's internal director/employee registry.
+- Any match immediately halts straight-through processing and escalates for independent board/owner sign-off.
 
 ---
 
@@ -189,7 +200,7 @@ A common flaw in agent systems is allowing the maker agent to supply a long pers
 - **Strict Data-Only Interface:** The Guardian evaluates solely the structured `Proposal` schema, the underlying ledger facts, and verified document hashes. An agent cannot talk the Guardian out of enforcing an invariant.
 
 ### 4.2 AST-Enforced Static Code Boundaries
-To guarantee physical code isolation between untrusted agents, the core engine, and the Guardian, the repository runs a custom AST static analysis boundary checker (`scripts/check-boundaries.py` [MEASURE: 5 boundary rules verified via `--self-test`]):
+To guarantee physical code isolation between untrusted agents, the core engine, and the Guardian, the repository runs a custom AST static analysis boundary checker (`scripts/check-boundaries.py`, 5/5 boundary rules verified via `--self-test`):
 
 ```
 services/agents/     ──(HTTP only, no imports)──► services/engine/
@@ -215,7 +226,7 @@ sequenceDiagram
     participant H as Human Owner
 
     A->>G: Submit Proposal (ULID, typed payload)
-    G->>G: Run G-01..G-13 Invariants
+    G->>G: Run G-01..G-15 Invariants
     G->>L: Append Immutable Verdict Record
     alt Verdict is ESCALATE or BLOCK
         G-->>H: Push Notification with Explainable Proof
@@ -359,7 +370,7 @@ In accordance with FinTechathon 2026 submission requirements, the following tabl
 | **RSK-07** | **LLM Local CLI Dependency:** Local development relies on logged-in Claude CLI rather than enterprise HSM-backed KMS. | High | Medium | Public demo runs on deterministic, labelled replay cache; live cloud deployment switches to scoped environment variables. | Medium | <!-- STATUS: active dev design, owner Asharib, S2 --> |
 | **RSK-08** | **Synthetic Banking Sandbox vs Live Rails:** Disconnect between simulated sandbox wallet and live banking API nuances. | Medium | Medium | Sandbox strictly enforces ISO 20022 and mod-97 IBAN check digits; production connector interface isolated behind adapter boundary. | Low | <!-- STATUS: sandbox complete, live connector Tier 3 --> |
 | **RSK-09** | **Unverified Regional Tax Patterns:** Regional tax identification regexes (e.g., Pakistan FBR NTN / STRN) unverified by government API. | High | Low | **Rule G-11:** Fails safe to `escalate` rather than `block`, alerting operator to verify tax certificate manually. | Low | **Implemented** (Rule G-11; scenario S-11). |
-| **RSK-10** | **Stale Financial State Decisioning:** Decisions made on outdated statement caches or disconnected bank syncs. | Medium | Medium | **Rule G-14 (Tier 2):** Invalidation trigger rejecting proposals if cash position or statements exceed 48-hour staleness threshold. | Low | <!-- STATUS: planned Tier 2, owner Abdullah, B2 --> |
+| **RSK-10** | **Stale Financial State Decisioning:** Decisions made on outdated statement caches or disconnected bank syncs. | Medium | Medium | **Rule G-14 & G-15:** Freshness invariants (forecast $\le 24$h, bank balance $\le 48$h, extraction confidence) and insider account detection. | Low | **Implemented & Verified** (Rules G-14, G-15; `test_g14_g15.py`). |
 
 ---
 

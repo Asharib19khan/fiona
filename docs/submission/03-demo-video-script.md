@@ -31,10 +31,9 @@
 
 ### Scene 01: Introduction & The Stage Reveal
 - **Duration:** 45 seconds (Timecode: `0:00 – 0:45`)
-- **Screen Route:** `apps/web/app/(app)/onboarding` $\longrightarrow$ `apps/web/app/(app)/analysis`
+- **Screen Route:** Browser at `http://localhost:3000/` $\longrightarrow$ Click **Analysis** in the left navigation rail (`http://localhost:3000/analysis`)
 - **Visuals:**
-  - Fast-cut open on the Fiona terminal banner and clean web shell.
-  - User selects tenant: *Karachi Apparel Retailers* (`ten_karachi_apparel`).
+  - Fast-cut open on the Fiona web shell showing active tenant: *Karachi Apparel Retailers* (`ten_karachi_apparel`).
   - Screen displays the **Lifecycle Stage Card**: The owner selected "Growth" during setup, but the screen renders a clear amber badge: **Stage: Shake-Out (Confidence: High)**.
   - Mouse clicks the card, opening the **Explain-Any-Number Drawer** displaying the Dickinson (2011) cash-flow sign pattern matrix:
     - Operating Cash Flow (CFO): **Negative** ($-$ PKR 4.2M)
@@ -56,14 +55,14 @@
 
 ### Scene 02: The Executive Morning Briefing
 - **Duration:** 35 seconds (Timecode: `0:45 – 1:20`)
-- **Screen Route:** `apps/web/app/(app)/briefing`
+- **Screen Route:** Click **Briefing** in the left navigation rail (`http://localhost:3000/`)
 - **Visuals:**
   - Clean, prioritized dashboard replacing dense balance sheets.
-  - Top Metrics Ribbon:
-    - Current Cash: **PKR 3,100,000**
+  - Top Metrics Ribbon (Summary Grid):
+    - Current Cash at Lowest Point: **PKR 246,119** (below policy buffer)
     - Owner Cash Buffer Policy: **PKR 2,000,000**
     - 13-Week Runway Status: **Breach Alert in Week 7** (amber warning pill)
-  - Feed displays three actionable cards:
+  - Feed displays prioritized actionable cards:
     1. *Security Alert:* 1 blocked suspicious disbursement.
     2. *Strategic Opportunity:* Concessionary SBP refinance match available.
     3. *Working Capital Action:* Early-payment discount opportunity yielding 44.6% APR.
@@ -74,28 +73,28 @@
   >  
   > *Directly below, Fiona surfaces three mission-critical items: an attempted fraud blocked by the Guardian, a subsidized government financing match, and an early-payment discount. Let's look at the blocked transaction."*
 - **Technical Claim Proved:**
-  - Direct ledger feed parsing in `apps/web/app/(app)/briefing`.
+  - Direct ledger feed parsing in `apps/web/app/page.tsx`.
   - Cash buffer decoupling (Ruling R2): Buffer lives in tenant policy, not in agent parameters.
 
 ---
 
 ### Scene 03: The Guardian in Action (DEMO-1)
 - **Duration:** 55 seconds (Timecode: `1:20 – 2:15`)
-- **Screen Route:** `apps/web/app/(app)/bills` $\longrightarrow$ `apps/web/app/(app)/approvals`
+- **Screen Route:** Press `Ctrl+Shift+D` to toggle scenario `planted-bill` $\longrightarrow$ Click **Approvals** in the left navigation rail (`http://localhost:3000/approvals` or `/?scenario=planted-bill`)
 - **Visuals:**
   - Incoming vendor bill arrives from *Mehran Garments* (`sup_017`), invoice `INV-2231`, amount **PKR 184,500.00** (`bill_2231`).
-  - Invoice PDF preview highlights:
+  - Invoice preview highlights 3 critical red flags:
     1. Red flag 1: Bank IBAN changed on 2026-10-20 (just 2 days ago), confirmed via email only.
     2. Red flag 2: Invoice number `INV-2231` is a near-duplicate of already-paid `INV 2231` (`bill_2188`, settled on 28 Sep).
     3. Red flag 3: Urgent memo text: *"Urgent settlement required immediately or raw material supply will halt."*
   - The Controller agent extracted the data and the Treasurer drafted payment proposal `prop_demo_01`.
-  - **The Guardian Inspection Modal pops up:**
+  - **The Guardian Inspection Panel / Modal displays:**
     - G-05 (Duplicate Invoice): **FAIL $\longrightarrow$ BLOCK** (Normalized ID match: `INV2231`).
     - G-03 (Bank Details Changed < 7 Days / Unconfirmed): **FAIL $\longrightarrow$ BLOCK** (Changed 2 days ago via email).
     - G-12 (Adversarial Prompt Injection / Urgency): **FAIL $\longrightarrow$ ESCALATE** (Urgency coercive language flagged).
     - G-01 (Mandate Cap Exceeded): **FAIL $\longrightarrow$ ESCALATE** (PKR 184,500 exceeds Treasurer cap of PKR 150,000).
-    - Strictest-Outcome Resolver: **FINAL VERDICT: BLOCK**.
-  - System shows execution refused by the sandbox wallet.
+    - Strictest-Outcome Resolver: **FINAL VERDICT: BLOCK** (rendered in prominent red badge).
+  - System shows execution refused by the sandbox wallet; payment button is hard-disabled.
 - **Spoken Narration (Voiceover):**
   > *"Here is Fiona’s crown jewel: the independent Guardian verification engine.*  
   >  
@@ -115,9 +114,9 @@
 
 ### Scene 04: Financing Matching & The Strategic Council
 - **Duration:** 55 seconds (Timecode: `2:15 – 3:10`)
-- **Screen Route:** `apps/web/app/(app)/financing` $\longrightarrow$ `apps/web/app/(app)/council`
+- **Screen Route:** Click **Financing** (`http://localhost:3000/financing`) $\longrightarrow$ Click **Council** (`http://localhost:3000/council`)
 - **Visuals:**
-  - Financing Matcher Screen:
+  - Financing Matcher Screen (`/financing`):
     - User evaluates a PKR 2,000,000 working-capital facility for peak season inventory.
     - Matcher queries `rulebook/financing.yaml` across 20 regional options.
     - Ranked Matches:
@@ -125,9 +124,13 @@
       2. **Commercial Running Finance:** 17.30% Effective Annual Cost. Status: *Alternative*.
       3. **Equity Financing:** Status: *Not Recommended (Dilutive)*.
     - Debt-Service Coverage: Post-borrowing DSCR calculated at **1.45× ($14,500\text{ bp}$)**, beating the 1.25× policy threshold.
-  - User toggles **Council Mode**:
-    - Dual-column debate between **CFO Strategist** (advocating SBP concessionary debt) and **Growth Analyst** (advocating equity partner to avoid fixed debt burdens).
-    - Screen renders the **Consensus Recommendation Memo** alongside a preserved, immutable **Dissenting Opinion Block** authored by the Growth Analyst.
+  - User navigates to **Council** (`/council`):
+    - Structured debate between 4 agent roles:
+      - **CFO Strategist:** Recommends subsidized debt to preserve equity.
+      - **Treasurer:** Flags liquidity risk and ongoing 13-week forecast buffer breach.
+      - **Growth Analyst:** Explores equity partnership to avoid fixed debt burdens.
+      - **Guardian:** Ensures comparative review does not emit automated borrowing instructions.
+    - Screen renders the **Dissent on Record** card, preserving the multi-agent debate permanently.
 - **Spoken Narration (Voiceover):**
   > *"To resolve the working capital crunch, the owner turns to financing. Fiona’s matching engine scans an authoritative regional catalogue of 20 SME credit instruments.*  
   >  
@@ -143,16 +146,16 @@
 
 ### Scene 05: 13-Week Cash Alert & Payment Timing Optimization
 - **Duration:** 45 seconds (Timecode: `3:10 – 3:55`)
-- **Screen Route:** `apps/web/app/(app)/forecast`
+- **Screen Route:** Click **Cash forecast** (`http://localhost:3000/forecast`) $\longrightarrow$ Navigate to **Payment timing** (`http://localhost:3000/decisions/payment-timing` or via `Ctrl+K`)
 - **Visuals:**
-  - Interactive 13-week cash-flow bar chart.
-  - Week 7 turns bright amber: Projected balance dips to **PKR 1,580,000**, breaching the PKR 2,000,000 buffer by PKR 420,000.
-  - Hovering on Week 7 reveals causal breakdown: advance tax payment + major winter inventory shipment arrival.
-  - Screen transitions to **Payment Timing Optimizer**:
+  - Interactive 13-week cash-flow table (`/forecast`):
+    - Week 7 turns bright amber: Status renders **Below buffer** (projected cash dips beneath PKR 2,000,000 buffer).
+    - Causal decomposition: advance tax instalment + major winter inventory shipment arrival.
+  - Screen transitions to **Payment Timing Optimizer** (`/decisions/payment-timing`):
     - Supplier *Chenab Fabrics* offers invoice discount terms: 2/10 net 30 on a PKR 500,000 invoice.
     - Fiona calculates the Compounded Effective Annual Return: **44.59% APR**.
     - Cost of capital comparison: 44.59% return vs. 22.00% cost of debt.
-    - Rule G-08 in action: Paying on Day 3 would deepen the Week 7 breach. The Guardian issues:
+    - Rule G-08 in action: Paying immediately on Day 3 would deepen the Week 7 breach. The Guardian issues:
       `Verdict: APPROVE_WITH_CONDITIONS { pay_on: "2026-12-08" }`.
 - **Spoken Narration (Voiceover):**
   > *"In the cash forecast, Fiona peers 13 weeks into the future using direct ledger commitments. Notice Week 7: scheduled tax instalments and inventory arrivals create an impending 420,000 rupee breach below the owner’s safety buffer.*  
@@ -169,18 +172,15 @@
 
 ### Scene 06: Human Approval, Sandbox Wallet & Audit Chain
 - **Duration:** 35 seconds (Timecode: `3:55 – 4:30`)
-- **Screen Route:** `apps/web/app/(app)/approvals` $\longrightarrow$ `apps/web/app/(app)/audit`
+- **Screen Route:** Click **Sandbox wallet** (`http://localhost:3000/wallet`) $\longrightarrow$ Click **Audit trail** (`http://localhost:3000/audit`)
 - **Visuals:**
-  - The owner receives an escalation alert on their mobile view for a legitimate, high-value supplier bill (PKR 350,000) exceeding the Treasurer's PKR 150,000 mandate cap.
-  - Owner reviews three-way match evidence, verifies zero G-03/G-05 red flags, and taps **Approve & Sign**.
-  - Sandbox Wallet transitions to *Executing*:
-    - Verifies cryptographic signature of verdict.
-    - Evaluates business hours window.
-    - Posts synthetic disbursement.
-  - Screen cuts to `public.audit_log`:
-    - Shows sequential ledger entries.
-    - Displays SHA-256 hash chaining: `Hash_n = HMAC-SHA256(Hash_{n-1} + Sequence + Payload)`.
-    - Visual verification badge turns green: **Audit Chain Verified Untampered**.
+  - `/wallet` screen:
+    - Displays the 5-step zero-trust payment lifecycle (Proposal $\to$ Guardian checks $\to$ Owner reviews $\to$ Wallet verifies verdict $\to$ Audit chain records).
+    - Highlights tenant mandate caps: Per-payment cap PKR 150,000, Daily cap PKR 450,000.
+  - `/audit` screen:
+    - Shows sequential ledger entries in `public.audit_log`.
+    - Prominent green badge: **VERIFIED** (Audit chain verified untampered).
+    - Displays RFC 8785 canonical SHA-256 hash chaining: `Hash_n = HMAC-SHA256(Hash_{n-1} + Sequence + Payload)`.
 - **Spoken Narration (Voiceover):**
   > *"When a legitimate payment exceeds an agent’s cap, Fiona escalates to the human owner. The owner reviews the three-way match on their phone and provides multi-factor approval.*  
   >  
@@ -190,31 +190,46 @@
 - **Technical Claim Proved:**
   - Segregation of duties and human-in-the-loop escalation.
   - Zero-trust wallet execution gated by verdict proof.
-  - Cryptographic tamper-evident hash chaining in PostgreSQL audit log.
+  - Cryptographic tamper-evident hash chaining in PostgreSQL audit log (`scripts/verify_audit_chain.py`).
 
 ---
 
-### Scene 07: Conclusion & Architectural Sign-Off
+### Scene 07: Command Bar, Multi-Lingual Voice & Architectural Sign-Off
 - **Duration:** 15 seconds (Timecode: `4:30 – 4:45`)
-- **Screen Route:** Title card with GitHub repository link & architecture diagram
+- **Screen Route:** Press `Ctrl+K` (Global Command Bar) $\longrightarrow$ Closing Title Card
 - **Visuals:**
-  - Full-screen architectural summary:
+  - User presses `Ctrl+K` from any screen to reveal the **Multi-Lingual Command Palette** (`apps/web/components/command-bar.tsx`).
+  - Demonstrates instant multi-lingual command switching:
+    - English (`/briefing`, `/forecast`, `/audit`)
+    - Urdu (`اردو`: تجزیہ, پیشگوئی, منظوری)
+    - Chinese (`简体中文`: 简报, 预测, 审核)
+  - Microphone icon activates Web Speech API voice command recognition.
+  - Fast cut to full-screen architectural closing card:
     - *The Model Decides* (Multi-Agent Council)
     - *The Engine Computes* (Dickinson Stage, 13-Week Cash, Financing Matcher, DSCR)
     - *The Guardian Checks* (15 Invariant Rules, Strictest Outcome Combiner)
-  - GitHub repo link: `https://github.com/Asharib19khan/fiona`
-  - FinTechathon 2026 International Track badge.
+    - *The Wallet Moves Money* (Sandbox Gated Execution)
+    - 430 Passing Unit & Property Tests Monorepo-Wide
+    - GitHub Repo: `https://github.com/Asharib19khan/fiona`
+    - FinTechathon 2026 International Track badge (Tsinghua PBCSF & WeBank).
 - **Spoken Narration (Voiceover):**
-  > *"Fiona proves that autonomous finance copilots can be fast, intelligent, and mathematically safe. By separating reasoning from deterministic computation and independent governance, we give small businesses the financial intelligence of an elite enterprise treasury. Thank you."*
+  > *"With multi-lingual voice navigation and independent mathematical governance, Fiona proves that autonomous finance copilots can be fast, intelligent, and mathematically safe. By separating reasoning from deterministic computation and invariant verification, we give small businesses the financial intelligence of an elite enterprise treasury. Thank you."*
 - **Technical Claim Proved:**
+  - Tier 2 Command Bar with Web Speech API voice input and multi-lingual support (`apps/web/components/command-bar.tsx`).
   - Complete thematic and structural alignment with official Topic E submission requirements.
   - Video length clocked at **285 seconds (4 minutes 45 seconds)**.
 
 ---
 
-## 3. Production & Recording Instructions
+## 3. Production & Recording Instructions (For Asharib)
 
-1. **Resolution & Framing:** 1920×1080 (1080p), 60 fps. Cursor smoothed via screen capture software.
+1. **Resolution & Framing:** 1920×1080 (1080p), 60 fps. Cursor smoothed via screen capture software (OBS Studio / Loom / Camtasia).
 2. **Audio Track:** Voiceover delivered in clear, confident, professional English. Background music ducked to $-24\text{ dB}$ during speech.
-3. **Data Authenticity Notice:** The lower third of the video must display the persistent banner: *"All data shown is synthetic; financial math and security invariants run live on repo commit `b57503b`."*
+3. **Data Authenticity Notice:** The lower third of the video must display the persistent banner: *"All data shown is synthetic; financial math and security invariants run live on repo commit `b57503b` (430 tests passing)."*
 4. **Export Format:** MP4 (H.264 / AAC), strictly under 500 MB.
+5. **Browser Keyboard Shortcuts Reference:**
+   - `Ctrl+K`: Open Multi-Lingual Quick Command Palette (with voice assist).
+   - `Ctrl+Shift+D`: Open Developer Scenario Switcher (`default`, `planted-bill`, `clean`, `escalate-over-cap`).
+   - `[`: Toggle left navigation rail on/off.
+   - `]`: Toggle right agent inspector on/off.
+   - `?`: Open keyboard shortcuts help modal.
