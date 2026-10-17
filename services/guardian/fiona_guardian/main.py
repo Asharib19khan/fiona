@@ -16,6 +16,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from fiona_guardian.api import router
+
 API_VERSION = "v1"
 SERVICE = "guardian"
 _INCOMING_ID = re.compile(r"^[A-Za-z0-9_\-]{8,64}$")
@@ -48,6 +50,14 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+        if isinstance(exc.detail, dict):
+            return _error(
+                request,
+                exc.status_code,
+                str(exc.detail.get("code", "http_error")),
+                str(exc.detail.get("message", "The request could not be completed.")),
+                exc.detail.get("details"),
+            )
         code = {404: "not_found", 405: "method_not_allowed"}.get(exc.status_code, "http_error")
         return _error(request, exc.status_code, code, str(exc.detail))
 
@@ -66,6 +76,8 @@ def create_app() -> FastAPI:
     @app.get("/healthz", tags=["meta"])
     def healthz() -> dict[str, str]:
         return {"api_version": API_VERSION, "status": "ok", "service": SERVICE}
+
+    app.include_router(router)
 
     return app
 
