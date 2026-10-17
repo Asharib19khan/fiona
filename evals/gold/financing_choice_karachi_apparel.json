@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "memo_id": "gold_financing_choice_karachi_apparel_v1",
+  "tenant_id": "ten_karachi_apparel",
+  "decision_type": "financing_choice",
+  "question": "Which available source best supports PKR 2,000,000 of seasonal working capital for the synthetic Karachi Apparel business?",
+  "A_executive_decision": {"recommended_option": "pk_supplier_credit", "urgency": "now", "confidence": "low", "one_line": "Ask suppliers for extended terms while separately repairing the forecast cash breach; do not add debt at the requested amount."},
+  "B_business_context": {"stage_figure": "stage.classification", "objectives": "Protect liquidity during the seasonal working-capital requirement.", "constraints": ["Forecast cash falls below the owner buffer.", "EBITDA is a labelled operating-cash-flow proxy."]},
+  "C_evidence_reviewed": [
+    {"kind": "ledger_query", "ref": "data/fixtures/ten_karachi_apparel/events.jsonl", "as_of": "2026-10-22", "verification": "synthetic Generator v1 ledger fixture"},
+    {"kind": "forecast_run", "ref": "fc_a677b77c1ed2c6038e38", "as_of": "2026-10-22", "verification": "Y1 fixture-backed 13-week forecast"},
+    {"kind": "market_source", "ref": "rulebook/financing.yaml#pk_supplier_credit", "as_of": "2026-10-13", "verification": "catalogue source"}
+  ],
+  "D_financial_condition": {"figures": ["business.ebitda_next_12m", "business.existing_debt_service_12m", "solvency.dscr_forward", "cash.lowest_closing"], "health_bands": "Liquidity breach is shown directly from the fixture-backed forecast."},
+  "E_alternatives": [
+    {"option": "pk_supplier_credit", "summary": "Negotiate longer supplier terms.", "figures": ["financing.effective_annual_cost.mid", "financing.time_to_funds_days"], "pros": ["Lowest explicit cost in the catalogue output."], "cons": ["Does not independently repair the cash breach."], "eligible": true, "why_not": "Supplier agreement is still needed."},
+    {"option": "pk_pmybals_t3", "summary": "Indicative subsidised term loan.", "figures": ["financing.dscr_after", "financing.dscr_after_downside"], "pros": ["Cited low annual rate."], "cons": ["Coverage fails at the requested amount."], "eligible": true, "why_not": "Only possible at a smaller size; the calculated maximum is zero."},
+    {"option": "defer", "summary": "Stage the seasonal requirement until cash is repaired.", "figures": ["cash.lowest_closing"], "pros": ["Avoids a new fixed repayment."], "cons": ["May constrain stock availability."], "eligible": true, "why_not": "Use if suppliers cannot extend terms."}
+  ],
+  "F_quantitative_analysis": {"figures": ["is.revenue_annualised", "business.ebitda_next_12m", "solvency.dscr_forward", "financing.effective_annual_cost.mid", "financing.dscr_after"], "formulas_shown": true},
+  "G_downside": [{"scenario": "base", "parameters_ref": "rulebook/financing.yaml", "figures": ["financing.dscr_after"]}, {"scenario": "downside", "parameters_ref": "T-DEC-DOWN-01", "figures": ["financing.dscr_after_downside"]}, {"scenario": "severe", "parameters_ref": "fc_a677b77c1ed2c6038e38", "figures": ["cash.lowest_closing"]}],
+  "H_recommendation": {"reasoning": "Supplier credit is the catalogue's lowest-cost eligible option. It is a bridge, not a cure for the buffer breach, so it must be paired with a revised cash plan and owner approval.", "would_change_if": ["A supplier discount makes extended terms costly.", "A lender supplies terms that pass base and downside coverage.", "The forecast is repaired above the cash buffer."]},
+  "I_implementation": [{"step": "Request extended terms from key suppliers.", "owner": "Owner", "by_date": "2026-10-23", "approval_required": "owner", "success_measure": "Written supplier terms reduce near-term cash outflows."}, {"step": "Reforecast the 13-week cash plan after supplier responses.", "owner": "Treasurer", "by_date": "2026-10-24", "approval_required": "none", "success_measure": "Updated forecast identifies the first week at or above the buffer."}],
+  "J_risks_and_triggers": [{"risk": "Supplier credit is unavailable or costly.", "indicator_metric_id": "financing.effective_annual_cost.mid", "trigger": "Supplier adds a cost above the agreed benchmark.", "action": "Compare the actual term with the payment-timing engine."}, {"risk": "Debt service worsens the cash crisis.", "indicator_metric_id": "financing.dscr_after_downside", "trigger": "Below the downside coverage floor.", "action": "Do not draw the facility at the requested amount."}],
+  "K_sources_and_audit": [{"ref": "data/fixtures/ten_karachi_apparel/manifest.json", "kind": "synthetic fixture", "as_of": "2026-10-22"}, {"ref": "rulebook/financing.yaml", "kind": "catalogue", "as_of": "2026-10-13"}, {"ref": "engine.financing.matcher", "kind": "engine", "as_of": "2026-10-22"}],
+  "dissent": [],
+  "figures": [
+    {"metric_id": "is.revenue_annualised", "label": "Sales, annualised", "money": {"minor": 15797406963, "currency": "PKR"}, "unit": "minor", "source_refs": ["data/fixtures/ten_karachi_apparel/events.jsonl"]},
+    {"metric_id": "business.ebitda_next_12m", "label": "Operating profit before interest, next 12 months (stub)", "money": {"minor": 556095249, "currency": "PKR"}, "unit": "minor", "source_refs": ["data/fixtures/ten_karachi_apparel/events.jsonl"], "note": "Operating cash-flow proxy until approved analysis EBITDA is available."},
+    {"metric_id": "business.existing_debt_service_12m", "label": "Existing loan payments, next 12 months", "money": {"minor": 619578000, "currency": "PKR"}, "unit": "minor", "source_refs": ["data/fixtures/ten_karachi_apparel/loans.json"]},
+    {"metric_id": "solvency.dscr_forward", "label": "Debt-service cover today", "value": 8975, "unit": "bp", "source_refs": ["engine.analysis.coverage.dscr_forward"]},
+    {"metric_id": "cash.lowest_closing", "label": "Lowest forecast cash (week 13)", "money": {"minor": -1709366189, "currency": "PKR"}, "unit": "minor", "source_refs": ["fc_a677b77c1ed2c6038e38"]},
+    {"metric_id": "financing.effective_annual_cost.mid", "label": "Explicit cost of longer supplier terms", "value": 0, "unit": "bp", "source_refs": ["SRC-FORMULA-EPD"]},
+    {"metric_id": "financing.time_to_funds_days", "label": "Days until the money arrives", "value": 7, "unit": "days", "source_refs": ["rulebook/financing.yaml#pk_supplier_credit"]},
+    {"metric_id": "financing.dscr_after", "label": "Debt-service cover after borrowing", "value": 8525, "unit": "bp", "source_refs": ["engine.analysis.coverage.dscr_forward"]},
+    {"metric_id": "financing.dscr_after_downside", "label": "Debt-service cover after borrowing, downside case", "value": 7246, "unit": "bp", "source_refs": ["T-DEC-DOWN-01"]}
+  ],
+  "labels": {"data_source": "synthetic", "note": "Generator v1 fixture. This evaluates the product pipeline, not real-world forecast accuracy."},
+  "key_figures": ["cash.lowest_closing", "solvency.dscr_forward", "financing.dscr_after", "financing.dscr_after_downside", "financing.effective_annual_cost.mid"],
+  "acceptable_alternatives": {"defer": "if suppliers will not extend terms at an acceptable cost"},
+  "liquidity_breach": true,
+  "outflow_options": []
+}

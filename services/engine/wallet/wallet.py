@@ -30,6 +30,7 @@ import psycopg
 
 from engine.ledger import db
 from engine.ledger.ids import encode_ulid
+from engine.ledger.posting import PostingContext, post_event_in_session
 from engine.wallet.audit import append
 from fiona_contracts.hashing import verdict_hash
 
@@ -349,6 +350,7 @@ def execute_payment(
                 json.dumps({"type": "wallet", "key": source_key}),
             ),
         )
+        post_event_in_session(conn, tenant_id, event_id, PostingContext(), now=now)
         append(
             conn,
             tenant_id,

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Any
 
 from engine.forecast.cash.engine import forecast_cash
 from engine.forecast.ledger_source import LedgerSnapshot
@@ -24,7 +25,7 @@ class BusinessFigures:
     country: str | None
     history_days: int
     revenue_annual_minor: int | None
-    ebitda_next_12m_minor: int | None  # stub (see module docstring)
+    ebitda_next_12m_minor: int | None
     existing_service_12m_minor: int
     existing_service_basis: str
     cash_lowest_closing_minor: int | None
@@ -32,9 +33,16 @@ class BusinessFigures:
     cash_buffer_minor: int | None
     has_b2b_receivables: bool
     forecast_run_id: str | None
+    ebitda_source: str = "operating_cash_proxy"
 
 
-def business_figures(snap: LedgerSnapshot) -> BusinessFigures:
+def business_figures(
+    snap: LedgerSnapshot,
+    *,
+    conn: Any | None = None,
+    tenant_id: str | None = None,
+    approved_ebitda_minor: int | None = None,
+) -> BusinessFigures:
     lines = snap.bank_lines
     days = (lines[-1].posted_on - lines[0].posted_on).days + 1 if lines else 0
     scale = 365 / days if days else 0.0
@@ -56,8 +64,23 @@ def business_figures(snap: LedgerSnapshot) -> BusinessFigures:
     else:
         service, basis = 0, "no loan instalments in the bank statement"
 
-    operating = sum(b.amount_minor for b in lines if not LOAN.match(b.narration))
-    ebitda = round(operating * scale) if days else None
+    ebitda_source = "operating_cash_proxy"
+    if approved_ebitda_minor is not None:
+        ebitda = approved_ebitda_minor
+        ebitda_source = "approved_ebitda"
+    elif conn is not None and tenant_id is not None:
+        try:
+            from engine.analysis.ledger_adapter import ledger_windows
+
+            latest, _ = ledger_windows(conn, tenant_id)
+            ebitda = latest.income.ebitda
+            ebitda_source = "approved_ebitda"
+        except Exception:
+            operating = sum(b.amount_minor for b in lines if not LOAN.match(b.narration))
+            ebitda = round(operating * scale) if days else None
+    else:
+        operating = sum(b.amount_minor for b in lines if not LOAN.match(b.narration))
+        ebitda = round(operating * scale) if days else None
 
     forecast = forecast_cash(snap) if lines else None
     lowest = min(forecast.weeks, key=lambda w: w.closing.minor) if forecast else None
@@ -75,4 +98,5 @@ def business_figures(snap: LedgerSnapshot) -> BusinessFigures:
         cash_buffer_minor=snap.cash_buffer_minor,
         has_b2b_receivables=bool(snap.invoices),
         forecast_run_id=forecast.run_id if forecast else None,
+        ebitda_source=ebitda_source,
     )

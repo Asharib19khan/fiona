@@ -69,8 +69,14 @@ def test_cleared_payment_executes_once_and_is_audited(conn: psycopg.Connection) 
         event = conn.execute(
             "select payload from events where type = 'supplier_payment'"
         ).fetchone()[0]
+        journal = conn.execute(
+            "select account_code, debit_minor, credit_minor from journal_lines"
+            " where event_id = %s order by line_no",
+            (first.event_id,),
+        ).fetchall()
         assert verify(conn, tenant).ok
     assert event["to_iban"] == "PK00SYNB0000000000000001" and event["method"] == "wallet"
+    assert journal == [("2000", 9_500_000, 0), ("1000", 0, 9_500_000)]
     assert audit_actions(conn, tenant) == ["payment_executed"]
 
 

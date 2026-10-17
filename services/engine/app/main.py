@@ -23,6 +23,7 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from engine.app import errors
+from engine.app.tenancy import TenantId
 
 ENGINE_DIR = Path(__file__).resolve().parents[1]
 NOT_MODULES = {"app", "tests"}
@@ -98,6 +99,10 @@ def create_app(modules: Iterable[str] | None = None) -> FastAPI:
     @app.get("/healthz", tags=["meta"])
     def healthz() -> dict[str, str]:
         return {"api_version": errors.API_VERSION, "status": "ok", "service": "engine"}
+
+    @app.get("/v1/whoami", tags=["meta"])
+    def whoami(tenant_id: TenantId) -> dict[str, str]:
+        return {"tenant_id": tenant_id}
 
     app.state.modules = mount_modules(app, discover_modules() if modules is None else modules)
     log.info("engine started", extra={"mode": app.state.mode, "modules": app.state.modules})

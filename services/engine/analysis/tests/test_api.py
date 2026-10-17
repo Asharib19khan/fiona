@@ -8,21 +8,6 @@ def _client() -> TestClient:
     return TestClient(create_app())
 
 
-def test_get_stage_serves_labelled_stub():
-    body = _client().get("/v1/stage").json()
-    assert body["api_version"] == "v1"
-    assert body["data_source"] == "stub"
-    assert body["result"]["owner_stated_stage"] == "growth"
-    assert body["result"]["stage"] in {"shake_out", "mature"}
-
-
-def test_other_tenant_has_no_statements():
-    resp = _client().get(
-        "/v1/analysis/ratios", headers={"X-Fiona-Tenant": "ten_shenzhen_electronics"}
-    )
-    assert resp.status_code == 404
-
-
 def test_post_ratios_returns_figures_with_metric_ids():
     payload = {
         "latest": FY2026.model_dump(mode="json"),

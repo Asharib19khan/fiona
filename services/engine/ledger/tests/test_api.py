@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
 from collections.abc import Iterator
 from datetime import UTC, datetime
 
@@ -65,6 +67,14 @@ def test_events_are_filtered_and_tenant_scoped(client: TestClient) -> None:
     assert other["events"] == []
 
 
+def test_reconciliation_findings_are_ranked_by_amount(client: TestClient) -> None:
+    response = client.get("/v1/reconcile/findings", headers=HEADERS)
+    assert response.status_code == 200, response.text
+    findings = response.json()["findings"]
+    assert [finding["money_at_stake"]["minor"] for finding in findings] == [50_000, 2_500]
+    assert all(finding["source"] == "reconciliation" for finding in findings)
+
+
 def test_wallet_refuses_without_a_verdict_and_audits_it(client: TestClient) -> None:
     body = {
         "proposal_id": "prop_missing",
@@ -95,3 +105,48 @@ def test_tenant_never_comes_from_the_body(client: TestClient) -> None:
     client.post("/v1/wallet/pay", json=body, headers=HEADERS)
     audit = client.get("/v1/audit", headers={"X-Fiona-Tenant": "ten_karachi_apparel"}).json()
     assert all(r["proposal_id"] != "prop_x" for r in audit["records"])
+
+
+def test_bill_duplicate_check_is_read_only(client: TestClient) -> None:
+    document = b"same synthetic bill document"
+    digest = hashlib.sha256(document).hexdigest()
+    bills = [
+        {
+            "bill_id": bill_id,
+            "supplier_id": "sup_001",
+            "number": "SYN-100",
+            "issue_date": "2026-10-20",
+            "due_date": "2026-10-30",
+            "po_number": "PO-100",
+            "lines": [],
+            "subtotal_minor": 125_000,
+            "tax": [],
+            "total_minor": 125_000,
+            "document_id": f"doc_{index}",
+            "document_path": f"{bill_id}.txt",
+            "document_sha256": digest,
+            "currency": "PKR",
+            "received_at": "2026-10-22T09:00:00Z",
+        }
+        for index, bill_id in enumerate(("bill_duplicate_prior", "bill_duplicate_current"), start=1)
+    ]
+    imported = client.post(
+        "/v1/import/bills",
+        json={
+            "bills": bills,
+            "documents": {
+                "bill_duplicate_prior.txt": base64.b64encode(document).decode("ascii"),
+                "bill_duplicate_current.txt": base64.b64encode(document).decode("ascii"),
+            },
+        },
+        headers=HEADERS,
+    )
+    assert imported.status_code == 200, imported.text
+    checked = client.post(
+        "/v1/bills/check", json={"bill_id": "bill_duplicate_current"}, headers=HEADERS
+    )
+    assert checked.status_code == 200, checked.text
+    result = checked.json()
+    assert result["check"]["rule"] == "G-05"
+    assert result["check"]["outcome"] == "block"
+    assert result["check"]["audit"]["matched_bill_id"] == "bill_duplicate_prior"

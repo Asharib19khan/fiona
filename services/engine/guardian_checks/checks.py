@@ -1528,6 +1528,7 @@ def g14_stale_inputs(ctx: CheckContext) -> Check | None:
         t_stale = get_threshold("T-G14-STALE")
         limits = t_stale["values"]
         max_fc_hours = int(limits.get("forecast_run_hours", 24))
+        max_bal_hours = int(limits.get("bank_balance_hours", 48))
 
         now_dt = ctx.get_now_dt()
         fc_age_hours = 0
@@ -1539,10 +1540,25 @@ def g14_stale_inputs(ctx: CheckContext) -> Check | None:
                 fc_dt = fc_dt.replace(tzinfo=UTC)
             fc_age_hours = max(0, int((now_dt - fc_dt).total_seconds() / 3600))
 
+        bal_age_hours = 0
+        if ctx.bank_balance_as_of:
+            b_str = str(ctx.bank_balance_as_of)
+            s_bal = b_str[:-1] + "+00:00" if b_str.endswith("Z") else b_str
+            bal_dt = datetime.fromisoformat(s_bal)
+            if bal_dt.tzinfo is None:
+                bal_dt = bal_dt.replace(tzinfo=UTC)
+            bal_age_hours = max(0, int((now_dt - bal_dt).total_seconds() / 3600))
+
+        low_confidence_fields = [
+            f
+            for f, conf in ctx.extraction_confidence.items()
+            if str(conf).lower() in ("low", "uncertain")
+        ]
+
         audit = {
             "forecast_age_hours": fc_age_hours,
-            "balance_age_hours": 0,
-            "low_confidence_fields": [],
+            "balance_age_hours": bal_age_hours,
+            "low_confidence_fields": low_confidence_fields,
             "conflicts": [],
         }
 
@@ -1553,6 +1569,26 @@ def g14_stale_inputs(ctx: CheckContext) -> Check | None:
                 result="fail",
                 outcome="escalate",
                 detail=f"Forecast baseline age ({fc_age_hours}h) exceeds freshness limit ({max_fc_hours}h).",
+                audit=audit,
+            )
+
+        if bal_age_hours > max_bal_hours:
+            return Check(
+                name="evidence",
+                rule="G-14",
+                result="fail",
+                outcome="escalate",
+                detail=f"Bank balance snapshot age ({bal_age_hours}h) exceeds freshness limit ({max_bal_hours}h).",
+                audit=audit,
+            )
+
+        if low_confidence_fields:
+            return Check(
+                name="evidence",
+                rule="G-14",
+                result="fail",
+                outcome="escalate",
+                detail=f"Low confidence extracted fields: {', '.join(sorted(low_confidence_fields))}.",
                 audit=audit,
             )
 

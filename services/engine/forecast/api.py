@@ -9,7 +9,7 @@ from fastapi import APIRouter, Query, Request
 from engine.app.tenancy import TenantId
 from engine.forecast.cash.engine import forecast_cash
 from engine.forecast.cash.schemas import CashForecastResponse
-from engine.forecast.deps import mode, not_live_yet, require_mock_tenant
+from engine.forecast.deps import mode, require_mock_tenant
 from engine.forecast.feed.rank import rank_findings
 from engine.forecast.feed.schemas import FindingsResponse, SourceStatus
 from engine.forecast.inventory.schemas import InventoryAnalysisResponse
@@ -94,8 +94,25 @@ def inventory_analysis(request: Request, tenant_id: TenantId) -> InventoryAnalys
 def launch_lab_simulate(
     request: Request, tenant_id: TenantId, body: LaunchLabRequest
 ) -> LaunchLabResponse:
-    """Mock mode returns the winter-shawl run for any valid request, stamped now."""
-    if mode(request) != "mock":
-        raise not_live_yet("Y5", "Mon 19 Oct")
-    require_mock_tenant(tenant_id)
-    return load("launch_lab_winter_shawl").model_copy(update={"generated_at": datetime.now(UTC)})
+    """Simulate a product launch using resolved ledger history and market benchmarks (Y5)."""
+    from engine.forecast.launch_lab.policy import load_policy
+    from engine.forecast.launch_lab.resolver import resolve_case
+    from engine.forecast.launch_lab.service import analyse
+
+    current_mode = mode(request)
+    policy, sources = load_policy(
+        owner_overrides=body.constraints.model_dump(exclude_none=True) if body.constraints else None
+    )
+    case = resolve_case(tenant_id, body)
+    runs = body.simulation_runs or (500 if current_mode == "mock" else 2000)
+    seed = body.seed or 42
+
+    return analyse(
+        case,
+        policy,
+        sources,
+        mode=current_mode,
+        generated_at=datetime.now(UTC),
+        runs=runs,
+        seed=seed,
+    )

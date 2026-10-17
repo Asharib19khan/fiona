@@ -58,6 +58,16 @@ DEBT_TYPES = {
     "refinance_scheme",
     "microfinance",
 }
+INPUT_LABELS = {
+    "profile.has_b2b_receivables": "whether the business has B2B receivables",
+    "profile.has_card_or_online_revenue": "whether the business has card or online revenue",
+    "profile.industry": "the business's industry",
+    "profile.legal_form": "the business's legal form",
+    "profile.owner_age_years": "the owner's age",
+    "profile.size_tier": "the business's size tier",
+    "profile.years_operating": "the number of years the business has operated",
+    "request.is_new_borrower_of_bank": "whether the business is a new borrower of the bank",
+}
 
 
 @dataclass(frozen=True)
@@ -75,6 +85,10 @@ class Schedule:
     first_payment: float
     service_12m: float  # debt service counted for DSCR in the first 12 months
     payments_first_3m: float
+
+
+def _input_label(name: str) -> str:
+    return INPUT_LABELS.get(name, name.replace(".", " ").replace("_", " "))
 
 
 def _mid(lo: int | None, hi: int | None) -> int | None:
@@ -212,7 +226,13 @@ def schedule(
         flows[tenor] -= amount * (1 + i * tenor)
     payments_list = [-f for f in flows[1:] if f < 0]
     first = payments_list[0] if payments_list else 0.0
-    service = interest_only_12m if style == "revolving" else sum(-f for f in flows[1:13] if f < 0)
+    if style == "revolving":
+        service = interest_only_12m
+    elif option.get("type") == "invoice_discounting":
+        # Invoice discounting is bullet-repaid, but only its interest belongs in DSCR service.
+        service = amount * i * min(tenor, 12)
+    else:
+        service = sum(-f for f in flows[1:13] if f < 0)
     return Schedule(flows, first, service, sum(-f for f in flows[1:4] if f < 0))
 
 
@@ -289,13 +309,21 @@ def match_financing(
     ebitda = biz.ebitda_next_12m_minor
     ebitda_down = round(ebitda * (1 + revenue_change / 10_000)) if ebitda is not None else None
 
+    is_approved = getattr(biz, "ebitda_source", "") == "approved_ebitda"
+    ebitda_origin = Origin.LEDGER if is_approved else Origin.STUB
+    ebitda_ref = (
+        "engine.analysis: approved EBITDA (income statement)"
+        if is_approved
+        else "bank statement: operating cash flow before debt service, annualised"
+    )
+
     stub_inputs = [
         money_input(
             "ebitda_next_12m",
             ebitda or 0,
             cur,
-            Origin.STUB,
-            ref="bank statement: operating cash flow before debt service, annualised",
+            ebitda_origin,
+            ref=ebitda_ref,
         ),
         money_input(
             "existing_debt_service_12m",
@@ -440,7 +468,7 @@ def match_financing(
                 )
         elif eac.get("mid") is None:
             cost_unknown = True
-            need = ", ".join(mid.missing) or "a quoted rate"
+            need = ", ".join(_input_label(item) for item in mid.missing) or "a quoted rate"
             figures.append(
                 Figure(
                     metric_id="financing.effective_annual_cost.mid",
@@ -661,7 +689,7 @@ def match_financing(
             gaps.setdefault(
                 name,
                 InsufficientData(
-                    need=name.replace("_", " "),
+                    need=_input_label(name),
                     why="An eligibility rule needs it.",
                     blocking=False,
                     metric_ids=[name],

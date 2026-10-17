@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from engine.forecast._contracts import Figure, FigureInput, Money
 from engine.forecast.figures import Envelope, InsufficientData, RuleCheck
@@ -25,6 +25,12 @@ class DebtTerms(BaseModel):
     grace_months: int = Field(0, ge=0, le=60)
     upfront_fee_bp: int = Field(0, ge=0, le=10_000)
     repayment: Literal["annuity", "equal_principal", "bullet"] = "annuity"
+
+    @model_validator(mode="after")
+    def _repayment_can_start(self):
+        if self.repayment != "bullet" and self.grace_months >= self.term_months:
+            raise ValueError("grace_months must be shorter than term_months for amortising debt")
+        return self
 
 
 class EquityTerms(BaseModel):
@@ -43,6 +49,12 @@ class DebtEquityRequest(BaseModel):
     equity: EquityTerms | None = None
     horizon_months: int = Field(12, ge=1, le=60)
     as_of: date | None = None
+
+    @model_validator(mode="after")
+    def _positive_amount(self):
+        if self.amount.minor <= 0:
+            raise ValueError("amount must be greater than zero")
+        return self
 
 
 class DividendRequest(BaseModel):

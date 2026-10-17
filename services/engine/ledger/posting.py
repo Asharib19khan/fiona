@@ -163,6 +163,64 @@ def balanced(lines: list[dict]) -> bool:
     return sum(ln["debit_minor"] for ln in lines) == sum(ln["credit_minor"] for ln in lines)
 
 
+def post_event_in_session(
+    conn: psycopg.Connection,
+    tenant_id: str,
+    event_id: str,
+    ctx: PostingContext,
+    *,
+    now: datetime,
+) -> int:
+    """Post one event inside an existing tenant-scoped transaction.
+
+    The wallet uses this after inserting a supplier-payment event, so its simulated
+    payment, journal and audit record commit or roll back together.
+    """
+    row = conn.execute(
+        "select e.type, e.business_date, e.payload, t.currency from events e"
+        " join tenants t on t.id = e.tenant_id"
+        " where e.id = %s and not exists (select 1 from journal_lines j where j.event_id = e.id)",
+        (event_id,),
+    ).fetchone()
+    if row is None:
+        return 0
+    kind, business_date, payload, currency = row
+    lines = [
+        line
+        for line in post_event(kind, payload, ctx)
+        if line["debit_minor"] or line["credit_minor"]
+    ]
+    if not lines:
+        return 0
+    if not balanced(lines):
+        raise ValueError(f"posting rule produced an unbalanced journal for {event_id}")
+
+    journal_id = "jnl_" + event_id[4:]
+    with conn.cursor() as cursor:
+        cursor.executemany(
+            "insert into journal_lines (tenant_id, journal_id, line_no, event_id, account_code, debit_minor,"
+            " credit_minor, currency, business_date, memo, posted_at)"
+            " values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            [
+                (
+                    tenant_id,
+                    journal_id,
+                    number,
+                    event_id,
+                    line["account"],
+                    line["debit_minor"],
+                    line["credit_minor"],
+                    currency,
+                    business_date,
+                    line["memo"],
+                    now,
+                )
+                for number, line in enumerate(lines, start=1)
+            ],
+        )
+    return len(lines)
+
+
 def post_unposted(
     conn: psycopg.Connection, tenant_id: str, ctx: PostingContext, *, now: datetime
 ) -> int:

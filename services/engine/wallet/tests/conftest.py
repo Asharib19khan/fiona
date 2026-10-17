@@ -75,6 +75,12 @@ def seed_wallet_tenant(
                 T0,
             ),
         )
+        x(
+            "insert into accounts (tenant_id, code, name, class, neutral_class) values "
+            "(%s, '1000', 'Cash at bank', 'asset', 'cash'), "
+            "(%s, '2000', 'Accounts payable', 'liability', 'payables')",
+            (tenant_id, tenant_id),
+        )
         parties = [
             ("sup_001", "PK00SYNB0000000000000001", True, None),
             ("sup_018", "PK00SYNB0000000000000018", False, None),

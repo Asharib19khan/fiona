@@ -6,6 +6,6 @@
   "scripts": {
     "dev": "uv run python app/dev.py",
     "lint": "uv run ruff check . && uv run ruff format --check .",
-    "test": "uv run pytest -q"
+    "test": "uv run pytest -q --basetemp .pytest-temp"
   }
 }

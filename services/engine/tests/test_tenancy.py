@@ -50,3 +50,50 @@ def test_live_mode_fails_closed_until_token_verification_lands() -> None:
     )
     assert res.status_code == 401
     assert res.json()["error"]["code"] == "unauthenticated"
+
+
+def test_live_mode_accepts_verified_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    import base64
+    import hashlib
+    import hmac
+    import json
+    import time
+
+    secret = "a" * 32
+    monkeypatch.setenv("INTERNAL_JWT_SECRET", secret)
+
+    now = int(time.time())
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload = {
+        "sub": "usr_owner_01",
+        "tenant_id": "ten_live_test",
+        "role": "owner",
+        "aud": "fiona-engine",
+        "iat": now,
+        "exp": now + 60,
+    }
+    h_b64 = (
+        base64.urlsafe_b64encode(json.dumps(header).encode("utf-8")).rstrip(b"=").decode("ascii")
+    )
+    p_b64 = (
+        base64.urlsafe_b64encode(json.dumps(payload).encode("utf-8")).rstrip(b"=").decode("ascii")
+    )
+    msg = f"{h_b64}.{p_b64}"
+    sig = hmac.new(secret.encode("utf-8"), msg.encode("ascii"), hashlib.sha256).digest()
+    sig_b64 = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
+    token = f"{msg}.{sig_b64}"
+
+    res = make_client(mode="live").get("/v1/whoami", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    assert res.json() == {"tenant_id": "ten_live_test"}
+
+
+def test_live_mode_rejects_expired_or_tampered_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    secret = "a" * 32
+    monkeypatch.setenv("INTERNAL_JWT_SECRET", secret)
+
+    res = make_client(mode="live").get(
+        "/v1/whoami", headers={"Authorization": "Bearer bad.token.here"}
+    )
+    assert res.status_code == 401
+    assert res.json()["error"]["code"] == "unauthenticated"

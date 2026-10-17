@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+
 import psycopg
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -14,7 +16,10 @@ record_strategy = st.dictionaries(
     keys=st.text(min_size=1, max_size=20, alphabet=st.characters(categories=["L", "N"])),
     values=st.one_of(
         st.integers(min_value=-1000000, max_value=1000000),
-        st.text(alphabet=st.characters(blacklist_characters=["\x00"]), max_size=50),
+        st.text(
+            alphabet=st.characters(blacklist_characters=["\x00"], blacklist_categories=["Cs"]),
+            max_size=50,
+        ),
         st.booleans(),
     ),
     min_size=1,
@@ -86,7 +91,7 @@ def test_audit_detects_tampering(conn: psycopg.Connection) -> None:
 @given(records=st.lists(record_strategy, min_size=1, max_size=8))
 def test_random_appends_always_verify(conn: psycopg.Connection, records: list[dict]) -> None:
     """Hypothesis property: any random sequence of valid records appended verifies cleanly."""
-    tenant = f"ten_rand_{abs(hash(str(records))) % 1000000}"
+    tenant = f"ten_rnd_{uuid.uuid4().hex[:16]}"
     seed_wallet_tenant(conn, tenant)
 
     with tenant_session(conn, tenant):

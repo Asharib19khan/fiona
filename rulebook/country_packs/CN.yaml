@@ -1,0 +1,60 @@
+# Country pack: China (CN) for Shenzhen persona (Tier 2 / Task D7).
+# Market inputs, tax and legal references used by rules and memos for Chinese SMEs.
+
+schema_version: 1
+country: CN
+currency: CNY
+minor_unit_exponent: 2
+timezone: Asia/Shanghai
+pack_version: "1.0.0"
+effective_date: "2026-10-14"
+
+market:
+  policy_rate_bp:
+    value: 335
+    describes: "People's Bank of China 1-year Loan Prime Rate (LPR)"
+    as_of: "2026-09-20"
+    source: {title: "PBOC National Interbank Funding Center LPR Announcement", url: "http://www.pbc.gov.cn"}
+    verification: primary
+    stale_after_days: 60
+  cpi_inflation_yoy_bp:
+    value: 60
+    describes: "China National Bureau of Statistics CPI, year on year"
+    as_of: "2026-09-30"
+    verification: secondary
+    stale_after_days: 35
+  usd_cny:
+    value_x10000: 71250
+    describes: "USD/CNY central parity rate"
+    as_of: "2026-10-13"
+    verification: primary
+    stale_after_days: 7
+
+tax:
+  corporate_tax_rate_bp:
+    value: 2500
+    describes: "Standard Enterprise Income Tax (EIT) rate; 20% / preferential 5% for qualified small low-profit enterprises"
+    as_of: "2026-01-01"
+    verification: secondary
+  vat_rate_bp:
+    value: 1300
+    describes: "Standard VAT rate on manufacturing and goods sales"
+    verification: primary
+  tax_id_formats:
+    USCC:
+      pattern: "^[0-9A-HJ-NP-RT-UW-Y]{18}$"
+      verification: primary
+      note: "18-character Unified Social Credit Code under GB 32100-2015. Mandatory for all Chinese legal entities and fapiao issuance."
+
+law:
+  company_law: "PRC Company Law (2023 Revision, effective 1 July 2024)"
+  dividends:
+    statutory_reserve: "Article 211: Companies must allocate 10% of after-tax profits to statutory surplus reserve until reaching 50% of registered capital before distributing dividends."
+    source: {title: "National People's Congress Standing Committee Gazette"}
+    verification: primary
+  reporting_frameworks:
+    summary: "Chinese Accounting Standards (CAS) / Accounting Standards for Small Business Enterprises (ASSBE)"
+    verification: primary
+
+change_log:
+  - {version: "1.0.0", date: "2026-10-17", change: "First CN pack with USCC tax ID pattern and PBOC market rates for Shenzhen persona."}

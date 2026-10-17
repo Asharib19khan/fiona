@@ -6,19 +6,33 @@ Every response carries api_version "v1". Wallet responses say SIMULATED: no real
 from __future__ import annotations
 
 import base64
+import io
+import tempfile
+import zipfile
 from collections.abc import Iterator
 from datetime import UTC, date, datetime
 from typing import Annotated, Any
 
 import psycopg
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from engine.app.errors import ApiError
 from engine.app.tenancy import TenantId
-from engine.ledger import db, importers
+from engine.ledger import (
+    bill_checks,
+    db,
+    importers,
+    participation,
+    pos_reconcile,
+    proposals,
+    reconcile,
+)
 from engine.wallet.audit import verify
+from engine.wallet.oplog import export_operation_log
 from engine.wallet.wallet import PaymentRequest, execute_payment
+from fiona_contracts.models import DecisionRequest, Finding
 
 router = APIRouter(tags=["ledger"])
 
@@ -115,7 +129,7 @@ def ledger_events(
 ) -> EventsResponse:
     with db.tenant_session(conn, tenant_id):
         rows = conn.execute(
-            "select id, type, occurred_at, business_date, currency, payload, source from events"
+            "select id, type, occurred_at, business_date, currency, party_id, payload, source from events"
             " where (%(type)s::text is null or type = %(type)s)"
             " and (%(from)s::date is null or business_date >= %(from)s)"
             " and (%(to)s::date is null or business_date <= %(to)s)"
@@ -130,12 +144,113 @@ def ledger_events(
             "occurred_at": r[2].astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "date": r[3].isoformat(),
             "currency": r[4],
-            **r[5],
-            "source": r[6],
+            "party_id": r[5],
+            **r[6],
+            "source": r[7],
         }
         for r in rows[:limit]
     ]
     return EventsResponse(events=events, next_offset=offset + limit if len(rows) > limit else None)
+
+
+class ReconcileRunResponse(BaseModel):
+    api_version: str = "v1"
+    run_id: str
+    matched_bank_lines: int
+    unmatched_bank_lines: int
+    exact: int
+    rule: int
+    one_to_many: int
+    fuzzy: int = 0
+
+
+class ReconcileMatch(BaseModel):
+    match_id: str
+    bank_line_id: str
+    event_ids: list[str]
+    pass_name: str
+    confidence: float
+    status: str
+
+
+class ReconcileMatchesResponse(BaseModel):
+    api_version: str = "v1"
+    matches: list[ReconcileMatch]
+
+
+class ReconcileFindingsResponse(BaseModel):
+    api_version: str = "v1"
+    ranked_by: str = "money_at_stake"
+    findings: list[Finding]
+
+
+class BillCheckResponse(BaseModel):
+    api_version: str = "v1"
+    bill_id: str
+    check: dict[str, Any]
+
+
+class BillCheckRequest(BaseModel):
+    bill_id: str = Field(min_length=1)
+
+
+@router.post("/v1/reconcile/run", response_model=ReconcileRunResponse)
+def reconcile_run(tenant_id: TenantId, conn: Conn, now: Clock) -> ReconcileRunResponse:
+    """Run conservative deterministic matching; proposals require review before posting."""
+    return ReconcileRunResponse(**reconcile.run(conn, tenant_id, now=now))
+
+
+@router.post("/v1/reconcile/pos", response_model=pos_reconcile.POSReconcileResponse)
+def reconcile_pos(
+    tenant_id: TenantId, conn: Conn, now: Clock
+) -> pos_reconcile.POSReconcileResponse:
+    """Run POS sales register reconciliation against cash deposits and acquirer settlements."""
+    return pos_reconcile.POSReconcileResponse(
+        **pos_reconcile.run_pos_reconciliation(conn, tenant_id, now=now)
+    )
+
+
+@router.get("/v1/reconcile/matches", response_model=ReconcileMatchesResponse)
+def reconcile_matches(tenant_id: TenantId, conn: Conn) -> ReconcileMatchesResponse:
+    with db.tenant_session(conn, tenant_id):
+        rows = conn.execute(
+            "select match_id, bank_line_id, array_agg(event_id order by event_id), pass, confidence, status"
+            " from matches group by match_id, bank_line_id, pass, confidence, status"
+            " order by bank_line_id, match_id"
+        ).fetchall()
+    return ReconcileMatchesResponse(
+        matches=[
+            ReconcileMatch(
+                match_id=row[0],
+                bank_line_id=row[1],
+                event_ids=row[2],
+                pass_name=row[3],
+                confidence=float(row[4]),
+                status=row[5],
+            )
+            for row in rows
+        ]
+    )
+
+
+@router.get("/v1/reconcile/findings", response_model=ReconcileFindingsResponse)
+def reconcile_findings(tenant_id: TenantId, conn: Conn, now: Clock) -> ReconcileFindingsResponse:
+    """Read-only findings for bank lines that still need reconciliation review."""
+    findings = reconcile.findings(conn, tenant_id, now=now)
+    return ReconcileFindingsResponse(
+        findings=sorted(findings, key=lambda finding: finding.money_at_stake.minor, reverse=True)
+    )
+
+
+@router.post("/v1/bills/check", response_model=BillCheckResponse)
+def bill_check(
+    tenant_id: TenantId, conn: Conn, now: Clock, body: BillCheckRequest
+) -> BillCheckResponse:
+    """Run the read-only Guardian duplicate-bill check (G-05) for an imported bill."""
+    check = bill_checks.duplicate_bill_check(conn, tenant_id, body.bill_id, now=now)
+    if check is None:
+        raise ApiError(404, "bill_not_found", "No imported bill exists for this bill_id.")
+    return BillCheckResponse(bill_id=body.bill_id, check=check)
 
 
 class PayRequest(BaseModel):
@@ -217,3 +332,111 @@ def audit(tenant_id: TenantId, conn: Conn, proposal_id: str | None = None) -> Au
         first_bad_seq=result.first_bad_seq,
         records=records,
     )
+
+
+@router.get("/v1/audit/export", response_class=Response)
+def audit_export(tenant_id: TenantId, conn: Conn) -> Response:
+    """Download a tenant-scoped, verified execution-evidence bundle."""
+    with tempfile.TemporaryDirectory(prefix="fiona-audit-") as directory:
+        with db.tenant_session(conn, tenant_id):
+            export_operation_log(conn, tenant_id, directory)
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, mode="w", compression=zipfile.ZIP_DEFLATED) as bundle:
+            for name in (
+                "operations.jsonl",
+                "audit_chain.jsonl",
+                "verification_report.json",
+                "README.md",
+            ):
+                with open(f"{directory}/{name}", "rb") as source:
+                    bundle.writestr(name, source.read())
+    return Response(
+        content=archive.getvalue(),
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": 'attachment; filename="fiona-execution-evidence.zip"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.get("/v1/proposals")
+def list_proposals(
+    tenant_id: TenantId,
+    conn: Conn,
+    needs_owner: bool = False,
+) -> dict[str, Any]:
+    """List proposals for the tenant, projected with current status and verdict."""
+    results = proposals.list_proposals(conn, tenant_id, needs_owner=needs_owner)
+    return {"api_version": "v1", "proposals": results}
+
+
+@router.get("/v1/proposals/{proposal_id}")
+def get_proposal(
+    tenant_id: TenantId,
+    conn: Conn,
+    proposal_id: str,
+) -> dict[str, Any]:
+    """Get single proposal by ID with its verdict and decision history."""
+    item = proposals.get_proposal(conn, tenant_id, proposal_id)
+    if not item:
+        raise ApiError(404, "not_found", f"No proposal matches ID: {proposal_id}")
+    return {"api_version": "v1", **item}
+
+
+@router.post("/v1/proposals", status_code=201)
+def create_proposal(
+    tenant_id: TenantId,
+    conn: Conn,
+    now: Clock,
+    body: dict[str, Any],
+    idempotency_key: str | None = Header(default=None, alias="idempotency-key"),
+) -> dict[str, Any]:
+    """Store an agent proposal, run Guardian checks, and append to audit log."""
+    prop, verdict = proposals.create_proposal(
+        conn, tenant_id, body, now=now, idempotency_key=idempotency_key
+    )
+    return {"api_version": "v1", "proposal": prop, "verdict": verdict}
+
+
+@router.post("/v1/proposals/{proposal_id}/decision")
+@router.post("/v1/proposals/{proposal_id}/decide")
+def decide_proposal(
+    tenant_id: TenantId,
+    conn: Conn,
+    now: Clock,
+    proposal_id: str,
+    body: DecisionRequest,
+    decided_by: str = Header(default="usr_owner", alias="x-user-id"),
+    idempotency_key: str | None = Header(default=None, alias="idempotency-key"),
+) -> dict[str, Any]:
+    """Record an owner decision (approve or reject) for an escalated proposal."""
+    return proposals.record_owner_decision(
+        conn,
+        tenant_id,
+        proposal_id,
+        body,
+        decided_by=decided_by,
+        now=now,
+        idempotency_key=idempotency_key,
+    )
+
+
+@router.post("/v1/participation/run")
+def run_participation(
+    tenant_id: TenantId,
+    conn: Conn,
+    now: Clock,
+    body: dict[str, Any],
+) -> dict[str, Any]:
+    """Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit."""
+    bill = body.get("bill") or body
+    owner_approval = body.get("owner_approval")
+    res = participation.run_full_participation_loop(
+        conn,
+        tenant_id,
+        bill,
+        owner_approval=owner_approval,
+        now=now,
+    )
+    return {"api_version": "v1", **res}

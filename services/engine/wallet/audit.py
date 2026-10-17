@@ -44,7 +44,7 @@ def compute_audit_hash(prev_hash: str, record: dict[str, Any]) -> str:
     """Compute sha256(prev_hash + canonical_json(record)) written as sha256:<hex>."""
     canonical = canonical_json(record)
     content = prev_hash + canonical
-    return "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
+    return "sha256:" + hashlib.sha256(content.encode("utf-8", errors="surrogatepass")).hexdigest()
 
 
 def append(

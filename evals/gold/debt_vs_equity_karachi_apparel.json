@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "memo_id": "gold_debt_vs_equity_karachi_apparel_v1",
+  "tenant_id": "ten_karachi_apparel",
+  "decision_type": "debt_vs_equity",
+  "question": "How should the synthetic Karachi Apparel business fund PKR 2,000,000 of seasonal working capital?",
+  "A_executive_decision": {
+    "recommended_option": "B_equity",
+    "urgency": "now",
+    "confidence": "low",
+    "one_line": "Discuss the specified equity offer with the owner; neither the requested debt nor internal cash passes the current liquidity and coverage gates."
+  },
+  "B_business_context": {
+    "stage_figure": "stage.classification",
+    "objectives": "Fund seasonal working capital without worsening the 13-week cash crisis.",
+    "constraints": [
+      "The 13-week cash forecast is below the owner buffer.",
+      "Forward EBITDA is currently an operating-cash-flow proxy and is labelled stub."
+    ]
+  },
+  "C_evidence_reviewed": [
+    {"kind": "ledger_query", "ref": "data/fixtures/ten_karachi_apparel/events.jsonl", "as_of": "2026-10-22", "verification": "synthetic Generator v1 ledger fixture"},
+    {"kind": "forecast_run", "ref": "fc_a677b77c1ed2c6038e38", "as_of": "2026-10-22", "verification": "Y1 fixture-backed 13-week forecast"},
+    {"kind": "assumption", "ref": "DEBT-TERMS-2026-10-22", "as_of": "2026-10-22", "verification": "illustrative owner-supplied 19% 24-month annuity terms"},
+    {"kind": "assumption", "ref": "EQUITY-TERMS-2026-10-22", "as_of": "2026-10-22", "verification": "illustrative owner-supplied PKR 18,000,000 pre-money value"}
+  ],
+  "D_financial_condition": {
+    "figures": ["cash.lowest_closing", "cash.buffer", "solvency.dscr_forward", "decision.existing_debt_service"],
+    "health_bands": "Not used: this gold memo is calibrated from the fixture-backed decision and forecast engines."
+  },
+  "E_alternatives": [
+    {"option": "A_debt", "summary": "PKR 2,000,000, 19% annual rate, 24-month annuity.", "figures": ["decision.dscr_after_debt", "decision.dscr_after_debt_downside", "decision.cash_low_point_with_debt"], "pros": ["No ownership dilution."], "cons": ["Fails base and downside coverage and leaves forecast cash below buffer."], "eligible": false, "why_not": "Fails DE-02, DE-03 and DE-04."},
+    {"option": "B_equity", "summary": "PKR 2,000,000 at PKR 18,000,000 pre-money.", "figures": ["decision.pre_money_valuation", "decision.dilution"], "pros": ["No fixed repayment while liquidity is stressed."], "cons": ["Owner gives up 10% and must agree control terms."], "eligible": true, "why_not": "Owner acceptance and investor diligence are still required."},
+    {"option": "C_internal", "summary": "Use cash already above the buffer.", "figures": ["decision.internal_capacity", "decision.internal_shortfall"], "pros": ["No financing cost or dilution."], "cons": ["No cash is above the buffer."], "eligible": false, "why_not": "Fails DE-02."},
+    {"option": "E_defer", "summary": "Delay or stage the request.", "figures": ["decision.funding_requirement"], "pros": ["Avoids new commitments during the cash breach."], "cons": ["May delay seasonal stock availability."], "eligible": true, "why_not": "Use if no acceptable equity offer is available."}
+  ],
+  "F_quantitative_analysis": {"figures": ["decision.debt_service_next_12m", "decision.max_debt_downside", "decision.dilution"], "formulas_shown": true},
+  "G_downside": [
+    {"scenario": "base", "parameters_ref": "DEBT-TERMS-2026-10-22", "figures": ["decision.dscr_after_debt"]},
+    {"scenario": "downside", "parameters_ref": "T-DEC-DOWN-01", "figures": ["decision.dscr_after_debt_downside", "decision.max_debt_downside"]},
+    {"scenario": "severe", "parameters_ref": "T-DEC-DOWN-01", "figures": ["cash.lowest_closing"]}
+  ],
+  "H_recommendation": {"reasoning": "The proposed debt fails coverage before the added repayment is considered safe, and neither debt nor equity removes the forecast breach by itself. Equity avoids a new fixed repayment, but the owner must accept the stated dilution and investor terms.", "would_change_if": ["The cash forecast is repaired above the buffer.", "Approved forward EBITDA replaces the proxy and coverage reaches the lender threshold.", "An investor changes valuation or control terms."]},
+  "I_implementation": [
+    {"step": "Prepare a staged equity discussion using the stated pre-money valuation.", "owner": "Owner", "by_date": "2026-10-29", "approval_required": "owner", "success_measure": "Investor terms document records valuation, dilution and control rights."},
+    {"step": "Repair the cash shortfall before committing seasonal spend.", "owner": "Treasurer", "by_date": "2026-10-23", "approval_required": "owner", "success_measure": "Updated forecast stays at or above the buffer."},
+    {"step": "Re-run the comparison after approved EBITDA is available.", "owner": "CFO Strategist", "by_date": "2026-10-29", "approval_required": "none", "success_measure": "All coverage figures cite the approved analysis output."}
+  ],
+  "J_risks_and_triggers": [
+    {"risk": "Liquidity worsens before capital is available.", "indicator_metric_id": "cash.lowest_closing", "trigger": "Any forecast week remains below cash.buffer.", "action": "Pause discretionary commitments and update the funding plan."},
+    {"risk": "Debt is raised despite failed coverage.", "indicator_metric_id": "decision.dscr_after_debt_downside", "trigger": "Below the 1.0x downside threshold.", "action": "Do not proceed with the requested debt size."},
+    {"risk": "Equity terms erode owner control.", "indicator_metric_id": "decision.dilution", "trigger": "Investor changes dilution or control rights.", "action": "Obtain owner decision and legal review."}
+  ],
+  "K_sources_and_audit": [
+    {"ref": "data/fixtures/ten_karachi_apparel/manifest.json", "kind": "synthetic fixture", "as_of": "2026-10-22"},
+    {"ref": "rulebook/thresholds.yaml", "kind": "rulebook", "as_of": "2026-10-14"},
+    {"ref": "decisions/debt-equity/0.1.0", "kind": "engine", "as_of": "2026-10-22"}
+  ],
+  "dissent": [],
+  "figures": [
+    {"metric_id": "cash.lowest_closing", "label": "Lowest forecast balance (week 13)", "money": {"minor": -1709366189, "currency": "PKR"}, "unit": "minor", "source_refs": ["fc_a677b77c1ed2c6038e38"]},
+    {"metric_id": "cash.buffer", "label": "Your minimum cash buffer", "money": {"minor": 200000000, "currency": "PKR"}, "unit": "minor", "source_refs": ["tenant.policies.cash_buffer_minor"]},
+    {"metric_id": "decision.existing_debt_service", "label": "Existing debt service over the next 12 months", "money": {"minor": 619578000, "currency": "PKR"}, "unit": "minor", "source_refs": ["loan_01:schedule:20-31"]},
+    {"metric_id": "solvency.dscr_forward", "label": "Current forward debt-service cover", "value": 8975, "unit": "bp", "source_refs": ["engine.analysis.coverage.dscr_forward"]},
+    {"metric_id": "decision.debt_service_next_12m", "label": "New debt service in the next 12 months", "money": {"minor": 120980680, "currency": "PKR"}, "unit": "minor", "source_refs": ["decisions/debt-equity/0.1.0"]},
+    {"metric_id": "decision.dscr_after_debt", "label": "Debt-service cover after borrowing", "value": 7509, "unit": "bp", "source_refs": ["engine.analysis.coverage.dscr_forward"]},
+    {"metric_id": "decision.dscr_after_debt_downside", "label": "Debt-service cover after borrowing in the downside case", "value": 6353, "unit": "bp", "source_refs": ["T-DEC-DOWN-01"]},
+    {"metric_id": "decision.max_debt_downside", "label": "Largest debt amount that passes downside coverage", "money": {"minor": 0, "currency": "PKR"}, "unit": "minor", "source_refs": ["decisions/debt-equity/0.1.0"]},
+    {"metric_id": "decision.cash_low_point_with_debt", "label": "Lowest forecast cash with the loan", "money": {"minor": -1529529636, "currency": "PKR"}, "unit": "minor", "source_refs": ["fc_a677b77c1ed2c6038e38"]},
+    {"metric_id": "decision.pre_money_valuation", "label": "Pre-money valuation", "money": {"minor": 1800000000, "currency": "PKR"}, "unit": "minor", "source_refs": ["EQUITY-TERMS-2026-10-22"]},
+    {"metric_id": "decision.dilution", "label": "Share of the business given up", "value": 1000, "unit": "bp", "source_refs": ["EQUITY-TERMS-2026-10-22"]},
+    {"metric_id": "decision.internal_capacity", "label": "Cash available above the buffer", "money": {"minor": 0, "currency": "PKR"}, "unit": "minor", "source_refs": ["fc_a677b77c1ed2c6038e38"]},
+    {"metric_id": "decision.internal_shortfall", "label": "Funding still needed after internal cash", "money": {"minor": 200000000, "currency": "PKR"}, "unit": "minor", "source_refs": ["decisions/debt-equity/0.1.0"]},
+    {"metric_id": "decision.funding_requirement", "label": "Funding requirement", "money": {"minor": 200000000, "currency": "PKR"}, "unit": "minor", "source_refs": ["DEBT-TERMS-2026-10-22"]}
+  ],
+  "labels": {"data_source": "synthetic", "note": "Generator v1 fixture. Forward EBITDA is a labelled operating-cash-flow proxy until approved analysis EBITDA is available."},
+  "key_figures": ["cash.lowest_closing", "cash.buffer", "decision.dscr_after_debt", "decision.dscr_after_debt_downside", "decision.dilution"],
+  "acceptable_alternatives": {"E_defer": "if no owner-acceptable equity offer is available"},
+  "liquidity_breach": true,
+  "outflow_options": ["C_internal"]
+}

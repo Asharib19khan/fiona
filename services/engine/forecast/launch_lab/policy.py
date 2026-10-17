@@ -105,6 +105,8 @@ def _normalise_keys(section: dict[str, Any]) -> dict[str, Any]:
     """Rulebook and API payloads write rates as `<name>_bp` integers; the model uses fractions."""
     out: dict[str, Any] = {}
     for key, value in section.items():
+        if value is None:
+            continue
         if key.endswith("_bp"):
             out[key.removesuffix("_bp")] = _from_bp(value)
         else:
