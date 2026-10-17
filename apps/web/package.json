@@ -9,7 +9,7 @@
     "start": "next start --port 3000",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest --configLoader runner run"
   },
   "dependencies": {
     "@fiona/contracts": "workspace:*",
