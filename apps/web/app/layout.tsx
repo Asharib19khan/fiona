@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { WindowShell } from "./shell";
+import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { apiMode } from "@/lib/env";
 import "./globals.css";
 import "@fiona/ui/styles.css";
@@ -32,7 +33,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           }}
         />
       </head>
-      <body><WindowShell mockMode={mockMode}>{children}</WindowShell></body>
+      <body>
+        <SmoothScrollProvider>
+          <WindowShell mockMode={mockMode}>{children}</WindowShell>
+        </SmoothScrollProvider>
+      </body>
     </html>
   );
 }

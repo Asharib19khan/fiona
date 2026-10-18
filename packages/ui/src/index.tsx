@@ -1,4 +1,14 @@
-import type { ReactNode, ButtonHTMLAttributes, HTMLAttributes } from "react";
+"use client";
+
+import {
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+} from "react";
+import { motion, animate, useMotionValue } from "motion/react";
 
 export const UI_PACKAGE = "@fiona/ui" as const;
 
@@ -19,10 +29,11 @@ export function Button({
 export function Card({
   children,
   className = "",
+  interactive = false,
   ...props
-}: HTMLAttributes<HTMLElement> & { children: ReactNode }) {
+}: HTMLAttributes<HTMLElement> & { children: ReactNode; interactive?: boolean }) {
   return (
-    <section className={`card ${className}`.trim()} {...props}>
+    <section className={`card ${interactive ? "card-interactive" : ""} ${className}`.trim()} {...props}>
       {children}
     </section>
   );
@@ -46,10 +57,42 @@ export function AutonomyBadge({ children }: { children: ReactNode }) {
   return <span className="autonomy-badge">{children}</span>;
 }
 
-export function MoneyText({ amountMinor, currency = "PKR", className = "" }: { amountMinor: number; currency?: string; className?: string }) {
+export function MoneyText({
+  amountMinor,
+  currency = "PKR",
+  className = "",
+  animateCount = true,
+}: {
+  amountMinor: number;
+  currency?: string;
+  className?: string;
+  animateCount?: boolean;
+}) {
   const digits = new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
-  const amount = new Intl.NumberFormat("en", { style: "currency", currency }).format(amountMinor / 10 ** digits);
-  return <span className={`money-text ${className}`.trim()}>{amount}</span>;
+  const targetMajor = amountMinor / 10 ** digits;
+
+  const count = useMotionValue(0);
+  const [displayValue, setDisplayValue] = useState(() => {
+    return new Intl.NumberFormat("en", { style: "currency", currency }).format(targetMajor);
+  });
+
+  useEffect(() => {
+    if (!animateCount) {
+      setDisplayValue(new Intl.NumberFormat("en", { style: "currency", currency }).format(targetMajor));
+      return;
+    }
+    count.set(0);
+    const controls = animate(count, targetMajor, {
+      duration: 0.9,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (latest) => {
+        setDisplayValue(new Intl.NumberFormat("en", { style: "currency", currency }).format(latest));
+      },
+    });
+    return () => controls.stop();
+  }, [targetMajor, currency, animateCount, count]);
+
+  return <span className={`money-text ${className}`.trim()}>{displayValue}</span>;
 }
 
 export function TimeText({ dateTime, timeZone = "Asia/Karachi" }: { dateTime: string; timeZone?: string }) {
@@ -78,8 +121,30 @@ export function FigureWithExplain({ label, amountMinor, currency = "PKR", explan
   return <div className="figure-explain"><span className="eyebrow">{label}</span><strong><MoneyText amountMinor={amountMinor} currency={currency} /></strong><p>{explanation}</p><ProvenancePopover sourceRefs={sourceRefs} /></div>;
 }
 
-export function VerdictPanel({ outcome, title = "Guardian review", children }: { outcome: "approve" | "conditions" | "escalate" | "block"; title?: string; children?: ReactNode }) {
-  return <section className="verdict-panel"><div className="verdict-heading"><div><span className="eyebrow">INDEPENDENT CHECK</span><h3>{title}</h3></div><OutcomeBadge outcome={outcome} /></div>{children ?? <p>Verdict details and source evidence will appear here.</p>}</section>;
+export function VerdictPanel({
+  outcome,
+  title = "Guardian review",
+  children,
+  className = "",
+}: {
+  outcome: "approve" | "conditions" | "escalate" | "block";
+  title?: string;
+  children?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`verdict-panel ${className}`.trim()}>
+      <div className={`verdict-panel-mesh verdict-panel-mesh-${outcome}`} aria-hidden="true" />
+      <div className="verdict-heading">
+        <div>
+          <span className="eyebrow">INDEPENDENT CHECK</span>
+          <h3>{title}</h3>
+        </div>
+        <OutcomeBadge outcome={outcome} />
+      </div>
+      {children ?? <p>Verdict details and source evidence will appear here.</p>}
+    </section>
+  );
 }
 
 export function FindingCard({
@@ -91,6 +156,7 @@ export function FindingCard({
   time,
   outcome,
   action,
+  className = "",
 }: {
   title: string;
   description: string;
@@ -100,16 +166,64 @@ export function FindingCard({
   time: string;
   outcome?: "approve" | "conditions" | "escalate" | "block";
   action?: ReactNode;
+  className?: string;
 }) {
+  const cardRef = useRef<HTMLElement | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  }
+
   return (
-    <article className="finding-card">
+    <motion.article
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+      className={`finding-card ${className}`.trim()}
+    >
+      <div
+        className="finding-card-spotlight"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(380px circle at ${mousePos.x}px ${mousePos.y}px, var(--accent-glow), transparent 80%)`,
+        }}
+        aria-hidden="true"
+      />
+      <div className="finding-card-glow-indicator" aria-hidden="true" />
+
       <div className="finding-main">
-        <span className={`severity severity-${severity}`}>{severity} priority</span>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
+          <span className={`severity severity-${severity}`}>
+            <span className="severity-pulse-dot" />
+            {severity} priority
+          </span>
+        </div>
         <h3>{title}</h3>
         <p>{description}</p>
-        <div className="finding-meta"><span>{source}</span><span aria-hidden="true">·</span><TimeText dateTime={time} /></div>
+        <div className="finding-meta">
+          <span>{source}</span>
+          <span aria-hidden="true">·</span>
+          <TimeText dateTime={time} />
+        </div>
       </div>
-      <div className="finding-side"><span className="eyebrow">At stake</span><MoneyText amountMinor={amountMinor} /><div className="finding-actions">{outcome && <OutcomeBadge outcome={outcome} />}{action}</div></div>
-    </article>
+      <div className="finding-side">
+        <span className="eyebrow">At stake</span>
+        <MoneyText amountMinor={amountMinor} animateCount={true} />
+        <div className="finding-actions">
+          {outcome && <OutcomeBadge outcome={outcome} />}
+          {action}
+        </div>
+      </div>
+    </motion.article>
   );
 }
