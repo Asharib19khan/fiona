@@ -9,10 +9,8 @@ import {
   OutcomeBadge,
   ProvenancePopover,
   StateChip,
-  VerdictPanel,
 } from "@fiona/ui";
-import { getMockProposals } from "@/lib/mock-api";
-import { demoCashWeeks, demoFinanceSnapshot } from "@/lib/tier-one-data";
+import { demoFinanceSnapshot } from "@/lib/tier-one-data";
 import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/server-read";
 import { routes } from "@/lib/routes";
 import { ImportPreview } from "@/components/import-preview";
@@ -87,6 +85,7 @@ function Table({ headers, rows, empty }: { headers: string[]; rows: Array<Array<
 async function ForecastScreenBase() {
   const data = await engineData("forecast/cash");
   const connectedWeeks = objects(data?.weeks);
+  if (!data) return <div className="section-page"><Heading section="forecast" /><DataSource connected={false} fallback="The cash forecast could not be computed right now (the engine did not answer). No figures are shown rather than old ones." /></div>;
   const weeks = connectedWeeks.length ? connectedWeeks.map((week) => ({
     week: typeof week.week === "number" ? week.week : 0,
     start: typeof week.start === "string" ? week.start : "—",
@@ -95,7 +94,7 @@ async function ForecastScreenBase() {
     closing: minor(week.closing) ?? 0,
     below: week.below_buffer === true,
     connected: true,
-  })) : demoCashWeeks.map((week) => ({ ...week, below: week.closing < 200_000_000, connected: false, inflows: 0, outflows: 0 }));
+  })) : [];
   const buffer = figureMinor(data?.buffer) ?? 200_000_000;
   const lowest = figureMinor(data?.lowest_closing) ?? Math.min(...weeks.map((week) => week.closing));
   const firstBelow = typeof data?.first_week_below_buffer === "number" ? data.first_week_below_buffer : weeks.find((week) => week.closing < buffer)?.week ?? null;
@@ -111,10 +110,10 @@ async function ForecastScreenBase() {
     const previousClose = index === 0 ? 953_352_992 : (weeks[index - 1]?.closing ?? 953_352_992);
     return [`Week ${week.week}`, week.start, <MoneyText amountMinor={week.closing - previousClose} key="net" />, closing, bufferStatus];
   });
-  return <div className="section-page"><Heading section="forecast" badge={data ? "Engine · read only" : "Generator v1 snapshot"} /><DataSource connected={Boolean(data)} fallback="Showing the reproducible synthetic 13-week holdout snapshot." />
+  return <div className="section-page"><Heading section="forecast" badge="Computed from your ledger" /><DataSource connected fallback="" />
     <div className="tier-metric-grid"><Metric label="Lowest forecast close" amount={lowest} note="13-week view" /><Metric label="Owner cash buffer" amount={buffer} note="Tenant policy" /><Metric label="First buffer breach" value={firstBelow ? `Week ${firstBelow}` : "None"} note="Forecast alert" /></div>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">WEEKLY CASH PATH</span><h2>Closing balance and buffer check</h2></div><span className="placeholder-tag">PKR · minor units</span></div><Table headers={data ? ["Period", "Starting", "Inflows", "Outflows", "Closing", "Buffer check"] : ["Period", "Net movement", "Closing", "Buffer check"]} rows={rows} empty="The engine returned no forecast weeks." /></Card>
-    <p className="footnote">Forecasts are decision support. The page does not schedule a payment. The fallback snapshot shows the held-out Generator v1 evaluation path; inflow and outflow detail appears only from the local engine response.</p>
+    <p className="footnote">Forecasts are decision support, computed from your posted ledger: last year&rsquo;s seasonal pattern scaled to recent trading, plus the bills, invoices and loan payments already due. The page does not schedule a payment.</p>
   </div>;
 }
 
@@ -132,38 +131,19 @@ async function AnalysisScreen() {
   const healthDimensions = object(health?.dimensions) ?? {};
   const rows = ratioFigures.map((figure) => {
     const shown = figure.money ? <MoneyText amountMinor={minor(figure.money) ?? 0} /> : figure.value !== undefined ? `${figure.value}${figure.unit === "bp" ? " bp" : ` ${String(figure.unit ?? "")}`}` : figure.status === "insufficient_data" ? "Insufficient data" : "—";
-    return [String(figure.label ?? figure.metric_id ?? "Metric"), shown, String(figure.status ?? "ok"), <ProvenancePopover key={String(figure.metric_id)} sourceRefs={Array.isArray(figure.source_refs) ? figure.source_refs.map(String) : []} />];
+    return [String(figure.label ?? figure.metric_id ?? "Metric"), shown, String(figure.status ?? "ok"), <ProvenancePopover key={String(figure.metric_id)} sourceRefs={Array.isArray(figure.source_refs) ? figure.source_refs.slice(0, 12).map(String) : []} total={Array.isArray(figure.source_refs) ? figure.source_refs.length : 0} />];
   });
-  const fallbackFigures = [
-    ["Annualised sales", <MoneyText amountMinor={demoFinanceSnapshot.annualSalesMinor} key="annual-sales" />],
-    ["Operating cash-flow proxy", <MoneyText amountMinor={demoFinanceSnapshot.operatingCashProxyMinor} key="cash-proxy" />],
-    ["Existing 12-month debt service", <MoneyText amountMinor={demoFinanceSnapshot.existingDebtServiceMinor} key="debt-service" />],
-    ["Forward DSCR", `${(demoFinanceSnapshot.forwardDscrBp / 10_000).toFixed(4)}×`],
-  ];
   const stageName = typeof stage?.stage === "string" ? stage.stage.replaceAll("_", " ") : null;
-  return <div className="section-page"><Heading section="analysis" badge={stageData ? "Ledger · read only" : "Generator v1 snapshot"} /><DataSource connected={Boolean(stageData && ratioData && healthData)} fallback="The Y2 ledger endpoints are available when the local engine and seeded database are running. Showing calibrated decision inputs here." />
-    <div className="tier-metric-grid"><Metric label="Lifecycle stage" value={stageName ?? "Not loaded"} note={stageName ? `${String(stage?.confidence ?? "")} confidence` : "Load the ledger to classify the stage."} /><Metric label="Overall health band" value={String(health?.overall ?? "Not loaded")} note="Categorical health band; no composite score." /><Metric label="Decision coverage" value={ratioFigures.length || fallbackFigures.length} unit=" figures" note="Every engine figure has source references." /></div>
+  return <div className="section-page"><Heading section="analysis" badge={stageData ? "Computed from your ledger" : "Unavailable"} /><DataSource connected={Boolean(stageData && ratioData && healthData)} fallback="The analysis could not be computed right now (the engine did not answer). No figures are shown rather than old ones." />
+    <div className="tier-metric-grid"><Metric label="Lifecycle stage" value={stageName ?? "Not loaded"} note={stageName ? `${String(stage?.confidence ?? "")} confidence` : "Load the ledger to classify the stage."} /><Metric label="Overall health band" value={String(health?.overall ?? "Not loaded")} note="Categorical health band; no composite score." /><Metric label="Figures computed" value={ratioFigures.length || "None"} unit={ratioFigures.length ? " figures" : ""} note="Every engine figure has source references." /></div>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">FINANCIAL INDICATORS</span><h2>Ratios and source trail</h2></div><span className="placeholder-tag">No composite health score</span></div>
-      {ratioFigures.length ? <Table headers={["Metric", "Value", "Status", "Sources"]} rows={rows} empty="No ratios were returned." /> : <Table headers={["Generator v1 input", "Calibrated value"]} rows={fallbackFigures} empty="No synthetic calibration figures." />}
+      <Table headers={["Metric", "Value", "Status", "Sources"]} rows={rows} empty="The ratios could not be computed right now (the engine did not answer)." />
     </Card>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">HEALTH BANDS</span><h2>By financial dimension</h2></div></div><div className="band-grid">{Object.entries(healthDimensions).map(([name, raw]) => { const dimension = object(raw); return <div className="band-card" key={name}><span className="eyebrow">{name.replaceAll("_", " ")}</span><strong>{String(dimension?.band ?? "not available")}</strong><p>{Array.isArray(dimension?.reasons) ? dimension.reasons.join(" ") : ""}</p></div>; })}{!Object.keys(healthDimensions).length && <EmptyState title="Health bands not loaded">Connect the local read-only engine to view the bands calculated from posted journal lines.</EmptyState>}</div></Card>
-    <p className="footnote">The fallback operating cash-flow proxy is not approved EBITDA and is labelled accordingly in the financing and decision memos.</p>
+    <p className="footnote">Prototype accounting: cost of sales at item cost, no depreciation run and no monthly sales-tax offset yet, so ratios are indicative, not audited.</p>
   </div>;
 }
 
-function FinancingScreen() {
-  const snapshot = demoFinanceSnapshot;
-  const options = [
-    { name: "Supplier credit", provider: "PK supplier terms", cost: "0 bp explicit cost", dscr: "No new scheduled loan service", outcome: "Recommended bridge", note: "Needs supplier agreement; does not repair the forecast cash breach." },
-    { name: "PMYB&ALS term loan", provider: "Illustrative scheme", cost: "Catalogue terms; verify with lender", dscr: `${(snapshot.debtDscrBp / 10_000).toFixed(4)}× base · ${(snapshot.debtDownsideDscrBp / 10_000).toFixed(4)}× downside`, outcome: "Fails coverage at requested size", note: "The Generator v1 matcher calculated zero safe additional debt at this snapshot." },
-    { name: "Owner equity", provider: "Illustrative offer", cost: `${(snapshot.equityDilutionBp / 100).toFixed(1)}% dilution`, dscr: "No fixed repayment", outcome: "Consider owner-approved terms", note: "Uses the illustrative PKR 18m pre-money offer; diligence and control terms remain open." },
-  ];
-  return <div className="section-page"><Heading section="financing" badge="Generator v1 calibration" /><DataSource connected={false} fallback="The matcher uses the Generator v1 fixture; direct browser recalculation is not connected in this view." />
-    <div className="tier-metric-grid"><Metric label="Funding request" amount={snapshot.requestedMinor} note="Seasonal working capital" /><Metric label="Current forward DSCR" value={`${(snapshot.forwardDscrBp / 10_000).toFixed(4)}×`} note="Based on labelled operating-cash-flow proxy" /><Metric label="Current cash low point" amount={-1_709_366_189} note="13-week Generator v1 forecast" /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCHED OPTIONS</span><h2>Compare cost, coverage and conditions</h2></div><span className="placeholder-tag">Illustrative · verify terms</span></div><div className="option-list">{options.map((option) => <article className="option-row" key={option.name}><div><span className="eyebrow">{option.provider}</span><h3>{option.name}</h3><p>{option.note}</p></div><div className="option-facts"><span>{option.cost}</span><span>{option.dscr}</span><strong>{option.outcome}</strong></div></article>)}</div></Card>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BUSINESS INPUTS</span><h2>What the comparison used</h2></div></div><div className="tier-metric-grid inner-metrics"><Metric label="Annualised sales" amount={snapshot.annualSalesMinor} /><Metric label="Operating cash-flow proxy" amount={snapshot.operatingCashProxyMinor} note="Not approved EBITDA" /><Metric label="Existing debt service" amount={snapshot.existingDebtServiceMinor} /></div><p className="proposal-reasoning">Source: synthetic Generator v1 ledger, forecast and financing matcher. Supplier credit is a bridge while the owner repairs cash flow; it is not a liquidity cure.</p></Card>
-  </div>;
-}
 
 async function FinancingLiveScreen() {
   const snapshot = demoFinanceSnapshot;
@@ -175,9 +155,10 @@ async function FinancingLiveScreen() {
     supplier_discount: { discount_bp: snapshot.supplierCreditCostBp, within_days: snapshot.supplierCreditDays, net_days: 30 },
   });
   const data = result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
-  if (!data) return <FinancingScreen />;
+  if (!data) return <div className="section-page"><Heading section="financing" /><DataSource connected={false} fallback={result.kind === "unavailable" ? result.message : "The financing matcher could not run right now."} /></div>;
   const options = objects(data?.options);
   const figures = objects(data?.business_figures);
+  const proxy = figures.find((figure) => String(figure.note ?? "").toLowerCase().includes("proxy"));
   const detail = (values: unknown) => objects(values).map((figure, index) => {
     const label = String(figure.label ?? figure.metric_id ?? `Metric ${index + 1}`);
     const amount = minor(figure.money);
@@ -189,7 +170,8 @@ async function FinancingLiveScreen() {
     return <div className="band-card" key={String(figure.metric_id ?? index)}><span className="eyebrow">{label}</span><strong>{text}</strong><p>{Array.isArray(figure.source_refs) ? figure.source_refs.map(String).join(" · ") : String(figure.status ?? "")}</p></div>;
   });
   const unavailable = result.kind === "unavailable" ? result.message : "Start the local engine and fixture database to load the matcher response.";
-  return <div className="section-page"><Heading section="financing" badge={data ? "Matcher · fixture backed" : "Matcher unavailable"} /><DataSource connected={Boolean(data)} fallback={unavailable} />
+  return <div className="section-page"><Heading section="financing" badge="Computed from your ledger" /><DataSource connected={Boolean(data)} fallback={unavailable} />
+    {proxy && <DegradedBanner><strong>Proxy used for EBITDA.</strong> {String(proxy.label ?? "EBITDA")} is estimated from operating cash flow, not audited EBITDA ({String(proxy.note ?? "")}). It feeds debt-service cover and therefore the ranking below; treat the ranking as indicative until real EBITDA is available.</DegradedBanner>}
     <div className="tier-metric-grid"><Metric label="Funding request" amount={minor(data?.amount) ?? snapshot.requestedMinor} note="Seasonal working capital" /><Metric label="Snapshot date" value={String(data?.as_of ?? "Not loaded")} note="Fixture as-of date" /><Metric label="Eligible options" value={options.filter((option) => option.eligible === true).length} note="Catalogue and known business facts" /></div>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCHED OPTIONS</span><h2>Compare cost, coverage and conditions</h2></div><span className="placeholder-tag">Each option carries its source</span></div>
       {options.length ? <div className="option-list">{options.map((option, index) => <article className="option-row" key={String(option.option_id ?? index)}><div><span className="eyebrow">{String(option.provider_label ?? option.kind ?? "Catalogue option")} · {option.illustrative === true ? "Illustrative" : "Catalogue"}</span><h3>{String(option.name ?? option.option_id)}</h3><p>{Array.isArray(option.rank_reasons) ? option.rank_reasons.map(String).join(" · ") : ""}</p><p className="footnote">{String(option.source_ref ?? "")}</p></div><div className="option-facts"><strong>{String(option.outcome ?? "needs_information").replaceAll("_", " ")}{typeof option.rank === "number" ? ` · rank ${option.rank}` : ""}</strong><span>{option.eligible === true ? "Eligible" : option.eligible === false ? "Ineligible" : "Needs more information"}</span><div className="band-grid">{detail(option.figures)}</div></div></article>)}</div> : <EmptyState title="No matcher response">{data ? "The matcher returned no options." : unavailable}</EmptyState>}

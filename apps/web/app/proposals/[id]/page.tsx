@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Card, DegradedBanner, MoneyText, StateChip } from "@fiona/ui";
+import { DegradedBanner, MoneyText, StateChip } from "@fiona/ui";
 import { getWorkspaceSession } from "@/lib/session";
 import { readEnginePath } from "@/lib/server-read";
 

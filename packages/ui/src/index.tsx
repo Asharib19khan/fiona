@@ -127,8 +127,11 @@ export function DegradedBanner({ children }: { children: ReactNode }) {
   return <aside className="degraded-banner" role="status"><span aria-hidden="true">◷</span>{children}</aside>;
 }
 
-export function ProvenancePopover({ label = "Sources", sourceRefs }: { label?: string; sourceRefs: string[] }) {
-  return <details className="provenance-popover"><summary>{label}</summary><ul>{sourceRefs.length ? sourceRefs.map((ref) => <li key={ref}>{ref}</li>) : <li>No source references were attached.</li>}</ul></details>;
+/** A figure's source references. Shows the first `limit` and counts the rest (a ratio can rest on tens of thousands of ledger events). */
+export function ProvenancePopover({ label = "Sources", sourceRefs, total, limit = 12 }: { label?: string; sourceRefs: string[]; total?: number; limit?: number }) {
+  const count = Math.max(total ?? 0, sourceRefs.length);
+  const shown = sourceRefs.slice(0, limit);
+  return <details className="provenance-popover"><summary>{count > 1 ? `${label} (${count.toLocaleString("en-US")})` : label}</summary><ul>{shown.length ? shown.map((ref) => <li key={ref}>{ref}</li>) : <li>No source references were attached.</li>}{count > shown.length && <li>…and {(count - shown.length).toLocaleString("en-US")} more</li>}</ul></details>;
 }
 
 export function FigureWithExplain({ label, amountMinor, currency = "PKR", explanation, sourceRefs = [] }: { label: string; amountMinor: number; currency?: string; explanation: string; sourceRefs?: string[] }) {
