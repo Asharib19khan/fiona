@@ -159,6 +159,25 @@
         "title": "AuditResponse",
         "type": "object"
       },
+      "AutonomyChange": {
+        "properties": {
+          "action_type": {
+            "pattern": "^[a-z_]{3,40}$",
+            "title": "Action Type",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action_type",
+          "level"
+        ],
+        "title": "AutonomyChange",
+        "type": "object"
+      },
       "BalanceSheet": {
         "properties": {
           "as_of": {
@@ -7960,6 +7979,95 @@
         ]
       }
     },
+    "/v1/mandates": {
+      "get": {
+        "description": "Each agent's mandate in force: autonomy per action, caps, and the system ceiling.",
+        "operationId": "get_mandates_v1_mandates_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Mandates V1 Mandates Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Mandates",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/mandates/{agent}/autonomy": {
+      "post": {
+        "description": "The owner raises or lowers an agent's autonomy for one action type (a new version).",
+        "operationId": "change_autonomy_v1_mandates__agent__autonomy_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "agent",
+            "required": true,
+            "schema": {
+              "title": "Agent",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutonomyChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Change Autonomy V1 Mandates  Agent  Autonomy Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Autonomy",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/participation/run": {
       "post": {
         "description": "Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.\n\nAn owner approval in the body counts only from a person, and always as that person.",
@@ -8448,8 +8556,28 @@
     },
     "/v1/reconcile/findings": {
       "get": {
-        "description": "Read-only findings for bank lines that still need reconciliation review.",
+        "description": "Read-only findings for bank lines that still need reconciliation review, largest first.\n`limit` keeps the top ones (a briefing needs a few, not thousands).",
         "operationId": "reconcile_findings_v1_reconcile_findings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 10000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {

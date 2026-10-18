@@ -364,6 +364,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mandates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Mandates
+         * @description Each agent's mandate in force: autonomy per action, caps, and the system ceiling.
+         */
+        get: operations["get_mandates_v1_mandates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mandates/{agent}/autonomy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Autonomy
+         * @description The owner raises or lowers an agent's autonomy for one action type (a new version).
+         */
+        post: operations["change_autonomy_v1_mandates__agent__autonomy_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/participation/run": {
         parameters: {
             query?: never;
@@ -542,7 +582,8 @@ export interface paths {
         };
         /**
          * Reconcile Findings
-         * @description Read-only findings for bank lines that still need reconciliation review.
+         * @description Read-only findings for bank lines that still need reconciliation review, largest first.
+         *     `limit` keeps the top ones (a briefing needs a few, not thousands).
          */
         get: operations["reconcile_findings_v1_reconcile_findings_get"];
         put?: never;
@@ -719,6 +760,13 @@ export interface components {
             }[];
             /** Verified */
             verified: boolean;
+        };
+        /** AutonomyChange */
+        AutonomyChange: {
+            /** Action Type */
+            action_type: string;
+            /** Level */
+            level: string;
         };
         /** BalanceSheet */
         BalanceSheet: {
@@ -3928,6 +3976,74 @@ export interface operations {
             };
         };
     };
+    get_mandates_v1_mandates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_autonomy_v1_mandates__agent__autonomy_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agent: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutonomyChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     run_participation_v1_participation_run_post: {
         parameters: {
             query?: never;
@@ -4253,7 +4369,9 @@ export interface operations {
     };
     reconcile_findings_v1_reconcile_findings_get: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
