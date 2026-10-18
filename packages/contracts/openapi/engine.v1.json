@@ -2196,6 +2196,78 @@
         "title": "ForecastView",
         "type": "object"
       },
+      "GuardianReview": {
+        "description": "The adversarial reviewer's answer (rulebook/guardian.yaml G-12 output_schema), or an error.\n\nThe engine turns it into the G-12 check and sets the outcome itself. The answer fields are\nloose on purpose: a malformed answer is recorded as a CHECK_ERROR escalation, not rejected,\nso a bad model output can never leave a proposal unreviewed.",
+        "properties": {
+          "concern": {
+            "title": "Concern"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "injection_detected": {
+            "title": "Injection Detected"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
+          "reasons": {
+            "title": "Reasons"
+          },
+          "reviewed_verdict_id": {
+            "pattern": "^vrd_[A-Za-z0-9]+$",
+            "title": "Reviewed Verdict Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reviewed_verdict_id"
+        ],
+        "title": "GuardianReview",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -7295,6 +7367,51 @@
         ]
       }
     },
+    "/v1/bills/{bill_id}": {
+      "get": {
+        "description": "One imported bill as the ledger recorded it, with what has been paid against it.",
+        "operationId": "get_bill_v1_bills__bill_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bill_id",
+            "required": true,
+            "schema": {
+              "title": "Bill Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Bill V1 Bills  Bill Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Bill",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/decisions/debt-equity": {
       "post": {
         "operationId": "debt_equity_v1_decisions_debt_equity_post",
@@ -7379,6 +7496,7 @@
     },
     "/v1/decisions/payment-timing": {
       "post": {
+        "description": "Mock mode: the labelled fixture. Live mode: every open bill against the live forecast.",
         "operationId": "payment_timing_v1_decisions_payment_timing_post",
         "requestBody": {
           "content": {
@@ -7844,7 +7962,7 @@
     },
     "/v1/participation/run": {
       "post": {
-        "description": "Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.",
+        "description": "Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.\n\nAn owner approval in the body counts only from a person, and always as that person.",
         "operationId": "run_participation_v1_participation_run_post",
         "requestBody": {
           "content": {
@@ -7934,7 +8052,7 @@
         ]
       },
       "post": {
-        "description": "Store an agent proposal, run Guardian checks, and append to audit log.",
+        "description": "Store an agent proposal, run Guardian checks, and append to audit log.\n\nThe proposer is the verified caller, never the body: an agent proposes only as itself, so\nthe maker-checker rule (G-04) cannot be dodged by naming someone else as the maker.",
         "operationId": "create_proposal_v1_proposals_post",
         "parameters": [
           {
@@ -8043,7 +8161,7 @@
     },
     "/v1/proposals/{proposal_id}/decide": {
       "post": {
-        "description": "Record an owner decision (approve or reject) for an escalated proposal.",
+        "description": "Record a person's decision (approve or reject) on a proposal. Agents never decide.",
         "operationId": "decide_proposal_v1_proposals__proposal_id__decide_post",
         "parameters": [
           {
@@ -8052,16 +8170,6 @@
             "required": true,
             "schema": {
               "title": "Proposal Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-user-id",
-            "required": false,
-            "schema": {
-              "default": "usr_owner",
-              "title": "X-User-Id",
               "type": "string"
             }
           },
@@ -8124,7 +8232,7 @@
     },
     "/v1/proposals/{proposal_id}/decision": {
       "post": {
-        "description": "Record an owner decision (approve or reject) for an escalated proposal.",
+        "description": "Record a person's decision (approve or reject) on a proposal. Agents never decide.",
         "operationId": "decide_proposal_v1_proposals__proposal_id__decision_post",
         "parameters": [
           {
@@ -8133,16 +8241,6 @@
             "required": true,
             "schema": {
               "title": "Proposal Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "header",
-            "name": "x-user-id",
-            "required": false,
-            "schema": {
-              "default": "usr_owner",
-              "title": "X-User-Id",
               "type": "string"
             }
           },
@@ -8198,6 +8296,151 @@
           }
         },
         "summary": "Decide Proposal",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/request-review": {
+      "post": {
+        "description": "A person asks the Guardian to review a proposal again (for example after an outage).",
+        "operationId": "request_guardian_review_v1_proposals__proposal_id__request_review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Request Guardian Review V1 Proposals  Proposal Id  Request Review Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Guardian Review",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/review": {
+      "post": {
+        "description": "Record the Guardian's review as a new verdict chained to the one it reviewed.",
+        "operationId": "proposal_review_v1_proposals__proposal_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuardianReview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Proposal Review V1 Proposals  Proposal Id  Review Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Proposal Review",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/review-packet": {
+      "get": {
+        "description": "What the adversarial reviewer may see (G-12): no agent reasoning, documents as data.",
+        "operationId": "proposal_review_packet_v1_proposals__proposal_id__review_packet_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Proposal Review Packet V1 Proposals  Proposal Id  Review Packet Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Proposal Review Packet",
         "tags": [
           "ledger"
         ]

@@ -111,6 +111,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/bills/{bill_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Bill
+         * @description One imported bill as the ledger recorded it, with what has been paid against it.
+         */
+        get: operations["get_bill_v1_bills__bill_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/bills/check": {
         parameters: {
             query?: never;
@@ -174,7 +194,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Payment Timing */
+        /**
+         * Payment Timing
+         * @description Mock mode: the labelled fixture. Live mode: every open bill against the live forecast.
+         */
         post: operations["payment_timing_v1_decisions_payment_timing_post"];
         delete?: never;
         options?: never;
@@ -353,6 +376,8 @@ export interface paths {
         /**
          * Run Participation
          * @description Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.
+         *
+         *     An owner approval in the body counts only from a person, and always as that person.
          */
         post: operations["run_participation_v1_participation_run_post"];
         delete?: never;
@@ -377,6 +402,9 @@ export interface paths {
         /**
          * Create Proposal
          * @description Store an agent proposal, run Guardian checks, and append to audit log.
+         *
+         *     The proposer is the verified caller, never the body: an agent proposes only as itself, so
+         *     the maker-checker rule (G-04) cannot be dodged by naming someone else as the maker.
          */
         post: operations["create_proposal_v1_proposals_post"];
         delete?: never;
@@ -416,7 +444,7 @@ export interface paths {
         put?: never;
         /**
          * Decide Proposal
-         * @description Record an owner decision (approve or reject) for an escalated proposal.
+         * @description Record a person's decision (approve or reject) on a proposal. Agents never decide.
          */
         post: operations["decide_proposal_v1_proposals__proposal_id__decide_post"];
         delete?: never;
@@ -436,9 +464,69 @@ export interface paths {
         put?: never;
         /**
          * Decide Proposal
-         * @description Record an owner decision (approve or reject) for an escalated proposal.
+         * @description Record a person's decision (approve or reject) on a proposal. Agents never decide.
          */
         post: operations["decide_proposal_v1_proposals__proposal_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/request-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request Guardian Review
+         * @description A person asks the Guardian to review a proposal again (for example after an outage).
+         */
+        post: operations["request_guardian_review_v1_proposals__proposal_id__request_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Proposal Review
+         * @description Record the Guardian's review as a new verdict chained to the one it reviewed.
+         */
+        post: operations["proposal_review_v1_proposals__proposal_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/review-packet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Proposal Review Packet
+         * @description What the adversarial reviewer may see (G-12): no agent reasoning, documents as data.
+         */
+        get: operations["proposal_review_packet_v1_proposals__proposal_id__review_packet_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1890,6 +1978,32 @@ export interface components {
             forecast_run_id?: string | null;
             /** Weekly Closing Minor */
             weekly_closing_minor: number[];
+        };
+        /**
+         * GuardianReview
+         * @description The adversarial reviewer's answer (rulebook/guardian.yaml G-12 output_schema), or an error.
+         *
+         *     The engine turns it into the G-12 check and sets the outcome itself. The answer fields are
+         *     loose on purpose: a malformed answer is recorded as a CHECK_ERROR escalation, not rejected,
+         *     so a bad model output can never leave a proposal unreviewed.
+         */
+        GuardianReview: {
+            /** Concern */
+            concern?: unknown;
+            /** Error */
+            error?: string | null;
+            /** Injection Detected */
+            injection_detected?: unknown;
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /** Model */
+            model?: string | null;
+            /** Prompt Version */
+            prompt_version?: string | null;
+            /** Reasons */
+            reasons?: unknown;
+            /** Reviewed Verdict Id */
+            reviewed_verdict_id: string;
         };
         /** HealthResponse */
         HealthResponse: {
@@ -3364,6 +3478,39 @@ export interface operations {
             };
         };
     };
+    get_bill_v1_bills__bill_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bill_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     bill_check_v1_bills_check_post: {
         parameters: {
             query?: never;
@@ -3928,7 +4075,6 @@ export interface operations {
             query?: never;
             header?: {
                 "idempotency-key"?: string | null;
-                "x-user-id"?: string;
             };
             path: {
                 proposal_id: string;
@@ -3968,7 +4114,6 @@ export interface operations {
             query?: never;
             header?: {
                 "idempotency-key"?: string | null;
-                "x-user-id"?: string;
             };
             path: {
                 proposal_id: string;
@@ -3980,6 +4125,109 @@ export interface operations {
                 "application/json": components["schemas"]["DecisionRequest"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_guardian_review_v1_proposals__proposal_id__request_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposal_review_v1_proposals__proposal_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardianReview"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposal_review_packet_v1_proposals__proposal_id__review_packet_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
