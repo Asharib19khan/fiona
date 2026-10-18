@@ -189,10 +189,14 @@ function CouncilScreen() {
 }
 
 
+/** The business date `days` ago, as YYYY-MM-DD (the demo dataset pins "today" with FIONA_NOW). */
+function daysBeforeToday(days: number): string {
+  const today = process.env.FIONA_NOW ? new Date(process.env.FIONA_NOW) : new Date();
+  return new Date(today.getTime() - days * 86_400_000).toISOString().slice(0, 10);
+}
+
 async function BillsScreen() {
-  // The last 60 business days of bills, newest first (the demo dataset pins "today" with FIONA_NOW).
-  const today = new Date(process.env.FIONA_NOW ?? Date.now());
-  const since = new Date(today.getTime() - 60 * 86_400_000).toISOString().slice(0, 10);
+  const since = daysBeforeToday(60);
   const read = await readEngine("ledger/events", new URLSearchParams({ type: "purchase_bill", date_from: since, limit: "1000" }));
   const data = read.kind === "ok" && read.status === 200 ? objectValue(read.data) : null;
   if (!data) return <div className="section-page"><Heading section="bills" /><DataSource connected={false} fallback="The engine did not answer, so no bills are shown. Try again in a moment." /></div>;
