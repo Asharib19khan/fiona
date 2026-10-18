@@ -7,6 +7,7 @@ import io
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -184,10 +185,12 @@ def test_mcp_server_speaks_the_protocol_and_journals_calls(
 
 
 @pytest.fixture
-def agent_home(tmp_path, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("FIONA_AGENT_HOME", str(tmp_path))
-    monkeypatch.setattr(runtime.shutil, "which", lambda _: "claude")
-    return tmp_path
+def agent_home(monkeypatch: pytest.MonkeyPatch):
+    # Outside the repo, like production: pytest's own temp dir may sit inside it (--basetemp).
+    with tempfile.TemporaryDirectory(prefix="fiona-agents-test-") as home:
+        monkeypatch.setenv("FIONA_AGENT_HOME", home)
+        monkeypatch.setattr(runtime.shutil, "which", lambda _: "claude")
+        yield Path(home)
 
 
 def _fake_cli(
