@@ -3,12 +3,19 @@
 app = "fiona-agents"
 primary_region = "sin"
 
+# Secrets are set with `fly secrets set` (see docs/demo/DEPLOY.md), never here.
+[env]
+  FIONA_MODE = "live"
+  FIONA_NOW = "2026-10-22T09:00:00Z"
+  FIONA_LLM_PROVIDER = "claude_cli"
+  ENGINE_BASE_URL = "https://fiona-engine.fly.dev"
+
 [http_service]
   internal_port = 8100
   force_https = true
   auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 0   # A8 sets this to 1 for demo day
+  min_machines_running = 1   # demo: no cold starts
 
   [[http_service.checks]]
     method = "GET"
@@ -20,4 +27,4 @@ primary_region = "sin"
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
-  memory = "512mb"
+  memory = "2gb"

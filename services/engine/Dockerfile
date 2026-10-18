@@ -18,9 +18,12 @@ WORKDIR /srv/services/engine
 COPY --from=build --chown=fiona:fiona /srv/services/engine /srv/services/engine
 # engine.ledger.db finds migrations at <repo root>/supabase/migrations (parents[3] of ledger/db.py = /srv).
 COPY --chown=fiona:fiona supabase/migrations /srv/supabase/migrations
+# Read at run time: rule thresholds and mandates (rulebook/), and the forecast's ledger files.
+COPY --chown=fiona:fiona rulebook /srv/rulebook
+COPY --chown=fiona:fiona data/fixtures /srv/data/fixtures
 ENV PATH="/srv/services/engine/.venv/bin:${PATH}" \
     PYTHONUNBUFFERED=1 \
-    FIONA_MODE=mock
+    FIONA_MODE=live
 USER fiona
 EXPOSE 8000
 CMD ["uvicorn", "engine.app.main:app", "--app-dir", "/srv/services", "--host", "0.0.0.0", "--port", "8000"]
