@@ -46,7 +46,34 @@ def load_tenant(conn: psycopg.Connection, folder: Path, *, now: datetime = DEMO_
     report["journal_lines"] = posting.post_unposted(
         conn, tenant_id, posting.context_from_db(conn, tenant_id, loans), now=now
     )
+    report["wallet"] = open_demo_wallet(conn, folder, now=now)
     return report
+
+
+def open_demo_wallet(conn: psycopg.Connection, folder: Path, *, now: datetime = DEMO_CLOCK) -> dict:
+    """The sandbox wallet on the tenant's operating account, funded with the statement's latest
+    balance, so approved payments can be simulated against real-looking cash."""
+    from engine.ledger import db
+    from engine.wallet.wallet import open_account
+
+    tenant = json.loads((folder / "tenant.json").read_text(encoding="utf-8"))
+    account = (tenant.get("bank_accounts") or [{}])[0]
+    with db.tenant_session(conn, tenant["id"]):
+        row = conn.execute(
+            "select balance_minor from bank_lines where account_iban = %s"
+            " order by posted_on desc, line_no desc limit 1",
+            (account.get("iban"),),
+        ).fetchone()
+    balance = int(row[0]) if row and row[0] is not None else 0
+    wallet_id = open_account(
+        conn,
+        tenant["id"],
+        iban=account["iban"],
+        currency=tenant["currency"],
+        opening_balance_minor=balance,
+        now=now,
+    )
+    return {"wallet": wallet_id, "opening_balance_minor": balance}
 
 
 def load_all(conn: psycopg.Connection, fixtures: Path = seed.DEFAULT_FIXTURES) -> list[dict]:

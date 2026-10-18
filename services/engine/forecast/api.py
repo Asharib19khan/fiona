@@ -31,7 +31,18 @@ def _cash(request: Request, tenant_id: str, weeks: int) -> CashForecastResponse:
         return result.model_copy(
             update={"horizon_weeks": min(weeks, 13), "weeks": result.weeks[:weeks]}
         )
-    return forecast_cash(snapshot, weeks=weeks, mode=mode(request), generated_at=datetime.now(UTC))
+    run_mode = mode(request)
+    cached = _FORECASTS.get((tenant_id, weeks, run_mode))
+    if cached and cached[0] is snapshot:  # the ledger is unchanged since this forecast ran
+        return cached[1]
+    result = forecast_cash(snapshot, weeks=weeks, mode=run_mode, generated_at=datetime.now(UTC))
+    _FORECASTS[(tenant_id, weeks, run_mode)] = (snapshot, result)
+    return result
+
+
+# The last forecast per tenant, horizon and mode, keyed to the snapshot object it was computed
+# from: a changed ledger gives a new snapshot object and so a fresh forecast.
+_FORECASTS: dict[tuple[str, int, str], tuple[object, CashForecastResponse]] = {}
 
 
 @router.get("/v1/forecast/cash", response_model=CashForecastResponse)
@@ -47,8 +58,23 @@ def findings(request: Request, tenant_id: TenantId) -> FindingsResponse:
     cash = _cash(request, tenant_id, 13)
     if cash.method.name == "mock_fixture":
         return load("findings")
-    feed = load("findings")
-    others = [f for f in feed.findings if f.source != "forecast"]
+    if mode(request) == "mock":
+        feed = load("findings")
+        others = [f for f in feed.findings if f.source != "forecast"]
+        inventory_status = SourceStatus(
+            source="inventory", status="ok", note="mock fixture (mock mode)"
+        )
+    else:
+        # Live: the inventory engine's own computed findings, never the static mock feed.
+        inventory = inventory_analysis(request, tenant_id)
+        others = list(inventory.findings)
+        inventory_status = SourceStatus(
+            source="inventory",
+            status="ok",
+            run_id=inventory.run_id,
+            generated_at=inventory.generated_at,
+            note="computed from the generator's stock files (no ledger loader yet)",
+        )
     return FindingsResponse(
         mode=mode(request),
         tenant_id=tenant_id,
@@ -58,11 +84,9 @@ def findings(request: Request, tenant_id: TenantId) -> FindingsResponse:
             SourceStatus(
                 source="forecast", status="ok", run_id=cash.run_id, generated_at=cash.generated_at
             ),
+            inventory_status,
             SourceStatus(
-                source="inventory", status="ok", note="mock fixture until Y3 (Mon 19 Oct)"
-            ),
-            SourceStatus(
-                source="launch_lab", status="ok", note="mock fixture until Y5 (Mon 19 Oct)"
+                source="launch_lab", status="unavailable", note="Launch Lab publishes no findings"
             ),
             SourceStatus(
                 source="financing",
@@ -79,15 +103,46 @@ def inventory_analysis(request: Request, tenant_id: TenantId) -> InventoryAnalys
         from engine.forecast.inventory.engine import analyse_inventory
         from engine.forecast.inventory.loader import load_inventory_fixture
 
+        stamp = _inventory_stamp(tenant_id)
+        cached = _INVENTORY.get((tenant_id, mode(request)))
+        if cached and cached[0] == stamp:  # the stock files are unchanged since the last run
+            return cached[1]
         data = load_inventory_fixture(tenant_id)
     except TenantDataMissing:
         require_mock_tenant(tenant_id)
         return load("inventory_analysis")
-    return analyse_inventory(
+    result = analyse_inventory(
         data,
         as_of=data.as_of,
         mode=mode(request),
         generated_at=datetime.now(UTC),
+    )
+    _INVENTORY[(tenant_id, mode(request))] = (stamp, result)
+    return result
+
+
+_INVENTORY: dict[tuple[str, str], tuple[tuple, InventoryAnalysisResponse]] = {}
+
+
+def _inventory_stamp(tenant_id: str) -> tuple:
+    """Size and modification time of every stock file the analysis reads."""
+    from engine.forecast.ledger_source import FIXTURES_ROOT
+
+    folder = FIXTURES_ROOT / tenant_id
+    if not (folder / "tenant.json").is_file():
+        raise TenantDataMissing(tenant_id)
+    files = (
+        "tenant.json",
+        "items.csv",
+        "events.jsonl",
+        "purchase_orders.json",
+        "goods_received.json",
+    )
+    return tuple(
+        ((folder / f).stat().st_mtime_ns, (folder / f).stat().st_size)
+        if (folder / f).is_file()
+        else None
+        for f in files
     )
 
 

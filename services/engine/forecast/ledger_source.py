@@ -113,6 +113,18 @@ def load_ledger_snapshot(
         currency, buffer_minor, country, timezone = tenant
         as_of = as_of or clock.business_date(timezone or "UTC")
 
+        # The ledger is append-only, so these counts change whenever anything that feeds the
+        # snapshot changes (an import, a payment, a reconciliation run, a new buffer).
+        fingerprint = conn.execute(
+            "select (select count(*) from events), (select max(recorded_at) from events),"
+            " (select count(*) from bank_lines),"
+            " (select count(*) from matches where status <> 'rejected')"
+        ).fetchone()
+        key = (tenant_id, as_of, tuple(fingerprint), buffer_minor)
+        cached = _SNAPSHOTS.get((tenant_id, as_of))
+        if cached and cached[0] == key:
+            return cached[1]
+
         bank_lines = [
             BankLine(r[0], r[1], r[2], r[3], r[4], r[5])
             for r in conn.execute(
@@ -178,7 +190,7 @@ def load_ledger_snapshot(
         notes.append(
             "no customer receipts are matched yet: run reconciliation so paid invoices stop counting as receivables"
         )
-    return LedgerSnapshot(
+    snapshot = LedgerSnapshot(
         tenant_id=tenant_id,
         currency=currency,
         as_of=as_of,
@@ -193,6 +205,13 @@ def load_ledger_snapshot(
         source="ledger:postgres",
         notes=notes,
     )
+    _SNAPSHOTS[(tenant_id, as_of)] = (key, snapshot)
+    return snapshot
+
+
+# Snapshots by (tenant, as_of), reused while the ledger fingerprint is unchanged. Snapshots are
+# frozen, so sharing one between requests is safe.
+_SNAPSHOTS: dict[tuple[str, date], tuple[tuple, LedgerSnapshot]] = {}
 
 
 def load_snapshot(tenant_id: str, mode: str) -> LedgerSnapshot:

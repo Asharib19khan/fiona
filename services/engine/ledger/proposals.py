@@ -491,34 +491,39 @@ def _build_guardian_context(
                     tax_id_type=p_row[5] or "NTN",
                 )
 
-        # 4. Prior bills (from purchase_bill events)
+        # 4. Prior bills (from purchase_bill events): every earlier bill except the one under
+        # review, which would otherwise match itself. (The loop variable must not reuse the name
+        # `payload`: the proposal's payload is read again below.)
         bill_events = conn.execute(
             """
             select party_id, payload, business_date
             from events
             where tenant_id = %s and type = 'purchase_bill'
+              and coalesce(payload->>'bill_id', '') <> coalesce(%s, '')
             order by business_date desc, id desc
-            limit 100
+            limit 5000
             """,
-            (tenant_id,),
+            (tenant_id, payload.get("bill_id")),
         ).fetchall()
         prior_bills = []
-        for party_id, payload, bdate in bill_events:
-            if not isinstance(payload, dict):
+        for party_id, prior_payload, bdate in bill_events:
+            if not isinstance(prior_payload, dict):
                 continue
-            b_id = payload.get("bill_id") or payload.get("id")
+            b_id = prior_payload.get("bill_id") or prior_payload.get("id")
             prior_bills.append(
                 PriorBillContext(
                     bill_id=str(b_id) if b_id else None,
-                    supplier_id=party_id or payload.get("supplier_id"),
-                    number=payload.get("number") or payload.get("bill_number"),
-                    total_minor=payload.get("total_minor") or payload.get("amount_minor"),
-                    document_sha256=payload.get("document_sha256") or payload.get("sha256"),
-                    issue_date=payload.get("issue_date")
-                    or payload.get("date")
+                    supplier_id=party_id or prior_payload.get("supplier_id"),
+                    number=prior_payload.get("number") or prior_payload.get("bill_number"),
+                    total_minor=prior_payload.get("total_minor")
+                    or prior_payload.get("amount_minor"),
+                    document_sha256=prior_payload.get("document_sha256")
+                    or prior_payload.get("sha256"),
+                    issue_date=prior_payload.get("issue_date")
+                    or prior_payload.get("date")
                     or (bdate.isoformat() if bdate else None),
-                    paid=payload.get("paid"),
-                    status=payload.get("status"),
+                    paid=prior_payload.get("paid"),
+                    status=prior_payload.get("status"),
                 )
             )
 
@@ -606,6 +611,13 @@ def _build_guardian_context(
                 contract_ref=contract_ref,
                 total_minor=amt_minor,
                 due_date=str(b_data.get("due_date") or today_date),
+                # Identity fields G-05 compares against earlier bills (number, document hash);
+                # without them the duplicate check could only compare amounts.
+                number=b_data.get("number"),
+                document_sha256=b_data.get("document_sha256"),
+                po_number=b_data.get("po_number"),
+                po_id=b_data.get("po_id"),
+                grn_id=b_data.get("grn_id"),
             )
 
         raw_po = payload.get("po")

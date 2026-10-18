@@ -59,7 +59,13 @@ def client(migrated_db: str) -> Iterator[TestClient]:
         app.dependency_overrides.clear()
 
 
+_AMOUNTS = iter(range(900_000, 900_000 * 40, 450_000))  # 50% apart: never near-duplicates
+
+
 def propose(client: TestClient, bill: str, notes: str = PRESSURE) -> dict:
+    # A distinct amount per bill: identical same-day bills from one supplier are (rightly)
+    # blocked by G-05 as likely duplicates.
+    total = next(_AMOUNTS)
     """A utilities bill taken in through the real intake (document, event, posting), then the
     Treasurer's payment proposal for it."""
     with db.connect(client.db, autocommit=True) as conn:  # type: ignore[attr-defined]
@@ -70,8 +76,8 @@ def propose(client: TestClient, bill: str, notes: str = PRESSURE) -> dict:
                 "id": bill,
                 "supplier_id": "sup_001",
                 "number": f"INV-{bill}",
-                "total_minor": 900_000,
-                "subtotal_minor": 800_000,
+                "total_minor": total,
+                "subtotal_minor": total - 100_000,
                 "tax_minor": 100_000,
                 "category": "utilities",
                 "contract_ref": "cnt_util_001",
@@ -85,7 +91,7 @@ def propose(client: TestClient, bill: str, notes: str = PRESSURE) -> dict:
         "agent": "treasurer",
         "type": "payment",
         "summary": "Pay supplier",
-        "amount": {"minor": 900_000, "currency": "PKR"},
+        "amount": {"minor": total, "currency": "PKR"},
         "payload": {
             "payee_id": "sup_001",
             "bill_id": bill,
@@ -241,3 +247,15 @@ def test_stale_review_and_wrong_callers_are_refused(client: TestClient) -> None:
         ).status_code
         == 403
     )
+
+
+def test_guardian_reads_the_bill_being_paid_and_never_matches_it_to_itself(
+    client: TestClient,
+) -> None:
+    """Regression: the Guardian context once read another bill (a shadowed variable) and left the
+    bill number out, so G-05 compared nothing; with the number in, a bill must not match itself."""
+    propose(client, "bill_rev_other_a", notes="Thank you")
+    created = propose(client, "bill_rev_target", notes="Thank you")
+    g05 = next(c for c in created["verdict"]["checks"] if c["rule"] == "G-05")
+    assert "INV-bill_rev_target" in g05["detail"]
+    assert g05["outcome"] == "approve"

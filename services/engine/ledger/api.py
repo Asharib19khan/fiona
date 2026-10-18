@@ -25,6 +25,7 @@ from engine.ledger import (
     bill_checks,
     db,
     importers,
+    mandates,
     participation,
     pos_reconcile,
     proposals,
@@ -237,12 +238,17 @@ def reconcile_matches(tenant_id: TenantId, conn: Conn) -> ReconcileMatchesRespon
 
 
 @router.get("/v1/reconcile/findings", response_model=ReconcileFindingsResponse)
-def reconcile_findings(tenant_id: TenantId, conn: Conn, now: Clock) -> ReconcileFindingsResponse:
-    """Read-only findings for bank lines that still need reconciliation review."""
+def reconcile_findings(
+    tenant_id: TenantId,
+    conn: Conn,
+    now: Clock,
+    limit: int | None = Query(default=None, ge=1, le=10_000),
+) -> ReconcileFindingsResponse:
+    """Read-only findings for bank lines that still need reconciliation review, largest first.
+    `limit` keeps the top ones (a briefing needs a few, not thousands)."""
     findings = reconcile.findings(conn, tenant_id, now=now)
-    return ReconcileFindingsResponse(
-        findings=sorted(findings, key=lambda finding: finding.money_at_stake.minor, reverse=True)
-    )
+    ranked = sorted(findings, key=lambda finding: finding.money_at_stake.minor, reverse=True)
+    return ReconcileFindingsResponse(findings=ranked[:limit] if limit else ranked)
 
 
 @router.post("/v1/bills/check", response_model=BillCheckResponse)
@@ -254,6 +260,34 @@ def bill_check(
     if check is None:
         raise ApiError(404, "bill_not_found", "No imported bill exists for this bill_id.")
     return BillCheckResponse(bill_id=body.bill_id, check=check)
+
+
+@router.get("/v1/mandates")
+def get_mandates(tenant_id: TenantId, conn: Conn) -> dict[str, Any]:
+    """Each agent's mandate in force: autonomy per action, caps, and the system ceiling."""
+    return mandates.list_mandates(conn, tenant_id)
+
+
+class AutonomyChange(BaseModel):
+    action_type: str = Field(pattern=r"^[a-z_]{3,40}$")
+    level: str
+
+
+@router.post("/v1/mandates/{agent}/autonomy")
+def change_autonomy(
+    tenant_id: TenantId,
+    actor: CurrentActor,
+    conn: Conn,
+    now: Clock,
+    agent: str,
+    body: AutonomyChange,
+) -> dict[str, Any]:
+    """The owner raises or lowers an agent's autonomy for one action type (a new version)."""
+    if actor.role != "owner":
+        raise ApiError(403, "owner_only", "Only the owner can change a mandate.")
+    return mandates.set_autonomy(
+        conn, tenant_id, agent, body.action_type, body.level, changed_by=actor.id, now=now
+    )
 
 
 @router.get("/v1/bills/{bill_id}")
