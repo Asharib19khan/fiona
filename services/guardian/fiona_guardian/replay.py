@@ -1,25 +1,10 @@
-"""Guardian replay fixture access. Kept separate from the agents' provider code for R8."""
+"""Public rule metadata read from the rulebook (no engine import, R8)."""
 
 from __future__ import annotations
 
-import json
-import os
 from pathlib import Path
-from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-
-
-def provider_name() -> str:
-    return os.environ.get("FIONA_LLM_PROVIDER", "replay")
-
-
-def planted_bill_review() -> dict[str, Any]:
-    return json.loads(
-        (REPO_ROOT / "packages/contracts/examples/scenarios/planted-bill-block.json").read_text(
-            encoding="utf-8"
-        )
-    )
 
 
 def guardian_rules() -> list[dict[str, str | None]]:
