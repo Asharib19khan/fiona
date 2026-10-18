@@ -16,6 +16,7 @@ import { demoCashWeeks, demoFinanceSnapshot } from "@/lib/tier-one-data";
 import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/server-read";
 import { routes } from "@/lib/routes";
 import { ImportPreview } from "@/components/import-preview";
+import { BillIntake } from "@/components/bill-intake";
 import { ProposalInbox } from "@/components/proposal-inbox";
 import { CouncilRoom } from "@/components/council-room";
 import { ReconcileRunner } from "@/components/reconcile-runner";
@@ -205,20 +206,10 @@ function CouncilScreen() {
   );
 }
 
-function BillsPreviewScreen() {
-  const record = getMockProposals()[0] ?? null;
-  const proposal = record?.proposal;
-  const verdict = record?.verdict;
-  return <div className="section-page"><Heading section="bills" /><DataSource connected={false} fallback="Showing the planted synthetic security example; imported bills require the engine connection." />
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BILL REVIEW</span><h2>{proposal?.summary ?? "No planted bill fixture loaded"}</h2></div>{verdict && <OutcomeBadge outcome={verdict.outcome === "approve_with_conditions" ? "conditions" : verdict.outcome} />}</div>
-      {proposal ? <><div className="bill-summary"><div><span className="eyebrow">PROPOSED AMOUNT</span><strong>{proposal.amount ? <MoneyText amountMinor={proposal.amount.minor} currency={proposal.amount.currency} /> : "Not supplied"}</strong></div><div><span className="eyebrow">PREPARED BY</span><strong>{proposal.agent.replaceAll("_", " ")}</strong></div><div><span className="eyebrow">CURRENT STATE</span><strong>{proposal.status.replaceAll("_", " ")}</strong></div></div><p className="proposal-reasoning">{proposal.reasoning}</p>{verdict && <VerdictPanel outcome={verdict.outcome === "approve_with_conditions" ? "conditions" : verdict.outcome}><ul className="verdict-check-list">{verdict.checks.map((check) => <li key={`${check.rule}-${check.name}`}><OutcomeBadge outcome={check.outcome === "approve_with_conditions" ? "conditions" : check.outcome} /><strong>{check.rule}</strong><span>{check.detail}</span></li>)}</ul></VerdictPanel>}</> : <EmptyState title="No sample bill available">Start the engine with the synthetic fixture to review imported bills.</EmptyState>}
-    </Card><p className="footnote">This view is a replay example. It cannot approve, post, or pay a bill.</p>
-  </div>;
-}
 
 async function BillsScreen() {
   const data = await engineData("ledger/events");
-  if (!data) return <BillsPreviewScreen />;
+  if (!data) return <div className="section-page"><Heading section="bills" /><DataSource connected={false} fallback="The engine did not answer, so no bills are shown. Try again in a moment." /></div>;
   const bills = objects(data?.events).filter((event) => event.event === "purchase_bill");
   const sampleBillId = typeof bills[0]?.bill_id === "string" ? bills[0].bill_id : null;
   const checkResult = sampleBillId ? await postEngine("bills/check", { bill_id: sampleBillId }) : null;
@@ -233,7 +224,7 @@ async function BillsScreen() {
     <MoneyText key="amount" amountMinor={typeof bill.total_minor === "number" ? bill.total_minor : 0} />,
   ]);
   const detail = checkResult?.kind === "unavailable" ? checkResult.message : "Import synthetic bills to the local ledger to run the duplicate check.";
-  return <div className="section-page"><Heading section="bills" badge={data ? "Ledger · read only" : "Synthetic preview"} /><DataSource connected={Boolean(data)} fallback="Start the local engine with the seeded database to review imported bills." />
+  return <div className="section-page"><Heading section="bills" badge="Ledger" /><DataSource connected={Boolean(data)} fallback="" /><BillIntake />
     <div className="tier-metric-grid"><Metric label="Imported bills" value={bills.length} note="Purchase bill events" /><Metric label="Duplicate check" value={checkOutcome ? checkOutcome.replaceAll("_", " ") : "Not run"} note="G-05 · read only" /><Metric label="Extraction status" value="Imported records" note="Bill extraction must preserve document hashes and citations." /></div>
     {check && <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">GUARDIAN DUPLICATE CHECK</span><h2>G-05 · {String(checkOutcome ?? "check")}</h2></div>{checkOutcome && <OutcomeBadge outcome={checkOutcome === "approve_with_conditions" ? "conditions" : (checkOutcome as "approve" | "escalate" | "block" | "conditions")} />}</div><p className="proposal-reasoning">{String(check.detail ?? "")}</p></Card>}
     {!check && <DegradedBanner>{detail}</DegradedBanner>}

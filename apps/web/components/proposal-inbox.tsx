@@ -281,9 +281,7 @@ export function ProposalInbox() {
                     </button>
                   </>
                 )}
-                {(p.status === "approved" || p.status === "executed" || p.status === "blocked" || p.status === "rejected") && (
-                  <Link className="button button-secondary" href={`/audit?proposal_id=${p.id}`}>Audit trail</Link>
-                )}
+                <Link className="button button-secondary" href={`/proposals/${p.id}`}>Full trail</Link>
               </div>
             </div>
           </Card>

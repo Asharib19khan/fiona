@@ -216,7 +216,7 @@ export function objectValue(value: unknown): Record<string, unknown> | null {
  * Server-only call to the agents service as the signed-in person (aud fiona-agents). Starting
  * runs can take a moment; reading them is quick.
  */
-export async function agentsRequest(method: "GET" | "POST", path: string, body?: unknown): Promise<ReadResult> {
+export async function agentsRequest(method: "GET" | "POST", path: string, body?: unknown, timeoutMs?: number): Promise<ReadResult> {
   if (!/^\/v1\/agents\/[A-Za-z0-9_/-]{1,120}$/.test(path)) {
     return { kind: "unavailable", status: 400, message: "Unknown agents route." };
   }
@@ -233,7 +233,7 @@ export async function agentsRequest(method: "GET" | "POST", path: string, body?:
       body: body === undefined ? null : JSON.stringify(body),
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(method === "GET" ? 10_000 : 30_000),
+      signal: AbortSignal.timeout(timeoutMs ?? (method === "GET" ? 10_000 : 30_000)),
     });
     return { kind: "ok", status: response.status, data: await response.json() };
   } catch {
@@ -243,7 +243,7 @@ export async function agentsRequest(method: "GET" | "POST", path: string, body?:
 
 /** Server-only engine GET of one vetted path (for example a single proposal). */
 export async function readEnginePath(path: string): Promise<ReadResult> {
-  if (!/^\/v1\/(proposals\/prop_[A-Za-z0-9_]+|bills\/bill_[A-Za-z0-9_]+)$/.test(path)) {
+  if (!/^\/v1\/(proposals\/prop_[A-Za-z0-9_]+(\/trace)?|bills\/bill_[A-Za-z0-9_]+|parties\?q=[^&#]{2,160})$/.test(path)) {
     return { kind: "unavailable", status: 400, message: "Unknown engine route." };
   }
   const headers = await sessionHeaders();

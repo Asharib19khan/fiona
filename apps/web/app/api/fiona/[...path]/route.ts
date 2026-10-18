@@ -93,6 +93,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
   if (path.length === 2 && path[0] === "proposals" && /^prop_[A-Za-z0-9_]+$/.test(path[1] ?? "") && !localMockMode()) {
     return relay(await readEnginePath(`/v1/proposals/${path[1]}`), "Proposal detail");
   }
+  if (path.length === 3 && path[0] === "proposals" && path[2] === "trace" && /^prop_[A-Za-z0-9_]+$/.test(path[1] ?? "")) {
+    return relay(await readEnginePath(`/v1/proposals/${path[1]}/trace`), "The proposal trail");
+  }
+  if (joined === "parties") {
+    const q = (new URL(request.url).searchParams.get("q") ?? "").trim();
+    if (q.length < 2 || q.length > 120) return error(400, "invalid_query", "Search with 2 to 120 characters.");
+    return relay(await readEnginePath(`/v1/parties?q=${encodeURIComponent(q)}`), "Supplier search");
+  }
   if (apiMode() !== "mock" && !hasInternalJwtSecret()) {
     return error(501, "live_bff_not_configured", "The live BFF requires an authenticated server configuration.");
   }
@@ -119,6 +127,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ pat
   const { path } = await params;
   if (!(await getWorkspaceSession())) return error(401, "not_signed_in", "Sign in to a workspace first.");
   const joined = path.join("/");
+  if (joined === "agents/read-bill") {
+    const bytes = await readLimitedBody(request, 7_300_000);
+    if (!bytes) return error(413, "request_too_large", "Bills are limited to 5 MB.");
+    let body: unknown;
+    try { body = JSON.parse(new TextDecoder().decode(bytes)); }
+    catch { return error(400, "invalid_json", "The request must be valid JSON."); }
+    return relay(await agentsRequest("POST", "/v1/agents/read-bill", body, 120_000), "Reading a bill");
+  }
+  if (joined === "bills/intake") {
+    const bytes = await readLimitedBody(request, 64 * 1024);
+    if (!bytes) return error(413, "request_too_large", "The bill is limited to 64 KB of text.");
+    let body: Record<string, unknown>;
+    try { body = JSON.parse(new TextDecoder().decode(bytes)); }
+    catch { return error(400, "invalid_json", "The bill must be valid JSON."); }
+    return relay(await postEngine("proposals", body, "/v1/bills/intake"), "Recording a bill");
+  }
   if (AGENT_WRITES.has(joined)) {
     const bytes = await readLimitedBody(request, 16 * 1024);
     if (!bytes) return error(413, "request_too_large", "Agent requests are limited to 16 KB.");
