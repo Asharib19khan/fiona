@@ -43,10 +43,6 @@ export function LoginPage({ next }: { next: string }) {
       <div className="login-ambient-glow" />
 
       <header className="login-topbar">
-        <div className="login-telemetry-badge">
-          <span className="telemetry-ping" />
-          <span>Every payment waits for your approval</span>
-        </div>
         <button
           type="button"
           className="login-theme-toggle"
@@ -72,13 +68,6 @@ export function LoginPage({ next }: { next: string }) {
           <div className="login-brand-header">
             <h1 className="login-wordmark">FIONA</h1>
             <p className="login-brand-sub">YOUR AI FINANCE TEAM</p>
-            <div className="login-security-pill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-              <span>Agents propose · the Guardian checks · you decide</span>
-            </div>
           </div>
 
           <form className="login-credentials-form" onSubmit={signIn} noValidate={false}>
@@ -129,14 +118,6 @@ export function LoginPage({ next }: { next: string }) {
               )}
             </button>
           </form>
-
-          <footer className="login-card-footer">
-            <div className="login-footer-meta">
-              <span>Accounts are created by your administrator</span>
-              <span className="meta-sep">·</span>
-              <span>Supabase Auth</span>
-            </div>
-          </footer>
         </div>
       </div>
     </div>

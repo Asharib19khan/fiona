@@ -1529,7 +1529,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 18px 28px;
   width: 100%;
 }
@@ -1630,7 +1630,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   font-weight: 700;
   letter-spacing: 0.18em;
   color: var(--text-muted, #64748b);
-  margin: 0 0 12px;
+  margin: 0;
   text-transform: uppercase;
 }
 
@@ -1912,7 +1912,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .login-field-group {
