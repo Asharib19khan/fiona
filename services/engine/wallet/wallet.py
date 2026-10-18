@@ -7,7 +7,9 @@ the tenant's hash-chained audit log.
 
 1. The verdict exists, belongs to this proposal and is unmodified (verdict_hash recomputed from
    the stored body), and its outcome is approve, approve_with_conditions with every condition
-   met now, or escalate with an owner decision by a user who is not the proposer.
+   met now, or escalate with an owner decision by a user who is not the proposer. A clearance
+   pays without a person only when the agent acts within its mandate for payments; at prepare
+   or advise the owner's approval of that verdict is required too.
 2. The requested payee, amount and date match the stored proposal exactly.
 3. Defence in depth, from the mandate and the rulebook: per-payment and daily caps (unless the
    owner released an escalation), payee on the allow-list, and no unconfirmed bank change.
@@ -97,6 +99,26 @@ def _one(conn: psycopg.Connection, sql: str, params: tuple) -> tuple | None:
     return conn.execute(sql, params).fetchone()
 
 
+def _require_owner_approval(
+    conn: psycopg.Connection, req: PaymentRequest, created_by: dict[str, Any] | None
+) -> None:
+    """The latest decision on this exact verdict must be an approval by someone other than
+    the proposer (maker-checker, G-04). A newer verdict needs a fresh decision."""
+    proposer = (created_by or {}).get("id")
+    rows = conn.execute(
+        "select decision, decided_by from decisions where proposal_id = %s and verdict_id = %s"
+        " order by decided_at desc, id desc",  # the latest decision wins
+        (req.proposal_id, req.verdict_id),
+    ).fetchall()
+    if not rows:
+        raise Refusal("NEEDS_OWNER: the owner has not approved this proposal")
+    decision, decided_by = rows[0]
+    if decision != "approve":
+        raise Refusal("OWNER_REJECTED: the owner rejected this proposal")
+    if decided_by == proposer:
+        raise Refusal("SAME_ACTOR: the approver is the proposer (maker-checker, G-04)")
+
+
 def _check(
     conn: psycopg.Connection, tenant_id: str, req: PaymentRequest, now: datetime
 ) -> dict[str, Any]:
@@ -160,6 +182,17 @@ def _check(
         raise Refusal(
             "VERDICT_BLOCKED: the Guardian blocked this proposal; no approval can release it"
         )
+    if outcome in ("approve", "approve_with_conditions"):
+        # A clearance lets the wallet act alone only at act_within_mandate (latest mandate
+        # version in force). At prepare or advise, or with no level recorded, the owner approves.
+        level = _one(
+            conn,
+            "select policy->'autonomy'->>%s from mandates where agent = %s"
+            " order by version desc limit 1",
+            (ptype, agent),
+        )
+        if level is None or level[0] != "act_within_mandate":
+            _require_owner_approval(conn, req, created_by)
     if outcome == "approve_with_conditions":
         for condition in body.get("conditions", []):
             kind = condition["kind"]
@@ -174,19 +207,7 @@ def _check(
             ):
                 raise Refusal(f"CONDITION_NOT_MET: deadline {condition['ts']} has passed")
     elif outcome == "escalate":
-        proposer = (created_by or {}).get("id")
-        rows = conn.execute(
-            "select decision, decided_by from decisions where proposal_id = %s and verdict_id = %s"
-            " order by decided_at desc, id desc",  # the latest decision wins
-            (req.proposal_id, req.verdict_id),
-        ).fetchall()
-        if not rows:
-            raise Refusal("NEEDS_OWNER: escalated, and no owner decision is recorded")
-        decision, decided_by = rows[0]
-        if decision != "approve":
-            raise Refusal("OWNER_REJECTED: the owner rejected this proposal")
-        if decided_by == proposer:
-            raise Refusal("SAME_ACTOR: the approver is the proposer (maker-checker, G-04)")
+        _require_owner_approval(conn, req, created_by)
         released_by_owner = True
     elif outcome != "approve":
         raise Refusal(f"UNKNOWN_OUTCOME: {outcome}")

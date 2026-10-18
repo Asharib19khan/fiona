@@ -84,14 +84,14 @@ agents:
 
 persona_mandates:
   ten_karachi_apparel:
-    note: "Synthetic demo persona. The owner has promoted the Treasurer to act_within_mandate for payments and the Controller to prepare; everyone else stays at advise."
+    note: "Synthetic demo persona. The owner keeps every agent below acting alone: the Treasurer and the Controller prepare (the owner approves each proposal with one tap); everyone else stays at advise. The owner may promote the Treasurer to act_within_mandate later."
     tenant_policies: {cash_buffer_minor: 200000000, currency: PKR}
     mandates:
       - id: mnd_treasurer_v1
         agent: treasurer
         version: 1
         currency: PKR
-        autonomy: {payment: act_within_mandate}
+        autonomy: {payment: prepare}
         per_payment_cap_minor: 15000000
         daily_cap_minor: 45000000
         allowed_action_types: [payment]

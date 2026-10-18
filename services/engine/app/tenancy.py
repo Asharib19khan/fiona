@@ -23,6 +23,7 @@ import json
 import os
 import re
 import time
+from dataclasses import dataclass
 from typing import Annotated
 
 from fastapi import Depends, Header, Request
@@ -37,6 +38,14 @@ _TENANT_ID = re.compile(r"^ten_[a-z0-9_]{1,60}$")
 def verify_internal_token(
     token: str, expected_aud: str = "fiona-engine", *, now: int | None = None
 ) -> str:
+    """The tenant from a verified internal token."""
+    return verify_internal_claims(token, expected_aud, now=now)["tenant_id"]
+
+
+def verify_internal_claims(
+    token: str, expected_aud: str = "fiona-engine", *, now: int | None = None
+) -> dict:
+    """Every claim of a verified internal token (signature, lifetime <= 60 s, audience, tenant)."""
     secret = os.environ.get("INTERNAL_JWT_SECRET", "")
     if len(secret.encode("utf-8")) < 32:
         raise ApiError(
@@ -92,23 +101,36 @@ def verify_internal_token(
     if not isinstance(tenant_id, str) or not _TENANT_ID.match(tenant_id):
         raise ApiError(401, "unauthenticated", "Bearer token tenant is invalid.")
 
-    return tenant_id
+    return claims
+
+
+def _live(request: Request) -> bool:
+    return getattr(request.app.state, "mode", "mock") != "mock"
+
+
+def _request_claims(request: Request) -> dict:
+    """The verified token's claims, checked once per request."""
+    cached = getattr(request.state, "fiona_claims", None)
+    if cached is not None:
+        return cached
+    auth_header = request.headers.get("Authorization") or request.headers.get("authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise ApiError(
+            401,
+            "unauthenticated",
+            "Live mode needs a verified internal token; the tenant is never taken from the request.",
+        )
+    claims = verify_internal_claims(auth_header[7:].strip())
+    request.state.fiona_claims = claims
+    return claims
 
 
 def current_tenant(
     request: Request,
     x_fiona_tenant: Annotated[str | None, Header(include_in_schema=False)] = None,
 ) -> str:
-    if getattr(request.app.state, "mode", "mock") != "mock":
-        auth_header = request.headers.get("Authorization") or request.headers.get("authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
-            raise ApiError(
-                401,
-                "unauthenticated",
-                "Live mode needs a verified internal token; the tenant is never taken from the request.",
-            )
-        token = auth_header[7:].strip()
-        return verify_internal_token(token)
+    if _live(request):
+        return _request_claims(request)["tenant_id"]
 
     tenant = x_fiona_tenant or os.environ.get("DEMO_TENANT_ID") or DEFAULT_DEMO_TENANT
     if not _TENANT_ID.match(tenant):
@@ -117,3 +139,62 @@ def current_tenant(
 
 
 TenantId = Annotated[str, Depends(current_tenant)]
+
+
+_USER_ID = re.compile(r"^usr_[A-Za-z0-9_]{1,80}$")
+_AGENT_NAME = re.compile(r"^[a-z][a-z_]{1,40}$")
+PEOPLE = frozenset({"owner", "finance"})
+GUARDIAN = "guardian"
+
+
+@dataclass(frozen=True)
+class Actor:
+    """Who is calling: a person (owner or finance, id usr_…), an agent (id = agent name), or the
+    Guardian service (role guardian), which only reviews.
+
+    Only people decide on proposals; agents only propose. Live mode reads this from the verified
+    token, never from the request, so an agent cannot approve its own work.
+    """
+
+    id: str
+    role: str
+
+    @property
+    def is_person(self) -> bool:
+        return self.role in PEOPLE
+
+
+def current_actor(
+    request: Request,
+    x_user_id: Annotated[str | None, Header(include_in_schema=False)] = None,
+    x_fiona_agent: Annotated[str | None, Header(include_in_schema=False)] = None,
+) -> Actor:
+    if _live(request):
+        claims = _request_claims(request)
+        role = claims.get("role")
+        if role in PEOPLE and isinstance(claims.get("sub"), str) and _USER_ID.match(claims["sub"]):
+            return Actor(claims["sub"], role)
+        if (
+            role == "agent"
+            and isinstance(claims.get("agent"), str)
+            and _AGENT_NAME.match(claims["agent"])
+        ):
+            if claims["agent"] == GUARDIAN:
+                raise ApiError(401, "unauthenticated", "The Guardian has its own role.")
+            return Actor(claims["agent"], "agent")
+        if role == GUARDIAN:
+            return Actor(GUARDIAN, GUARDIAN)
+        raise ApiError(401, "unauthenticated", "Bearer token does not name a person or an agent.")
+
+    # Mock mode is local development: the caller says who it is.
+    if x_fiona_agent:
+        if not _AGENT_NAME.match(x_fiona_agent):
+            raise ApiError(400, "invalid_actor", "X-Fiona-Agent must be an agent name.")
+        return Actor(x_fiona_agent, GUARDIAN if x_fiona_agent == GUARDIAN else "agent")
+    user = x_user_id or "usr_owner"
+    if not _USER_ID.match(user):
+        raise ApiError(400, "invalid_actor", "X-User-Id must look like usr_<id>.")
+    return Actor(user, "owner")
+
+
+CurrentActor = Annotated[Actor, Depends(current_actor)]

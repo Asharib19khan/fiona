@@ -62,13 +62,22 @@ def _ulid(prefix: str, moment: datetime, key: str | None = None) -> str:
     return f"{prefix}_{encode_ulid(ms, randomness)}"
 
 
+EXECUTE_ALONE = "act_within_mandate"
+
+
 def _compute_status(
     *,
     payment_event_id: str | None,
     decision: str | None,
     outcome: str | None,
+    autonomy: str | None = None,
 ) -> str:
-    """Project proposal status from wallet events, decisions, and verdicts."""
+    """Project proposal status from wallet events, decisions, verdicts and autonomy.
+
+    A cleared verdict is only "cleared" (executable without a person) when the agent acts within
+    its mandate for this action type. At prepare or advise, or with no autonomy recorded, the
+    owner still approves, so the proposal waits as needs_owner (fail closed).
+    """
     if payment_event_id:
         return "executed"
     if decision:
@@ -79,7 +88,7 @@ def _compute_status(
         if outcome == "escalate":
             return "needs_owner"
         if outcome in ("approve", "approve_with_conditions"):
-            return "cleared"
+            return "cleared" if autonomy == EXECUTE_ALONE else "needs_owner"
     return "submitted"
 
 
@@ -113,12 +122,14 @@ def _format_proposal_dict(
         dec_at,
         _dec_passkey,
         payment_event_id,
+        autonomy,
     ) = row
 
     status = _compute_status(
         payment_event_id=payment_event_id,
         decision=dec_decision,
         outcome=outcome,
+        autonomy=autonomy,
     )
 
     amount = None
@@ -180,19 +191,23 @@ def list_proposals(
                 v.verdict_hash, v.body as v_body,
                 d.id as dec_id, d.decision as dec_decision, d.note as dec_note, d.decided_by as dec_by,
                 d.decided_at as dec_at, d.passkey_verified as dec_passkey,
-                w.id as payment_event_id
+                w.id as payment_event_id, m.autonomy
             from proposals p
             left join lateral (
                 select id, outcome, checks, conditions, decided_at, verdict_hash, body
                 from verdicts
                 where tenant_id = p.tenant_id and proposal_id = p.id
+                  and id not in (
+                      select previous_verdict_id from verdicts
+                      where tenant_id = p.tenant_id and previous_verdict_id is not null
+                  )
                 order by decided_at desc, id desc
                 limit 1
             ) v on true
             left join lateral (
                 select id, decision, note, decided_by, decided_at, passkey_verified
                 from decisions
-                where tenant_id = p.tenant_id and proposal_id = p.id
+                where tenant_id = p.tenant_id and proposal_id = p.id and verdict_id = v.id
                 order by decided_at desc, id desc
                 limit 1
             ) d on true
@@ -201,6 +216,13 @@ def list_proposals(
                 where tenant_id = p.tenant_id and type = 'supplier_payment' and (payload->>'proposal_id' = p.id or source->>'key' = p.id)
                 limit 1
             ) w on true
+            left join lateral (
+                select policy->'autonomy'->>p.type as autonomy
+                from mandates
+                where tenant_id = p.tenant_id and agent = p.agent
+                order by version desc
+                limit 1
+            ) m on true
             where p.tenant_id = %s
             order by p.created_at desc, p.id desc
             """,
@@ -229,19 +251,23 @@ def get_proposal(
                 v.verdict_hash, v.body as v_body,
                 d.id as dec_id, d.decision as dec_decision, d.note as dec_note, d.decided_by as dec_by,
                 d.decided_at as dec_at, d.passkey_verified as dec_passkey,
-                w.id as payment_event_id
+                w.id as payment_event_id, m.autonomy
             from proposals p
             left join lateral (
                 select id, outcome, checks, conditions, decided_at, verdict_hash, body
                 from verdicts
                 where tenant_id = p.tenant_id and proposal_id = p.id
+                  and id not in (
+                      select previous_verdict_id from verdicts
+                      where tenant_id = p.tenant_id and previous_verdict_id is not null
+                  )
                 order by decided_at desc, id desc
                 limit 1
             ) v on true
             left join lateral (
                 select id, decision, note, decided_by, decided_at, passkey_verified
                 from decisions
-                where tenant_id = p.tenant_id and proposal_id = p.id
+                where tenant_id = p.tenant_id and proposal_id = p.id and verdict_id = v.id
                 order by decided_at desc, id desc
                 limit 1
             ) d on true
@@ -250,6 +276,13 @@ def get_proposal(
                 where tenant_id = p.tenant_id and type = 'supplier_payment' and (payload->>'proposal_id' = p.id or source->>'key' = p.id)
                 limit 1
             ) w on true
+            left join lateral (
+                select policy->'autonomy'->>p.type as autonomy
+                from mandates
+                where tenant_id = p.tenant_id and agent = p.agent
+                order by version desc
+                limit 1
+            ) m on true
             where p.tenant_id = %s and p.id = %s
             """,
             (tenant_id, proposal_id),
@@ -282,6 +315,76 @@ def get_proposal(
     return _format_proposal_dict(row, decisions=decisions)
 
 
+_FORECAST_CACHE: dict[tuple[str, str], tuple[float, ForecastContext]] = {}
+_FORECAST_TTL_SECONDS = 60.0
+
+
+def _ledger_forecast(
+    conn: psycopg.Connection, tenant_id: str, today: Any, now: datetime
+) -> ForecastContext | None:
+    """The tenant's 13-week forecast from its posted ledger, cached for a minute so a batch of
+    proposals does not recompute it. None when the ledger has no bank history yet."""
+    import time
+
+    from engine.forecast.cash.engine import forecast_cash
+    from engine.forecast.ledger_source import load_ledger_snapshot
+
+    key = (tenant_id, str(today))
+    cached = _FORECAST_CACHE.get(key)
+    if cached and time.monotonic() - cached[0] < _FORECAST_TTL_SECONDS:
+        return cached[1]
+    try:
+        snapshot = load_ledger_snapshot(conn, tenant_id, today, in_tenant_session=True)
+        if not snapshot.bank_lines:
+            return None
+        cash = forecast_cash(snapshot, weeks=13, mode="live", generated_at=now)
+    except Exception:  # G-08 then sees the flat fallback, never no forecast
+        return None
+    context = ForecastContext(
+        id=cash.run_id,
+        as_of=_iso(now),
+        weeks=[
+            ForecastWeek(w=w.week, start=w.start.isoformat(), closing_minor=w.closing.minor)
+            for w in cash.weeks
+        ],
+    )
+    _FORECAST_CACHE[key] = (time.monotonic(), context)
+    return context
+
+
+def _resolve_evidence(
+    conn: psycopg.Connection, tenant_id: str, evidence: dict[str, Any]
+) -> dict[str, Any] | None:
+    """What the ledger itself says a piece of evidence is: its party and amount."""
+    ref, kind = str(evidence.get("ref", "")), evidence.get("kind")
+    if kind in ("ledger_row", "ledger_event", "bill") and ref.startswith("bill_"):
+        row = conn.execute(
+            "select party_id, payload from events where tenant_id = %s and type = 'purchase_bill'"
+            " and payload->>'bill_id' = %s order by business_date desc limit 1",
+            (tenant_id, ref),
+        ).fetchone()
+        if row:
+            p = row[1] or {}
+            return {
+                "kind": kind,
+                "party_id": p.get("party") or p.get("supplier_id") or row[0],
+                "amount_minor": p.get("total_minor"),
+            }
+    if kind == "document" and ref.startswith("doc_"):
+        row = conn.execute(
+            "select extracted from documents where tenant_id = %s and id = %s",
+            (tenant_id, ref),
+        ).fetchone()
+        if row:
+            extracted = row[0] or {}
+            return {
+                "kind": "document",
+                "party_id": extracted.get("supplier_id") or extracted.get("party"),
+                "amount_minor": extracted.get("total_minor"),
+            }
+    return None
+
+
 def _build_guardian_context(
     conn: psycopg.Connection,
     tenant_id: str,
@@ -312,7 +415,7 @@ def _build_guardian_context(
         mandate_row = conn.execute(
             """
             select id, version, currency, per_payment_cap_minor, daily_cap_minor,
-                   allowed_action_types, effective_from
+                   allowed_action_types, effective_from, policy
             from mandates
             where tenant_id = %s and agent = %s
             order by version desc
@@ -324,7 +427,10 @@ def _build_guardian_context(
         mandate = None
         if mandate_row:
             allowed_actions = mandate_row[5] or []
-            autonomy = {action: "act_within_mandate" for action in allowed_actions}
+            stored = (mandate_row[7] or {}).get("autonomy") or {}
+            # The owner's recorded level per action; an allowed action with no level recorded
+            # falls back to prepare (the owner approves), never to acting alone.
+            autonomy = {action: stored.get(action, "prepare") for action in allowed_actions}
             mandate = Mandate(
                 id=mandate_row[0],
                 tenant_id=tenant_id,
@@ -427,25 +533,28 @@ def _build_guardian_context(
         ).fetchone()
         payments_today = int(spent_row[0]) if spent_row and spent_row[0] is not None else 0
 
-        # 6. Forecast context (13-week baseline)
-        bal_row = conn.execute(
-            "select coalesce(balance_minor, 350000000) from wallet_accounts where tenant_id = %s limit 1",
-            (tenant_id,),
-        ).fetchone()
-        current_balance = bal_row[0] if bal_row and bal_row[0] is not None else 350_000_000
-        forecast_weeks = [
-            ForecastWeek(
-                w=i,
-                start=(today_date + timedelta(weeks=i - 1)).isoformat(),
-                closing_minor=current_balance,
+        # 6. Forecast context: the real 13-week forecast from the ledger (G-08 checks a payment
+        # against the weeks it lands in). A tenant with no ledger history yet falls back to its
+        # wallet balance held flat, which is all that is known about its cash.
+        forecast_ctx = _ledger_forecast(conn, tenant_id, today_date, now)
+        if forecast_ctx is None:
+            bal_row = conn.execute(
+                "select coalesce(balance_minor, 350000000) from wallet_accounts where tenant_id = %s limit 1",
+                (tenant_id,),
+            ).fetchone()
+            current_balance = bal_row[0] if bal_row and bal_row[0] is not None else 350_000_000
+            forecast_ctx = ForecastContext(
+                id=f"fc_{tenant_id}",
+                as_of=_iso(now),
+                weeks=[
+                    ForecastWeek(
+                        w=i,
+                        start=(today_date + timedelta(weeks=i - 1)).isoformat(),
+                        closing_minor=current_balance,
+                    )
+                    for i in range(1, 14)
+                ],
             )
-            for i in range(1, 14)
-        ]
-        forecast_ctx = ForecastContext(
-            id=f"fc_{tenant_id}",
-            as_of=_iso(now),
-            weeks=forecast_weeks,
-        )
 
         # 7. Evidence index
         amount_val = proposal.get("amount")
@@ -458,7 +567,9 @@ def _build_guardian_context(
         for ev in proposal.get("evidence", []):
             if isinstance(ev, dict) and "ref" in ev:
                 ref = ev["ref"]
-                evidence_index[ref] = {
+                # The ledger's own record when it has one, so G-09 compares the claim with the
+                # evidence's real party and amount; otherwise the reference as stated.
+                evidence_index[ref] = _resolve_evidence(conn, tenant_id, ev) or {
                     "kind": ev.get("kind", "document"),
                     "party_id": payee_id,
                     "amount_minor": amt_minor,
@@ -494,11 +605,20 @@ def _build_guardian_context(
                 category=category,
                 contract_ref=contract_ref,
                 total_minor=amt_minor,
-                due_date=str(today_date),
+                due_date=str(b_data.get("due_date") or today_date),
             )
 
         raw_po = payload.get("po")
         po_id = payload.get("po_id") or b_data.get("po_id")
+        po_number = payload.get("po_number") or b_data.get("po_number")
+        if not po_id and po_number:
+            # Imported bills cite the PO by its printed number, not its ID.
+            po_match = conn.execute(
+                "select id from purchase_orders where tenant_id = %s and number = %s"
+                " order by id limit 1",
+                (tenant_id, po_number),
+            ).fetchone()
+            po_id = po_match[0] if po_match else None
         if isinstance(raw_po, dict):
             po_ctx = POContext(**raw_po)
         elif po_id:
@@ -519,6 +639,13 @@ def _build_guardian_context(
 
         raw_grn = payload.get("grn")
         grn_id = payload.get("grn_id") or b_data.get("grn_id")
+        if not grn_id and po_id:
+            grn_match = conn.execute(
+                "select id from goods_received where tenant_id = %s and po_id = %s"
+                " order by received_on desc, id desc limit 1",
+                (tenant_id, po_id),
+            ).fetchone()
+            grn_id = grn_match[0] if grn_match else None
         if isinstance(raw_grn, dict):
             grn_ctx = GRNContext(**raw_grn)
         elif grn_id:
@@ -747,9 +874,13 @@ def record_owner_decision(
             """
             select id, outcome from verdicts
             where tenant_id = %s and proposal_id = %s
+              and id not in (
+                  select previous_verdict_id from verdicts
+                  where tenant_id = %s and previous_verdict_id is not null
+              )
             order by decided_at desc, id desc limit 1
             """,
-            (tenant_id, proposal_id),
+            (tenant_id, proposal_id, tenant_id),
         ).fetchone()
         if not v_row:
             raise ApiError(400, "no_verdict", "Proposal has no Guardian verdict.")

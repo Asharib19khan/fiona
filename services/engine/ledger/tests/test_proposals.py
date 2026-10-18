@@ -19,6 +19,7 @@ from engine.wallet.tests.conftest import (
 
 TENANT = "ten_proposals_test"
 HEADERS = {"X-Fiona-Tenant": TENANT}
+AS_TREASURER = {**HEADERS, "X-Fiona-Agent": "treasurer"}
 CLOCK = datetime(2026, 10, 22, 9, 0, tzinfo=UTC)
 
 
@@ -66,7 +67,7 @@ def test_create_and_fetch_proposal(client: TestClient) -> None:
         "created_by": {"kind": "agent", "id": "treasurer"},
     }
 
-    create_res = client.post("/v1/proposals", json=draft, headers=HEADERS)
+    create_res = client.post("/v1/proposals", json=draft, headers=AS_TREASURER)
     assert create_res.status_code == 201, create_res.text
     data = create_res.json()
     assert data["api_version"] == "v1"
@@ -116,7 +117,9 @@ def test_escalated_proposal_needs_owner_and_approves(client: TestClient) -> None
         "created_by": {"kind": "user", "id": "usr_finance_01"},
     }
 
-    res = client.post("/v1/proposals", json=draft, headers=HEADERS)
+    res = client.post(
+        "/v1/proposals", json=draft, headers={**HEADERS, "x-user-id": "usr_finance_01"}
+    )
     assert res.status_code == 201
     proposal = res.json()["proposal"]
     verdict = res.json()["verdict"]
@@ -192,7 +195,7 @@ def test_cannot_override_blocked_proposal(client: TestClient) -> None:
         "created_by": {"kind": "agent", "id": "treasurer"},
     }
 
-    res = client.post("/v1/proposals", json=draft, headers=HEADERS)
+    res = client.post("/v1/proposals", json=draft, headers=AS_TREASURER)
     assert res.status_code == 201
     proposal = res.json()["proposal"]
     assert proposal["status"] == "blocked"
@@ -206,3 +209,36 @@ def test_cannot_override_blocked_proposal(client: TestClient) -> None:
     )
     assert decide_res.status_code == 400
     assert decide_res.json()["error"]["code"] == "cannot_override_block"
+
+
+def test_agents_cannot_decide_or_propose_as_someone_else(client: TestClient) -> None:
+    draft = {
+        "agent": "treasurer",
+        "type": "payment",
+        "summary": "Pay verified supplier utilities",
+        "amount": {"minor": 1_000_000, "currency": "PKR"},
+        "payload": {
+            "payee_id": "sup_001",
+            "bill_id": "bill_actor",
+            "pay_on": TODAY,
+            "channel": "wallet",
+        },
+        "evidence": [{"kind": "ledger_row", "ref": "bill_actor"}],
+        "reasoning": "Actor test.",
+        "created_by": {"kind": "user", "id": "usr_owner"},  # ignored: the caller is the maker
+    }
+    as_controller = {**HEADERS, "X-Fiona-Agent": "controller"}
+    assert client.post("/v1/proposals", json=draft, headers=as_controller).status_code == 403
+
+    res = client.post("/v1/proposals", json=draft, headers=AS_TREASURER)
+    assert res.status_code == 201, res.text
+    proposal = res.json()["proposal"]
+    assert proposal["created_by"] == {"kind": "agent", "id": "treasurer"}
+
+    decide = client.post(
+        f"/v1/proposals/{proposal['id']}/decision",
+        json={"decision": "approve", "note": "Self-approval"},
+        headers=AS_TREASURER,
+    )
+    assert decide.status_code == 403
+    assert decide.json()["error"]["code"] == "agents_cannot_decide"

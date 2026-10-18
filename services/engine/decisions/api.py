@@ -10,6 +10,7 @@ from engine.app.errors import ApiError
 from engine.app.tenancy import TenantId
 from engine.decisions.debt_equity import compare_debt_equity
 from engine.decisions.dividend import compare_dividend
+from engine.decisions.payment_timing_live import live_payment_timing
 from engine.decisions.schemas import (
     DebtEquityRequest,
     DecisionResponse,
@@ -17,8 +18,9 @@ from engine.decisions.schemas import (
     PaymentTimingRequest,
     PaymentTimingResponse,
 )
-from engine.forecast.deps import mode, not_live_yet, require_mock_tenant
-from engine.forecast.ledger_source import TenantDataMissing, load_fixture_snapshot
+from engine.forecast.cash.engine import forecast_cash
+from engine.forecast.deps import mode, require_mock_tenant
+from engine.forecast.ledger_source import TenantDataMissing, load_ledger_snapshot, load_snapshot
 from engine.forecast.mocks.registry import load
 
 router = APIRouter(tags=["decisions"])
@@ -26,10 +28,8 @@ router = APIRouter(tags=["decisions"])
 
 @router.post("/v1/decisions/debt-equity", response_model=DecisionResponse)
 def debt_equity(request: Request, tenant_id: TenantId, body: DebtEquityRequest) -> DecisionResponse:
-    if mode(request) != "mock":
-        raise not_live_yet("Y4", "Sat 17 Oct")
     try:
-        snapshot = load_fixture_snapshot(tenant_id)
+        snapshot = load_snapshot(tenant_id, mode(request))
     except TenantDataMissing:
         require_mock_tenant(tenant_id)
         return load("decision_debt_equity")
@@ -52,10 +52,8 @@ def debt_equity(request: Request, tenant_id: TenantId, body: DebtEquityRequest) 
 
 @router.post("/v1/decisions/dividend", response_model=DecisionResponse)
 def dividend(request: Request, tenant_id: TenantId, body: DividendRequest) -> DecisionResponse:
-    if mode(request) != "mock":
-        raise not_live_yet("Y4", "Sat 17 Oct")
     try:
-        snapshot = load_fixture_snapshot(tenant_id)
+        snapshot = load_snapshot(tenant_id, mode(request))
     except TenantDataMissing:
         require_mock_tenant(tenant_id)
         return load("decision_dividend")
@@ -80,7 +78,18 @@ def dividend(request: Request, tenant_id: TenantId, body: DividendRequest) -> De
 def payment_timing(
     request: Request, tenant_id: TenantId, body: PaymentTimingRequest
 ) -> PaymentTimingResponse:
-    if mode(request) != "mock":
-        raise not_live_yet("Y8", "Sun 18 Oct")
-    require_mock_tenant(tenant_id)
-    return load("payment_timing")
+    """Mock mode: the labelled fixture. Live mode: every open bill against the live forecast."""
+    run_mode = mode(request)
+    if run_mode == "mock":
+        require_mock_tenant(tenant_id)
+        return load("payment_timing")
+    from engine.ledger import db
+
+    with db.connect(autocommit=True) as conn:
+        snapshot = load_ledger_snapshot(conn, tenant_id)
+        with db.tenant_session(conn, tenant_id):
+            names = dict(conn.execute("select id, name from parties").fetchall())
+    cash = forecast_cash(
+        snapshot, weeks=body.horizon_weeks, mode=run_mode, generated_at=datetime.now(UTC)
+    )
+    return live_payment_timing(body, snapshot, cash, names, mode=run_mode)

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -60,15 +61,46 @@ def _settlement_methods(narration: str) -> set[str] | None:
     return None
 
 
+class _SaleQueue:
+    """One payment method and branch's sales in date order, with running totals."""
+
+    def __init__(self, events: list[dict[str, Any]]) -> None:
+        self.events = sorted(events, key=lambda event: event["business_date"])  # stable
+        self.dates = [event["business_date"] for event in self.events]
+        self.running = [0]
+        for event in self.events:
+            self.running.append(self.running[-1] + _event_total(event["type"], event["payload"]))
+        self.head = 0  # sales before head are matched
+
+    def cut(self, day: date, *, strictly_before: bool) -> int:
+        """End of the unmatched prefix dated on or before (or strictly before) the day."""
+        end = bisect_left(self.dates, day) if strictly_before else bisect_right(self.dates, day)
+        return max(end, self.head)
+
+    def total(self, cut: int) -> int:
+        return self.running[cut] - self.running[self.head]
+
+    def take(self, cut: int) -> list[dict[str, Any]]:
+        return self.events[self.head : cut]
+
+
 def _candidate_matches(
     bank_lines: list[dict[str, Any]], events: list[dict[str, Any]]
 ) -> list[Candidate]:
-    """Return non-overlapping, deterministic proposals in pass order."""
+    """Return non-overlapping, deterministic proposals in pass order.
+
+    Events are indexed by amount (passes 1 and 4) and settlement sales are queued per payment
+    method and branch (pass 3), so a run is linear in practice. The indexes keep each kind's
+    original (date, id) order, so the result is identical to scanning every event.
+    """
     used_events: set[str] = set()
+    matched_banks: set[str] = set()
     candidates: list[Candidate] = []
     by_kind: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    by_amount: dict[tuple[str, int], list[dict[str, Any]]] = defaultdict(list)
     for event in events:
         by_kind[event["type"]].append(event)
+        by_amount[(event["type"], _event_total(event["type"], event["payload"]))].append(event)
 
     def add(
         bank: dict[str, Any], found: list[dict[str, Any]], pass_name: str, confidence: float
@@ -78,6 +110,7 @@ def _candidate_matches(
             return
         candidates.append(Candidate(bank["id"], ids, pass_name, confidence))
         used_events.update(ids)
+        matched_banks.add(bank["id"])
 
     # Pass 1: outgoing supplier payments and unambiguous invoice receipts. Both use an
     # exact integer amount, a three-day date window and a reference visible in the narration.
@@ -87,9 +120,8 @@ def _candidate_matches(
         if narration.startswith("IBFT TO ") and amount < 0:
             found = [
                 event
-                for event in by_kind["supplier_payment"]
+                for event in by_amount[("supplier_payment", -amount)]
                 if event["id"] not in used_events
-                and _event_total(event["type"], event["payload"]) == -amount
                 and _days_apart(event["business_date"], bank["posted_on"]) <= 3
                 and str(event["payload"].get("payment_id", ""))[4:] in bank["reference"]
             ]
@@ -98,9 +130,8 @@ def _candidate_matches(
         elif narration.startswith("IBFT FROM ") and amount > 0:
             found = [
                 event
-                for event in by_kind["customer_invoice"]
+                for event in by_amount[("customer_invoice", amount)]
                 if event["id"] not in used_events
-                and _event_total(event["type"], event["payload"]) == amount
                 and event["payload"].get("number", "").upper() in narration
             ]
             if len(found) == 1:
@@ -111,7 +142,7 @@ def _candidate_matches(
     for bank in bank_lines:
         if bank["amount_minor"] <= 0 or not bank["narration"].upper().startswith("IBFT FROM "):
             continue
-        if any(candidate.bank_line_id == bank["id"] for candidate in candidates):
+        if bank["id"] in matched_banks:
             continue
         available = [
             event
@@ -133,40 +164,47 @@ def _candidate_matches(
     # Pass 3: settlement batches. A settlement is the complete unmatched set for its method
     # and branch up to that bank date. Cash deposits allow the generator's documented drawer
     # over/short variance, capped at 2% of the deposit.
+    # Sales wait in one queue per (method, branch), oldest first. Only this pass ever matches a
+    # sale, and a settlement takes the whole unmatched prefix up to its date, so each queue is
+    # "everything after its head is unmatched": a prefix's count and total come from a binary
+    # search on dates and running totals, and a match just moves the head.
+    queues: dict[tuple[Any, Any], _SaleQueue] = {}
+    grouped: dict[tuple[Any, Any], list[dict[str, Any]]] = defaultdict(list)
+    for event in by_kind["sale"]:
+        payment = event["payload"].get("payment", {})
+        grouped[(payment.get("method"), event["payload"].get("branch"))].append(event)
+    for key, group in grouped.items():
+        queues[key] = _SaleQueue(group)
+
     for bank in bank_lines:
-        if bank["amount_minor"] <= 0 or any(c.bank_line_id == bank["id"] for c in candidates):
+        if bank["amount_minor"] <= 0 or bank["id"] in matched_banks:
             continue
         narration = bank["narration"].upper()
         methods = _settlement_methods(narration)
         branch = _BRANCH.search(narration)
         if methods is not None:
-            found = [
-                event
-                for event in by_kind["sale"]
-                if event["id"] not in used_events
-                and event["business_date"] <= bank["posted_on"]
-                and event["payload"].get("payment", {}).get("method") in methods
-                and (branch is None or event["payload"].get("branch") == branch.group(1))
+            cuts = [
+                (queue, queue.cut(bank["posted_on"], strictly_before=False))
+                for key, queue in queues.items()
+                if key[0] in methods and (branch is None or key[1] == branch.group(1))
             ]
-            if (
-                found
-                and sum(_event_total(event["type"], event["payload"]) for event in found)
-                == bank["amount_minor"]
-            ):
-                add(bank, found, "one_to_many", 1.0)
+            total = sum(queue.total(cut) for queue, cut in cuts)
+            if any(cut > queue.head for queue, cut in cuts) and total == bank["amount_minor"]:
+                add(bank, [e for queue, cut in cuts for e in queue.take(cut)], "one_to_many", 1.0)
+                for queue, cut in cuts:
+                    queue.head = cut
         elif narration.startswith("CASH DEPOSIT ") and branch is not None:
-            found = [
-                event
-                for event in by_kind["sale"]
-                if event["id"] not in used_events
-                and event["business_date"] < bank["posted_on"]
-                and event["payload"].get("payment", {}).get("method") == "cash"
-                and event["payload"].get("branch") == branch.group(1)
-            ]
-            total = sum(_event_total(event["type"], event["payload"]) for event in found)
+            queue = queues.get(("cash", branch.group(1)))
+            if queue is None:
+                continue
+            cut = queue.cut(bank["posted_on"], strictly_before=True)
             allowed_variance = max(1, bank["amount_minor"] * 200 // 10_000)
-            if found and abs(total - bank["amount_minor"]) <= allowed_variance:
-                add(bank, found, "one_to_many", 0.98)
+            if (
+                cut > queue.head
+                and abs(queue.total(cut) - bank["amount_minor"]) <= allowed_variance
+            ):
+                add(bank, queue.take(cut), "one_to_many", 0.98)
+                queue.head = cut
 
     # Pass 4: Model/fuzzy matching with deterministic amount verification (Pass 4).
     # Unmatched bank lines are matched against remaining events where line amounts
@@ -174,18 +212,15 @@ def _candidate_matches(
     from rapidfuzz import fuzz
 
     for bank in bank_lines:
-        if any(c.bank_line_id == bank["id"] for c in candidates):
+        if bank["id"] in matched_banks:
             continue
         narration = bank["narration"].upper()
         reference = bank["reference"].upper()
         amount = bank["amount_minor"]
 
         if amount > 0:
-            for event in by_kind["customer_invoice"]:
+            for event in by_amount[("customer_invoice", amount)]:
                 if event["id"] in used_events:
-                    continue
-                evt_tot = _event_total(event["type"], event["payload"])
-                if evt_tot != amount:
                     continue
                 if _days_apart(event["business_date"], bank["posted_on"]) > 14:
                     continue
@@ -206,11 +241,8 @@ def _candidate_matches(
             matched_event = None
             best_score = 0
             for k in target_types:
-                for event in by_kind[k]:
+                for event in by_amount[(k, -amount)]:
                     if event["id"] in used_events:
-                        continue
-                    evt_tot = _event_total(event["type"], event["payload"])
-                    if evt_tot != -amount:
                         continue
                     if _days_apart(event["business_date"], bank["posted_on"]) > 14:
                         continue

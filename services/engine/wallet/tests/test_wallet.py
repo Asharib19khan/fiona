@@ -26,9 +26,13 @@ from engine.wallet.wallet import PaymentRequest, execute_payment
 _tenants = itertools.count(1)
 
 
-def new_tenant(conn: psycopg.Connection, balance: int = OPENING_BALANCE) -> str:
+def new_tenant(
+    conn: psycopg.Connection,
+    balance: int = OPENING_BALANCE,
+    autonomy: str | None = "act_within_mandate",
+) -> str:
     tenant = f"ten_wallet_{next(_tenants)}"
-    seed_wallet_tenant(conn, tenant, opening_balance_minor=balance)
+    seed_wallet_tenant(conn, tenant, opening_balance_minor=balance, payment_autonomy=autonomy)
     return tenant
 
 
@@ -94,6 +98,32 @@ def test_escalated_payment_needs_an_owner_who_is_not_the_proposer(conn: psycopg.
     assert (
         execute_payment(conn, tenant, req, now=NOW).status == "executed"
     )  # owner releases the cap escalation
+
+
+@pytest.mark.parametrize("autonomy", ["prepare", "advise", None])
+def test_cleared_payment_below_act_within_mandate_waits_for_the_owner(
+    conn: psycopg.Connection, autonomy: str | None
+) -> None:
+    tenant = new_tenant(conn, autonomy=autonomy)
+    store_proposal(conn, tenant, "prop_prep", amount=9_500_000)
+    verdict = store_verdict(conn, tenant, "prop_prep", "approve")
+    req = request("prop_prep", verdict, amount=9_500_000)
+    assert execute_payment(conn, tenant, req, now=NOW).reason.startswith("NEEDS_OWNER")
+    assert balance(conn, tenant) == OPENING_BALANCE
+    store_decision(conn, tenant, "prop_prep", verdict, decided_by="usr_owner")
+    assert execute_payment(conn, tenant, req, now=NOW).status == "executed"
+    assert balance(conn, tenant) == OPENING_BALANCE - 9_500_000
+
+
+def test_owner_approval_of_a_cleared_payment_does_not_lift_the_caps(
+    conn: psycopg.Connection,
+) -> None:
+    tenant = new_tenant(conn, autonomy="prepare")
+    store_proposal(conn, tenant, "prop_big", amount=CAP + 1)
+    verdict = store_verdict(conn, tenant, "prop_big", "approve")
+    store_decision(conn, tenant, "prop_big", verdict, decided_by="usr_owner")
+    result = execute_payment(conn, tenant, request("prop_big", verdict, amount=CAP + 1), now=NOW)
+    assert result.reason.startswith("OVER_CAP")
 
 
 def test_conditions_are_checked_at_execution(conn: psycopg.Connection) -> None:

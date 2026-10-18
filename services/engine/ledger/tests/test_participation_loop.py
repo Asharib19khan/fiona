@@ -30,7 +30,7 @@ def seed_participation_tenant(conn: psycopg.Connection, tenant_id: str) -> None:
     row = conn.execute("select id from tenants where id = %s", (tenant_id,)).fetchone()
     if row:
         return
-    seed_wallet_tenant(conn, tenant_id)
+    seed_wallet_tenant(conn, tenant_id, payment_autonomy="prepare")  # the persona default
     with db.tenant_session(conn, tenant_id):
         conn.execute(
             """
@@ -68,8 +68,9 @@ def client(migrated_db: str) -> Iterator[TestClient]:
         app.dependency_overrides.clear()
 
 
-def test_participation_loop_cleared_autonomous_flow(migrated_db: str) -> None:
-    """Full autonomous loop for a compliant bill within mandate."""
+def test_participation_loop_cleared_waits_for_owner_then_executes(migrated_db: str) -> None:
+    """A compliant bill within mandate clears, but the Treasurer prepares (persona default):
+    nothing pays until the owner approves, then the full loop runs."""
     with db.connect(migrated_db, autocommit=True) as conn:
         bill = {
             "id": "bill_auto_001",
@@ -84,7 +85,22 @@ def test_participation_loop_cleared_autonomous_flow(migrated_db: str) -> None:
             "due_date": TODAY,
         }
 
-        result = run_full_participation_loop(conn, TENANT, bill, now=CLOCK)
+        waiting = run_full_participation_loop(conn, TENANT, bill, now=CLOCK)
+        assert waiting["verdict"]["outcome"] == "approve"
+        assert waiting["status"] == "needs_owner"
+        assert waiting["wallet_payment"] is None
+
+        result = run_full_participation_loop(
+            conn,
+            TENANT,
+            bill,
+            owner_approval={
+                "decision": "approve",
+                "note": "Utilities bill checked.",
+                "decided_by": "usr_owner_01",
+            },
+            now=CLOCK,
+        )
 
         # 1. Proposal and verdict
         assert result["status"] == "executed"
@@ -207,8 +223,24 @@ def test_participation_loop_http_api(client: TestClient) -> None:
 
     res = client.post("/v1/participation/run", json={"bill": bill}, headers=HEADERS_HTTP)
     assert res.status_code == 200, res.text
+    assert res.json()["status"] == "needs_owner"
+    assert res.json()["wallet_payment"] is None
+
+    approval = {"decision": "approve", "note": "Checked.", "decided_by": "usr_owner"}
+    as_agent = {**HEADERS_HTTP, "X-Fiona-Agent": "treasurer"}
+    res = client.post(
+        "/v1/participation/run", json={"bill": bill, "owner_approval": approval}, headers=as_agent
+    )
+    assert res.status_code == 403, res.text  # an agent cannot approve, whatever the body says
+
+    as_owner = {**HEADERS_HTTP, "X-User-Id": "usr_owner_01"}
+    res = client.post(
+        "/v1/participation/run", json={"bill": bill, "owner_approval": approval}, headers=as_owner
+    )
+    assert res.status_code == 200, res.text
     data = res.json()
     assert data["api_version"] == "v1"
+    assert data["decision"]["decision"]["decided_by"] == "usr_owner_01"  # the caller, not the body
     assert data["status"] == "executed"
     assert data["verdict"]["outcome"] == "approve"
     assert data["wallet_payment"]["status"] == "executed"

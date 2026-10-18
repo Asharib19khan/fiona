@@ -11,8 +11,8 @@ from engine.app.tenancy import TenantId
 from engine.financing.business import business_figures
 from engine.financing.matcher import match_financing
 from engine.financing.schemas import FinancingMatchRequest, FinancingMatchResponse
-from engine.forecast.deps import mode, not_live_yet, require_mock_tenant
-from engine.forecast.ledger_source import TenantDataMissing, load_fixture_snapshot
+from engine.forecast.deps import mode, require_mock_tenant
+from engine.forecast.ledger_source import TenantDataMissing, load_snapshot
 from engine.forecast.mocks.registry import load
 
 router = APIRouter(tags=["financing"])
@@ -23,11 +23,8 @@ def financing_match(
     request: Request, tenant_id: TenantId, body: FinancingMatchRequest
 ) -> FinancingMatchResponse:
     run_mode = mode(request)
-    if run_mode != "mock":
-        raise not_live_yet("Y10", "Fri 16 Oct")
-
     try:
-        snapshot = load_fixture_snapshot(tenant_id)
+        snapshot = load_snapshot(tenant_id, run_mode)
     except TenantDataMissing:
         require_mock_tenant(tenant_id)
         return load("financing_match")

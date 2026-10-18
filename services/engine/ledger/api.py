@@ -14,12 +14,13 @@ from datetime import UTC, date, datetime
 from typing import Annotated, Any
 
 import psycopg
-from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
+from engine.app import clock, guardian_notify
 from engine.app.errors import ApiError
-from engine.app.tenancy import TenantId
+from engine.app.tenancy import CurrentActor, TenantId
 from engine.ledger import (
     bill_checks,
     db,
@@ -28,6 +29,7 @@ from engine.ledger import (
     pos_reconcile,
     proposals,
     reconcile,
+    review,
 )
 from engine.wallet.audit import verify
 from engine.wallet.oplog import export_operation_log
@@ -43,8 +45,9 @@ def get_conn() -> Iterator[psycopg.Connection]:
 
 
 def get_clock() -> datetime:
-    """The engine clock. Tests override this dependency; logic never calls now() itself."""
-    return datetime.now(UTC)
+    """The engine clock (FIONA_NOW pins it). Tests override this dependency; logic never calls
+    now() itself."""
+    return clock.now()
 
 
 Conn = Annotated[psycopg.Connection, Depends(get_conn)]
@@ -253,6 +256,45 @@ def bill_check(
     return BillCheckResponse(bill_id=body.bill_id, check=check)
 
 
+@router.get("/v1/bills/{bill_id}")
+def get_bill(tenant_id: TenantId, conn: Conn, bill_id: str) -> dict[str, Any]:
+    """One imported bill as the ledger recorded it, with what has been paid against it."""
+    with db.tenant_session(conn, tenant_id):
+        row = conn.execute(
+            "select id, business_date, party_id, currency, payload from events"
+            " where type = 'purchase_bill' and payload->>'bill_id' = %s"
+            " order by business_date desc, id desc limit 1",
+            (bill_id,),
+        ).fetchone()
+        if row is None:
+            raise ApiError(404, "bill_not_found", "No imported bill exists for this bill_id.")
+        paid = conn.execute(
+            "select coalesce(sum((payload->>'amount_minor')::bigint), 0) from events"
+            " where type = 'supplier_payment' and payload->>'bill_id' = %s",
+            (bill_id,),
+        ).fetchone()[0]
+    payload = row[4] or {}
+    total = int(payload.get("total_minor") or 0)
+    return {
+        "api_version": "v1",
+        "bill": {
+            "bill_id": bill_id,
+            "event_id": row[0],
+            "posted_on": row[1].isoformat(),
+            "supplier_id": payload.get("party") or payload.get("supplier_id") or row[2],
+            "number": payload.get("number"),
+            "issue_date": payload.get("issue_date"),
+            "due_date": payload.get("due_date"),
+            "total": {"minor": total, "currency": row[3]},
+            "paid": {"minor": int(paid), "currency": row[3]},
+            "open": {"minor": max(0, total - int(paid)), "currency": row[3]},
+            "document_id": payload.get("document_id"),
+            "po_number": payload.get("po_number"),
+            "category": payload.get("category"),
+        },
+    }
+
+
 class PayRequest(BaseModel):
     proposal_id: str = Field(pattern=r"^prop_[A-Za-z0-9_]+$")
     verdict_id: str = Field(pattern=r"^vrd_[A-Za-z0-9_]+$")
@@ -387,36 +429,125 @@ def get_proposal(
 @router.post("/v1/proposals", status_code=201)
 def create_proposal(
     tenant_id: TenantId,
+    actor: CurrentActor,
     conn: Conn,
     now: Clock,
     body: dict[str, Any],
+    background: BackgroundTasks,
     idempotency_key: str | None = Header(default=None, alias="idempotency-key"),
 ) -> dict[str, Any]:
-    """Store an agent proposal, run Guardian checks, and append to audit log."""
+    """Store an agent proposal, run Guardian checks, and append to audit log.
+
+    The proposer is the verified caller, never the body: an agent proposes only as itself, so
+    the maker-checker rule (G-04) cannot be dodged by naming someone else as the maker.
+    """
+    if actor.role == "guardian":
+        raise ApiError(
+            403, "guardian_never_acts", "The Guardian reviews proposals; it never makes one."
+        )
+    if not actor.is_person and body.get("agent") != actor.id:
+        raise ApiError(403, "wrong_agent", f"{actor.id} can only submit its own proposals.")
+    body = {
+        **body,
+        "created_by": {"kind": "user" if actor.is_person else "agent", "id": actor.id},
+    }
     prop, verdict = proposals.create_proposal(
         conn, tenant_id, body, now=now, idempotency_key=idempotency_key
     )
+    background.add_task(guardian_notify.request_review, tenant_id, prop["id"])
     return {"api_version": "v1", "proposal": prop, "verdict": verdict}
+
+
+@router.post("/v1/proposals/{proposal_id}/request-review", status_code=202)
+def request_guardian_review(
+    tenant_id: TenantId, actor: CurrentActor, conn: Conn, proposal_id: str
+) -> dict[str, Any]:
+    """A person asks the Guardian to review a proposal again (for example after an outage)."""
+    if not actor.is_person:
+        raise ApiError(403, "people_only", "Only the owner or finance team can ask for a review.")
+    if proposals.get_proposal(conn, tenant_id, proposal_id) is None:
+        raise ApiError(404, "not_found", f"No proposal found with ID: {proposal_id}")
+    if not guardian_notify.enabled():
+        raise ApiError(503, "guardian_not_configured", "The Guardian service is not configured.")
+    requested = guardian_notify.request_review(tenant_id, proposal_id)
+    if not requested:
+        raise ApiError(503, "guardian_unavailable", "The Guardian did not accept the review.")
+    return {"api_version": "v1", "status": "accepted", "proposal_id": proposal_id}
+
+
+class GuardianReview(BaseModel):
+    """The adversarial reviewer's answer (rulebook/guardian.yaml G-12 output_schema), or an error.
+
+    The engine turns it into the G-12 check and sets the outcome itself. The answer fields are
+    loose on purpose: a malformed answer is recorded as a CHECK_ERROR escalation, not rejected,
+    so a bad model output can never leave a proposal unreviewed.
+    """
+
+    reviewed_verdict_id: str = Field(pattern=r"^vrd_[A-Za-z0-9]+$")
+    concern: Any = None
+    reasons: Any = None
+    injection_detected: Any = None
+    error: str | None = Field(default=None, max_length=500)
+    model: str | None = Field(default=None, max_length=80)
+    prompt_version: str | None = Field(default=None, max_length=80)
+    latency_ms: int | None = Field(default=None, ge=0)
+
+
+def _guardian_only(actor: Any) -> None:
+    if actor.role != "guardian":
+        raise ApiError(403, "guardian_only", "Only the Guardian service can do this.")
+
+
+@router.get("/v1/proposals/{proposal_id}/review-packet")
+def proposal_review_packet(
+    tenant_id: TenantId, actor: CurrentActor, conn: Conn, proposal_id: str
+) -> dict[str, Any]:
+    """What the adversarial reviewer may see (G-12): no agent reasoning, documents as data."""
+    _guardian_only(actor)
+    return review.review_packet(conn, tenant_id, proposal_id)
+
+
+@router.post("/v1/proposals/{proposal_id}/review")
+def proposal_review(
+    tenant_id: TenantId,
+    actor: CurrentActor,
+    conn: Conn,
+    now: Clock,
+    proposal_id: str,
+    body: GuardianReview,
+) -> dict[str, Any]:
+    """Record the Guardian's review as a new verdict chained to the one it reviewed."""
+    _guardian_only(actor)
+    return review.record_review(
+        conn,
+        tenant_id,
+        proposal_id,
+        body.reviewed_verdict_id,
+        body.model_dump(exclude={"reviewed_verdict_id"}),
+        now=now,
+    )
 
 
 @router.post("/v1/proposals/{proposal_id}/decision")
 @router.post("/v1/proposals/{proposal_id}/decide")
 def decide_proposal(
     tenant_id: TenantId,
+    actor: CurrentActor,
     conn: Conn,
     now: Clock,
     proposal_id: str,
     body: DecisionRequest,
-    decided_by: str = Header(default="usr_owner", alias="x-user-id"),
     idempotency_key: str | None = Header(default=None, alias="idempotency-key"),
 ) -> dict[str, Any]:
-    """Record an owner decision (approve or reject) for an escalated proposal."""
+    """Record a person's decision (approve or reject) on a proposal. Agents never decide."""
+    if not actor.is_person:
+        raise ApiError(403, "agents_cannot_decide", "Only the owner or finance team can decide.")
     return proposals.record_owner_decision(
         conn,
         tenant_id,
         proposal_id,
         body,
-        decided_by=decided_by,
+        decided_by=actor.id,
         now=now,
         idempotency_key=idempotency_key,
     )
@@ -425,13 +556,24 @@ def decide_proposal(
 @router.post("/v1/participation/run")
 def run_participation(
     tenant_id: TenantId,
+    actor: CurrentActor,
     conn: Conn,
     now: Clock,
     body: dict[str, Any],
+    background: BackgroundTasks,
 ) -> dict[str, Any]:
-    """Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit."""
+    """Execute end-to-end participation loop: bill intake -> proposal -> guardian -> execution -> audit.
+
+    An owner approval in the body counts only from a person, and always as that person.
+    """
     bill = body.get("bill") or body
     owner_approval = body.get("owner_approval")
+    if owner_approval is not None:
+        if not actor.is_person:
+            raise ApiError(
+                403, "agents_cannot_decide", "Only the owner or finance team can decide."
+            )
+        owner_approval = {**owner_approval, "decided_by": actor.id}
     res = participation.run_full_participation_loop(
         conn,
         tenant_id,
@@ -439,4 +581,6 @@ def run_participation(
         owner_approval=owner_approval,
         now=now,
     )
+    if owner_approval is None and res.get("proposal", {}).get("id"):
+        background.add_task(guardian_notify.request_review, tenant_id, res["proposal"]["id"])
     return {"api_version": "v1", **res}

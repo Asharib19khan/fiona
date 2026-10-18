@@ -14,16 +14,17 @@ from engine.forecast.feed.rank import rank_findings
 from engine.forecast.feed.schemas import FindingsResponse, SourceStatus
 from engine.forecast.inventory.schemas import InventoryAnalysisResponse
 from engine.forecast.launch_lab.schemas import LaunchLabRequest, LaunchLabResponse
-from engine.forecast.ledger_source import TenantDataMissing, load_fixture_snapshot
+from engine.forecast.ledger_source import TenantDataMissing, load_snapshot
 from engine.forecast.mocks.registry import load
 
 router = APIRouter(tags=["forecast"])
 
 
 def _cash(request: Request, tenant_id: str, weeks: int) -> CashForecastResponse:
-    """The real Y1 engine on the tenant's ledger fixtures; the static mock only if there are none."""
+    """The real Y1 engine on the tenant's ledger (live) or its generator fixtures (mock); the
+    static mock only if a mock tenant has no fixtures."""
     try:
-        snapshot = load_fixture_snapshot(tenant_id)
+        snapshot = load_snapshot(tenant_id, mode(request))
     except TenantDataMissing:
         require_mock_tenant(tenant_id)
         result = load("cash_forecast")

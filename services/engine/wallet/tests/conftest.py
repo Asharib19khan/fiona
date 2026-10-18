@@ -52,9 +52,19 @@ def conn(migrated_db: str) -> Iterator[psycopg.Connection]:
 
 
 def seed_wallet_tenant(
-    conn: psycopg.Connection, tenant_id: str, opening_balance_minor: int = OPENING_BALANCE
+    conn: psycopg.Connection,
+    tenant_id: str,
+    opening_balance_minor: int = OPENING_BALANCE,
+    payment_autonomy: str | None = "act_within_mandate",
 ) -> None:
-    """Tenant, the rulebook treasurer mandate, four suppliers and a funded simulated account."""
+    """Tenant, the rulebook treasurer mandate, four suppliers and a funded simulated account.
+
+    The rulebook persona keeps the Treasurer at prepare. Most wallet tests exercise the wallet's
+    own defences (caps, allow-list, bank changes), so by default the owner has promoted the
+    Treasurer to act_within_mandate; pass payment_autonomy="prepare" for the persona default, or
+    None for a mandate with no autonomy recorded.
+    """
+    policy = {"autonomy": {"payment": payment_autonomy}} if payment_autonomy else {}
     with db.tenant_session(conn, tenant_id):
         x = conn.execute
         x(
@@ -64,13 +74,15 @@ def seed_wallet_tenant(
         )
         x(
             "insert into mandates (tenant_id, id, agent, version, currency, per_payment_cap_minor, daily_cap_minor,"
-            " allowed_action_types, effective_from, created_at) values (%s, %s, 'treasurer', 1, 'PKR', %s, %s, %s, %s, %s)",
+            " allowed_action_types, policy, effective_from, created_at)"
+            " values (%s, %s, 'treasurer', 1, 'PKR', %s, %s, %s, %s, %s, %s)",
             (
                 tenant_id,
                 TREASURER["id"],
                 CAP,
                 DAILY_CAP,
                 TREASURER["allowed_action_types"],
+                json.dumps(policy),
                 TREASURER["effective_from"],
                 T0,
             ),
