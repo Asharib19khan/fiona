@@ -185,8 +185,33 @@ def _window(lines: list[_Line], currency: str, start: date, end: date, label: st
     )
 
 
+# Computed windows per tenant, reused while the ledger is unchanged. Reading every journal line
+# moves ~20 MB from the database per call; the ledger is append-only, so a cheap fingerprint
+# (line count and newest posting) tells when a re-read is needed. Lives in engine memory only.
+_WINDOWS: dict[str, tuple[tuple, tuple[Window, Window | None]]] = {}
+
+
+def _fingerprint(conn: psycopg.Connection, tenant_id: str) -> tuple:
+    with db.tenant_session(conn, tenant_id):
+        return tuple(
+            conn.execute(
+                "select count(*), max(posted_at), (select count(*) from accounts) from journal_lines"
+            ).fetchone()
+        )
+
+
 def ledger_windows(conn: psycopg.Connection, tenant_id: str) -> tuple[Window, Window | None]:
     """Return the latest rolling 12-month statement window and its prior comparison window."""
+    key = (conn.info.host, conn.info.port, conn.info.dbname, *_fingerprint(conn, tenant_id))
+    cached = _WINDOWS.get(tenant_id)
+    if cached and cached[0] == key:
+        return cached[1]
+    result = _compute_windows(conn, tenant_id)
+    _WINDOWS[tenant_id] = (key, result)
+    return result
+
+
+def _compute_windows(conn: psycopg.Connection, tenant_id: str) -> tuple[Window, Window | None]:
     currency, lines = _fetch(conn, tenant_id)
     latest_end = max(line.business_date for line in lines)
     latest_start = latest_end - timedelta(days=364)
