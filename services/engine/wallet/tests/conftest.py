@@ -31,6 +31,8 @@ TREASURER = next(
 CAP = TREASURER["per_payment_cap_minor"]
 DAILY_CAP = TREASURER["daily_cap_minor"]
 OPENING_BALANCE = 350_000_000
+TIER1_RULES = [f"G-{n:02d}" for n in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13)]
+ALL_RULES = [*TIER1_RULES, "G-12"]
 
 
 @pytest.fixture(scope="session")
@@ -175,23 +177,34 @@ def store_verdict(
     verdict_id: str | None = None,
     conditions: list | None = None,
     previous: str | None = None,
+    rules: list[str] | None = None,
+    decided_at: str = T0,
+    first_check_outcome: str | None = None,
 ) -> str:
+    """A verdict shaped like the engine's: G-01 carries the outcome, every other rule in `rules`
+    (default: all Tier-1 rules plus the G-12 review) passes."""
     verdict_id = verdict_id or f"vrd_{proposal_id[5:]}"
+    rules = ALL_RULES if rules is None else rules
+    first = {
+        "name": "policy",
+        "rule": "G-01",
+        "result": "pass" if outcome == "approve" else "fail",
+        "outcome": first_check_outcome
+        or (outcome if outcome != "approve_with_conditions" else "approve"),
+        "detail": "test",
+    }
+    passes = [
+        {"name": "policy", "rule": r, "result": "pass", "outcome": "approve", "detail": "test"}
+        for r in rules
+        if r != "G-01"
+    ]
     body = {
         "id": verdict_id,
         "proposal_id": proposal_id,
         "outcome": outcome,
-        "checks": [
-            {
-                "name": "policy",
-                "rule": "G-01",
-                "result": "pass" if outcome == "approve" else "fail",
-                "outcome": outcome if outcome != "approve_with_conditions" else "approve",
-                "detail": "test",
-            }
-        ],
+        "checks": ([first] if "G-01" in rules else []) + passes,
         "conditions": conditions or [],
-        "decided_at": T0,
+        "decided_at": decided_at,
         "policy_version": "1.0.0",
         "previous_verdict_id": previous,
     }
@@ -207,7 +220,7 @@ def store_verdict(
                 outcome,
                 json.dumps(body["checks"]),
                 json.dumps(body["conditions"]),
-                T0,
+                decided_at,
                 digest,
                 previous,
                 json.dumps(body),

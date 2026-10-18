@@ -11,10 +11,12 @@ import pytest
 from engine.ledger import db
 from engine.wallet.audit import verify
 from engine.wallet.tests.conftest import (
+    ALL_RULES,
     CAP,
     DAILY_CAP,
     NOW,
     OPENING_BALANCE,
+    TIER1_RULES,
     TODAY,
     seed_wallet_tenant,
     store_decision,
@@ -179,6 +181,37 @@ def _setup_and_request(conn: psycopg.Connection, case: str) -> tuple[str, Paymen
         store_proposal(conn, tenant, "prop_late", amount=amount, pay_on="2026-10-23")
         late = store_verdict(conn, tenant, "prop_late", "approve")
         req = request("prop_late", late, amount=amount, pay_on="2026-10-23")
+    if case in (
+        "expired_verdict",
+        "future_verdict",
+        "incomplete_verdict",
+        "review_missing",
+        "inconsistent_verdict",
+    ):
+        options: dict = {
+            "expired_verdict": {"decided_at": "2026-10-14T09:00:00Z"},
+            "future_verdict": {"decided_at": "2026-10-22T10:00:00Z"},
+            "incomplete_verdict": {"rules": [r for r in ALL_RULES if r != "G-06"]},
+            "review_missing": {"rules": TIER1_RULES},
+            "inconsistent_verdict": {"first_check_outcome": "block"},
+        }[case]
+        store_proposal(conn, tenant, "prop_v", amount=amount)
+        v = store_verdict(conn, tenant, "prop_v", "approve", **options)
+        req = request("prop_v", v, amount=amount)
+    if case == "wrong_tenant":
+        # Tenant B asks the wallet to pay tenant A's cleared proposal: row-level security hides it.
+        other = new_tenant(conn)
+        req = request("prop_x", verdict, amount=amount)
+        tenant = other
+    if case == "wrong_currency":
+        req = PaymentRequest(
+            proposal_id="prop_x",
+            verdict_id=verdict,
+            payee_id=payee,
+            amount_minor=amount,
+            currency="USD",
+            pay_on=TODAY,
+        )
     if case == "over_daily_cap":
         for n, part in enumerate((CAP, CAP, DAILY_CAP - 2 * CAP)):
             store_proposal(conn, tenant, f"prop_day{n}", amount=part)
@@ -208,6 +241,13 @@ REFUSALS: dict[str, str] = {
     "not_allow_listed": "NOT_ALLOW_LISTED",
     "bank_change_email": "BANK_CHANGE_UNCONFIRMED",
     "insufficient_funds": "INSUFFICIENT_FUNDS",
+    "expired_verdict": "EXPIRED_VERDICT",
+    "future_verdict": "FUTURE_VERDICT",
+    "incomplete_verdict": "INCOMPLETE_VERDICT",
+    "review_missing": "REVIEW_MISSING",
+    "inconsistent_verdict": "INCONSISTENT_VERDICT",
+    "wrong_tenant": "NO_PROPOSAL",
+    "wrong_currency": "REQUEST_MISMATCH",
 }
 
 

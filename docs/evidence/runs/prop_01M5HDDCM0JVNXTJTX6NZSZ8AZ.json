@@ -1,0 +1,1917 @@
+{
+  "notice": "SYNTHETIC DATA and SIMULATED payments: an invented business; no real money moved.",
+  "tenant_id": "ten_karachi_apparel",
+  "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+  "agent_run": {
+    "id": "run_treasurer_21828ecc0eed",
+    "tenant_id": "ten_karachi_apparel",
+    "agent": "treasurer",
+    "task": "A new bill was just recorded: bill_01M5HDDCM08CGHFN99KN18FGZN from Lyari Stitching House, due 2026-10-22. Look at it with your tools and decide whether and when to propose paying it. If you propose it, use propose_payment for bill_01M5HDDCM08CGHFN99KN18FGZN. Report what you decided and why.",
+    "pipeline_id": null,
+    "status": "completed",
+    "started_at": "2026-10-18T16:22:08.733401+00:00",
+    "finished_at": "2026-10-18T16:22:40.013058+00:00",
+    "model": "claude-sonnet-5-5",
+    "prompt": "treasurer",
+    "toolbox": "treasurer",
+    "ephemeral": false,
+    "replayed": false,
+    "report": {
+      "summary": "I proposed paying the new Lyari Stitching House bill (PKR 80,240.00) today, 22 Oct, because it is due today and cash is comfortable until week 7. The Guardian flagged it twice. There is no purchase order or goods-received record behind the bill, and today's payments are over the daily cap. Please check the bill before approving.",
+      "cash_position": "Lowest closing -PKR 12,103,145.14 (week 13). First week below the buffer of PKR 2,000,000.00: week 7 (4–10 Dec 2026), closing -PKR 1,926,677.65.",
+      "proposed": [
+        {
+          "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+          "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+          "pay_on": "2026-10-22",
+          "why": "Lyari Stitching House, PKR 80,240.00, due 22 Oct. Issued 20 Oct. No early-payment discount. Cash is above the buffer through week 6. The Guardian escalated it (missing purchase order and goods-received record; daily cap exceeded)."
+        }
+      ],
+      "deferred": [],
+      "owner_attention": [
+        "Guardian check G-06 failed: this bill has no matching purchase order and no goods-received record. We cannot confirm the goods or work were ordered and delivered. Please confirm with Lyari Stitching House or your team before approving. It is a new bill, issued only two days before its due date.",
+        "Guardian check G-10: payments today exceed the daily cap of 45000000 (minor units, i.e. PKR 450,000.00). Six of my earlier proposals are still waiting for your decision, and one (bill_2254) is approved.",
+        "The forecast still falls below your buffer in week 7 and reaches -PKR 12,103,145.14 by week 13. You will need to choose between delaying suppliers and arranging financing."
+      ]
+    },
+    "summary": "I proposed paying the new Lyari Stitching House bill (PKR 80,240.00) today, 22 Oct, because it is due today and cash is comfortable until week 7. The Guardian flagged it twice. There is no purchase order or goods-received record behind the bill, and today's payments are over the daily cap. Please check the bill before approving.",
+    "prompt_version": "treasurer/v2",
+    "cost_usd": 0.2222595,
+    "turns": 6,
+    "duration_ms": 31281
+  },
+  "agent_tool_calls": [
+    {
+      "kind": "tool_call",
+      "tool": "get_cash_outlook",
+      "args": {},
+      "ok": true,
+      "ms": 2811,
+      "result": {
+        "as_of": "2026-10-22",
+        "buffer": {
+          "minor": 200000000,
+          "currency": "PKR",
+          "display": "PKR 2,000,000.00"
+        },
+        "opening": {
+          "minor": 953352992,
+          "currency": "PKR",
+          "display": "PKR 9,533,529.92"
+        },
+        "lowest_closing": {
+          "minor": -1210314514,
+          "currency": "PKR",
+          "display": "-PKR 12,103,145.14"
+        },
+        "first_week_below_buffer": 7,
+        "weeks": [
+          {
+            "week": 1,
+            "from": "2026-10-23",
+            "to": "2026-10-29",
+            "inflows": {
+              "minor": 913175353,
+              "currency": "PKR",
+              "display": "PKR 9,131,753.53"
+            },
+            "outflows": {
+              "minor": 308273262,
+              "currency": "PKR",
+              "display": "PKR 3,082,732.62"
+            },
+            "closing": {
+              "minor": 1558255083,
+              "currency": "PKR",
+              "display": "PKR 15,582,550.83"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 2,
+            "from": "2026-10-30",
+            "to": "2026-11-05",
+            "inflows": {
+              "minor": 384228338,
+              "currency": "PKR",
+              "display": "PKR 3,842,283.38"
+            },
+            "outflows": {
+              "minor": 578189021,
+              "currency": "PKR",
+              "display": "PKR 5,781,890.21"
+            },
+            "closing": {
+              "minor": 1364294400,
+              "currency": "PKR",
+              "display": "PKR 13,642,944.00"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 3,
+            "from": "2026-11-06",
+            "to": "2026-11-12",
+            "inflows": {
+              "minor": 395896444,
+              "currency": "PKR",
+              "display": "PKR 3,958,964.44"
+            },
+            "outflows": {
+              "minor": 372382925,
+              "currency": "PKR",
+              "display": "PKR 3,723,829.25"
+            },
+            "closing": {
+              "minor": 1387807919,
+              "currency": "PKR",
+              "display": "PKR 13,878,079.19"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 4,
+            "from": "2026-11-13",
+            "to": "2026-11-19",
+            "inflows": {
+              "minor": 412390069,
+              "currency": "PKR",
+              "display": "PKR 4,123,900.69"
+            },
+            "outflows": {
+              "minor": 437152452,
+              "currency": "PKR",
+              "display": "PKR 4,371,524.52"
+            },
+            "closing": {
+              "minor": 1363045536,
+              "currency": "PKR",
+              "display": "PKR 13,630,455.36"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 5,
+            "from": "2026-11-20",
+            "to": "2026-11-26",
+            "inflows": {
+              "minor": 398683443,
+              "currency": "PKR",
+              "display": "PKR 3,986,834.43"
+            },
+            "outflows": {
+              "minor": 356793506,
+              "currency": "PKR",
+              "display": "PKR 3,567,935.06"
+            },
+            "closing": {
+              "minor": 1404935473,
+              "currency": "PKR",
+              "display": "PKR 14,049,354.73"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 6,
+            "from": "2026-11-27",
+            "to": "2026-12-03",
+            "inflows": {
+              "minor": 387067864,
+              "currency": "PKR",
+              "display": "PKR 3,870,678.64"
+            },
+            "outflows": {
+              "minor": 646754873,
+              "currency": "PKR",
+              "display": "PKR 6,467,548.73"
+            },
+            "closing": {
+              "minor": 1145248464,
+              "currency": "PKR",
+              "display": "PKR 11,452,484.64"
+            },
+            "below_buffer": false
+          },
+          {
+            "week": 7,
+            "from": "2026-12-04",
+            "to": "2026-12-10",
+            "inflows": {
+              "minor": 419179806,
+              "currency": "PKR",
+              "display": "PKR 4,191,798.06"
+            },
+            "outflows": {
+              "minor": 1757096035,
+              "currency": "PKR",
+              "display": "PKR 17,570,960.35"
+            },
+            "closing": {
+              "minor": -192667765,
+              "currency": "PKR",
+              "display": "-PKR 1,926,677.65"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 8,
+            "from": "2026-12-11",
+            "to": "2026-12-17",
+            "inflows": {
+              "minor": 444238781,
+              "currency": "PKR",
+              "display": "PKR 4,442,387.81"
+            },
+            "outflows": {
+              "minor": 557262163,
+              "currency": "PKR",
+              "display": "PKR 5,572,621.63"
+            },
+            "closing": {
+              "minor": -305691147,
+              "currency": "PKR",
+              "display": "-PKR 3,056,911.47"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 9,
+            "from": "2026-12-18",
+            "to": "2026-12-24",
+            "inflows": {
+              "minor": 321096734,
+              "currency": "PKR",
+              "display": "PKR 3,210,967.34"
+            },
+            "outflows": {
+              "minor": 442380837,
+              "currency": "PKR",
+              "display": "PKR 4,423,808.37"
+            },
+            "closing": {
+              "minor": -426975250,
+              "currency": "PKR",
+              "display": "-PKR 4,269,752.50"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 10,
+            "from": "2026-12-25",
+            "to": "2026-12-31",
+            "inflows": {
+              "minor": 439916809,
+              "currency": "PKR",
+              "display": "PKR 4,399,168.09"
+            },
+            "outflows": {
+              "minor": 497132124,
+              "currency": "PKR",
+              "display": "PKR 4,971,321.24"
+            },
+            "closing": {
+              "minor": -484190565,
+              "currency": "PKR",
+              "display": "-PKR 4,841,905.65"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 11,
+            "from": "2027-01-01",
+            "to": "2027-01-07",
+            "inflows": {
+              "minor": 397646422,
+              "currency": "PKR",
+              "display": "PKR 3,976,464.22"
+            },
+            "outflows": {
+              "minor": 802508826,
+              "currency": "PKR",
+              "display": "PKR 8,025,088.26"
+            },
+            "closing": {
+              "minor": -889052969,
+              "currency": "PKR",
+              "display": "-PKR 8,890,529.69"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 12,
+            "from": "2027-01-08",
+            "to": "2027-01-14",
+            "inflows": {
+              "minor": 431031325,
+              "currency": "PKR",
+              "display": "PKR 4,310,313.25"
+            },
+            "outflows": {
+              "minor": 569725424,
+              "currency": "PKR",
+              "display": "PKR 5,697,254.24"
+            },
+            "closing": {
+              "minor": -1027747068,
+              "currency": "PKR",
+              "display": "-PKR 10,277,470.68"
+            },
+            "below_buffer": true
+          },
+          {
+            "week": 13,
+            "from": "2027-01-15",
+            "to": "2027-01-21",
+            "inflows": {
+              "minor": 434916741,
+              "currency": "PKR",
+              "display": "PKR 4,349,167.41"
+            },
+            "outflows": {
+              "minor": 617484187,
+              "currency": "PKR",
+              "display": "PKR 6,174,841.87"
+            },
+            "closing": {
+              "minor": -1210314514,
+              "currency": "PKR",
+              "display": "-PKR 12,103,145.14"
+            },
+            "below_buffer": true
+          }
+        ],
+        "method": "seasonal_naive_scaled",
+        "data_gaps": []
+      }
+    },
+    {
+      "kind": "tool_call",
+      "tool": "list_my_open_proposals",
+      "args": {},
+      "ok": true,
+      "ms": 2155,
+      "result": {
+        "proposals": [
+          {
+            "id": "prop_01M5HDDCM0QNNNDMW0NH0E9W5A",
+            "status": "approved",
+            "summary": "Pay Lyari Stitching House for bill_2254 on 2026-10-23",
+            "amount": {
+              "minor": 14800000,
+              "currency": "PKR",
+              "display": "PKR 148,000.00"
+            },
+            "bill_id": "bill_2254",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM0H1B44H02RSGS5YB4",
+            "status": "needs_owner",
+            "summary": "Pay Gulshan Kidswear for bill_2256 on 2026-10-23",
+            "amount": {
+              "minor": 900000,
+              "currency": "PKR",
+              "display": "PKR 9,000.00"
+            },
+            "bill_id": "bill_2256",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM0CDKCADW4BKYZW03G",
+            "status": "needs_owner",
+            "summary": "Pay Faisalabad Cotton Mills for bill_3880 on 2026-10-23",
+            "amount": {
+              "minor": 1539192,
+              "currency": "PKR",
+              "display": "PKR 15,391.92"
+            },
+            "bill_id": "bill_3880",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM0CCDGZXX2YC4KSGQJ",
+            "status": "needs_owner",
+            "summary": "Pay Saddar Embroidery Works for bill_2253 on 2026-10-23",
+            "amount": {
+              "minor": 15000000,
+              "currency": "PKR",
+              "display": "PKR 150,000.00"
+            },
+            "bill_id": "bill_2253",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM0A5S9JJYH1CN9FT31",
+            "status": "needs_owner",
+            "summary": "Pay Hala Handloom for bill_3932 on 2026-10-23",
+            "amount": {
+              "minor": 3717000,
+              "currency": "PKR",
+              "display": "PKR 37,170.00"
+            },
+            "bill_id": "bill_3932",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM04TQ95JZMB9J7R496",
+            "status": "needs_owner",
+            "summary": "Pay Sialkot Apparel Works for bill_2255 on 2026-10-23",
+            "amount": {
+              "minor": 14950001,
+              "currency": "PKR",
+              "display": "PKR 149,500.01"
+            },
+            "bill_id": "bill_2255",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          },
+          {
+            "id": "prop_01M5HDDCM035M2QN0ZGZT9DAEX",
+            "status": "needs_owner",
+            "summary": "Pay Sialkot Apparel Works for bill_3879 on 2026-10-23",
+            "amount": {
+              "minor": 3287952,
+              "currency": "PKR",
+              "display": "PKR 32,879.52"
+            },
+            "bill_id": "bill_3879",
+            "pay_on": "2026-10-23",
+            "guardian_outcome": "escalate"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "tool_call",
+      "tool": "get_payment_plan",
+      "args": {
+        "due_within_days": 14,
+        "limit": 60
+      },
+      "ok": true,
+      "ms": 4375,
+      "result": {
+        "as_of": "2026-10-22",
+        "buffer": {
+          "minor": 200000000,
+          "currency": "PKR",
+          "display": "PKR 2,000,000.00"
+        },
+        "cost_of_money": {
+          "metric": "payments.cost_of_money",
+          "label": "Your cost of money",
+          "status": "ok",
+          "value": "22.00%"
+        },
+        "open_bills_due_within_window": 51,
+        "already_proposed_bills": 7,
+        "bills": [
+          {
+            "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 8024000,
+              "currency": "PKR",
+              "display": "PKR 80,240.00"
+            },
+            "issue_date": "2026-10-20",
+            "due_date": "2026-10-22",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-22",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_2231",
+            "supplier": "Mehran Garments",
+            "supplier_id": "sup_017",
+            "amount": {
+              "minor": 18450000,
+              "currency": "PKR",
+              "display": "PKR 184,500.00"
+            },
+            "issue_date": "2026-10-17",
+            "due_date": "2026-10-24",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-24",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3884",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 13151808,
+              "currency": "PKR",
+              "display": "PKR 131,518.08"
+            },
+            "issue_date": "2026-09-24",
+            "due_date": "2026-10-24",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-24",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3960",
+            "supplier": "Mehran Garments",
+            "supplier_id": "sup_017",
+            "amount": {
+              "minor": 20390400,
+              "currency": "PKR",
+              "display": "PKR 203,904.00"
+            },
+            "issue_date": "2026-10-17",
+            "due_date": "2026-10-24",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-24",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_2240",
+            "supplier": "Indus Weaving Mills",
+            "supplier_id": "sup_001",
+            "amount": {
+              "minor": 28036800,
+              "currency": "PKR",
+              "display": "PKR 280,368.00"
+            },
+            "issue_date": "2026-10-15",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3886",
+            "supplier": "Murree Knitwear",
+            "supplier_id": "sup_009",
+            "amount": {
+              "minor": 489936,
+              "currency": "PKR",
+              "display": "PKR 4,899.36"
+            },
+            "issue_date": "2026-09-25",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3887",
+            "supplier": "Sialkot Apparel Works",
+            "supplier_id": "sup_012",
+            "amount": {
+              "minor": 6575904,
+              "currency": "PKR",
+              "display": "PKR 65,759.04"
+            },
+            "issue_date": "2026-09-25",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3888",
+            "supplier": "Faisalabad Cotton Mills",
+            "supplier_id": "sup_016",
+            "amount": {
+              "minor": 1539192,
+              "currency": "PKR",
+              "display": "PKR 15,391.92"
+            },
+            "issue_date": "2026-09-25",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3889",
+            "supplier": "Korangi Garments",
+            "supplier_id": "sup_006",
+            "amount": {
+              "minor": 1539192,
+              "currency": "PKR",
+              "display": "PKR 15,391.92"
+            },
+            "issue_date": "2026-09-25",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3936",
+            "supplier": "Saddar Embroidery Works",
+            "supplier_id": "sup_004",
+            "amount": {
+              "minor": 29311200,
+              "currency": "PKR",
+              "display": "PKR 293,112.00"
+            },
+            "issue_date": "2026-10-10",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3937",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 5664000,
+              "currency": "PKR",
+              "display": "PKR 56,640.00"
+            },
+            "issue_date": "2026-10-10",
+            "due_date": "2026-10-25",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-25",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3778",
+            "supplier": "Swat Wool Works",
+            "supplier_id": "sup_008",
+            "amount": {
+              "minor": 2143116,
+              "currency": "PKR",
+              "display": "PKR 21,431.16"
+            },
+            "issue_date": "2026-08-27",
+            "due_date": "2026-10-26",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-26",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3890",
+            "supplier": "Kotri Textile Traders",
+            "supplier_id": "sup_003",
+            "amount": {
+              "minor": 6926364,
+              "currency": "PKR",
+              "display": "PKR 69,263.64"
+            },
+            "issue_date": "2026-09-26",
+            "due_date": "2026-10-26",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-26",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3941",
+            "supplier": "Hala Dupatta Crafts",
+            "supplier_id": "sup_005",
+            "amount": {
+              "minor": 2973600,
+              "currency": "PKR",
+              "display": "PKR 29,736.00"
+            },
+            "issue_date": "2026-10-11",
+            "due_date": "2026-10-26",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-26",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3942",
+            "supplier": "Hala Handloom",
+            "supplier_id": "sup_015",
+            "amount": {
+              "minor": 2230200,
+              "currency": "PKR",
+              "display": "PKR 22,302.00"
+            },
+            "issue_date": "2026-10-11",
+            "due_date": "2026-10-26",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-26",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3894",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 19727712,
+              "currency": "PKR",
+              "display": "PKR 197,277.12"
+            },
+            "issue_date": "2026-09-27",
+            "due_date": "2026-10-27",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-27",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3897",
+            "supplier": "Korangi Garments",
+            "supplier_id": "sup_006",
+            "amount": {
+              "minor": 3078384,
+              "currency": "PKR",
+              "display": "PKR 30,783.84"
+            },
+            "issue_date": "2026-09-27",
+            "due_date": "2026-10-27",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-27",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3946",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 1416000,
+              "currency": "PKR",
+              "display": "PKR 14,160.00"
+            },
+            "issue_date": "2026-10-12",
+            "due_date": "2026-10-27",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-27",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3899",
+            "supplier": "Sialkot Apparel Works",
+            "supplier_id": "sup_012",
+            "amount": {
+              "minor": 3287952,
+              "currency": "PKR",
+              "display": "PKR 32,879.52"
+            },
+            "issue_date": "2026-09-28",
+            "due_date": "2026-10-28",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-28",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3900",
+            "supplier": "Faisalabad Cotton Mills",
+            "supplier_id": "sup_016",
+            "amount": {
+              "minor": 769596,
+              "currency": "PKR",
+              "display": "PKR 7,695.96"
+            },
+            "issue_date": "2026-09-28",
+            "due_date": "2026-10-28",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-28",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3948",
+            "supplier": "Hala Handloom",
+            "supplier_id": "sup_015",
+            "amount": {
+              "minor": 2230200,
+              "currency": "PKR",
+              "display": "PKR 22,302.00"
+            },
+            "issue_date": "2026-10-13",
+            "due_date": "2026-10-28",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-28",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3973",
+            "supplier": "Mehran Garments",
+            "supplier_id": "sup_017",
+            "amount": {
+              "minor": 11469600,
+              "currency": "PKR",
+              "display": "PKR 114,696.00"
+            },
+            "issue_date": "2026-10-21",
+            "due_date": "2026-10-28",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-28",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_2246",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 6500001,
+              "currency": "PKR",
+              "display": "PKR 65,000.01"
+            },
+            "issue_date": "2026-10-14",
+            "due_date": "2026-10-29",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-29",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3903",
+            "supplier": "Kotri Textile Traders",
+            "supplier_id": "sup_003",
+            "amount": {
+              "minor": 11543940,
+              "currency": "PKR",
+              "display": "PKR 115,439.40"
+            },
+            "issue_date": "2026-09-29",
+            "due_date": "2026-10-29",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-29",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3904",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 16439760,
+              "currency": "PKR",
+              "display": "PKR 164,397.60"
+            },
+            "issue_date": "2026-09-29",
+            "due_date": "2026-10-29",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-29",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3950",
+            "supplier": "Saddar Embroidery Works",
+            "supplier_id": "sup_004",
+            "amount": {
+              "minor": 5097600,
+              "currency": "PKR",
+              "display": "PKR 50,976.00"
+            },
+            "issue_date": "2026-10-14",
+            "due_date": "2026-10-29",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-29",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3963",
+            "supplier": "Indus Weaving Mills",
+            "supplier_id": "sup_001",
+            "amount": {
+              "minor": 14018400,
+              "currency": "PKR",
+              "display": "PKR 140,184.00"
+            },
+            "issue_date": "2026-10-19",
+            "due_date": "2026-10-29",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-29",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3954",
+            "supplier": "Hala Dupatta Crafts",
+            "supplier_id": "sup_005",
+            "amount": {
+              "minor": 2230200,
+              "currency": "PKR",
+              "display": "PKR 22,302.00"
+            },
+            "issue_date": "2026-10-15",
+            "due_date": "2026-10-30",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-30",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3907",
+            "supplier": "Kotri Textile Traders",
+            "supplier_id": "sup_003",
+            "amount": {
+              "minor": 6926364,
+              "currency": "PKR",
+              "display": "PKR 69,263.64"
+            },
+            "issue_date": "2026-10-01",
+            "due_date": "2026-10-31",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-10-31",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_2248",
+            "supplier": "Hala Dupatta Crafts",
+            "supplier_id": "sup_005",
+            "amount": {
+              "minor": 10060000,
+              "currency": "PKR",
+              "display": "PKR 100,600.00"
+            },
+            "issue_date": "2026-10-17",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3910",
+            "supplier": "Murree Knitwear",
+            "supplier_id": "sup_009",
+            "amount": {
+              "minor": 3429552,
+              "currency": "PKR",
+              "display": "PKR 34,295.52"
+            },
+            "issue_date": "2026-10-02",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3911",
+            "supplier": "Sialkot Apparel Works",
+            "supplier_id": "sup_012",
+            "amount": {
+              "minor": 6575904,
+              "currency": "PKR",
+              "display": "PKR 65,759.04"
+            },
+            "issue_date": "2026-10-02",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3912",
+            "supplier": "Faisalabad Cotton Mills",
+            "supplier_id": "sup_016",
+            "amount": {
+              "minor": 769596,
+              "currency": "PKR",
+              "display": "PKR 7,695.96"
+            },
+            "issue_date": "2026-10-02",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3913",
+            "supplier": "Korangi Garments",
+            "supplier_id": "sup_006",
+            "amount": {
+              "minor": 3078384,
+              "currency": "PKR",
+              "display": "PKR 30,783.84"
+            },
+            "issue_date": "2026-10-02",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3958",
+            "supplier": "Saddar Embroidery Works",
+            "supplier_id": "sup_004",
+            "amount": {
+              "minor": 12744000,
+              "currency": "PKR",
+              "display": "PKR 127,440.00"
+            },
+            "issue_date": "2026-10-17",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3959",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 4248000,
+              "currency": "PKR",
+              "display": "PKR 42,480.00"
+            },
+            "issue_date": "2026-10-17",
+            "due_date": "2026-11-01",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-01",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3806",
+            "supplier": "Swat Wool Works",
+            "supplier_id": "sup_008",
+            "amount": {
+              "minor": 8572464,
+              "currency": "PKR",
+              "display": "PKR 85,724.64"
+            },
+            "issue_date": "2026-09-03",
+            "due_date": "2026-11-02",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-02",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3914",
+            "supplier": "Kotri Textile Traders",
+            "supplier_id": "sup_003",
+            "amount": {
+              "minor": 9235152,
+              "currency": "PKR",
+              "display": "PKR 92,351.52"
+            },
+            "issue_date": "2026-10-03",
+            "due_date": "2026-11-02",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-02",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3961",
+            "supplier": "Hala Handloom",
+            "supplier_id": "sup_015",
+            "amount": {
+              "minor": 2230200,
+              "currency": "PKR",
+              "display": "PKR 22,302.00"
+            },
+            "issue_date": "2026-10-18",
+            "due_date": "2026-11-02",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-02",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3918",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 26303616,
+              "currency": "PKR",
+              "display": "PKR 263,036.16"
+            },
+            "issue_date": "2026-10-04",
+            "due_date": "2026-11-03",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-03",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3920",
+            "supplier": "Korangi Garments",
+            "supplier_id": "sup_006",
+            "amount": {
+              "minor": 1539192,
+              "currency": "PKR",
+              "display": "PKR 15,391.92"
+            },
+            "issue_date": "2026-10-04",
+            "due_date": "2026-11-03",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-03",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3966",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 1416000,
+              "currency": "PKR",
+              "display": "PKR 14,160.00"
+            },
+            "issue_date": "2026-10-19",
+            "due_date": "2026-11-03",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-03",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_2260",
+            "supplier": "Karachi Allied Cartons",
+            "supplier_id": "sup_010",
+            "amount": {
+              "minor": 6200000,
+              "currency": "PKR",
+              "display": "PKR 62,000.00"
+            },
+            "issue_date": "2026-10-05",
+            "due_date": "2026-11-04",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-04",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3922",
+            "supplier": "Sialkot Apparel Works",
+            "supplier_id": "sup_012",
+            "amount": {
+              "minor": 16439760,
+              "currency": "PKR",
+              "display": "PKR 164,397.60"
+            },
+            "issue_date": "2026-10-05",
+            "due_date": "2026-11-04",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-04",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3923",
+            "supplier": "Faisalabad Cotton Mills",
+            "supplier_id": "sup_016",
+            "amount": {
+              "minor": 3847980,
+              "currency": "PKR",
+              "display": "PKR 38,479.80"
+            },
+            "issue_date": "2026-10-05",
+            "due_date": "2026-11-04",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-04",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3968",
+            "supplier": "Hala Handloom",
+            "supplier_id": "sup_015",
+            "amount": {
+              "minor": 2230200,
+              "currency": "PKR",
+              "display": "PKR 22,302.00"
+            },
+            "issue_date": "2026-10-20",
+            "due_date": "2026-11-04",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-04",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3927",
+            "supplier": "Kotri Textile Traders",
+            "supplier_id": "sup_003",
+            "amount": {
+              "minor": 25396668,
+              "currency": "PKR",
+              "display": "PKR 253,966.68"
+            },
+            "issue_date": "2026-10-06",
+            "due_date": "2026-11-05",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-05",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3928",
+            "supplier": "Lyari Stitching House",
+            "supplier_id": "sup_002",
+            "amount": {
+              "minor": 3287952,
+              "currency": "PKR",
+              "display": "PKR 32,879.52"
+            },
+            "issue_date": "2026-10-06",
+            "due_date": "2026-11-05",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-05",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3929",
+            "supplier": "Korangi Garments",
+            "supplier_id": "sup_006",
+            "amount": {
+              "minor": 1557600,
+              "currency": "PKR",
+              "display": "PKR 15,576.00"
+            },
+            "issue_date": "2026-10-06",
+            "due_date": "2026-11-05",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-05",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3971",
+            "supplier": "Saddar Embroidery Works",
+            "supplier_id": "sup_004",
+            "amount": {
+              "minor": 11469600,
+              "currency": "PKR",
+              "display": "PKR 114,696.00"
+            },
+            "issue_date": "2026-10-21",
+            "due_date": "2026-11-05",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-05",
+            "early_payment_terms": null,
+            "figures": []
+          },
+          {
+            "bill_id": "bill_3972",
+            "supplier": "Gulshan Kidswear",
+            "supplier_id": "sup_007",
+            "amount": {
+              "minor": 1416000,
+              "currency": "PKR",
+              "display": "PKR 14,160.00"
+            },
+            "issue_date": "2026-10-21",
+            "due_date": "2026-11-05",
+            "overdue": false,
+            "optimiser_action": "pay_on_due",
+            "optimiser_pay_on": "2026-11-05",
+            "early_payment_terms": null,
+            "figures": []
+          }
+        ],
+        "more_not_shown": 0
+      }
+    },
+    {
+      "kind": "tool_call",
+      "tool": "propose_payment",
+      "args": {
+        "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+        "pay_on": "2026-10-22",
+        "reasoning": "Lyari Stitching House, PKR 80,240.00, due today 2026-10-22, so it is the most urgent bill. No early-payment discount. Cash stays above the buffer through week 6; week 7 is the first week below it, so paying on the due date is safe."
+      },
+      "ok": true,
+      "ms": 8625,
+      "result": {
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "status": "needs_owner",
+        "amount": {
+          "minor": 8024000,
+          "currency": "PKR",
+          "display": "PKR 80,240.00"
+        },
+        "guardian_outcome": "escalate",
+        "guardian_concerns": [
+          "G-06: Three-way match failed: missing purchase_order, goods_received.",
+          "G-10: Payments today (83899364) including this payment exceed daily cap of 45000000."
+        ],
+        "note": "The owner decides every payment; nothing is paid until they approve it."
+      }
+    }
+  ],
+  "proposal": {
+    "tenant_id": "ten_karachi_apparel",
+    "id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+    "agent": "treasurer",
+    "type": "payment",
+    "created_at": "2026-10-22 14:00:00+05:00",
+    "summary": "Pay Lyari Stitching House for bill_01M5HDDCM08CGHFN99KN18FGZN on 2026-10-22",
+    "amount_minor": 8024000,
+    "currency": "PKR",
+    "payload": {
+      "pay_on": "2026-10-22",
+      "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+      "channel": "wallet",
+      "payee_id": "sup_002"
+    },
+    "evidence": [
+      {
+        "ref": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+        "kind": "ledger_row"
+      },
+      {
+        "ref": "doc_01M5HDDCM0NM63BFB8W1257857",
+        "kind": "document"
+      }
+    ],
+    "reasoning": "Lyari Stitching House, PKR 80,240.00, due today 2026-10-22, so it is the most urgent bill. No early-payment discount. Cash stays above the buffer through week 6; week 7 is the first week below it, so paying on the due date is safe.",
+    "mandate_ref": "mnd_treasurer_v1",
+    "created_by": {
+      "id": "treasurer",
+      "kind": "agent"
+    }
+  },
+  "verdict_chain": [
+    {
+      "id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+      "outcome": "escalate",
+      "decided_at": "2026-10-22 14:00:00+05:00",
+      "verdict_hash": "sha256:f6cb25aa119c822781ca12d5f865eb324c256274d34d49a05298e363b3da2663",
+      "previous_verdict_id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA",
+      "body": {
+        "id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+        "checks": [
+          {
+            "name": "policy",
+            "rule": "G-01",
+            "audit": {
+              "cap_minor": 15000000,
+              "mandate_id": "mnd_treasurer_v1",
+              "amount_minor": 8024000,
+              "mandate_version": 1
+            },
+            "detail": "Payment of 8024000 is within the treasurer's cap of 15000000 per payment.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-02",
+            "audit": {
+              "payee_id": "sup_002",
+              "on_allow_list": true,
+              "allow_list_changed_at": null
+            },
+            "detail": "Payee sup_002 is on the allow-list.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-03",
+            "audit": {
+              "party_id": "sup_002",
+              "changed_at": null,
+              "confirmed_by": null,
+              "confirmed_via": null,
+              "new_iban_masked": "PK87****8407",
+              "old_iban_masked": null,
+              "days_since_change": null
+            },
+            "detail": "sup_002's bank details verified and consistent.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-04",
+            "audit": {
+              "approver": null,
+              "proposer": "treasurer",
+              "bill_entered_by": null
+            },
+            "detail": "Maker-checker segregation of duties verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-05",
+            "audit": {
+              "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+              "hashes_equal": false
+            },
+            "detail": "Bill LSH-2310 has no duplicates in history.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-06",
+            "audit": {
+              "po_id": null,
+              "grn_id": null,
+              "missing_documents": [
+                "purchase_order",
+                "goods_received"
+              ],
+              "worst_line_variance_bp": null
+            },
+            "detail": "Three-way match failed: missing purchase_order, goods_received.",
+            "result": "fail",
+            "outcome": "escalate"
+          },
+          {
+            "name": "arithmetic",
+            "rule": "G-07",
+            "audit": {
+              "stated_total": 8024000,
+              "recomputed_tax": null,
+              "difference_minor": 0,
+              "recomputed_total": 8024000,
+              "recomputed_subtotal": null
+            },
+            "detail": "Arithmetic verified: lines, taxes, and totals match within tolerance.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-08",
+            "audit": {
+              "safe_date": null,
+              "week_of_min": 13,
+              "buffer_minor": 200000000,
+              "forecast_as_of": "2026-10-22T09:00:00Z",
+              "min_base_minor": -1210314514,
+              "min_scen_minor": -1210314514,
+              "forecast_run_id": "fc_f51857f31de9ff0ee1fe"
+            },
+            "detail": "Payment of 8024000 leaves cash above buffer. (pre-existing dip in week 7, not caused by this payment).",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "evidence",
+            "rule": "G-09",
+            "audit": {
+              "missing_kinds": [],
+              "contradictions": [],
+              "required_kinds": [
+                "ledger_row",
+                "document"
+              ],
+              "unresolved_refs": [],
+              "unmatched_reasoning_values": []
+            },
+            "detail": "Required evidence present and verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-10",
+            "audit": {
+              "business_date": "2026-10-22",
+              "daily_cap_minor": 45000000,
+              "payments_today_minor": 83899364
+            },
+            "detail": "Payments today (83899364) including this payment exceed daily cap of 45000000.",
+            "result": "fail",
+            "outcome": "escalate"
+          },
+          {
+            "name": "policy",
+            "rule": "G-11",
+            "audit": {
+              "pattern_id": "NTN",
+              "tax_id_on_bill_masked": null,
+              "tax_id_on_file_masked": "25****-8"
+            },
+            "detail": "Supplier tax registration '2561976-8' verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-13",
+            "audit": {
+              "type": "payment",
+              "agent": "treasurer",
+              "category": "inventory_supplier",
+              "mandate_id": "mnd_treasurer_v1",
+              "mandate_version": 1
+            },
+            "detail": "Action 'payment' is within treasurer's mandate permissions.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "adversarial",
+            "rule": "G-12",
+            "audit": {
+              "model": "claude_cli:claude-opus-5-5",
+              "concern": "medium",
+              "reasons": [
+                "doc_01M5HDDCM0NM63BFB8W1257857 cites PO ref PO-3958 and a receiver (received_by usr_4d19...), but the ledger bill bill_01M5HDDCM08CGHFN99KN18FGZN has po_id=null and grn_id=null. G-06 three-way match failed, so there is nothing on our side showing the goods were ordered or received.",
+                "Date inconsistency: the document's own warning says issue_date 2026-10-20 is after 'today' (2026-10-18). The proposal created_at and pay_on are 2026-10-22, and the due date is only 2 days after issue. Someone should confirm the invoice date is genuine and not pre-dated.",
+                "payee.payments_to_date.last_paid_on is 2026-10-22, the same day as this proposed payment. G-10 reports 83,899,364 paid today against a cap of 45,000,000, almost double. Today's other payments should be checked for possible duplicate or split payments to sup_002.",
+                "payload.channel is 'wallet', but the bill says to pay IBAN PK87SYND1331844186178407. Confirm that the wallet route actually pays the verified IBAN on file.",
+                "No sign of a bank-detail change: the IBAN on the bill matches payee.bank_iban, bank_account_changed_at is null and there are no recent changes. No pressure language or instructions aimed at an AI were found in the document (embedded_instructions is empty)."
+              ],
+              "latency_ms": 11656,
+              "prompt_version": "g12/v1",
+              "injection_detected": false
+            },
+            "detail": "Adversarial review: concern medium. doc_01M5HDDCM0NM63BFB8W1257857 cites PO ref PO-3958 and a receiver (received_by usr_4d19...), but the ledger bill bill_01M5HDDCM08CGHFN99KN18FGZN has po_id=null and grn_id=null. G-06 three-way match failed, so there is nothing on our side showing the goods were ordered or received.; Date inconsistency: the document's own warning says issue_date 2026-10-20 is after 'today' (2026-10-18). The proposal created_at and pay_on are 2026-10-22, and the due date is only 2 days after issue. Someone should confirm the invoice date is genuine and not pre-dated.; payee.payments_to_date.last_paid_on is 2026-10-22, the same day as this proposed payment. G-10 reports 83,899,364 paid today against a cap of 45,000,000, almost double. Today's other payments should be checked for possible duplicate or split payments to sup_002.; payload.channel is 'wallet', but the bill says to pay IBAN PK87SYND1331844186178407. Confirm that the wallet route actually pays the verified IB",
+            "result": "pass",
+            "outcome": "approve"
+          }
+        ],
+        "outcome": "escalate",
+        "conditions": [],
+        "decided_at": "2026-10-22T09:00:00Z",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "policy_version": "1.0.0",
+        "previous_verdict_id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA"
+      }
+    },
+    {
+      "id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA",
+      "outcome": "escalate",
+      "decided_at": "2026-10-22 14:00:00+05:00",
+      "verdict_hash": "sha256:849892199df6b5f7b1e665f28c110cffefebc9ad64d7e188835e8298e7a21d43",
+      "previous_verdict_id": null,
+      "body": {
+        "id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA",
+        "checks": [
+          {
+            "name": "policy",
+            "rule": "G-01",
+            "audit": {
+              "cap_minor": 15000000,
+              "mandate_id": "mnd_treasurer_v1",
+              "amount_minor": 8024000,
+              "mandate_version": 1
+            },
+            "detail": "Payment of 8024000 is within the treasurer's cap of 15000000 per payment.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-02",
+            "audit": {
+              "payee_id": "sup_002",
+              "on_allow_list": true,
+              "allow_list_changed_at": null
+            },
+            "detail": "Payee sup_002 is on the allow-list.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-03",
+            "audit": {
+              "party_id": "sup_002",
+              "changed_at": null,
+              "confirmed_by": null,
+              "confirmed_via": null,
+              "new_iban_masked": "PK87****8407",
+              "old_iban_masked": null,
+              "days_since_change": null
+            },
+            "detail": "sup_002's bank details verified and consistent.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-04",
+            "audit": {
+              "approver": null,
+              "proposer": "treasurer",
+              "bill_entered_by": null
+            },
+            "detail": "Maker-checker segregation of duties verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-05",
+            "audit": {
+              "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+              "hashes_equal": false
+            },
+            "detail": "Bill LSH-2310 has no duplicates in history.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-06",
+            "audit": {
+              "po_id": null,
+              "grn_id": null,
+              "missing_documents": [
+                "purchase_order",
+                "goods_received"
+              ],
+              "worst_line_variance_bp": null
+            },
+            "detail": "Three-way match failed: missing purchase_order, goods_received.",
+            "result": "fail",
+            "outcome": "escalate"
+          },
+          {
+            "name": "arithmetic",
+            "rule": "G-07",
+            "audit": {
+              "stated_total": 8024000,
+              "recomputed_tax": null,
+              "difference_minor": 0,
+              "recomputed_total": 8024000,
+              "recomputed_subtotal": null
+            },
+            "detail": "Arithmetic verified: lines, taxes, and totals match within tolerance.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-08",
+            "audit": {
+              "safe_date": null,
+              "week_of_min": 13,
+              "buffer_minor": 200000000,
+              "forecast_as_of": "2026-10-22T09:00:00Z",
+              "min_base_minor": -1210314514,
+              "min_scen_minor": -1210314514,
+              "forecast_run_id": "fc_f51857f31de9ff0ee1fe"
+            },
+            "detail": "Payment of 8024000 leaves cash above buffer. (pre-existing dip in week 7, not caused by this payment).",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "evidence",
+            "rule": "G-09",
+            "audit": {
+              "missing_kinds": [],
+              "contradictions": [],
+              "required_kinds": [
+                "ledger_row",
+                "document"
+              ],
+              "unresolved_refs": [],
+              "unmatched_reasoning_values": []
+            },
+            "detail": "Required evidence present and verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-10",
+            "audit": {
+              "business_date": "2026-10-22",
+              "daily_cap_minor": 45000000,
+              "payments_today_minor": 83899364
+            },
+            "detail": "Payments today (83899364) including this payment exceed daily cap of 45000000.",
+            "result": "fail",
+            "outcome": "escalate"
+          },
+          {
+            "name": "policy",
+            "rule": "G-11",
+            "audit": {
+              "pattern_id": "NTN",
+              "tax_id_on_bill_masked": null,
+              "tax_id_on_file_masked": "25****-8"
+            },
+            "detail": "Supplier tax registration '2561976-8' verified.",
+            "result": "pass",
+            "outcome": "approve"
+          },
+          {
+            "name": "policy",
+            "rule": "G-13",
+            "audit": {
+              "type": "payment",
+              "agent": "treasurer",
+              "category": "inventory_supplier",
+              "mandate_id": "mnd_treasurer_v1",
+              "mandate_version": 1
+            },
+            "detail": "Action 'payment' is within treasurer's mandate permissions.",
+            "result": "pass",
+            "outcome": "approve"
+          }
+        ],
+        "outcome": "escalate",
+        "conditions": [],
+        "decided_at": "2026-10-22T09:00:00Z",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "policy_version": "1.0.0"
+      }
+    }
+  ],
+  "owner_decisions": [
+    {
+      "id": "dec_01M5HDDCM0917DX3Y1B5RSAJ5X",
+      "verdict_id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+      "decision": "approve",
+      "decided_by": "usr_4d19eb96c88a47b1b6cc6e402d007c19",
+      "decided_at": "2026-10-22 14:00:00+05:00",
+      "note": "Goods received in store; PO raised by phone."
+    }
+  ],
+  "wallet_payments": [
+    {
+      "id": "evt_01M5HDDCM0W10Z0MD8AS8FTPA0",
+      "type": "supplier_payment",
+      "occurred_at": "2026-10-22 14:00:00+05:00",
+      "business_date": "2026-10-22",
+      "payload": {
+        "agent": "treasurer",
+        "label": "SIMULATED",
+        "party": "sup_002",
+        "method": "wallet",
+        "bill_id": "bill_01M5HDDCM08CGHFN99KN18FGZN",
+        "to_iban": "PK87SYND1331844186178407",
+        "from_iban": "PK72SYNA3011793858792276",
+        "payment_id": "pay_01M5HDDCM0JENPK43XQK4KA0E7",
+        "verdict_id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+        "wallet_ref": "wtx_01M5HDDCM0HBH1M2Y7A2QFWF9Y",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "amount_minor": 8024000
+      }
+    }
+  ],
+  "journal_lines": [
+    {
+      "event_id": "evt_01M5HDDCM0W10Z0MD8AS8FTPA0",
+      "journal_id": "jnl_01M5HDDCM0W10Z0MD8AS8FTPA0",
+      "line_no": 1,
+      "account_code": "2000",
+      "debit_minor": 8024000,
+      "credit_minor": 0,
+      "currency": "PKR"
+    },
+    {
+      "event_id": "evt_01M5HDDCM0W10Z0MD8AS8FTPA0",
+      "journal_id": "jnl_01M5HDDCM0W10Z0MD8AS8FTPA0",
+      "line_no": 2,
+      "account_code": "1000",
+      "debit_minor": 0,
+      "credit_minor": 8024000,
+      "currency": "PKR"
+    }
+  ],
+  "journal_balanced": true,
+  "audit_records": [
+    {
+      "seq": 26,
+      "record": {
+        "type": "payment",
+        "agent": "treasurer",
+        "action": "proposal_submitted",
+        "outcome": "escalate",
+        "currency": "PKR",
+        "verdict_id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "amount_minor": 8024000
+      },
+      "prev_hash": "sha256:39497d0c2d021b9d83429613a39f3c4f134e2a7aa2ac36288dd78d73ad756bee",
+      "hash": "sha256:bb7b92507d2f34d4a85d606ee45441c2424182652c1b92a4231983f35bc07a42"
+    },
+    {
+      "seq": 27,
+      "record": {
+        "model": "claude_cli:claude-opus-5-5",
+        "action": "guardian_review",
+        "concern": "medium",
+        "outcome": "escalate",
+        "verdict_id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+        "check_error": false,
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "reviewed_verdict_id": "vrd_01M5HDDCM0Q4QQ2RPYQDNDNPGA"
+      },
+      "prev_hash": "sha256:bb7b92507d2f34d4a85d606ee45441c2424182652c1b92a4231983f35bc07a42",
+      "hash": "sha256:30c85cc6bc92548c79de8024a18932d3b656897cdd98f6671a7c59b0600c68ae"
+    },
+    {
+      "seq": 28,
+      "record": {
+        "note": "Goods received in store; PO raised by phone.",
+        "action": "owner_decision",
+        "decision": "approve",
+        "decided_by": "usr_4d19eb96c88a47b1b6cc6e402d007c19",
+        "verdict_id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "passkey_verified": false
+      },
+      "prev_hash": "sha256:30c85cc6bc92548c79de8024a18932d3b656897cdd98f6671a7c59b0600c68ae",
+      "hash": "sha256:d779ba91f5547d7fcd9873d5d2caef53336310437860846e9780072977e27875"
+    },
+    {
+      "seq": 30,
+      "record": {
+        "at": "2026-10-22T09:00:00+00:00",
+        "label": "SIMULATED",
+        "action": "payment_executed",
+        "outcome": "escalate",
+        "currency": "PKR",
+        "event_id": "evt_01M5HDDCM0W10Z0MD8AS8FTPA0",
+        "payee_id": "sup_002",
+        "payment_id": "pay_01M5HDDCM0JENPK43XQK4KA0E7",
+        "verdict_id": "vrd_01M5HDDCM0KKZNHATM6BZT43GJ",
+        "wallet_ref": "wtx_01M5HDDCM0HBH1M2Y7A2QFWF9Y",
+        "proposal_id": "prop_01M5HDDCM0JVNXTJTX6NZSZ8AZ",
+        "amount_minor": 8024000,
+        "verdict_hash": "sha256:f6cb25aa119c822781ca12d5f865eb324c256274d34d49a05298e363b3da2663",
+        "balance_after_minor": 938908992
+      },
+      "prev_hash": "sha256:c3f5135acafe5ff7bbd2b69bc4b0f894335d018e19630187e5b2da56d49a8d72",
+      "hash": "sha256:bda403f8e4fb21ee1086bede3268020606c18f53680a48be1784907d7a0bd98a"
+    }
+  ],
+  "audit_chain": {
+    "verified": true,
+    "length": 32,
+    "first_bad_seq": null
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "tenant_id": "ten_karachi_apparel",
+  "chain_verified": true,
+  "chain_length": 32,
+  "first_bad_seq": null,
+  "latest_hash": "sha256:280abf83cea9d3c27cc7a0c07f782434fae73299a24b02a5055a53a77daa830d",
+  "verified_at": "2026-10-18T20:16:22Z"
+}

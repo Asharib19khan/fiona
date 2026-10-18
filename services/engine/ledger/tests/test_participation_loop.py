@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from engine.app.main import app
 from engine.ledger import api, db
 from engine.ledger.participation import run_full_participation_loop
+from engine.ledger.review import record_review
 from engine.wallet.audit import verify
 from engine.wallet.tests.conftest import (
     CAP,
@@ -68,6 +69,18 @@ def client(migrated_db: str) -> Iterator[TestClient]:
         app.dependency_overrides.clear()
 
 
+def _guardian_reviews(conn, result: dict) -> None:
+    """The Guardian service's model review (G-12) arrives; the wallet pays nothing before it."""
+    record_review(
+        conn,
+        TENANT,
+        result["proposal"]["id"],
+        result["verdict"]["id"],
+        {"concern": "none", "reasons": [], "injection_detected": False},
+        now=CLOCK,
+    )
+
+
 def test_participation_loop_cleared_waits_for_owner_then_executes(migrated_db: str) -> None:
     """A compliant bill within mandate clears, but the Treasurer prepares (persona default):
     nothing pays until the owner approves, then the full loop runs."""
@@ -89,6 +102,7 @@ def test_participation_loop_cleared_waits_for_owner_then_executes(migrated_db: s
         assert waiting["verdict"]["outcome"] == "approve"
         assert waiting["status"] == "needs_owner"
         assert waiting["wallet_payment"] is None
+        _guardian_reviews(conn, waiting)
 
         result = run_full_participation_loop(
             conn,
@@ -157,6 +171,7 @@ def test_participation_loop_escalated_and_owner_approved_flow(migrated_db: str) 
         assert unapproved["status"] == "needs_owner"
         assert unapproved["verdict"]["outcome"] == "escalate"
         assert unapproved["wallet_payment"] is None
+        _guardian_reviews(conn, unapproved)
 
         # Second run: with owner approval -> executed
         approved_result = run_full_participation_loop(
@@ -225,6 +240,17 @@ def test_participation_loop_http_api(client: TestClient) -> None:
     assert res.status_code == 200, res.text
     assert res.json()["status"] == "needs_owner"
     assert res.json()["wallet_payment"] is None
+    reviewed = client.post(
+        f"/v1/proposals/{res.json()['proposal']['id']}/review",
+        json={
+            "reviewed_verdict_id": res.json()["verdict"]["id"],
+            "concern": "none",
+            "reasons": [],
+            "injection_detected": False,
+        },
+        headers={**HEADERS_HTTP, "X-Fiona-Agent": "guardian"},
+    )
+    assert reviewed.status_code == 200, reviewed.text
 
     approval = {"decision": "approve", "note": "Checked.", "decided_by": "usr_owner"}
     as_agent = {**HEADERS_HTTP, "X-Fiona-Agent": "treasurer"}

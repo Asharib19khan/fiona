@@ -139,6 +139,21 @@ def test_escalated_proposal_needs_owner_and_approves(client: TestClient) -> None
     assert decide_fail.status_code == 400
     assert "maker_checker" in decide_fail.json()["error"]["code"]
 
+    # The Guardian's model review (G-12) answers; the wallet pays no verdict without it.
+    reviewed = client.post(
+        f"/v1/proposals/{proposal['id']}/review",
+        json={
+            "reviewed_verdict_id": verdict["id"],
+            "concern": "none",
+            "reasons": [],
+            "injection_detected": False,
+        },
+        headers={**HEADERS, "X-Fiona-Agent": "guardian"},
+    )
+    assert reviewed.status_code == 200, reviewed.text
+    verdict = reviewed.json()["verdict"]
+    assert verdict["outcome"] == "escalate"
+
     # Owner approves
     decide_res = client.post(
         f"/v1/proposals/{proposal['id']}/decision",

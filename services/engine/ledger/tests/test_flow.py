@@ -118,6 +118,22 @@ def pay(
     )
 
 
+def review(client: TestClient, created: dict, concern: str = "none") -> str:
+    """The Guardian service's model review (G-12) arrives; returns the new verdict ID."""
+    res = client.post(
+        f"/v1/proposals/{created['proposal']['id']}/review",
+        json={
+            "reviewed_verdict_id": created["verdict"]["id"],
+            "concern": concern,
+            "reasons": [],
+            "injection_detected": False,
+        },
+        headers=GUARDIAN,
+    )
+    assert res.status_code == 200, res.text
+    return res.json()["verdict"]["id"]
+
+
 def test_safe_bill_goes_all_the_way_to_a_balanced_audited_payment(client: TestClient) -> None:
     bill_id = intake(client, "sup_001", "SAFE-1", 2_200_000)
     created = propose(client, bill_id, "sup_001", 2_200_000)
@@ -125,7 +141,8 @@ def test_safe_bill_goes_all_the_way_to_a_balanced_audited_payment(client: TestCl
     assert created["proposal"]["status"] == "needs_owner"  # cleared or not, the owner decides
     assert created["verdict"]["outcome"] in ("approve", "approve_with_conditions", "escalate")
 
-    refused = pay(client, created, "sup_001", 2_200_000)
+    reviewed = review(client, created)
+    refused = pay(client, created, "sup_001", 2_200_000, reviewed)
     assert refused.json()["status"] == "refused" and refused.json()["reason"].startswith(
         "NEEDS_OWNER"
     )
@@ -134,9 +151,11 @@ def test_safe_bill_goes_all_the_way_to_a_balanced_audited_payment(client: TestCl
         f"/v1/proposals/{pid}/decision", json={"decision": "approve", "note": "ok"}, headers=OWNER
     )
     assert decided.status_code == 200, decided.text
-    paid = pay(client, created, "sup_001", 2_200_000)
+    paid = pay(client, created, "sup_001", 2_200_000, reviewed)
     assert paid.json()["status"] == "executed", paid.text
-    assert pay(client, created, "sup_001", 2_200_000).json()["status"] == "already_executed"
+    assert (
+        pay(client, created, "sup_001", 2_200_000, reviewed).json()["status"] == "already_executed"
+    )
 
     trace = client.get(f"/v1/proposals/{pid}/trace", headers=OWNER).json()
     assert (
@@ -219,7 +238,7 @@ def test_another_workspace_sees_and_decides_nothing(client: TestClient) -> None:
     )
 
 
-def test_with_the_guardian_review_missing_nothing_pays_without_the_owner(
+def test_with_the_guardian_review_missing_nothing_pays_even_with_the_owner(
     client: TestClient,
 ) -> None:
     # No GUARDIAN_INBOUND_TOKEN in tests: the model review never arrives, like an outage.
@@ -227,7 +246,15 @@ def test_with_the_guardian_review_missing_nothing_pays_without_the_owner(
     created = propose(client, bill_id, "sup_001", 1_200_000)
     assert not any(c["rule"] == "G-12" for c in created["verdict"]["checks"])
     assert created["proposal"]["status"] == "needs_owner"
-    assert pay(client, created, "sup_001", 1_200_000).json()["reason"].startswith("NEEDS_OWNER")
+    assert pay(client, created, "sup_001", 1_200_000).json()["reason"].startswith("REVIEW_MISSING")
+    decided = client.post(
+        f"/v1/proposals/{created['proposal']['id']}/decision",
+        json={"decision": "approve"},
+        headers=OWNER,
+    )
+    assert decided.status_code == 200, decided.text
+    # Fail closed: the owner's approval does not stand in for the missing review.
+    assert pay(client, created, "sup_001", 1_200_000).json()["reason"].startswith("REVIEW_MISSING")
 
 
 def test_intake_refuses_bad_bills(client: TestClient) -> None:

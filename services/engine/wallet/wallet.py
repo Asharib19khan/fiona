@@ -6,7 +6,8 @@ these hold, and otherwise refuses with a reason. Every attempt, paid or refused,
 the tenant's hash-chained audit log.
 
 1. The verdict exists, belongs to this proposal and is unmodified (verdict_hash recomputed from
-   the stored body), and its outcome is approve, approve_with_conditions with every condition
+   the stored body); it is at most VERDICT_MAX_AGE old, carries every Tier-1 rule plus the
+   G-12 model review, and is no softer than its own checks; and its outcome is approve, approve_with_conditions with every condition
    met now, or escalate with an owner decision by a user who is not the proposer. A clearance
    pays without a person only when the agent acts within its mandate for payments; at prepare
    or advise the owner's approval of that verdict is required too.
@@ -37,6 +38,16 @@ from engine.wallet.audit import append
 from fiona_contracts.hashing import verdict_hash
 
 SIMULATED = "SIMULATED"
+# Every Tier-1 rule applies to a payment, so a payment verdict must carry each one's result.
+REQUIRED_PAYMENT_RULES = frozenset(
+    {"G-01", "G-02", "G-03", "G-04", "G-05", "G-06", "G-07", "G-08", "G-09", "G-10", "G-11", "G-13"}
+)
+# The adversarial review. Missing means the Guardian service never answered: fail closed.
+MODEL_REVIEW_RULE = "G-12"
+# An older verdict judged a ledger that has since moved on; the Guardian must review again.
+VERDICT_MAX_AGE = timedelta(days=7)
+CLOCK_SKEW = timedelta(minutes=5)
+STRICTNESS = {"approve": 0, "approve_with_conditions": 1, "escalate": 2, "block": 3}
 
 
 @dataclass(frozen=True)
@@ -119,6 +130,37 @@ def _require_owner_approval(
         raise Refusal("SAME_ACTOR: the approver is the proposer (maker-checker, G-04)")
 
 
+def _check_verdict_complete(body: dict[str, Any], outcome: str, now: datetime) -> None:
+    """The verdict is recent, every payment rule ran, the model review ran, and the outcome is
+    at least as strict as every rule result (a hash proves integrity, not completeness)."""
+    try:
+        decided_at = datetime.fromisoformat(str(body.get("decided_at")).replace("Z", "+00:00"))
+    except ValueError:
+        raise Refusal("MALFORMED_VERDICT: decided_at is not a timestamp") from None
+    if decided_at.tzinfo is None:
+        raise Refusal("MALFORMED_VERDICT: decided_at has no time zone")
+    if decided_at > now + CLOCK_SKEW:
+        raise Refusal("FUTURE_VERDICT: the verdict is dated after now")
+    if now - decided_at > VERDICT_MAX_AGE:
+        raise Refusal(
+            f"EXPIRED_VERDICT: decided {(now - decided_at).days} days ago (limit"
+            f" {VERDICT_MAX_AGE.days}); the Guardian must review it again"
+        )
+    checks = [c for c in body.get("checks") or [] if isinstance(c, dict)]
+    ran = {c.get("rule") for c in checks}
+    missing = sorted(REQUIRED_PAYMENT_RULES - ran)
+    if missing:
+        raise Refusal(f"INCOMPLETE_VERDICT: rules {', '.join(missing)} did not run")
+    if MODEL_REVIEW_RULE not in ran:
+        raise Refusal(
+            "REVIEW_MISSING: the Guardian's adversarial review (G-12) has not answered;"
+            " no payment without it"
+        )
+    strictest = max(STRICTNESS.get(str(c.get("outcome")), STRICTNESS["block"]) for c in checks)
+    if STRICTNESS.get(outcome, STRICTNESS["block"]) < strictest:
+        raise Refusal("INCONSISTENT_VERDICT: the outcome is softer than its own rule results")
+
+
 def _check(
     conn: psycopg.Connection, tenant_id: str, req: PaymentRequest, now: datetime
 ) -> dict[str, Any]:
@@ -182,6 +224,7 @@ def _check(
         raise Refusal(
             "VERDICT_BLOCKED: the Guardian blocked this proposal; no approval can release it"
         )
+    _check_verdict_complete(body, outcome, now)
     if outcome in ("approve", "approve_with_conditions"):
         # A clearance lets the wallet act alone only at act_within_mandate (latest mandate
         # version in force). At prepare or advise, or with no level recorded, the owner approves.

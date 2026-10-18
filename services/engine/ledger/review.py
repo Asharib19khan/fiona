@@ -46,7 +46,10 @@ _PRE_SCAN: tuple[tuple[str, re.Pattern[str]], ...] = (
     (
         "addresses_an_ai",
         re.compile(
-            r"ignore (all |any )?(previous|prior|above)|as the assistant|\bsystem\s*:|you are (an? )?(ai|assistant|model)|disregard (the|your) (rules|instructions)",
+            r"(ignore|disregard|forget) (all |any )?(of )?(your |the |my )?(previous|prior|above|earlier|existing)"
+            r"|as the assistant|\bsystem\s*(note|prompt|message)?\s*:"
+            r"|(note|message|instructions?) (to|for) (the |any )?(ai|assistant|agent|model|bot)\b"
+            r"|you are (an? )?(ai|assistant|model)|disregard (the|your) (rules|instructions)",
             re.I,
         ),
     ),

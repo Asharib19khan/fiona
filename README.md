@@ -18,9 +18,9 @@ The full journey runs end to end in the browser (verified on 18 Oct 2026 with th
 | 1 | **Upload a bill** (PDF or text) | Claude Haiku transcribes the fields, each with the exact quote it came from. Code then checks every quote exists in the document, converts amounts to integer paisa and checks subtotal + tax = total. Text that tries to instruct an AI is reported, never followed. | Bills → Add a bill |
 | 2 | **You confirm and post it** | The bill is recorded as a ledger event with a balanced journal (debit the cost and input tax, credit payables) and the document's SHA-256 hash. | `POST /v1/bills/intake` |
 | 3 | **The Treasurer proposes payment** | A separate headless Claude process with its own tools. It chooses the bill, the date and the reasoning; amount, payee and evidence are filled from the ledger, not typed by the model. Bills flagged for injected instructions or a changed bank account are refused. | `services/agents` |
-| 4 | **The Guardian checks it** | 14 deterministic rules run in the engine, then a Claude Opus reviewer reads the evidence for injection, pressure and mismatches. Any failure of the reviewer counts as "escalate", never "approve". | `services/engine/guardian_checks`, `services/guardian` |
+| 4 | **The Guardian checks it** | 12 deterministic rules run in the engine, then a Claude Opus reviewer reads the evidence for injection, pressure and mismatches. Any failure of the reviewer counts as "escalate", never "approve". | `services/engine/guardian_checks`, `services/guardian` |
 | 5 | **You decide** | Approve or reject on the latest verdict. A Guardian **block** cannot be overridden. | Approvals |
-| 6 | **The sandbox wallet pays** | Refuses without a cleared verdict and an owner approval; pays once (idempotent); posts Dr Payables, Cr Bank. | `services/engine/wallet` |
+| 6 | **The sandbox wallet pays** | Re-checks everything from the database and refuses unless the verdict is the latest, unmodified, at most 7 days old, carries every rule plus the Opus review, and has your approval; pays once (idempotent); posts Dr Payables, Cr Bank. If the Guardian never answered, nothing is paid. | `services/engine/wallet` |
 | 7 | **Audit trail** | Every step is in an append-only, SHA-256 hash-chained log, verified on the proposal's trail page. | Approvals → Full trail |
 
 The injection demo bill (`lyari-stitching-LSH-2311-injection.txt`) shows the defences: the reader lists the three hidden instructions, the bank-account mismatch is flagged, the Treasurer refuses to propose it, and the Guardian's review reports `injection_detected: true`.
@@ -70,6 +70,11 @@ graph LR
 | G-08 | Cash stays above the owner's buffer (from the live forecast) | | |
 
 Outcomes combine strictest-first: block > escalate > approve with conditions > approve.
+G-14 and G-15 are written and tested but **switched off** (proposed, Tier 2): they run only with
+`enable_proposed=True` and appear in no verdict today.
+
+Evidence for every rule (tests, a real run, the secrets scan, known limits):
+[`docs/evidence/`](docs/evidence/README.md).
 
 ## Run it
 
