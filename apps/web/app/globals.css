@@ -2229,3 +2229,13 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   .scenario-selector-bar { grid-template-columns: 1fr; }
   .scenario-facts-row { grid-template-columns: 1fr; }
 }
+
+/* Phone navigation: bottom bar (base rules in packages/ui) and the full page list as a drawer. */
+@media (max-width: 700px) {
+  .mobile-nav a, .mobile-nav button { display: flex; min-height: 44px; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0; border: 0; color: var(--text-subtle); background: none; font: inherit; cursor: pointer; }
+  .mobile-nav a > span, .mobile-nav button > span { display: grid; place-items: center; font-size: 17px; line-height: 1; }
+  .mobile-nav small { font-size: 10px; }
+  .mobile-nav .mobile-nav-active { color: var(--accent); font-weight: 700; }
+  .sidebar.sidebar-mobile-open { position: fixed; z-index: 11; inset: 55px 0 calc(54px + env(safe-area-inset-bottom)) 0; display: flex; width: auto; flex-direction: column; overflow-y: auto; padding: 14px 16px; background: var(--surface-raised); }
+  .topbar-live-status { display: none; }
+}

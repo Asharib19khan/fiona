@@ -184,6 +184,7 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // phone: the full page list over the canvas
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
@@ -207,6 +208,7 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
         setPaletteOpen(false);
         setHelpOpen(false);
         setAuthOpen(false);
+        setMenuOpen(false);
       } else if (!typing && event.key === "?" && !event.metaKey && !event.ctrlKey) {
         setHelpOpen((open) => !open);
       } else if (!typing && event.key === "[") {
@@ -326,7 +328,12 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
         </header>
 
         {/* Primary Sidebar Rail */}
-        <aside className={`sidebar ${railOpen ? "" : "sidebar-hidden"}`} aria-label="Main navigation">
+        <aside
+          id="main-navigation"
+          className={`sidebar ${railOpen ? "" : "sidebar-hidden"} ${menuOpen ? "sidebar-mobile-open" : ""}`}
+          aria-label="Main navigation"
+          onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setMenuOpen(false); }}
+        >
           <div className="side-section-label">TREASURY WORKSPACE</div>
           <nav className="primary-nav">
             {navigation.map((item) => {
@@ -376,6 +383,23 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
             <span>{status.currency} · {status.timezone}</span>
           </footer>
         </main>
+
+        {/* Phone: the four pages used most, plus the full list */}
+        <nav className="mobile-nav" aria-label="Quick navigation">
+          {navigation.filter((item) => ["/", "/approvals", "/bills", "/forecast"].includes(item.href)).map((item) => {
+            const active = !menuOpen && (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
+            return (
+              <Link key={item.href} href={item.href} className={active ? "mobile-nav-active" : ""} aria-current={active ? "page" : undefined} onClick={() => setMenuOpen(false)}>
+                <span><NavIcon name={item.iconKey} /></span>
+                <small>{item.label === "Cash forecast" ? "Forecast" : item.label === "Bills & AP" ? "Bills" : item.label}</small>
+              </Link>
+            );
+          })}
+          <button type="button" className={menuOpen ? "mobile-nav-active" : ""} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen((open) => !open)}>
+            <span aria-hidden="true">{menuOpen ? "✕" : "☰"}</span>
+            <small>{menuOpen ? "Close" : "Menu"}</small>
+          </button>
+        </nav>
 
         {/* Right Inspector: The 5 Autonomous Agents */}
         <aside className={`inspector ${inspectorOpen ? "" : "inspector-hidden"}`} aria-label="Agent activity">

@@ -190,9 +190,13 @@ function CouncilScreen() {
 
 
 async function BillsScreen() {
-  const data = await engineData("ledger/events");
+  // The last 60 business days of bills, newest first (the demo dataset pins "today" with FIONA_NOW).
+  const today = new Date(process.env.FIONA_NOW ?? Date.now());
+  const since = new Date(today.getTime() - 60 * 86_400_000).toISOString().slice(0, 10);
+  const read = await readEngine("ledger/events", new URLSearchParams({ type: "purchase_bill", date_from: since, limit: "1000" }));
+  const data = read.kind === "ok" && read.status === 200 ? objectValue(read.data) : null;
   if (!data) return <div className="section-page"><Heading section="bills" /><DataSource connected={false} fallback="The engine did not answer, so no bills are shown. Try again in a moment." /></div>;
-  const bills = objects(data?.events).filter((event) => event.event === "purchase_bill");
+  const bills = objects(data?.events).filter((event) => event.event === "purchase_bill").reverse();
   const sampleBillId = typeof bills[0]?.bill_id === "string" ? bills[0].bill_id : null;
   const checkResult = sampleBillId ? await postEngine("bills/check", { bill_id: sampleBillId }) : null;
   const checkData = checkResult?.kind === "ok" && checkResult.status === 200 ? objectValue(checkResult.data) : null;
@@ -207,10 +211,10 @@ async function BillsScreen() {
   ]);
   const detail = checkResult?.kind === "unavailable" ? checkResult.message : "Import synthetic bills to the local ledger to run the duplicate check.";
   return <div className="section-page"><Heading section="bills" badge="Ledger" /><DataSource connected={Boolean(data)} fallback="" /><BillIntake />
-    <div className="tier-metric-grid"><Metric label="Imported bills" value={bills.length} note="Purchase bill events" /><Metric label="Duplicate check" value={checkOutcome ? checkOutcome.replaceAll("_", " ") : "Not run"} note="G-05 · read only" /><Metric label="Extraction status" value="Imported records" note="Bill extraction must preserve document hashes and citations." /></div>
+    <div className="tier-metric-grid"><Metric label="Bills in the last 60 days" value={data.next_offset ? `${bills.length}+` : bills.length} note={`Posted since ${since}`} /><Metric label="Duplicate check" value={checkOutcome ? checkOutcome.replaceAll("_", " ") : "Not run"} note="G-05 on the newest bill · read only" /><Metric label="New bills" value="Read, then confirmed" note="Claude transcribes with quotes; code checks them; you confirm before anything is posted." /></div>
     {check && <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">GUARDIAN DUPLICATE CHECK</span><h2>G-05 · {String(checkOutcome ?? "check")}</h2></div>{checkOutcome && <OutcomeBadge outcome={checkOutcome === "approve_with_conditions" ? "conditions" : (checkOutcome as "approve" | "escalate" | "block" | "conditions")} />}</div><p className="proposal-reasoning">{String(check.detail ?? "")}</p></Card>}
     {!check && <DegradedBanner>{detail}</DegradedBanner>}
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">IMPORTED BILL REGISTER</span><h2>Source records from the ledger</h2></div><span className="placeholder-tag">Read only</span></div><Table headers={["Bill ID", "Supplier number", "Received", "Supplier", "Total"]} rows={rows} empty="No imported bill events are available." /></Card>
+    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">IMPORTED BILL REGISTER</span><h2>Newest bills in the ledger</h2></div><span className="placeholder-tag">{bills.length > 50 ? "Latest 50 shown" : "Read only"}</span></div><Table headers={["Bill ID", "Supplier number", "Received", "Supplier", "Total"]} rows={rows} empty="No imported bill events are available." /></Card>
     <p className="footnote">Bill records remain source data. This screen does not approve a bill or issue a payment.</p>
   </div>;
 }
