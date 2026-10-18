@@ -57,6 +57,21 @@ export function AutonomyBadge({ children }: { children: ReactNode }) {
   return <span className="autonomy-badge">{children}</span>;
 }
 
+/**
+ * ISO 4217 minor-unit exponents (Money.minor is in these units). Not Intl's display digits:
+ * Intl shows PKR with 0 decimals, but PKR minor units are paisa (exponent 2).
+ */
+const ISO_EXPONENT: Record<string, number> = { JPY: 0, KRW: 0, VND: 0, CLP: 0, ISK: 0, UGX: 0, BHD: 3, KWD: 3, OMR: 3, JOD: 3, TND: 3 };
+
+export function minorExponent(currency: string): number {
+  return ISO_EXPONENT[currency.toUpperCase()] ?? 2;
+}
+
+/** Major units from integer minor units, for display only. */
+export function toMajor(amountMinor: number, currency: string): number {
+  return amountMinor / 10 ** minorExponent(currency);
+}
+
 export function MoneyText({
   amountMinor,
   currency = "PKR",
@@ -68,8 +83,7 @@ export function MoneyText({
   className?: string;
   animateCount?: boolean;
 }) {
-  const digits = new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
-  const targetMajor = amountMinor / 10 ** digits;
+  const targetMajor = toMajor(amountMinor, currency);
 
   const count = useMotionValue(0);
   const [displayValue, setDisplayValue] = useState(() => {
