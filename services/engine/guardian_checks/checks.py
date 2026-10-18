@@ -25,6 +25,20 @@ from engine.guardian_checks.rules import (
 from fiona_contracts.models import Check, PayOnCondition
 
 
+def _money(minor: int | None, ctx: CheckContext) -> str:
+    """A minor-unit amount as the owner reads it (PKR 80,240.00). Details are shown to people;
+    the exact minor units stay in the check's audit fields."""
+    if minor is None:
+        return "an unknown amount"
+    try:
+        currency = ctx.get_currency() or "PKR"
+    except Exception:  # the context may not name a currency
+        currency = "PKR"
+    sign = "-" if minor < 0 else ""
+    major, cents = divmod(abs(int(minor)), 100)
+    return f"{sign}{currency} {major:,}.{cents:02d}"
+
+
 def _mask_iban(iban: str | None) -> str | None:
     if not iban:
         return None
@@ -136,7 +150,7 @@ def g01_per_payment_cap(ctx: CheckContext) -> Check | None:
                 rule="G-01",
                 result="fail",
                 outcome="escalate",
-                detail=f"Payment of {amount_minor} is above the {agent}'s cap of {cap_minor} per payment.",
+                detail=f"Payment of {_money(amount_minor, ctx)} is above the {agent}'s cap of {_money(cap_minor, ctx)} per payment.",
                 audit=audit,
             )
 
@@ -145,7 +159,7 @@ def g01_per_payment_cap(ctx: CheckContext) -> Check | None:
             rule="G-01",
             result="pass",
             outcome="approve",
-            detail=f"Payment of {amount_minor} is within the {agent}'s cap of {cap_minor} per payment.",
+            detail=f"Payment of {_money(amount_minor, ctx)} is within the {agent}'s cap of {_money(cap_minor, ctx)} per payment.",
             audit=audit,
         )
     except Exception as e:
@@ -897,7 +911,7 @@ def g07_arithmetic(ctx: CheckContext) -> Check | None:
                         rule="G-07",
                         result="fail",
                         outcome="block",
-                        detail=f"Payment {amount_minor} does not match bill balance {bill.outstanding_balance_minor}.",
+                        detail=f"Payment {_money(amount_minor, ctx)} does not match the bill balance {_money(bill.outstanding_balance_minor, ctx)}.",
                         audit={
                             "amount_minor": amount_minor,
                             "balance_minor": bill.outstanding_balance_minor,
@@ -1076,7 +1090,7 @@ def g08_cash_buffer(ctx: CheckContext) -> Check | None:
             rule="G-08",
             result="fail",
             outcome="escalate",
-            detail=f"Payment of {amount} takes cash below the buffer ({buffer_minor}) on every permitted date within the horizon.",
+            detail=f"Payment of {_money(amount, ctx)} takes cash below the buffer ({_money(buffer_minor, ctx)}) on every permitted date within the horizon.",
             audit=audit,
         )
     except Exception as e:
@@ -1275,7 +1289,7 @@ def g10_daily_cap(ctx: CheckContext) -> Check | None:
                 rule="G-10",
                 result="fail",
                 outcome="escalate",
-                detail=f"Payments today ({total_today}) including this payment exceed daily cap of {daily_cap_minor}.",
+                detail=f"Payments today ({_money(total_today, ctx)}) including this payment exceed the daily cap of {_money(daily_cap_minor, ctx)}.",
                 audit=audit,
             )
 
@@ -1284,7 +1298,7 @@ def g10_daily_cap(ctx: CheckContext) -> Check | None:
             rule="G-10",
             result="pass",
             outcome="approve",
-            detail=f"Payments today ({total_today}) are within daily cap of {daily_cap_minor}.",
+            detail=f"Payments today ({_money(total_today, ctx)}) are within the daily cap of {_money(daily_cap_minor, ctx)}.",
             audit=audit,
         )
     except Exception as e:

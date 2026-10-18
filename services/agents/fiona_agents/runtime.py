@@ -310,3 +310,64 @@ def _invoke(record: dict[str, Any], journal: Path, timeout: float) -> dict[str, 
         "cost_usd": envelope.get("total_cost_usd"),
         "turns": envelope.get("num_turns"),
     }
+
+
+def structured_call(
+    prompt: str,
+    *,
+    system: str,
+    schema: dict[str, Any],
+    model: str,
+    timeout: float,
+    workdir_name: str,
+) -> dict[str, Any]:
+    """One stateless, tool-less Claude call whose answer must match `schema` (for example
+    reading a bill). Same isolation as an agent run: own empty directory, no settings, no
+    tools, no MCP, no saved session."""
+    executable = shutil.which("claude")
+    if executable is None:
+        raise AgentFailure("Claude CLI ('claude') is not on PATH")
+    workdir = home() / "work" / workdir_name
+    workdir.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        executable,
+        "-p",
+        "--model",
+        model,
+        "--system-prompt",
+        system,
+        "--json-schema",
+        json.dumps(schema),
+        "--output-format",
+        "json",
+        "--tools",
+        "",
+        "--strict-mcp-config",
+        "--setting-sources",
+        "",
+        "--disable-slash-commands",
+        "--no-session-persistence",
+    ]
+    try:
+        proc = subprocess.run(
+            cmd,
+            input=prompt,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout,
+            cwd=workdir,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AgentFailure(f"{model} timed out after {timeout:.0f}s") from exc
+    try:
+        envelope = json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise AgentFailure(
+            f"Claude CLI exited {proc.returncode}: {(proc.stderr or proc.stdout)[:300]}"
+        ) from exc
+    output = envelope.get("structured_output")
+    if envelope.get("is_error") or not isinstance(output, dict):
+        raise AgentFailure(f"Claude CLI error: {str(envelope.get('result'))[:300]}")
+    return {"output": output, "cost_usd": envelope.get("total_cost_usd"), "model": model}

@@ -25,6 +25,7 @@ from engine.ledger import (
     bill_checks,
     db,
     importers,
+    intake,
     mandates,
     participation,
     pos_reconcile,
@@ -262,6 +263,34 @@ def bill_check(
     return BillCheckResponse(bill_id=body.bill_id, check=check)
 
 
+@router.get("/v1/parties")
+def find_parties(
+    tenant_id: TenantId, conn: Conn, q: str = Query(min_length=2, max_length=120)
+) -> dict[str, Any]:
+    """Suppliers and other payees matching a name, tax ID or IBAN (to match a bill)."""
+    return {"api_version": "v1", "parties": intake.search_parties(conn, tenant_id, q)}
+
+
+@router.post("/v1/bills/intake", status_code=201)
+def bill_intake(
+    tenant_id: TenantId,
+    actor: CurrentActor,
+    conn: Conn,
+    now: Clock,
+    body: dict[str, Any],
+) -> dict[str, Any]:
+    """Record a bill a person read and confirmed: document, bill event and ledger posting."""
+    if not actor.is_person:
+        raise ApiError(403, "people_only", "Only the owner or finance team can add a bill.")
+    return intake.intake_bill(conn, tenant_id, body, received_by=actor.id, now=now)
+
+
+@router.get("/v1/proposals/{proposal_id}/trace")
+def proposal_trace(tenant_id: TenantId, conn: Conn, proposal_id: str) -> dict[str, Any]:
+    """Everything about one proposal, in order, from the bill to the audit chain."""
+    return intake.proposal_trace(conn, tenant_id, proposal_id)
+
+
 @router.get("/v1/mandates")
 def get_mandates(tenant_id: TenantId, conn: Conn) -> dict[str, Any]:
     """Each agent's mandate in force: autonomy per action, caps, and the system ceiling."""
@@ -309,6 +338,28 @@ def get_bill(tenant_id: TenantId, conn: Conn, bill_id: str) -> dict[str, Any]:
         ).fetchone()[0]
     payload = row[4] or {}
     total = int(payload.get("total_minor") or 0)
+    flags: dict[str, Any] = {
+        "embedded_instructions": [],
+        "warnings": [],
+        "bank_account_mismatch": False,
+    }
+    if payload.get("document_id"):
+        with db.tenant_session(conn, tenant_id):
+            doc = conn.execute(
+                "select d.extracted, p.bank_iban from documents d left join parties p"
+                " on p.tenant_id = d.tenant_id and p.id = %s where d.id = %s",
+                (
+                    payload.get("party") or payload.get("supplier_id") or row[2],
+                    payload["document_id"],
+                ),
+            ).fetchone()
+        extracted = (doc[0] if doc else None) or {}
+        on_bill = str(extracted.get("bank_iban_on_bill") or "").replace(" ", "")
+        flags = {
+            "embedded_instructions": list(extracted.get("embedded_instructions") or []),
+            "warnings": list(extracted.get("warnings") or []),
+            "bank_account_mismatch": bool(on_bill and doc and doc[1] and on_bill != doc[1]),
+        }
     return {
         "api_version": "v1",
         "bill": {
@@ -325,6 +376,7 @@ def get_bill(tenant_id: TenantId, conn: Conn, bill_id: str) -> dict[str, Any]:
             "document_id": payload.get("document_id"),
             "po_number": payload.get("po_number"),
             "category": payload.get("category"),
+            "flags": flags,
         },
     }
 

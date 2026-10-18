@@ -201,3 +201,46 @@ def pipeline_detail(
     if record is None or record.get("tenant_id") != who.tenant_id:
         raise HTTPException(404, {"code": "not_found", "message": "No pipeline matches this ID."})
     return {"api_version": "v1", **record}
+
+
+class ReadBillRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    filename: str = Field(min_length=1, max_length=200)
+    content_base64: str = Field(min_length=10, max_length=7_200_000)
+
+
+@router.post("/v1/agents/read-bill")
+def read_bill_route(
+    body: ReadBillRequest, authorization: str | None = Header(default=None)
+) -> dict[str, Any]:
+    """Read an uploaded bill into fields for a person to review. Nothing is recorded here."""
+    import base64
+    import binascii
+
+    from fiona_agents import reader
+    from fiona_agents.engine import Engine, EngineError
+
+    who = principal(authorization)
+    _live_enabled()
+    try:
+        content = base64.b64decode(body.content_base64, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise HTTPException(
+            400, {"code": "invalid_file", "message": "The file could not be decoded."}
+        ) from exc
+    try:
+        result = reader.read_bill(content, body.filename)
+    except reader.ReadError as exc:
+        raise HTTPException(exc.status, {"code": exc.code, "message": str(exc)}) from exc
+    # Suggest the supplier: tax ID first, then IBAN, then name. A suggestion, never a decision.
+    fields = result["fields"]
+    candidates: list[dict[str, Any]] = []
+    engine = Engine(who.tenant_id, "controller")
+    for key in ("supplier_tax_id", "bank_iban", "supplier_name"):
+        value = fields[key]["value"]
+        if value and not candidates:
+            try:
+                candidates = engine.get("/v1/parties", q=str(value)[:120]).get("parties", [])
+            except EngineError:
+                candidates = []
+    return {"api_version": "v1", **result, "supplier_candidates": candidates[:5]}
