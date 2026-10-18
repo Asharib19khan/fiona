@@ -4,8 +4,8 @@
   "private": true,
   "description": "Turborepo shim for the Python agents service (FastAPI, uv).",
   "scripts": {
-    "dev": "uv run uvicorn fiona_agents.main:app --reload --reload-dir fiona_agents --port 8100",
+    "dev": "uv run python -m fiona_agents.dev",
     "lint": "uv run ruff check . && uv run ruff format --check .",
-    "test": "uv run pytest -q"
+    "test": "uv run pytest -q --basetemp .pytest-temp"
   }
 }
