@@ -1,6 +1,6 @@
 """Agents service app: labelled replay endpoints and contract-gated bill extraction.
 
-The runtime (LLM wrapper, tool bridge, extraction, Controller, Treasurer …) arrives in A4.
+The agent team (runtime.py, orchestrator.py, team_api.py) runs each agent in its own Claude process.
 Run from services/agents: `uv run uvicorn fiona_agents.main:app --port 8100`.
 """
 
@@ -16,7 +16,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from fiona_agents import orchestrator
 from fiona_agents.api import router
+from fiona_agents.team_api import router as team_router
 
 API_VERSION = "v1"
 SERVICE = "agents"
@@ -78,6 +80,8 @@ def create_app() -> FastAPI:
         return {"api_version": API_VERSION, "status": "ok", "service": SERVICE}
 
     app.include_router(router)
+    app.include_router(team_router)
+    orchestrator.start_autopilot()
 
     return app
 
