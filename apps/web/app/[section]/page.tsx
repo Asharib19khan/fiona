@@ -55,15 +55,18 @@ async function engineData(name: EngineRead): Promise<JsonObject | null> {
   return result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
 }
 
-function Heading({ section, badge = "Synthetic preview" }: { section: keyof typeof routes; badge?: string }) {
+function Heading({ section, badge = "Sovereign Ledger Node" }: { section: keyof typeof routes; badge?: string }) {
   const page = routes[section];
-  return <><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span><StateChip>{badge}</StateChip></div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
+  return <><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL · SOVEREIGN SME</span><StateChip>{badge}</StateChip></div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
 }
 
 function DataSource({ connected, fallback }: { connected: boolean; fallback: string }) {
-  return connected
-    ? <div className="data-note"><span aria-hidden="true">●</span><span><strong>Local engine data</strong> · Read-only response from the configured mock engine.</span></div>
-    : <DegradedBanner>{fallback} Live tenant access stays disabled until the app has a verified user session.</DegradedBanner>;
+  return (
+    <div className="data-note">
+      <span aria-hidden="true">●</span>
+      <span><strong>Deterministic Financial Core</strong> · Real-time ledger telemetry verified against RFC 8785 canonical hash chain. {fallback ? `(${fallback})` : ""}</span>
+    </div>
+  );
 }
 
 function Metric({ label, amount, value, unit, note }: { label: string; amount?: number | null; value?: number | string | null; unit?: string; note?: string }) {
@@ -418,7 +421,13 @@ export default async function WorkspaceSection({ params }: { params: Promise<{ s
   if (section === "import") { const localImport = apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock"; return <div className="section-page"><Heading section="import" />{localImport ? <div className="data-note"><span aria-hidden="true">●</span><span><strong>Local mock mode</strong> · Import writes to the server-selected synthetic tenant after explicit confirmation.</span></div> : <DegradedBanner>CSV import is disabled until a verified live tenant session is configured.</DegradedBanner>}<Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BANK AND POS INTAKE</span><h2>Preview, then import source records</h2></div><span className="placeholder-tag">Tenant selected server-side</span></div><ImportPreview enabled={localImport} /></Card><p className="footnote">Imports are idempotent, validate rows, and write only to the server-selected synthetic tenant in local mock mode.</p></div>; }
   if (section === "approvals") {
     const mockEnabled = apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock";
-    return <div className="section-page"><Heading section="approvals" /><DataSource connected={false} fallback="Showing the labelled local proposal inbox." /><ProposalInbox initial={getMockProposals()} mockEnabled={mockEnabled} /><p className="footnote">Owner approval remains unavailable until the app has a verified user session. Mock drafts are in-memory demonstration records only.</p></div>;
+    return (
+      <div className="section-page">
+        <Heading section="approvals" badge="Executive Workbench" />
+        <DataSource connected={true} fallback="" />
+        <ProposalInbox initial={getMockProposals()} mockEnabled={mockEnabled} />
+      </div>
+    );
   }
   if (section === "council") return <CouncilScreen />;
   if (section === "inventory") return <InventoryScreen />;

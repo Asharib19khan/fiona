@@ -3,31 +3,152 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { AgentChip, AutonomyBadge, StateChip } from "@fiona/ui";
+import { AutonomyBadge, StateChip } from "@fiona/ui";
 import { CommandBar } from "../components/command-bar";
+import { BootScreen } from "../components/boot-screen";
+import { AuthModal, USERS, type UserSession } from "../components/auth-modal";
+import { LoginPage } from "../components/login-page";
+
+// Luxury SVG Icon set for navigation
+function NavIcon({ name }: { name: string }) {
+  switch (name) {
+    case "briefing":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="7" height="9" x="3" y="3" rx="1.5" />
+          <rect width="7" height="5" x="14" y="3" rx="1.5" />
+          <rect width="7" height="9" x="14" y="12" rx="1.5" />
+          <rect width="7" height="5" x="3" y="16" rx="1.5" />
+        </svg>
+      );
+    case "approvals":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+      );
+    case "forecast":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+      );
+    case "financing":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="8" cy="8" r="6" />
+          <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+          <path d="M7 6h2v4H7z" />
+          <path d="m14 14 3 3" />
+        </svg>
+      );
+    case "analysis":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 3v18h18" />
+          <path d="m19 9-5 5-4-4-3 3" />
+        </svg>
+      );
+    case "bills":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+          <path d="M16 8h-6" />
+          <path d="M16 12h-6" />
+          <path d="M10 16h-4" />
+        </svg>
+      );
+    case "reconcile":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m16 3 4 4-4 4" />
+          <path d="M20 7H4" />
+          <path d="m8 21-4-4 4-4" />
+          <path d="M4 17h16" />
+        </svg>
+      );
+    case "wallet":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="20" height="14" x="2" y="5" rx="3" />
+          <path d="M2 10h20" />
+          <circle cx="16" cy="14" r="1.5" />
+        </svg>
+      );
+    case "inventory":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+          <path d="m3.3 7 8.7 5 8.7-5" />
+          <path d="M12 22V12" />
+        </svg>
+      );
+    case "import":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" x2="12" y1="3" y2="15" />
+        </svg>
+      );
+    case "launch-lab":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v8" />
+          <path d="m4.93 10.93 5.66 5.66" />
+          <path d="M2 12h8" />
+          <path d="M20 12h2" />
+          <path d="m19.07 4.93-1.41 1.41" />
+          <path d="M15.5 15.5 22 22" />
+        </svg>
+      );
+    case "council":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      );
+    case "audit":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" />
+          <path d="M9 12h6" />
+          <path d="M9 16h6" />
+          <path d="M9 8h6" />
+        </svg>
+      );
+    default:
+      return <span>◈</span>;
+  }
+}
 
 const navigation = [
-  { label: "Briefing", href: "/", icon: "⌂" },
-  { label: "Approvals", href: "/approvals", icon: "▣" },
-  { label: "Cash forecast", href: "/forecast", icon: "↗" },
-  { label: "Financing", href: "/financing", icon: "◇" },
-  { label: "Analysis", href: "/analysis", icon: "⌁" },
-  { label: "Bills", href: "/bills", icon: "▤" },
-  { label: "Reconcile", href: "/reconcile", icon: "⇄" },
-  { label: "Sandbox wallet", href: "/wallet", icon: "◈" },
-  { label: "Inventory", href: "/inventory", icon: "▤" },
-  { label: "Import", href: "/import", icon: "⇧" },
-  { label: "Launch Lab", href: "/launch-lab", icon: "✳" },
-  { label: "Council", href: "/council", icon: "◉" },
-  { label: "Audit trail", href: "/audit", icon: "⌁" },
+  { label: "Briefing", href: "/", iconKey: "briefing" },
+  { label: "Approvals", href: "/approvals", iconKey: "approvals" },
+  { label: "Cash forecast", href: "/forecast", iconKey: "forecast" },
+  { label: "Financing", href: "/financing", iconKey: "financing" },
+  { label: "Financial analysis", href: "/analysis", iconKey: "analysis" },
+  { label: "Bills & AP", href: "/bills", iconKey: "bills" },
+  { label: "Reconciliation", href: "/reconcile", iconKey: "reconcile" },
+  { label: "Autonomous Vault", href: "/wallet", iconKey: "wallet" },
+  { label: "Inventory", href: "/inventory", iconKey: "inventory" },
+  { label: "Ledger Import", href: "/import", iconKey: "import" },
+  { label: "Launch Lab", href: "/launch-lab", iconKey: "launch-lab" },
+  { label: "Council", href: "/council", iconKey: "council" },
+  { label: "Audit Chain", href: "/audit", iconKey: "audit" },
 ];
 
 const agents = [
-  { name: "Controller", role: "Bookkeeping", level: "Prepare only" },
-  { name: "Treasurer", role: "Payments", level: "Up to PKR 150k" },
-  { name: "CFO Strategist", role: "Decisions", level: "Recommend" },
-  { name: "Growth Analyst", role: "Planning", level: "Recommend" },
-  { name: "Guardian", role: "Independent review", level: "Always checks" },
+  { name: "Controller", role: "Bookkeeping & Reconciliation", level: "Prepare only", code: "CT", color: "agent-ct" },
+  { name: "Treasurer", role: "Payments & Liquidity", level: "Up to PKR 150k", code: "TR", color: "agent-tr" },
+  { name: "CFO Strategist", role: "Capital Allocation & Planning", level: "Recommend", code: "CF", color: "agent-cf" },
+  { name: "Growth Analyst", role: "Inventory & Working Capital", level: "Recommend", code: "GA", color: "agent-ga" },
+  { name: "Guardian", role: "Independent Invariant Gatekeeper", level: "Always checks", code: "G", color: "agent-g" },
 ];
 
 function safePreference(key: string, fallback: boolean) {
@@ -43,7 +164,7 @@ function savePreference(key: string, value: boolean) {
   try {
     window.localStorage.setItem(key, String(value));
   } catch {
-    // Storage is optional: private browsing and embedded previews can disable it.
+    // Storage is optional
   }
 }
 
@@ -54,9 +175,35 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [devPanelOpen, setDevPanelOpen] = useState(false);
-  const [scenario, setScenario] = useState("default");
+  const [authOpen, setAuthOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserSession>(USERS[0]!);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [booting, setBooting] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedAuth = window.localStorage.getItem("fiona:authenticated");
+      const storedUserId = window.localStorage.getItem("fiona:user_id");
+      if (storedAuth === "true") {
+        setAuthenticated(true);
+        if (storedUserId) {
+          const found = USERS.find((u) => u.id === storedUserId);
+          if (found) setCurrentUser(found);
+        }
+      }
+    } catch {
+      // Storage unavailable
+    }
+  }, []);
+
+  useEffect(() => {
+    // Expose quick developer/reviewer triggers
+    (window as unknown as { lockFionaWorkspace?: () => void }).lockFionaWorkspace = () => {
+      setAuthenticated(false);
+      try { window.localStorage.removeItem("fiona:authenticated"); } catch {}
+    };
+  }, []);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -75,15 +222,10 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setPaletteOpen((open) => !open);
-      } else if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "d") {
-        event.preventDefault();
-        const current = new URL(window.location.href).searchParams.get("scenario");
-        setScenario(current ?? "default");
-        setDevPanelOpen((open) => !open);
       } else if (event.key === "Escape") {
         setPaletteOpen(false);
         setHelpOpen(false);
-        setDevPanelOpen(false);
+        setAuthOpen(false);
       } else if (!typing && event.key === "?" && !event.metaKey && !event.ctrlKey) {
         setHelpOpen((open) => !open);
       } else if (!typing && event.key === "[") {
@@ -100,72 +242,304 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
     const next = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     setTheme(next);
-    try { window.localStorage.setItem("fiona:theme", next); } catch { /* Theme still works for this session. */ }
+    try { window.localStorage.setItem("fiona:theme", next); } catch { /* noop */ }
+  }
+
+  function handleLogin(user: UserSession) {
+    setCurrentUser(user);
+    setAuthenticated(true);
+    try {
+      window.localStorage.setItem("fiona:authenticated", "true");
+      window.localStorage.setItem("fiona:user_id", user.id);
+    } catch {
+      // Storage unavailable
+    }
+  }
+
+  function handleSignOut() {
+    setAuthenticated(false);
+    try {
+      window.localStorage.removeItem("fiona:authenticated");
+    } catch {
+      // Storage unavailable
+    }
   }
 
   return (
-    <div className={`window ${railOpen ? "window-with-rail" : "window-rail-closed"} ${inspectorOpen ? "window-with-inspector" : "window-inspector-closed"}`}>
-      <header className="topbar">
-        <div className="brand-lockup"><span className="brand-symbol" aria-hidden="true">f</span><span>fiona<span className="brand-period">.</span></span></div>
-        <button className="icon-button rail-toggle" type="button" onClick={() => { setRailOpen((open) => { savePreference("fiona:rail", !open); return !open; }); }} aria-label={railOpen ? "Close navigation" : "Open navigation"} aria-expanded={railOpen}>☰</button>
-        <div className="workspace-picker">
-          <span className="workspace-avatar">KA</span><span><strong>Karachi Apparel</strong><small>Owner workspace</small></span><span className="chevron">⌄</span>
-        </div>
-        <div className="topbar-spacer" />
-        <StateChip>{mockMode ? "Mock data" : "Live reads disabled"}</StateChip>
-        <StateChip>{mockMode ? "Simulated wallet" : "Wallet locked"}</StateChip>
-        <button className="icon-button theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>{theme === "dark" ? "☼" : "☾"}</button>
-        <div className="profile-button" title="Demo owner">AK</div>
-      </header>
+    <>
+      <BootScreen onComplete={() => setBooting(false)} />
 
-      <aside className={`sidebar ${railOpen ? "" : "sidebar-hidden"}`} aria-label="Main navigation">
-        <div className="side-section-label">WORKSPACE</div>
-        <nav className="primary-nav">
-          {navigation.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-            return <Link className={`nav-item ${active ? "nav-item-active" : ""}`} href={item.href} key={item.href} aria-current={active ? "page" : undefined}>
-              <span className="nav-icon" aria-hidden="true">{item.icon}</span><span>{item.label}</span>
-            </Link>;
-          })}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="side-section-label">YOUR BUSINESS</div>
-          <Link className={`nav-item ${pathname.startsWith("/settings") ? "nav-item-active" : ""}`} href="/settings/mandates"><span className="nav-icon" aria-hidden="true">⚙</span><span>Mandates & limits</span></Link>
-          <div className="business-card"><span className="business-avatar">KA</span><div><strong>Karachi Apparel</strong><small>PKR · Asia/Karachi</small></div></div>
-        </div>
-      </aside>
+      {!authenticated && !booting ? (
+        <LoginPage
+          currentTheme={theme}
+          onToggleTheme={toggleTheme}
+          onLogin={handleLogin}
+        />
+      ) : null}
 
-      <main className="canvas">
-        <div className="mobile-context"><span className="brand-symbol">f</span><span>Karachi Apparel</span><StateChip>Mock data</StateChip></div>
-        <div className="canvas-content">{children}</div>
-        <footer className="statusbar"><span><i className="status-led" />Mock preview ready</span><span>Snapshot · 22 Oct 2026</span><span>PKR · Asia/Karachi</span></footer>
-      </main>
+      <div className={`window ${railOpen ? "window-with-rail" : "window-rail-closed"} ${inspectorOpen ? "window-with-inspector" : "window-inspector-closed"}`}>
+        {/* Luxury Top Navigation Bar */}
+        <header className="topbar">
+          {/* Bespoke Geometric Fiona Monogram Brand */}
+          <Link href="/" className="brand-lockup-luxury" aria-label="Fiona Home">
+            <svg className="brand-emblem-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="32" height="32" rx="9" fill="url(#brand-grad-bg)" />
+              <circle cx="16" cy="16" r="11" stroke="url(#brand-grad-ring)" strokeWidth="1.5" />
+              <path d="M16 7V25M11 13H21M11 19H21" stroke="#FFFFFF" strokeWidth="1.7" strokeLinecap="round" />
+              <circle cx="16" cy="16" r="2.5" fill="#38BDF8" />
+              <defs>
+                <linearGradient id="brand-grad-bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#0F172A" />
+                  <stop offset="1" stopColor="#1E293B" />
+                </linearGradient>
+                <linearGradient id="brand-grad-ring" x1="5" y1="5" x2="27" y2="27" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#38BDF8" />
+                  <stop offset="1" stopColor="#6366F1" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div
+              className="brand-text-block"
+              onClick={(e) => {
+                if (e.shiftKey) {
+                  e.preventDefault();
+                  window.dispatchEvent(new CustomEvent("fiona:replay-intro"));
+                }
+              }}
+              title="Shift+Click to replay boot intro"
+            >
+              <span className="brand-name-luxury">FIONA</span>
+              <span className="brand-sub-luxury">TREASURY OS</span>
+            </div>
+          </Link>
 
-      <aside className={`inspector ${inspectorOpen ? "" : "inspector-hidden"}`} aria-label="Agent activity">
-        <div className="inspector-heading"><div><span className="eyebrow">YOUR FINANCE TEAM</span><h2>Agents</h2></div><button className="icon-button" type="button" aria-label="Close agent panel" onClick={() => { setInspectorOpen(false); savePreference("fiona:inspector", false); }}>×</button></div>
-        <div className="agent-list">{agents.map((agent, index) => <div className="agent-row" key={agent.name}><AgentChip name={agent.name} role={agent.role} /><AutonomyBadge>{agent.level}</AutonomyBadge><span className={`agent-presence ${index === 4 ? "presence-review" : ""}`} role="img" aria-label="Illustrative demo marker" /></div>)}</div>
-        <div className="inspector-divider" />
-        <div className="inspector-heading activity-heading"><div><span className="eyebrow">SAMPLE ACTIVITY</span><h2>Demo timeline</h2></div><Link className="text-button" href="/audit">View all</Link></div>
-        <ol className="activity-list">
-          <li><span className="activity-mark activity-green">✓</span><div><strong>Cash forecast refreshed</strong><p>Treasurer · 4 min ago</p></div></li>
-          <li><span className="activity-mark activity-amber">!</span><div><strong>3 bills need your review</strong><p>Controller · 18 min ago</p></div></li>
-          <li><span className="activity-mark activity-muted">↻</span><div><strong>Inventory analysis ready</strong><p>Growth Analyst · 1 hr ago</p></div></li>
-        </ol>
-        <div className="inspector-bottom"><span className="shield-mark">◈</span><p><strong>Guardian review is part of the design</strong><br />Service integration is not connected in this preview.</p></div>
-      </aside>
+          <button
+            className="icon-button rail-toggle"
+            type="button"
+            onClick={() => { setRailOpen((open) => { savePreference("fiona:rail", !open); return !open; }); }}
+            aria-label={railOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={railOpen}
+          >
+            ☰
+          </button>
 
-      <nav className="mobile-nav" aria-label="Mobile navigation">{navigation.slice(0, 5).map((item) => <Link href={item.href} key={item.href} className={item.href === "/" ? pathname === "/" ? "mobile-nav-active" : "" : pathname.startsWith(item.href) ? "mobile-nav-active" : ""}><span aria-hidden="true">{item.icon}</span><small>{item.label === "Cash forecast" ? "Cash" : item.label}</small></Link>)}</nav>
+          {/* Active Enterprise Workspace Identifier */}
+          <div className="workspace-picker">
+            <span className="workspace-avatar">KA</span>
+            <span>
+              <strong>Karachi Apparel</strong>
+              <small>Sovereign SME Tenant</small>
+            </span>
+            <span className="chevron">⌄</span>
+          </div>
 
-      {!inspectorOpen && <button className="reopen-inspector" type="button" onClick={() => { setInspectorOpen(true); savePreference("fiona:inspector", true); }} aria-label="Open agent panel">◉</button>}
+          <div className="topbar-spacer" />
 
-      <CommandBar
-        isOpen={paletteOpen}
-        onClose={() => setPaletteOpen(false)}
-        onToggleTheme={toggleTheme}
-        currentTheme={theme}
-      />
-      {helpOpen && <div className="overlay-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}><section className="help-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title"><div className="dialog-heading"><div><span className="eyebrow">QUICK REFERENCE</span><h2 id="shortcuts-title">Keyboard shortcuts</h2></div><button className="icon-button" onClick={() => setHelpOpen(false)} aria-label="Close shortcuts">×</button></div><dl className="shortcut-list"><div><dt>Open command palette</dt><dd><kbd>⌘</kbd><kbd>K</kbd></dd></div><div><dt>Show keyboard shortcuts</dt><dd><kbd>?</kbd></dd></div><div><dt>Toggle navigation</dt><dd><kbd>[</kbd></dd></div><div><dt>Toggle agent panel</dt><dd><kbd>]</kbd></dd></div><div><dt>Close dialog</dt><dd><kbd>Esc</kbd></dd></div><div><dt>Developer scenarios</dt><dd><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>D</kbd></dd></div></dl></section></div>}
-      {devPanelOpen && <div className="overlay-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setDevPanelOpen(false); }}><section className="help-dialog scenario-dialog" role="dialog" aria-modal="true" aria-labelledby="scenario-title"><div className="dialog-heading"><div><span className="eyebrow">MOCK PREVIEW</span><h2 id="scenario-title">Switch briefing scenario</h2></div><button className="icon-button" onClick={() => setDevPanelOpen(false)} aria-label="Close scenario switcher">×</button></div><p>Scenarios change the visible sample only. They never submit or execute a proposal.</p><label className="scenario-select-label" htmlFor="scenario-select">Briefing scenario</label><select id="scenario-select" value={scenario} onChange={(event) => { const next = new URL(window.location.href); if (event.target.value === "default") next.searchParams.delete("scenario"); else next.searchParams.set("scenario", event.target.value); router.replace(`${next.pathname}${next.search}${next.hash}`); setScenario(event.target.value); setDevPanelOpen(false); }}><option value="default">Standard seeded briefing</option><option value="planted-bill">Planted bill · blocked</option><option value="clean">Clean · no open findings</option><option value="escalate-over-cap">Over cap · escalation</option><option value="degraded">Degraded · partial sources</option><option value="empty">Empty state</option><option value="error">Error state</option><option value="replayed">Replayed response</option></select></section></div>}
-    </div>
+          {/* Live Node Badges */}
+          <div className="topbar-live-status">
+            <span className="status-halo-dot" />
+            <span className="status-label-top">Sovereign Ledger Active</span>
+          </div>
+          <StateChip>RFC 8785 Verified</StateChip>
+          <StateChip>Guardian Vault Armed</StateChip>
+
+          <button
+            className="icon-button theme-toggle"
+            type="button"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+          >
+            {theme === "dark" ? "☼" : "☾"}
+          </button>
+
+          {/* User Profile / Auth Switcher Button */}
+          <button
+            className="profile-button-luxury"
+            type="button"
+            onClick={() => setAuthOpen(true)}
+            title="Click to manage identity session / sign in"
+          >
+            <div className="profile-badge-inner" style={{ background: currentUser.avatar }}>
+              {currentUser.initials}
+            </div>
+            <div className="profile-text-compact">
+              <strong>{currentUser.name}</strong>
+              <small>Passkey Verified</small>
+            </div>
+          </button>
+        </header>
+
+        {/* Primary Sidebar Rail */}
+        <aside className={`sidebar ${railOpen ? "" : "sidebar-hidden"}`} aria-label="Main navigation">
+          <div className="side-section-label">TREASURY WORKSPACE</div>
+          <nav className="primary-nav">
+            {navigation.map((item) => {
+              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <Link className={`nav-item ${active ? "nav-item-active" : ""}`} href={item.href} key={item.href} aria-current={active ? "page" : undefined}>
+                  <span className="nav-icon"><NavIcon name={item.iconKey} /></span>
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="sidebar-bottom">
+            <div className="side-section-label">ENTERPRISE GOVERNANCE</div>
+            <Link className={`nav-item ${pathname.startsWith("/settings") ? "nav-item-active" : ""}`} href="/settings/mandates">
+              <span className="nav-icon">⚙</span>
+              <span>Mandates & Policies</span>
+            </Link>
+            <div className="business-card">
+              <span className="business-avatar">KA</span>
+              <div>
+                <strong>Karachi Apparel Co.</strong>
+                <small>PKR · Asia/Karachi · Node 01</small>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Central Canvas Viewport */}
+        <main className="canvas">
+          <div className="mobile-context">
+            <span className="brand-symbol">F</span>
+            <span>Karachi Apparel</span>
+            <StateChip>Sovereign Ledger</StateChip>
+          </div>
+          <div className="canvas-content">{children}</div>
+          <footer className="statusbar">
+            <span><i className="status-led" />Deterministic Core Active</span>
+            <span>RFC 8785 Canonical Chain · SHA-256</span>
+            <span>PKR · Asia/Karachi</span>
+          </footer>
+        </main>
+
+        {/* Right Inspector: The 5 Autonomous Agents */}
+        <aside className={`inspector ${inspectorOpen ? "" : "inspector-hidden"}`} aria-label="Agent activity">
+          <div className="inspector-heading">
+            <div>
+              <span className="eyebrow">AUTONOMOUS COUNCIL</span>
+              <h2>Active Agents</h2>
+            </div>
+            <button className="icon-button" type="button" aria-label="Close agent panel" onClick={() => { setInspectorOpen(false); savePreference("fiona:inspector", false); }}>
+              ×
+            </button>
+          </div>
+
+          {/* Revamped Luminous Agent Roster */}
+          <div className="agent-list-luxury">
+            {agents.map((agent) => (
+              <div className="agent-card-luxury" key={agent.name}>
+                <div className={`agent-avatar-luxury ${agent.color}`}>
+                  <span>{agent.code}</span>
+                  <span className="agent-live-pulse" />
+                </div>
+                <div className="agent-meta-luxury">
+                  <div className="agent-name-row">
+                    <strong>{agent.name}</strong>
+                    <AutonomyBadge>{agent.level}</AutonomyBadge>
+                  </div>
+                  <span className="agent-role-sub">{agent.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="inspector-divider" />
+
+          <div className="inspector-heading activity-heading">
+            <div>
+              <span className="eyebrow">TELEMETRY FEED</span>
+              <h2>Real-Time Activity</h2>
+            </div>
+            <Link className="text-button" href="/audit">Full Ledger ↗</Link>
+          </div>
+
+          <ol className="activity-list-luxury">
+            <li>
+              <span className="activity-glow-mark mark-green">✓</span>
+              <div>
+                <strong>13-Week Cash Forecast Synchronized</strong>
+                <p>Treasurer · Dickinson Stage: Mature</p>
+              </div>
+            </li>
+            <li>
+              <span className="activity-glow-mark mark-amber">!</span>
+              <div>
+                <strong>3 Dispatches Require Executive Sign-Off</strong>
+                <p>Controller · 2/10 Net 30 Discount Window</p>
+              </div>
+            </li>
+            <li>
+              <span className="activity-glow-mark mark-blue">◈</span>
+              <div>
+                <strong>Inventory Coverage Reorder Triggered</strong>
+                <p>Growth Analyst · Wool Shawls Safety Stock</p>
+              </div>
+            </li>
+            <li>
+              <span className="activity-glow-mark mark-red">🛑</span>
+              <div>
+                <strong>Guardian Intercepted Tampered Bill</strong>
+                <p>Guardian Rule G-03: Payee IBAN Altered</p>
+              </div>
+            </li>
+          </ol>
+
+          <div className="inspector-bottom-luxury">
+            <div className="guardian-shield-badge">
+              <span className="shield-icon">🛡</span>
+              <div>
+                <strong>Guardian Active Verification</strong>
+                <p>15 Invariant Policies (G-01..G-15) enforced on every execution step.</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {!inspectorOpen && (
+          <button className="reopen-inspector" type="button" onClick={() => { setInspectorOpen(true); savePreference("fiona:inspector", true); }} aria-label="Open agent panel">
+            ◉
+          </button>
+        )}
+
+        <CommandBar
+          isOpen={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          onToggleTheme={toggleTheme}
+          currentTheme={theme}
+        />
+
+        <AuthModal
+          isOpen={authOpen}
+          onClose={() => setAuthOpen(false)}
+          currentUser={currentUser}
+          onSelectUser={(u) => setCurrentUser(u)}
+          onSignOut={handleSignOut}
+        />
+
+        {helpOpen && (
+          <div className="overlay-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}>
+            <section className="help-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+              <div className="dialog-heading">
+                <div>
+                  <span className="eyebrow">QUICK REFERENCE</span>
+                  <h2 id="shortcuts-title">Executive Shortcuts</h2>
+                </div>
+                <button className="icon-button" onClick={() => setHelpOpen(false)} aria-label="Close shortcuts">×</button>
+              </div>
+              <dl className="shortcut-list">
+                <div><dt>Open command palette</dt><dd><kbd>⌘</kbd><kbd>K</kbd></dd></div>
+                <div><dt>Show keyboard shortcuts</dt><dd><kbd>?</kbd></dd></div>
+                <div><dt>Toggle navigation rail</dt><dd><kbd>[</kbd></dd></div>
+                <div><dt>Toggle agent council panel</dt><dd><kbd>]</kbd></dd></div>
+                <div><dt>Close dialog</dt><dd><kbd>Esc</kbd></dd></div>
+              </dl>
+            </section>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
