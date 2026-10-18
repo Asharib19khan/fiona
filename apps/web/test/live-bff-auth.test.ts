@@ -12,6 +12,7 @@ const OWNER = {
   tenantId: "ten_karachi_apparel",
   role: "owner" as const,
   demo: false,
+  superAdmin: false,
 };
 
 describe("Live BFF session and token authentication (Task C)", () => {

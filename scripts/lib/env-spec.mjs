@@ -38,9 +38,10 @@ export const ENV_SPEC = [
   { name: "FIONA_CACHE_DIR", group: "Database", usedBy: "engine (local Postgres)", secret: false, required: [], default: "~/.cache/fiona", deployedIn: "local only", note: "Where the portable Postgres binaries are cached." },
   { name: "NEXT_PUBLIC_SUPABASE_URL", group: "Database", usedBy: "web", secret: false, required: ["live"], deployedIn: "Vercel", validate: url, note: "Public by design; protected by RLS." },
   { name: "NEXT_PUBLIC_SUPABASE_ANON_KEY", group: "Database", usedBy: "web", secret: false, required: ["live"], deployedIn: "Vercel", validate: prefix("eyJ", "sb_publishable_"), note: "Public by design (anon/publishable key); protected by RLS." },
-  { name: "SUPABASE_URL", group: "Database", usedBy: "engine", secret: false, required: ["live"], deployedIn: "Fly (fiona-engine)", validate: url },
-  { name: "SUPABASE_ANON_KEY", group: "Database", usedBy: "engine", secret: false, required: [], deployedIn: "Fly (fiona-engine)", validate: prefix("eyJ", "sb_publishable_") },
-  { name: "SUPABASE_SERVICE_ROLE_KEY", group: "Database", usedBy: "scripts/provision-user.mjs (local admin)", secret: true, required: [], deployedIn: "local only", validate: prefix("eyJ", "sb_secret_"), note: "Admin key for creating sign-in accounts and their tenant/role. Never in web, agents or Guardian, never NEXT_PUBLIC." },
+  { name: "SUPABASE_URL", group: "Database", usedBy: "reserved", secret: false, required: [], deployedIn: "-", validate: url, note: "Unused: the web app reads NEXT_PUBLIC_SUPABASE_URL." },
+  { name: "SUPABASE_ANON_KEY", group: "Database", usedBy: "reserved", secret: false, required: [], deployedIn: "-", note: "Unused: the web app reads NEXT_PUBLIC_SUPABASE_ANON_KEY." },
+  { name: "SUPER_ADMIN_EMAIL", group: "Database", usedBy: "web server, scripts/provision-user.mjs", secret: false, required: [], deployedIn: "Vercel (server only)", note: "The only address that can be super admin; it also needs the super_admin flag that scripts/provision-user.mjs --super-admin sets." },
+  { name: "SUPABASE_SERVICE_ROLE_KEY", group: "Database", usedBy: "web server (admin portal), scripts/provision-user.mjs", secret: true, required: [], deployedIn: "Vercel (server only)", validate: prefix("eyJ", "sb_secret_"), note: "Admin key for creating sign-in accounts and their tenant/role. Never in web, agents or Guardian, never NEXT_PUBLIC." },
 
   // Service URLs and internal auth
   { name: "ENGINE_BASE_URL", group: "Services", usedBy: "web BFF, agents", secret: false, required: [], default: "http://localhost:8000", deployedIn: "Vercel, Fly", validate: url },

@@ -14,6 +14,8 @@ export interface Session {
   role: Role | null;
   /** True for the local development stand-in used when Supabase Auth is not configured. */
   demo: boolean;
+  /** The one super admin: flagged in app_metadata AND the email named in SUPER_ADMIN_EMAIL. */
+  superAdmin: boolean;
 }
 
 const TENANT = /^ten_[a-z0-9_]{1,60}$/;
@@ -27,6 +29,7 @@ function demoSession(): Session {
     tenantId: TENANT.test(tenant) ? tenant : null,
     role: "owner",
     demo: true,
+    superAdmin: false,
   };
 }
 
@@ -56,8 +59,19 @@ export const getSession = cache(async (): Promise<Session | null> => {
     tenantId: tenant,
     role,
     demo: false,
+    superAdmin: isSuperAdmin(app, email),
   };
 });
+
+/**
+ * Super admin needs both: the `super_admin` flag, which only the admin key can write, and the
+ * exact address in the server-only SUPER_ADMIN_EMAIL. Either alone is not enough, so a copied
+ * flag or a look-alike account never qualifies.
+ */
+export function isSuperAdmin(app: Record<string, unknown>, email: string | null): boolean {
+  const configured = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
+  return Boolean(configured && email && app.super_admin === true && email.toLowerCase() === configured);
+}
 
 /** A session that may act on a workspace: signed in, assigned a workspace and a role. */
 export async function getWorkspaceSession(): Promise<(Session & { tenantId: string; role: Role }) | null> {

@@ -10,6 +10,7 @@ export interface ShellUser {
   role: "owner" | "finance" | null;
   workspace: string | null;
   demo: boolean;
+  superAdmin: boolean;
 }
 
 export function initials(name: string): string {
@@ -23,7 +24,19 @@ export function roleLabel(role: ShellUser["role"]): string {
 /** Who is signed in, their workspace and role, and signing out. */
 export function AuthModal({ isOpen, onClose, user }: { isOpen: boolean; onClose: () => void; user: ShellUser }) {
   const [signingOut, setSigningOut] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordNote, setPasswordNote] = useState<string | null>(null);
   if (!isOpen) return null;
+
+  async function changePassword() {
+    if (password.length < 10) {
+      setPasswordNote("Use at least 10 characters.");
+      return;
+    }
+    const { error } = await supabaseBrowser().auth.updateUser({ password });
+    setPassword("");
+    setPasswordNote(error ? error.message : "Password changed.");
+  }
 
   async function signOut() {
     setSigningOut(true);
@@ -44,8 +57,16 @@ export function AuthModal({ isOpen, onClose, user }: { isOpen: boolean; onClose:
         <dl className="shortcut-list">
           <div><dt>Email</dt><dd>{user.email ?? "Local development (no sign-in configured)"}</dd></div>
           <div><dt>Workspace</dt><dd>{user.workspace ?? "Not assigned"}</dd></div>
-          <div><dt>Role</dt><dd>{roleLabel(user.role)}</dd></div>
+          <div><dt>Role</dt><dd>{user.superAdmin ? "Super admin · " : ""}{roleLabel(user.role)}</dd></div>
         </dl>
+        {!user.demo && (
+          <div className="account-password">
+            <label className="spec-label" htmlFor="new-password">New password</label>
+            <input id="new-password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <button className="button button-quiet" type="button" onClick={changePassword}>Change password</button>
+            {passwordNote && <p role="status">{passwordNote}</p>}
+          </div>
+        )}
         {!user.demo && (
           <button className="button button-secondary" type="button" onClick={signOut} disabled={signingOut} style={{ marginTop: 16 }}>
             {signingOut ? "Signing out…" : "Sign out"}

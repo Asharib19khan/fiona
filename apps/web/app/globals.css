@@ -2024,3 +2024,13 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .mandate-row-live > div:first-child > span { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .mandate-row-live .mandate-levels { flex: 1 1 300px; }
 .mandate-level select { width: 100%; max-width: 100%; }
+.admin-portal { display: grid; gap: 14px; margin-top: 14px; }
+.admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end; padding: 15px; }
+.admin-form label { display: grid; gap: 6px; }
+.admin-form input, .admin-form select, .admin-portal td select, .account-password input { height: 38px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); background: var(--surface-raised); font-size: 13px; }
+.admin-secret { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--warning) 40%, var(--border)); border-radius: 10px; background: var(--warning-soft); font-size: 13px; }
+.admin-secret code { font-size: 15px; user-select: all; }
+.admin-muted { color: var(--text-muted); font-size: 12px; }
+.admin-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.account-password { display: grid; gap: 8px; margin-top: 16px; }
+.account-password p { margin: 0; color: var(--text-muted); font-size: 13px; }

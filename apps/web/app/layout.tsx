@@ -33,7 +33,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   };
   const session = await getSession();
   const user = session
-    ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo }
+    ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo, superAdmin: session.superAdmin }
     : null;
   return (
     <html lang="en" suppressHydrationWarning>

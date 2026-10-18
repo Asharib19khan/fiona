@@ -346,6 +346,12 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
               <span className="nav-icon">⚙</span>
               <span>Mandates & Policies</span>
             </Link>
+            {user.superAdmin && (
+              <Link className={`nav-item ${pathname.startsWith("/admin") ? "nav-item-active" : ""}`} href="/admin">
+                <span className="nav-icon">◎</span>
+                <span>Accounts</span>
+              </Link>
+            )}
             <div className="business-card">
               <span className="business-avatar">{initials(workspaceName)}</span>
               <div>
