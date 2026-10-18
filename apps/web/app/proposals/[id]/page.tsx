@@ -156,7 +156,7 @@ export default async function ProposalTrace({ params }: { params: Promise<{ id: 
             <p>
               <strong>Paid (simulated)</strong> <MoneyText amountMinor={Number(payment.amount_minor)} currency={currency} animateCount={false} /> on {String(payment.paid_on)} · {String(payment.from_iban)} → {String(payment.to_iban)} · ref {String(payment.wallet_ref)}
             </p>
-          ) : <p>{paymentState === "waiting" ? `Approved. The wallet pays it on ${String(payload.pay_on ?? "its date")} (Approvals → Pay what is due today).` : "No money has moved."}</p>}
+          ) : <p>{paymentState === "waiting" ? `Approved. The wallet pays it on ${String(payload.pay_on ?? "its date")} (Approvals → Send approved payments due today).` : "No money has moved."}</p>}
         </Step>
 
         <Step n={6} title="Ledger entry" state={payment ? "done" : "not_reached"}>

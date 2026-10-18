@@ -12,7 +12,7 @@
 
 ## 1. Executive Summary & Topic E Alignment Matrix
 
-Fiona is an enterprise-grade multi-agent autonomous finance copilot designed specifically for small-to-medium enterprises (SMEs). Developed for the FinTechathon 2026 International Track, Fiona addresses the chronic vulnerability of small enterprise finance: SME operators are brilliant at their trade but rarely trained in double-entry bookkeeping, treasury forecasting, credit risk analysis, or working-capital optimization.
+Fiona is a working prototype of a multi-agent finance copilot for small-to-medium enterprises (SMEs): AI agents propose, a deterministic engine computes, an independent Guardian checks, and the owner approves every payment. Developed for the FinTechathon 2026 International Track, Fiona addresses the chronic vulnerability of small enterprise finance: SME operators are brilliant at their trade but rarely trained in double-entry bookkeeping, treasury forecasting, credit risk analysis, or working-capital optimization.
 
 Unlike conversational wrappers that feed balance sheets into generic prompt windows, Fiona operates on a deterministic separation of powers:
 
@@ -357,4 +357,4 @@ node scripts/test-gitleaks.mjs
 
 ## 7. Conclusion
 
-Fiona delivers a production-ready, mathematically rigorous, and cryptographically verified financial copilot for SMEs. By pairing the creative reasoning of modern LLMs with the immutable guardrails of deterministic financial engineering, Fiona establishes a new standard for safe, trustworthy AI in enterprise financial services.
+Fiona is a working prototype of a deterministic, cryptographically audited financial copilot for SMEs, running on synthetic data with a sandbox wallet. By pairing the creative reasoning of modern LLMs with the immutable guardrails of deterministic financial engineering, Fiona establishes a new standard for safe, trustworthy AI in enterprise financial services.

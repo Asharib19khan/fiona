@@ -13,12 +13,13 @@ Dates follow PLAN.md §4 (submission Tue 20 Oct, 20:59 PKT).
 | A6 | Guardian adversarial review (Opus) + verdict combiner | done | Sat 17 Oct | 2026-10-18 | Was replay-only for one planted bill. Now live on any proposal (aff284e, 722660f): engine notifies, Guardian fetches its own packet, Opus reviews in an isolated process, engine records a chained verdict, failures escalate. Also: owner approves every action (D-019), decider from token only (D-020), G-06/G-08/G-09 context fixes. Verified: engine 370 passed, guardian 10 passed; live e2e caught a planted prompt-injection bill. |
 | A7 | Council mode on the financing question | done | Sun 18 Oct | 2026-10-18 | Real council (b8b9362): CFO, Treasurer, Growth argue in parallel with their tools, rebut, a no-tool chair writes the memo with dissent on record; figures checked against tool results. Was static text. Verified live on demo data. |
 | A10 | Command bar with voice (Tier 2) | done | Mon 19 Oct | 2026-10-17 | Multi-lingual (English, Urdu, Chinese) Ctrl+K command bar with Web Speech API voice input and quick persona/action triggers in `apps/web/components/command-bar.tsx`. |
+| A8 | Readiness: full journey in the browser, honest modes, docs | in progress | Tue 20 Oct | 2026-10-18 | Done: bill upload → Treasurer → Guardian → owner → wallet → journal → audit trail verified in the browser (clean and injection bills); Supabase sign-in + one super admin + Accounts page; sample-data fallbacks removed, EBITDA proxy disclosed; phone navigation restored; README rewritten; demo script at docs/demo/DEMO-SCRIPT.md. Open: deployment (needs Vercel/Fly/Supabase DB access), replay recordings, analysis payload size (Abdullah: source_refs ~45 MB). |
 | A9 / A11 / A12 | Onboarding extras, memory/batch/observability, accountant + lender views | parked (Tier 3) | Shenzhen final | 2026-10-13 | Moved by fiona-b7's re-plan |
 
 ## 18 Oct notes (fiona-7f session)
 - Cross-lane edits made with Asharib's go-ahead: services/engine/{ledger,wallet,forecast,decisions,financing} (live ledger snapshot, wallet/owner approval, reconcile fuzzy migration + 580x speed-up with identical output), rulebook/mandates.yaml + fixture (Treasurer at prepare). Daniyal to sign D-020.
 - Live mode is required for real data: forecast, financing and decisions read Postgres only when FIONA_MODE=live.
-- Open: web wiring (BFF to agents, live briefing, Supabase sign-in) waits until Antigravity finishes in apps/web; Supabase project not created yet.
+- Web wiring, live briefing and Supabase sign-in done later on 18 Oct (0f1c94b, da1fa6b, c340790, 138aa22, 920dcd1, 9b23269).
 
 ## HANDOFF (paused 2026-10-14 after A2; the orchestrator runs one lane at a time)
 - **State:** A1, S2 (kit), A2 done and committed. A2 is `1.0.0-rc.1`. Freeze and tag `contracts-v1` only after Daniyal's and Asharib's sign-off (C2/C8).

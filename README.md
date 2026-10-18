@@ -1,226 +1,132 @@
-# Fiona: The Autonomous AI Finance Team for SMEs
+# Fiona: an AI finance team for small businesses, with the owner in charge
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.4.0%20App%20Router-black?logo=next.js)](https://nextjs.org/)
-[![Turborepo](https://img.shields.io/badge/Turborepo-2.11-EF4444?logo=turborepo)](https://turbo.build/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/Tests-432%20Passing%20(Monorepo)-brightgreen)]()
-[![RFC 8785 Audit](https://img.shields.io/badge/Audit%20Chain-RFC%208785%20SHA--256-blue)]()
-[![Competition](https://img.shields.io/badge/FinTechathon%202026-Topic%20E%20(Tsinghua%20PBCSF%20%26%20WeBank)-purple)]()
+> FinTechathon 2026 International Track (Tsinghua PBCSF & WeBank) · Topic E, SME Finance Copilot
+> **Agents propose. The engine computes. The Guardian checks. The owner decides.**
 
-> **Competition Track:** FinTechathon 2026 International Track (Tsinghua PBCSF & WeBank)  
-> **Topic:** **E — SME Finance Copilot**  
-> **Core Principle:** $\mathbf{The\ Model\ Decides\ \longrightarrow\ The\ Engine\ Computes\ \longrightarrow\ The\ Guardian\ Checks}$  
-> **Repository:** [https://github.com/Asharib19khan/fiona](https://github.com/Asharib19khan/fiona)
+Fiona gives a small business four AI colleagues (a Treasurer, a Controller, a CFO Strategist and a Growth Analyst) who work over one double-entry ledger. They read bills, plan payments, forecast cash and compare financing. They cannot move money on their own. Every payment proposal goes through **the Guardian** (14 rule checks in code plus an independent review by a second model), then waits for the **owner's decision**. Only then can the sandbox wallet pay it, and every step is written to a hash-chained audit log.
+
+All the business data in this repository is **synthetic** (a generated Karachi garment business, "Karachi Apparel"). The wallet is a **sandbox**: no real bank is connected and no real money moves.
 
 ---
 
-## 1. Executive Overview
+## What works today
 
-Small-to-medium enterprises (SMEs) represent the backbone of global commerce yet suffer from the highest vulnerability to cash-flow insolvency. SME founders excel at their operational trade but rarely possess training in double-entry bookkeeping, treasury forecasting, working-capital optimization, or credit-risk underwriting.
+The full journey runs end to end in the browser (verified on 18 Oct 2026 with the bills in [`docs/demo/bills/`](docs/demo/bills/)):
 
-**Fiona** is an enterprise-grade multi-agent autonomous finance copilot that acts as a full AI finance team (CFO Strategist, Treasurer, Controller, Growth Analyst) governed by an independent deterministic risk gatekeeper: **The Guardian**. 
+| # | Step | What happens | Where |
+|---|---|---|---|
+| 1 | **Upload a bill** (PDF or text) | Claude Haiku transcribes the fields, each with the exact quote it came from. Code then checks every quote exists in the document, converts amounts to integer paisa and checks subtotal + tax = total. Text that tries to instruct an AI is reported, never followed. | Bills → Add a bill |
+| 2 | **You confirm and post it** | The bill is recorded as a ledger event with a balanced journal (debit the cost and input tax, credit payables) and the document's SHA-256 hash. | `POST /v1/bills/intake` |
+| 3 | **The Treasurer proposes payment** | A separate headless Claude process with its own tools. It chooses the bill, the date and the reasoning; amount, payee and evidence are filled from the ledger, not typed by the model. Bills flagged for injected instructions or a changed bank account are refused. | `services/agents` |
+| 4 | **The Guardian checks it** | 14 deterministic rules run in the engine, then a Claude Opus reviewer reads the evidence for injection, pressure and mismatches. Any failure of the reviewer counts as "escalate", never "approve". | `services/engine/guardian_checks`, `services/guardian` |
+| 5 | **You decide** | Approve or reject on the latest verdict. A Guardian **block** cannot be overridden. | Approvals |
+| 6 | **The sandbox wallet pays** | Refuses without a cleared verdict and an owner approval; pays once (idempotent); posts Dr Payables, Cr Bank. | `services/engine/wallet` |
+| 7 | **Audit trail** | Every step is in an append-only, SHA-256 hash-chained log, verified on the proposal's trail page. | Approvals → Full trail |
 
-Unlike conversational wrappers that feed raw balance sheets into unstructured LLM prompts, Fiona operates on a mathematical **separation of powers**:
-- **Agents propose** actions (bill payments, financing applications, inventory reorders).
-- **The Engine computes** deterministic financial truths (13-week direct cash forecasts, Dickinson lifecycle stages, DSCR ratios).
-- **The Guardian checks** 15 invariant policies before any simulated payment or ledger mutation can occur.
+The injection demo bill (`lyari-stitching-LSH-2311-injection.txt`) shows the defences: the reader lists the three hidden instructions, the bank-account mismatch is flagged, the Treasurer refuses to propose it, and the Guardian's review reports `injection_detected: true`.
 
----
+Other screens compute from the same ledger: a 13-week cash forecast with buffer alerts, lifecycle stage and ratios, financing options ranked by cost, bank reconciliation, inventory analysis, a council of agents that debates a decision with dissent on record, and per-agent mandates the owner can tighten.
 
-## 2. Topic E Alignment & Official Capabilities Matrix
+## Modes
 
-| Official Tsinghua / WeBank Requirement | Fiona Delivered Architecture | Code Traceability | Verification & Tests |
-| :--- | :--- | :--- | :--- |
-| **"A finance copilot for small-business owners..."** | Multi-agent council with 3-tier Autonomy Ladder, human-in-the-loop review, and multilingual voice command bar (English, Urdu, Chinese). | `services/agents/`<br>`apps/web/app/` | `pnpm --filter @fiona/web test`<br>`scripts/check-boundaries.py` |
-| **"...offering financing-option matching..."** | Multi-criteria matcher across 20 regional debt/equity instruments (Pakistan SBP & China SME products) with post-borrowing DSCR capacity checks. | `services/engine/financing/`<br>`rulebook/financing.yaml` | `services/engine/financing/tests/`<br>`test_coverage.py` |
-| **"...cash-flow management with alerts..."** | 13-week direct cash forecast from immutable ledger events, detecting liquidity buffer breaches and optimizing 2/10 net 30 payment timing (44.6% APR). | `services/engine/forecast/`<br>`services/engine/decisions/tvm.py` | `services/engine/forecast/tests/`<br>`test_cash_forecast.py` |
-| **"...and business financial analysis."** | Empirical lifecycle Stage Detector after Dickinson (2011), 40+ financial ratio library, health score grading, and POS reconciliation. | `services/engine/analysis/stage.py`<br>`services/engine/analysis/ratios.py` | `test_stage.py`<br>`test_ratios.py` |
+The status chips at the top of every page say which mode you are in.
 
----
+| Mode | What it needs | What you see |
+|---|---|---|
+| **Live (local)** | Postgres, Supabase Auth for sign-in, a logged-in Claude Code CLI | Real reads and writes against the local ledger; agents and the Guardian run as local `claude -p` processes. This is the mode verified above. |
+| **Mock** | Nothing (no keys) | The web app with contract-checked sample responses and a labelled local stand-in user ("Local developer"). Useful for the UI only; nothing is computed. |
+| **Replay** | — | Planned for the public link: recorded real agent and Guardian runs. The Guardian supports recording and replaying its reviews; the public recordings are **not made yet**. |
 
-## 3. System Architecture: 5 Decoupled Layers
+Every figure shown in live mode comes from the engine. When the engine does not answer, screens say so and show nothing, rather than falling back to sample numbers.
+
+## Architecture
 
 ```mermaid
-graph TB
-    subgraph Layer1["1. Experience & Presentation Layer (apps/web)"]
-        UI["Web Shell (Next.js 16.4 / React 19)"]
-        Desk["SME Briefing Workbench"]
-        Drawer["Explain-Any-Number Drawer"]
-        CouncilView["Council Mode Deliberation View"]
-    end
-
-    subgraph Layer2["2. Multi-Agent Reasoning Layer (services/agents)"]
-        CFO["CFO Strategist (Advice)"]
-        TR["Treasurer (Liquidity)"]
-        CTRL["Controller (Ledger & Match)"]
-        GA["Growth Analyst (Working Capital)"]
-        Council["Council Debate Coordinator"]
-    end
-
-    subgraph Layer3["3. Verification & Governance Ring (services/guardian)"]
-        G_Engine["Guardian Verification Engine"]
-        G_Rules["15 Invariant Rules (G-01..G-15)"]
-        G_Adv["Adversarial Reviewer (Opus G-12)"]
-        G_Comb["Strictest-Outcome Combiner"]
-    end
-
-    subgraph Layer4["4. Deterministic Financial Core (services/engine)"]
-        Stage["Stage Detector (Dickinson 2011)"]
-        Ratios["Financial Ratio Library (40+ Metrics)"]
-        CashFC["13-Week Cash Forecast Engine"]
-        FinMatch["Financing Option Matcher"]
-        TVM["TVM & Decision Primitives"]
-        Recon["Multi-Pass Reconciliation Pipeline"]
-    end
-
-    subgraph Layer5["5. Persistence & Cryptographic Execution Layer"]
-        DB[(PostgreSQL 17 + Forced RLS)]
-        AppendOnly["Append-Only Transaction Triggers"]
-        AuditChain["RFC 8785 SHA-256 Hash-Chained Log"]
-        Wallet["Zero-Trust Sandbox Wallet"]
-    end
-
-    UI --> Layer2
-    UI --> Layer4
-    Layer2 --> Layer3
-    Layer3 --> Layer4
-    Layer3 --> Layer5
-    Layer4 --> DB
-    Wallet --> DB
-    DB --> AuditChain
+graph LR
+  Web["apps/web<br/>Next.js 16 · the owner's console"] -->|"60 s signed token"| Engine
+  Web --> Agents
+  Agents["services/agents<br/>one claude -p process per agent<br/>tools over MCP"] -->|"propose only"| Engine
+  Engine["services/engine<br/>FastAPI · ledger, forecast,<br/>analysis, Guardian rules, wallet"] -->|"review request"| Guardian
+  Guardian["services/guardian<br/>Opus adversarial review (G-12)"] -->|"findings"| Engine
+  Engine --> DB[("Postgres<br/>forced row-level security<br/>append-only + hash-chained audit")]
 ```
 
----
+- **One ledger, one writer.** Only the engine writes to Postgres. Every table is tenant-scoped with forced row-level security.
+- **Money** is always integer minor units plus an ISO 4217 code; there is no float arithmetic on money.
+- **Models only call tools.** Agents reach the ledger only through narrow tools (`propose_payment`, `list_due_bills`, …); they cannot post journals, approve, or pay.
+- **Sign-in** is Supabase Auth (email and password). Workspace and role come from `app_metadata`, which users cannot edit. One super admin (a fixed address, set server-side) creates accounts from the Accounts page.
 
-## 4. Flagship Innovations & Core Features
+### The Guardian's checks
 
-### 1. Dickinson (2011) Cash Flow Lifecycle Stage Detection
-Replaces static balance-sheet snapshots with empirical cash-flow signature analysis across Operating ($O$), Investing ($I$), and Financing ($F$) cash flows:
-$$\text{Stage} = f(\text{sgn}(CF_O), \text{sgn}(CF_I), \text{sgn}(CF_F)) \in \{\text{Introduction, Growth, Mature, Shake-Out, Decline}\}$$
-Prevents premature debt issuance when an SME is entering shake-out or decline phases.
+| Rule | Checks | Rule | Checks |
+|---|---|---|---|
+| G-01 | Per-payment cap | G-09 | Every figure in the reasoning has evidence |
+| G-02 | Payee is an approved supplier | G-10 | Daily payment cap |
+| G-03 | Bank details changed without call-back confirmation | G-11 | Supplier tax ID present and valid |
+| G-04 | Maker-checker (the proposer cannot approve) | G-12 | Independent model review (Opus): injection, pressure, mismatches |
+| G-05 | Duplicate bill | G-13 | Action is within the agent's mandate |
+| G-06 | Three-way match (PO, goods received, bill) | G-14 | Inputs are not stale |
+| G-07 | Arithmetic and journal balance | G-15 | Payee is not an insider |
+| G-08 | Cash stays above the owner's buffer (from the live forecast) | | |
 
-### 2. 13-Week Cash Forecasting & Early-Payment Discount Optimization
-Calculates the true effective annualized return of vendor payment discounts:
-$$\text{APR} = \frac{d}{1 - d} \times \frac{365}{t_{\text{due}} - t_{\text{disc}}}$$
-A standard `2/10 net 30` discount yields an **annualized return of 44.59%**. Fiona automatically balances discount capture against the tenant's mandatory liquidity buffer.
+Outcomes combine strictest-first: block > escalate > approve with conditions > approve.
 
-### 3. The 15 Guardian Invariant Rules (G-01..G-15)
-Every financial proposal must run the Guardian gauntlet:
-- **G-01 Arithmetic Verification**: Enforces zero float math; subtotal + tax = total.
-- **G-03 Bank Details Verification**: Blocks Business Email Compromise (BEC) and bank detail changes without multi-factor authorization.
-- **G-08 Mandate Spending Caps**: Hard stops actions exceeding per-payment or daily autonomy ceilings.
-- **G-12 Adversarial Prompt Injection Defense**: Quarantines untrusted invoice text and validates proposals against prompt-injection attacks.
-- **G-14 & G-15 Regulatory Sanctions & Capital Preservation Checks**.
+## Run it
 
-### 4. Multi-Agent Council Mode with Dissent on Record
-When facing complex decisions (e.g., debt financing vs. angel equity), Fiona's agents convene a structured council. If the CFO advocates borrowing but the Treasurer warns of a week-7 liquidity shortfall, the debate is captured in a formal memo with **dissent permanently on record**.
+Prerequisites: Node.js 24+, pnpm 10 (`corepack enable`), Python 3.12 and [uv](https://docs.astral.sh/uv/).
 
-### 5. Cryptographic Audit Log & Zero-Trust Sandbox Wallet
-- **RFC 8785 Canonical JSON Serialization** + SHA-256 hash chaining: every entry includes `prev_hash`, creating an immutable ledger chain.
-- Verified using `python scripts/verify_audit_chain.py` (0 tampering tolerance).
+**Mock (UI only, no keys):**
 
----
+```bash
+pnpm install
+pnpm dev            # web :3000, engine :8000, agents :8100, guardian :8200
+```
 
-## 5. Monorepo Structure
+**Live (local):**
+
+1. Copy `.env.example` to `.env.local` at the repo root. Set `NEXT_PUBLIC_API_MODE=live`, `FIONA_MODE=live`, `FIONA_LLM_PROVIDER=claude_cli`, `INTERNAL_JWT_SECRET` (32+ characters), `GUARDIAN_INBOUND_TOKEN`, your Supabase project's URL and publishable key, and (server only) its secret key. `pnpm doctor` checks the file and tells you what is missing.
+2. Log in to Claude Code once (`claude`), since the agents and the Guardian use that login.
+3. Build the database and load the synthetic business: `pnpm db:reset && pnpm demo-data` (local portable Postgres unless `DATABASE_URL` is set). Set `FIONA_NOW=2026-10-22T09:00:00Z` so "today" matches the dataset.
+4. Create accounts: `node scripts/provision-user.mjs --super-admin` for yourself (the password goes to a file in your home folder and is never printed), then add people from the Accounts page.
+5. `pnpm dev`, sign in, and go to **Bills → Add a bill** with a file from [`docs/demo/bills/`](docs/demo/bills/).
+
+## Checks
+
+```bash
+pnpm test               # every package and service
+pnpm lint && pnpm typecheck
+pnpm check:boundaries   # services talk only through packages/contracts
+pnpm check:env-coverage # every env var read is documented
+```
+
+The audit chain is re-verified on every proposal's trail page (and by `GET /v1/proposals/{id}/trace`); `scripts/verify_audit_chain.py <log.jsonl>` checks an exported log offline.
+
+The end-to-end engine tests in `services/engine/ledger/tests/test_flow.py` cover a safe bill paid all the way to a balanced, audited payment; a Guardian block that stops both the owner and the wallet; an injected bill recorded as data and shown to the reviewer; tenant isolation; a missing Guardian review; and bad bills refused at intake.
+
+## Known limitations
+
+- **Prototype, not production.** No real bank, no real money, synthetic data only. Not audited; not a substitute for an accountant.
+- **Not deployed yet.** It runs locally; the hosted demo and its replay recordings are still to do.
+- **Local model runtime.** Agents and the Guardian run through the Claude Code CLI on the host machine, so live mode needs that login. A hosted version would use the API.
+- **Accounting simplifications.** Cost of sales at item cost, no depreciation run, no monthly sales-tax offset; financing uses operating cash flow as a stand-in for EBITDA (the screen says so). Ratios are indicative.
+- **Inventory analysis** still reads the generator's files rather than the ledger.
+- **Bill reading** needs a text layer (PDF or text file); scanned images are not supported yet.
+- **The analysis endpoint** returns every source event ID for each ratio (about 45 MB), so that page takes several seconds.
+
+## Repository
 
 ```text
-├── apps/
-│   └── web/                 # Next.js 16.4 App Router console (the Window)
-├── packages/
-│   ├── contracts/           # Pydantic & TS models, JSON Schemas, RFC 8785 hashing
-│   └── ui/                  # Design system tokens and accessible UI primitives
-├── services/
-│   ├── engine/              # FastAPI financial core: ledger, forecast, stage, ratios, DB
-│   ├── agents/              # Multi-agent runtime (Haiku extract, Sonnet reasoning, CLI bridge)
-│   └── guardian/            # Invariant rules G-01..G-15 & adversarial reviewer
-├── rulebook/                # YAML country packs (PK, CN), mandates, and financing catalog
-├── docs/
-│   ├── submission/          # Official FinTechathon 2026 Deliverables (01 to 07)
-│   └── orchestrator/        # Team roadmap, PLAN.md, and architecture decisions
-└── scripts/                 # Boundaries check, env coverage, and audit chain verifier
+apps/web            the owner's console (Next.js 16, React 19)
+packages/contracts  shared types, JSON schemas, canonical hashing
+packages/ui         design system
+services/engine     ledger, forecast, analysis, financing, Guardian rules, wallet (FastAPI)
+services/agents     the agent team: runtime, tools (MCP), council, bill reader
+services/guardian   the independent model review (G-12)
+rulebook/           mandates, Guardian thresholds, financing catalogue (YAML)
+data/               synthetic data generator and fixtures
+docs/               blueprint, decisions, demo bills, submission documents
 ```
 
----
+Submission documents: [technical documentation](docs/submission/01-technical-documentation.md) · [presentation](docs/submission/02-presentation-deck.md) · [demo script](docs/submission/03-demo-video-script.md) · [security self-assessment](docs/submission/05-security-self-assessment.md) · [execution evidence](docs/submission/06-execution-evidence/README.md) · [judge Q&A](docs/submission/07-judge-qa-defense-matrix.md)
 
-## 6. Quickstart & Local Evaluation
-
-### Prerequisites
-- **Node.js** $\ge 24$ (managed via Corepack)
-- **Python** 3.12 and [uv](https://docs.astral.sh/uv/)
-- **pnpm** 10.34.6 (`corepack enable`)
-
-### 1. Zero-Secret Local Demo (Instant Run)
-Fiona runs completely offline using deterministic contract-backed **Seed-42 synthetic fixtures**. No API keys or external services are required:
-
-```bash
-# 1. Install dependencies
-pnpm install
-
-# 2. Diagnostic environment health check
-pnpm doctor
-
-# 3. Start all services (Web :3000, Engine :8000, Agents :8100, Guardian :8200)
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### 2. Multi-Model Claude CLI Bridge (No API Keys Needed)
-Fiona supports a **headless terminal connection** to Claude Code CLI, allowing multi-model dispatching without paying for direct API keys:
-- Fast extraction tasks route to **Haiku**
-- CFO / Treasurer financial reasoning routes to **Sonnet**
-- Guardian adversarial review routes to **Opus**
-
-```bash
-# Enable the terminal CLI bridge
-export FIONA_LLM_PROVIDER=claude_cli
-pnpm dev
-```
-
----
-
-## 7. Verification & Self-Testing Commands
-
-Evaluate Fiona's mathematical correctness and security isolation:
-
-```bash
-# Run all 432 unit & property tests across the monorepo
-pnpm test --force
-
-# Verify architectural static import boundaries
-python scripts/check-boundaries.py
-
-# Verify cryptographic audit chain integrity
-python scripts/verify_audit_chain.py
-
-# Verify environment variable coverage
-pnpm check:env-coverage
-
-# Build optimized production bundle
-pnpm build
-```
-
----
-
-## 8. Official Submission Deliverables Index
-
-| Deliverable | Document File | Description |
-| :--- | :--- | :--- |
-| **01 Technical Documentation** | [`docs/submission/01-technical-documentation.md`](docs/submission/01-technical-documentation.md) | Exhaustive 360-line specification of architecture, algorithms, and models |
-| **02 Presentation Deck** | [`docs/submission/02-presentation-deck.md`](docs/submission/02-presentation-deck.md) / [HTML Deck](docs/submission/presentation-deck.html) | 13 structured slides with verbatim 9m 30s speaker notes |
-| **03 Demo Video Script** | [`docs/submission/03-demo-video-script.md`](docs/submission/03-demo-video-script.md) | Timed 4m 45s shot-by-shot script demonstrating DEMO-1 fraud prevention |
-| **04 Source Code** | [This Repository](https://github.com/Asharib19khan/fiona) | Fully tested, reproducible monorepo codebase |
-| **05 Security Assessment** | [`docs/submission/05-security-self-assessment.md`](docs/submission/05-security-self-assessment.md) | STRIDE threat model, 15 Guardian rules, RLS policies, known-risk register |
-| **06 Execution Evidence** | [`docs/submission/06-execution-evidence/README.md`](docs/submission/06-execution-evidence/README.md) | 1MB operations log, 13-entry verified audit chain, verification report |
-| **07 Defense Matrix** | [`docs/submission/07-judge-qa-defense-matrix.md`](docs/submission/07-judge-qa-defense-matrix.md) | Judge technical defense matrix with mathematical proofs & code citations |
-
----
-
-## 9. Synthetic Data Disclosure
-
-All company names, suppliers, bank accounts, tax identifiers, and transaction amounts in this repository are **100% synthetic**, generated by `data/generator`. No real-world financial records or customer PII are stored or processed.
-
----
-
-**License:** MIT  
-**Authors:** Asharib Khan, Abdullah, Daniyal, Yahya (Team Fiona)
+**Team:** Asharib Khan, Abdullah, Daniyal, Yahya

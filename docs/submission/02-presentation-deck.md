@@ -305,7 +305,7 @@ $$\text{Hash}_n = \text{HMAC-SHA256}(\text{Hash}_{n-1} \,\|\, \text{Seq}_n \,\|\
 ## Slide 13: Conclusion: The Future of SME Treasury
 
 ### Slide Visual / Content
-### Fiona: Production-Ready AI Financial Copilot
+### Fiona: an AI Finance Team the Owner Stays in Charge Of
 
 - **Complete Topic E Fulfillment:** Stage Detection, 13-Week Cash Forecast, Concessionary Matcher, Double-Entry Ledger, and Sandbox Execution.
 - **Verified Software Engineering:** 40+ clean commits, 355 unit & property tests passing in engine suite (430 tests passing monorepo-wide across 6 packages), zero-secret CI, and strict AST boundaries.
