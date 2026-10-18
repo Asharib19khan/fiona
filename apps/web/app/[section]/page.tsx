@@ -17,11 +17,12 @@ import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/serv
 import { routes } from "@/lib/routes";
 import { ImportPreview } from "@/components/import-preview";
 import { ProposalInbox } from "@/components/proposal-inbox";
+import { CouncilRoom } from "@/components/council-room";
 import { ReconcileRunner } from "@/components/reconcile-runner";
 import { InventoryView, type InventoryItemData, type InventorySummaryData } from "@/components/inventory-view";
 import { LaunchLabSimulator } from "@/components/launch-lab-simulator";
 import { WalletStation } from "@/components/wallet-station";
-import { apiMode } from "@/lib/env";
+import { getWorkspaceSession } from "@/lib/session";
 
 type JsonObject = Record<string, unknown>;
 
@@ -55,17 +56,21 @@ async function engineData(name: EngineRead): Promise<JsonObject | null> {
   return result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
 }
 
-function Heading({ section, badge = "Sovereign Ledger Node" }: { section: keyof typeof routes; badge?: string }) {
+function Heading({ section, badge }: { section: keyof typeof routes; badge?: string }) {
   const page = routes[section];
-  return <><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL · SOVEREIGN SME</span><StateChip>{badge}</StateChip></div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
+  return <><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span>{badge && <StateChip>{badge}</StateChip>}</div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
 }
 
 function DataSource({ connected, fallback }: { connected: boolean; fallback: string }) {
   return (
-    <div className="data-note">
-      <span aria-hidden="true">●</span>
-      <span><strong>Deterministic Financial Core</strong> · Real-time ledger telemetry verified against RFC 8785 canonical hash chain. {fallback ? `(${fallback})` : ""}</span>
-    </div>
+    connected ? (
+      <div className="data-note">
+        <span aria-hidden="true">●</span>
+        <span><strong>Computed from your ledger</strong> · Read live from the engine.</span>
+      </div>
+    ) : (
+      <DegradedBanner>{fallback || "The engine did not answer, so this page shows no figures."}</DegradedBanner>
+    )
   );
 }
 
@@ -191,34 +196,13 @@ async function FinancingLiveScreen() {
   </div>;
 }
 
-async function CouncilScreen() {
-  const snapshot = demoFinanceSnapshot;
-  const result = await postEngine("financing/match", {
-    amount: { minor: snapshot.requestedMinor, currency: snapshot.currency },
-    purpose: "working_capital_seasonal",
-    profile: { industry: "retail_apparel" },
-    pre_money_valuation: { minor: 1_800_000_000, currency: snapshot.currency },
-  });
-  const data = result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
-  const options = objects(data?.options);
-  const ranked = options.find((option) => typeof option.rank === "number") ?? null;
-  const rankedName = ranked ? String(ranked.name ?? ranked.option_id) : "No option is ranked";
-  const rankedReason = ranked && Array.isArray(ranked.rank_reasons) ? ranked.rank_reasons.map(String).join(" · ") : "The matcher needs more inputs before it can rank an option.";
-  const supplier = options.find((option) => String(option.kind) === "supplier_credit");
-  const equity = options.find((option) => String(option.kind) === "equity_angel");
-  const gaps = objects(data?.insufficient_data);
-  return <div className="section-page"><Heading section="council" badge={data ? "Engine-backed review" : "Review unavailable"} />
-    <DataSource connected={Boolean(data)} fallback={result.kind === "unavailable" ? result.message : "Start the local engine and fixture database to generate this financing review."} />
-    <div className="tier-metric-grid"><Metric label="Question" value="PKR 2m seasonal funding" note="No application is submitted." /><Metric label="Matcher lead" value={rankedName} note={rankedReason} /><Metric label="Open data gaps" value={gaps.length} note="Unresolved inputs remain visible." /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">COUNCIL REVIEW</span><h2>Four perspectives on the same financing evidence</h2></div><span className="placeholder-tag">Structured engine review</span></div>
-      <div className="option-list">
-        <article className="option-row"><div><span className="eyebrow">CFO STRATEGIST</span><h3>Compare eligible cost and repayment capacity</h3><p>{rankedReason}</p></div><div className="option-facts"><strong>{rankedName}</strong><span>Matcher ranking · catalogue sources on the financing page</span></div></article>
-        <article className="option-row"><div><span className="eyebrow">TREASURER</span><h3>Protect cash before adding fixed payments</h3><p>The 13-week cash path includes a buffer breach; check payment timing and confirm funds before committing to a borrowing schedule.</p></div><div className="option-facts"><strong>Liquidity risk remains open</strong><span>Cash forecast · synthetic ledger</span></div></article>
-        <article className="option-row"><div><span className="eyebrow">GROWTH ANALYST</span><h3>Preserve capacity for the seasonal order</h3><p>{equity ? `${String(equity.name)} avoids fixed repayment but introduces ownership and diligence questions.` : "Equity terms are not sufficiently supported by this matcher request."}</p></div><div className="option-facts"><strong>Owner choice required</strong><span>Illustrative options need verified terms</span></div></article>
-        <article className="option-row"><div><span className="eyebrow">GUARDIAN</span><h3>Do not turn this comparison into an instruction</h3><p>Some financing data may be incomplete or illustrative. No agent can submit an application or commit the business from this review.</p></div><div className="option-facts"><strong>Review only</strong><span>Owner approval and verified terms required</span></div></article>
-      </div>
-    </Card><Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">DISSENT ON RECORD</span><h2>The cheapest option and safest cash position may differ</h2></div></div><p className="proposal-reasoning">The matcher may prefer {supplier ? String(supplier.name) : "supplier credit"} on cost, while the Treasurer flags the forecast buffer breach. The Growth Analyst may consider {equity ? String(equity.name) : "equity"} to avoid fixed repayment, subject to owner control and valuation review. This is a rules-based synthesis of engine outputs, not a model-generated conversation.</p><p className="footnote">The council records the trade-off for owner review and issues no financing instruction.</p></Card>
-  </div>;
+function CouncilScreen() {
+  return (
+    <div className="section-page">
+      <Heading section="council" badge="Advice only" />
+      <CouncilRoom />
+    </div>
+  );
 }
 
 function BillsPreviewScreen() {
@@ -265,7 +249,7 @@ async function ReconcileScreen() {
   const rows = matches.map((match) => [String(match.bank_line_id ?? "—"), String(match.pass_name ?? "—"), `${Math.round(Number(match.confidence ?? 0) * 100)}%`, String(match.status ?? "—"), Array.isArray(match.event_ids) ? match.event_ids.join(", ") : "—"]);
   return <div className="section-page"><Heading section="reconcile" badge={matchesData ? "Ledger · read only" : "Synthetic preview"} /><DataSource connected={Boolean(matchesData)} fallback="No seeded ledger response is available; the page does not invent reconciliation counts." />
     <div className="tier-metric-grid"><Metric label="Saved matches" value={matches.length} note="From the ledger endpoint" /><Metric label="Open findings" value={findings.length} note="Ranked by money at stake" /><Metric label="Posting behavior" value="Proposals only" note="Matches remain proposals until reviewed." /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCH REGISTER</span><h2>Bank lines and linked events</h2></div><span className="placeholder-tag">Review before posting</span></div><ReconcileRunner enabled={apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock"} /><Table headers={["Bank line", "Pass", "Confidence", "Review status", "Linked events"]} rows={rows} empty="No match response is available. Run the local engine with the seeded database to load it." /></Card>
+    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCH REGISTER</span><h2>Bank lines and linked events</h2></div><span className="placeholder-tag">Review before posting</span></div><ReconcileRunner enabled /><Table headers={["Bank line", "Pass", "Confidence", "Review status", "Linked events"]} rows={rows} empty="No match response is available. Run the local engine with the seeded database to load it." /></Card>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">NEEDS REVIEW</span><h2>Unmatched bank-line findings</h2></div></div>{findings.length ? <div className="option-list">{findings.map((finding, index) => <article className="option-row" key={String(finding.id ?? index)}><div><h3>{String(finding.title ?? finding.metric_id ?? "Reconciliation finding")}</h3><p>{String(finding.detail ?? finding.note ?? "Review the source bank line and candidate ledger events.")}</p></div>{minor(finding.money_at_stake) !== null && <strong><MoneyText amountMinor={minor(finding.money_at_stake) ?? 0} /></strong>}</article>)}</div> : <EmptyState title="No live findings loaded">A match decision must remain reviewable. This page has no action that posts ledger events.</EmptyState>}</Card>
   </div>;
 }
@@ -278,7 +262,7 @@ async function AuditScreen() {
   return <div className="section-page"><Heading section="audit" badge={data ? "Ledger · read only" : "Replay preview"} /><DataSource connected={Boolean(data)} fallback="The sample timeline is not an audit-chain export." />
     <div className="tier-metric-grid"><Metric label="Chain verification" value={data ? (verified ? "Verified" : "Failed") : "Not checked"} note={data?.first_bad_seq ? `First invalid entry: ${String(data.first_bad_seq)}` : "Read-only verification"} /><Metric label="Entries" value={typeof data?.chain_length === "number" ? data.chain_length : "None"} note="Full tenant chain length" /><Metric label="Payment mode" value="SIMULATED" note="No bank rails are connected." /></div>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">HASH-CHAIN ENTRIES</span><h2>Latest recorded operations</h2></div><span className={`placeholder-tag ${verified ? "tag-positive" : ""}`}>{data ? (verified ? "VERIFIED" : "CHECK FAILED") : "NOT CONNECTED"}</span></div><Table headers={["Sequence", "Recorded at", "Proposal", "Entry hash"]} rows={rows} empty="Connect the local mock engine with the seeded database to inspect verified audit entries." /></Card>
-    {data && apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock" && <a className="button button-secondary" href="/api/fiona/audit/export" download>Download execution evidence</a>}
+    {data && <a className="button button-secondary" href="/api/fiona/audit/export" download>Download execution evidence</a>}
     <p className="footnote">The wallet API itself is not called from this read-only screen. A replay marker is not evidence that an operation occurred.</p>
   </div>;
 }
@@ -418,14 +402,16 @@ export default async function WorkspaceSection({ params }: { params: Promise<{ s
   if (section === "reconcile") return <ReconcileScreen />;
   if (section === "wallet") return <WalletScreen />;
   if (section === "audit") return <AuditScreen />;
-  if (section === "import") { const localImport = apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock"; return <div className="section-page"><Heading section="import" />{localImport ? <div className="data-note"><span aria-hidden="true">●</span><span><strong>Local mock mode</strong> · Import writes to the server-selected synthetic tenant after explicit confirmation.</span></div> : <DegradedBanner>CSV import is disabled until a verified live tenant session is configured.</DegradedBanner>}<Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BANK AND POS INTAKE</span><h2>Preview, then import source records</h2></div><span className="placeholder-tag">Tenant selected server-side</span></div><ImportPreview enabled={localImport} /></Card><p className="footnote">Imports are idempotent, validate rows, and write only to the server-selected synthetic tenant in local mock mode.</p></div>; }
+  if (section === "import") { const localImport = Boolean(await getWorkspaceSession()); return <div className="section-page"><Heading section="import" />{localImport ? <div className="data-note"><span aria-hidden="true">●</span><span><strong>Imports go to your workspace</strong> · Rows are validated, duplicates are skipped, and new bills reach the agents and the Guardian on the next run.</span></div> : <DegradedBanner>Sign in to a workspace to import data.</DegradedBanner>}<Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BANK AND POS INTAKE</span><h2>Preview, then import source records</h2></div><span className="placeholder-tag">Tenant selected server-side</span></div><ImportPreview enabled={localImport} /></Card><p className="footnote">Imports are idempotent: the same file twice adds nothing. Your workspace comes from your account, never from the file.</p></div>; }
   if (section === "approvals") {
-    const mockEnabled = apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock";
     return (
       <div className="section-page">
-        <Heading section="approvals" badge="Executive Workbench" />
-        <DataSource connected={true} fallback="" />
-        <ProposalInbox initial={getMockProposals()} mockEnabled={mockEnabled} />
+        <Heading section="approvals" badge="You decide" />
+        <div className="data-note">
+          <span aria-hidden="true">●</span>
+          <span><strong>Nothing pays without you</strong> · Agents propose, the Guardian checks every proposal against its rules and with an independent review, and your decision is recorded under your name in the audit trail.</span>
+        </div>
+        <ProposalInbox />
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { apiMode } from "@/lib/env";
 import { hasInternalJwtSecret, mintInternalJwt } from "@/lib/server-auth";
+import { getWorkspaceSession } from "@/lib/session";
 
 const engineReads = {
   "forecast/cash": { path: "/v1/forecast/cash", query: ["weeks"] },
@@ -9,10 +10,11 @@ const engineReads = {
   "analysis/ratios": { path: "/v1/analysis/ratios", query: [] },
   "analysis/health": { path: "/v1/analysis/health", query: [] },
   "reconcile/matches": { path: "/v1/reconcile/matches", query: [] },
-  "reconcile/findings": { path: "/v1/reconcile/findings", query: [] },
+  "reconcile/findings": { path: "/v1/reconcile/findings", query: ["limit"] },
   audit: { path: "/v1/audit", query: ["proposal_id"] },
   "ledger/events": { path: "/v1/ledger/events", query: ["type", "date_from", "date_to", "limit", "offset"] },
   proposals: { path: "/v1/proposals", query: ["needs_owner"] },
+  mandates: { path: "/v1/mandates", query: [] },
 } as const;
 
 const enginePosts = {
@@ -40,31 +42,28 @@ export type ReadResult =
   | { kind: "unavailable"; status: number; message: string }
   | { kind: "disabled" };
 
-function demoTenant(): string | null {
-  const tenant = process.env.DEMO_TENANT_ID ?? "ten_karachi_apparel";
-  return /^ten_[a-z0-9_]{1,60}$/.test(tenant) ? tenant : null;
-}
+export type Audience = "fiona-engine" | "fiona-agents";
 
-function authHeaders(tenant: string): Record<string, string> | null {
+/**
+ * Headers that carry the signed-in person to a service. Live mode signs a 60-second internal
+ * token with their user ID, workspace and role (R15); local mock mode names the workspace in a
+ * header. No session, no workspace or no signing secret: no headers, and the caller refuses.
+ */
+export async function sessionHeaders(aud: Audience = "fiona-engine"): Promise<Record<string, string> | null> {
+  const session = await getWorkspaceSession();
+  if (!session) return null;
+  const headers: Record<string, string> = { "X-Fiona-Tenant": session.tenantId };
   const mode = apiMode();
   const fionaMode = process.env.FIONA_MODE ?? "mock";
-  const isMock = mode === "mock" && fionaMode === "mock";
-
-  const headers: Record<string, string> = {
-    "X-Fiona-Tenant": tenant,
-  };
-
-  if (!isMock) {
-    if (!hasInternalJwtSecret()) {
-      return null;
-    }
-    const token = mintInternalJwt({ tenantId: tenant, aud: "fiona-engine" });
-    if (!token) return null;
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
+  if (mode === "mock" && fionaMode === "mock") return headers;
+  if (!hasInternalJwtSecret()) return null;
+  const token = mintInternalJwt({ userId: session.userId, tenantId: session.tenantId, role: session.role, aud });
+  if (!token) return null;
+  headers.Authorization = `Bearer ${token}`;
   return headers;
 }
+
+const READ_TIMEOUT_MS = 20_000; // live analysis reads the whole ledger: several seconds is normal
 
 /**
  * Server-only engine read access. In mock mode, uses X-Fiona-Tenant; in live mode,
@@ -74,10 +73,7 @@ export async function readEngine(
   name: EngineRead,
   incoming = new URLSearchParams(),
 ): Promise<ReadResult> {
-  const tenant = demoTenant();
-  if (!tenant) return { kind: "unavailable", status: 500, message: "The server demo tenant is invalid." };
-
-  const headers = authHeaders(tenant);
+  const headers = await sessionHeaders();
   if (!headers) {
     return { kind: "disabled" };
   }
@@ -101,7 +97,7 @@ export async function readEngine(
       headers: { accept: "application/json", ...headers },
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(3_000),
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     const data: unknown = await response.json();
     return { kind: "ok", status: response.status, data };
@@ -116,10 +112,7 @@ export async function postEngine(
   body: Record<string, unknown>,
   customPath?: string,
 ): Promise<ReadResult> {
-  const tenant = demoTenant();
-  if (!tenant) return { kind: "unavailable", status: 500, message: "The server demo tenant is invalid." };
-
-  const headers = authHeaders(tenant);
+  const headers = await sessionHeaders();
   if (!headers) {
     return { kind: "disabled" };
   }
@@ -159,9 +152,7 @@ export async function importEngine(
   csv: string,
   fileName: string,
 ): Promise<ReadResult> {
-  const tenant = demoTenant();
-  if (!tenant) return { kind: "unavailable", status: 500, message: "The server demo tenant is invalid." };
-  const headers = authHeaders(tenant);
+  const headers = await sessionHeaders();
   if (!headers) return { kind: "disabled" };
 
   const base = process.env.ENGINE_BASE_URL ?? "http://127.0.0.1:8000";
@@ -189,9 +180,7 @@ export async function importEngine(
 
 /** Download an execution-evidence bundle through the server-selected demo tenant. */
 export async function exportAuditEvidence(): Promise<FileReadResult> {
-  const tenant = demoTenant();
-  if (!tenant) return { kind: "unavailable", status: 500, message: "The server demo tenant is invalid." };
-  const headers = authHeaders(tenant);
+  const headers = await sessionHeaders();
   if (!headers) return { kind: "disabled" };
 
   const base = process.env.ENGINE_BASE_URL ?? "http://127.0.0.1:8000";
@@ -221,4 +210,54 @@ export function objectValue(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null;
+}
+
+/**
+ * Server-only call to the agents service as the signed-in person (aud fiona-agents). Starting
+ * runs can take a moment; reading them is quick.
+ */
+export async function agentsRequest(method: "GET" | "POST", path: string, body?: unknown): Promise<ReadResult> {
+  if (!/^\/v1\/agents\/[A-Za-z0-9_/-]{1,120}$/.test(path)) {
+    return { kind: "unavailable", status: 400, message: "Unknown agents route." };
+  }
+  const headers = await sessionHeaders("fiona-agents");
+  if (!headers) return { kind: "disabled" };
+  const base = process.env.AGENTS_BASE_URL ?? "http://127.0.0.1:8100";
+  let target: URL;
+  try { target = new URL(path, base); }
+  catch { return { kind: "unavailable", status: 503, message: "The agents service URL is invalid." }; }
+  try {
+    const response = await fetch(target, {
+      method,
+      headers: { accept: "application/json", ...(body === undefined ? {} : { "content-type": "application/json" }), ...headers },
+      body: body === undefined ? null : JSON.stringify(body),
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(method === "GET" ? 10_000 : 30_000),
+    });
+    return { kind: "ok", status: response.status, data: await response.json() };
+  } catch {
+    return { kind: "unavailable", status: 503, message: "The agents service is not responding." };
+  }
+}
+
+/** Server-only engine GET of one vetted path (for example a single proposal). */
+export async function readEnginePath(path: string): Promise<ReadResult> {
+  if (!/^\/v1\/(proposals\/prop_[A-Za-z0-9_]+|bills\/bill_[A-Za-z0-9_]+)$/.test(path)) {
+    return { kind: "unavailable", status: 400, message: "Unknown engine route." };
+  }
+  const headers = await sessionHeaders();
+  if (!headers) return { kind: "disabled" };
+  const base = process.env.ENGINE_BASE_URL ?? "http://127.0.0.1:8000";
+  try {
+    const response = await fetch(new URL(path, base), {
+      headers: { accept: "application/json", ...headers },
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
+    });
+    return { kind: "ok", status: response.status, data: await response.json() };
+  } catch {
+    return { kind: "unavailable", status: 503, message: "The engine is not responding." };
+  }
 }

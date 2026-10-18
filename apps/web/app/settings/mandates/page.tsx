@@ -1,17 +1,25 @@
-import { AutonomyBadge, Card, EmptyState, MoneyText, StateChip } from "@fiona/ui";
-import { getMockMandates } from "@/lib/mock-api";
+import { StateChip } from "@fiona/ui";
+import { MandatesPanel } from "@/components/mandates-panel";
 import { routes } from "@/lib/routes";
+import { getWorkspaceSession } from "@/lib/session";
 
-const limits = [
-  { agent: "Controller", job: "Prepare and classify records", limit: "Cannot move money" },
-  { agent: "Treasurer", job: "Prepare payment proposals", limit: "Within an owner mandate" },
-  { agent: "CFO Strategist", job: "Analyze and recommend", limit: "Owner decides" },
-  { agent: "Growth Analyst", job: "Model business scenarios", limit: "Owner decides" },
-];
+export const dynamic = "force-dynamic";
 
-export default function MandatesPage() {
-  const [treasurer] = getMockMandates();
-  return <div className="section-page"><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span><StateChip>Mock data</StateChip></div><header className="page-heading"><div><h1>{routes.mandates.label}</h1><p>{routes.mandates.description}</p></div></header>
-    <Card className="mandates-panel"><div className="panel-heading"><div><span className="eyebrow">DEMO OWNER POLICY</span><h2>What each agent can do</h2></div><span className="placeholder-tag">MOCK API</span></div><div className="mandate-rows">{limits.map((item) => <div className="mandate-row" key={item.agent}><div><strong>{item.agent}</strong><span>{item.job}</span></div><AutonomyBadge>{item.limit}</AutonomyBadge></div>)}{treasurer && <div className="mandate-row"><div><strong>Treasurer’s active contract mandate</strong><span>Daily cap <MoneyText amountMinor={treasurer.daily_cap_minor} currency={treasurer.currency} /></span></div><AutonomyBadge><MoneyText amountMinor={treasurer.per_payment_cap_minor} currency={treasurer.currency} /> per payment</AutonomyBadge></div>}</div><EmptyState title="Policy editing is not enabled">These values are read from a synthetic contract fixture. Changes need a connected owner session and server-side enforcement.</EmptyState></Card>
-    <p className="footnote">Illustrative policy values only. The live wallet and approval enforcement are not connected to this page.</p></div>;
+export default async function MandatesPage() {
+  const session = await getWorkspaceSession();
+  const owner = session?.role === "owner";
+  return (
+    <div className="section-page">
+      <div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span><StateChip>Permission tiers</StateChip></div>
+      <header className="page-heading"><div><h1>{routes.mandates.label}</h1><p>{routes.mandates.description}</p></div></header>
+      <div className="data-note">
+        <span aria-hidden="true">●</span>
+        <span>
+          <strong>Enforced, not just shown</strong> · The Guardian checks every proposal against these mandates and the wallet re-checks them before paying. A level can never go above its ceiling, no agent can raise its own, and every change is a new version in the audit trail.
+        </span>
+      </div>
+      <MandatesPanel canEdit={owner} />
+      <p className="footnote">{owner ? "Only the owner can change a level." : "Only the owner can change a level; you are signed in with a different role."}</p>
+    </div>
+  );
 }

@@ -4,7 +4,21 @@ import { useEffect, useState } from "react";
 
 export function BootScreen({ onComplete }: { onComplete?: () => void }) {
   const [fading, setFading] = useState(false);
-  const [removed, setRemoved] = useState(false);
+  // Plays once per browser session: hidden until the client checks it has not been seen.
+  const [removed, setRemoved] = useState(true);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        if (window.sessionStorage.getItem("fiona:intro-seen")) return;
+        window.sessionStorage.setItem("fiona:intro-seen", "1");
+      } catch {
+        return; // storage blocked: skip the intro rather than replay it on every page
+      }
+      setRemoved(false);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     // Allow replaying the intro anytime by dispatching 'fiona:replay-intro'

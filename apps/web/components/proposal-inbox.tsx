@@ -1,208 +1,188 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Card, EmptyState, MoneyText, OutcomeBadge, StateChip } from "@fiona/ui";
-import type { MockProposalRecord } from "@/lib/mock-api";
+import { useCallback, useEffect, useState } from "react";
+import { Card, EmptyState, MoneyText } from "@fiona/ui";
 
-type ApprovalTab = "unread" | "reconsideration" | "rejected" | "approved";
+type Tab = "needs_you" | "blocked" | "approved" | "rejected";
 
-interface ProposalItem {
+interface Check {
+  name: string;
+  rule: string;
+  result: "pass" | "fail";
+  outcome: string;
+  detail: string;
+  audit?: { concern?: string; reasons?: string[]; injection_detected?: boolean; model?: string } | null;
+}
+
+interface Proposal {
   id: string;
   agent: string;
   type: string;
+  created_at: string;
   summary: string;
   reasoning: string;
-  payee: string;
-  iban?: string;
-  amountMinor: number;
-  currency: string;
-  status: ApprovalTab;
-  guardianRulesChecked: string[];
-  guardianVerdict: "approve" | "block" | "review";
-  date: string;
-  urgency: "high" | "normal" | "low";
+  amount: { minor: number; currency: string } | null;
+  payload: { payee_id?: string; bill_id?: string; pay_on?: string };
+  status: string;
+  verdict: { id: string; outcome: string; checks: Check[] } | null;
 }
 
-const INITIAL_PROPOSALS: ProposalItem[] = [
-  {
-    id: "prop_9912_raw_cotton",
-    agent: "Treasurer",
-    type: "Vendor Payment",
-    summary: "Discharge raw cotton yarn invoice INV-2231 to Gul Ahmed Mills",
-    reasoning: "2/10 net 30 payment capture yielding 44.59% APR annualized return. Cash remains PKR 46M above buffer.",
-    payee: "Gul Ahmed Textile Mills Ltd.",
-    iban: "PK36SCBL0000001123456701",
-    amountMinor: 12_000_000,
-    currency: "PKR",
-    status: "unread",
-    guardianRulesChecked: ["G-01 (Zero Float Math)", "G-03 (Bank Detail Match)", "G-08 (Mandate Cap)"],
-    guardianVerdict: "approve",
-    date: "Today, 10:14 AM",
-    urgency: "high",
-  },
-  {
-    id: "prop_9914_bulk_dye",
-    agent: "Controller",
-    type: "Reorder Authorization",
-    summary: "Procure Reactive Blue 19 reactive dyes for Fall Collection",
-    reasoning: "Stock depletion forecast within 11 operating days. Reorder point triggered at EOQ optimum.",
-    payee: "Dawood Chemicals Pvt Ltd.",
-    iban: "PK82MCB00123984712093412",
-    amountMinor: 4_850_000,
-    currency: "PKR",
-    status: "unread",
-    guardianRulesChecked: ["G-01 (Arithmetic Verification)", "G-08 (Cap Clearance)"],
-    guardianVerdict: "approve",
-    date: "Today, 09:30 AM",
-    urgency: "normal",
-  },
-  {
-    id: "prop_9908_working_cap",
-    agent: "CFO Strategist",
-    type: "Financing Restructure",
-    summary: "SBP SME Export Refinance Scheme vs. Supplier Credit Extension",
-    reasoning: "Council debate open: CFO favors SBP 6% concessionary facility; Treasurer urges supplier credit to avoid debt service.",
-    payee: "State Bank of Pakistan / Partner Bank",
-    amountMinor: 20_000_000,
-    currency: "PKR",
-    status: "reconsideration",
-    guardianRulesChecked: ["G-14 (Regulatory Sanctions)", "G-15 (Capital Preservation)"],
-    guardianVerdict: "review",
-    date: "Yesterday, 04:15 PM",
-    urgency: "normal",
-  },
-  {
-    id: "prop_planted_bill_tamper",
-    agent: "Controller",
-    type: "Vendor Payment",
-    summary: "Planted Attack: Altered Account & Duplicate Bill INV-2231",
-    reasoning: "Interception alert: Recipient account mismatch detected against historical verified vendor profile.",
-    payee: "Unverified Intermediary Corp",
-    iban: "PK99HABB0099881122334455",
-    amountMinor: 18_450_000,
-    currency: "PKR",
-    status: "rejected",
-    guardianRulesChecked: ["G-03 (Bank Details Verification: FAILED)", "G-12 (Adversarial Prompt Defense: FLAGGED)"],
-    guardianVerdict: "block",
-    date: "16 Oct 2026, 02:40 PM",
-    urgency: "high",
-  },
-  {
-    id: "prop_over_cap_order",
-    agent: "Growth Analyst",
-    type: "Equipment Capex",
-    summary: "High-speed computerized embroidery machine purchase",
-    reasoning: "Requested amount exceeds the autonomous growth mandate limit of PKR 50M without Board clearance.",
-    payee: "Tajima Industrial Machinery Co.",
-    amountMinor: 65_000_000,
-    currency: "PKR",
-    status: "rejected",
-    guardianRulesChecked: ["G-08 (Autonomous Spending Cap: EXCEEDED)"],
-    guardianVerdict: "block",
-    date: "15 Oct 2026, 11:10 AM",
-    urgency: "normal",
-  },
-  {
-    id: "prop_9891_utility_k_electric",
-    agent: "Treasurer",
-    type: "Fixed Operating Expense",
-    summary: "Monthly industrial grid electricity bill settlement",
-    reasoning: "Matched against automated utility portal metering. Cleared under automated utility mandate.",
-    payee: "K-Electric Karachi Industrial Grid",
-    iban: "PK11HABB0001002003004005",
-    amountMinor: 3_420_000,
-    currency: "PKR",
-    status: "approved",
-    guardianRulesChecked: ["G-01 (Arithmetic)", "G-03 (Authorized Payee)", "G-08 (Within Cap)"],
-    guardianVerdict: "approve",
-    date: "14 Oct 2026, 09:00 AM",
-    urgency: "low",
-  },
-  {
-    id: "prop_9888_weekly_payroll",
-    agent: "Controller",
-    type: "Direct Salary Disbursement",
-    summary: "Weekly manufacturing plant floor payroll tranche",
-    reasoning: "Fully reconciled against biometric attendance logs and approved wage registry.",
-    payee: "Karachi Apparel Payroll Disbursement Vault",
-    amountMinor: 14_100_000,
-    currency: "PKR",
-    status: "approved",
-    guardianRulesChecked: ["G-01 (Reconciliation 0-Diff)", "G-08 (Pre-approved Payroll Schedule)"],
-    guardianVerdict: "approve",
-    date: "12 Oct 2026, 08:30 AM",
-    urgency: "high",
-  },
+const AGENTS: Record<string, string> = {
+  treasurer: "Treasurer",
+  controller: "Controller",
+  cfo_strategist: "CFO Strategist",
+  growth_analyst: "Growth Analyst",
+};
+
+const REVIEWED = new Set(["payment", "bill_approval", "journal_adjustment", "send_document", "purchase_order"]);
+
+const TABS: Array<{ key: Tab; label: string; icon: string; statuses: string[] }> = [
+  { key: "needs_you", label: "Needs your decision", icon: "▣", statuses: ["needs_owner", "submitted"] },
+  { key: "blocked", label: "Blocked by the Guardian", icon: "✕", statuses: ["blocked"] },
+  { key: "approved", label: "Approved & paid", icon: "✓", statuses: ["approved", "cleared", "executed"] },
+  { key: "rejected", label: "Rejected", icon: "↺", statuses: ["rejected"] },
 ];
 
-export function ProposalInbox({ initial, mockEnabled }: { initial: MockProposalRecord[]; mockEnabled: boolean }) {
-  const [activeTab, setActiveTab] = useState<ApprovalTab>("unread");
-  const [proposals, setProposals] = useState<ProposalItem[]>(INITIAL_PROPOSALS);
+function when(iso: string): string {
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Karachi" }).format(new Date(iso));
+}
+
+function GuardianSection({ proposal }: { proposal: Proposal }) {
+  const checks = proposal.verdict?.checks ?? [];
+  const failed = checks.filter((c) => c.outcome !== "approve");
+  const review = checks.find((c) => c.rule === "G-12");
+  const passed = checks.length - failed.length;
+  return (
+    <div className="spec-item spec-guardian-item">
+      <span className="spec-label">
+        Guardian verdict: {proposal.verdict ? proposal.verdict.outcome.replaceAll("_", " ") : "not yet checked"}
+      </span>
+      <div className="guardian-chips">
+        {passed > 0 && <span className="guardian-chip chip-ok">{passed} rule{passed === 1 ? "" : "s"} passed</span>}
+        {failed.filter((c) => c.rule !== "G-12").map((c) => (
+          <span key={`${c.rule}-${c.detail}`} className="guardian-chip chip-failed" title={c.detail}>
+            {c.rule}: {c.detail.length > 110 ? `${c.detail.slice(0, 110)}…` : c.detail}
+          </span>
+        ))}
+      </div>
+      {review ? (
+        <div className={`guardian-review ${review.outcome === "approve" ? "" : "guardian-review-raised"}`}>
+          <strong>
+            Independent review (G-12): {review.detail.startsWith("CHECK_ERROR") ? "could not run, so this escalates" : `concern ${review.audit?.concern ?? "?"}`}
+            {review.audit?.injection_detected ? " · instructions hidden in the document" : ""}
+          </strong>
+          {review.audit?.reasons && review.audit.reasons.length > 0 && (
+            <ul>{review.audit.reasons.slice(0, 4).map((r) => <li key={r}>{r}</li>)}</ul>
+          )}
+          {review.detail.startsWith("CHECK_ERROR") && <p>{review.detail}</p>}
+        </div>
+      ) : REVIEWED.has(proposal.type) && proposal.status !== "executed" ? (
+        <p className="guardian-review guardian-review-pending">Independent review in progress…</p>
+      ) : null}
+    </div>
+  );
+}
+
+/** Every proposal the agents made, live from the engine. Approving or rejecting is recorded
+ * as you (from your signed-in session) and nothing pays until you approve. */
+export function ProposalInbox() {
+  const [tab, setTab] = useState<Tab>("needs_you");
+  const [proposals, setProposals] = useState<Proposal[] | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const counts = {
-    unread: proposals.filter((p) => p.status === "unread").length,
-    reconsideration: proposals.filter((p) => p.status === "reconsideration").length,
-    rejected: proposals.filter((p) => p.status === "rejected").length,
-    approved: proposals.filter((p) => p.status === "approved").length,
-  };
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/fiona/proposals", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error?.message ?? "Proposals could not be loaded.");
+      setProposals(data.proposals as Proposal[]);
+      setProblem(null);
+    } catch (err) {
+      setProblem(err instanceof Error ? err.message : "Proposals could not be loaded.");
+    }
+  }, []);
 
-  const filteredProposals = proposals.filter((p) => p.status === activeTab);
+  useEffect(() => {
+    const first = window.setTimeout(load, 0);
+    const timer = window.setInterval(load, 15_000); // Guardian reviews land a little after the proposal
+    return () => { window.clearTimeout(first); window.clearInterval(timer); };
+  }, [load]);
 
-  function transitionStatus(id: string, newStatus: ApprovalTab, notice: string) {
-    setProposals((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
-    setFeedback(notice);
-    setTimeout(() => setFeedback(null), 3500);
+  async function act(proposal: Proposal, action: "approve" | "reject" | "review") {
+    setBusy(proposal.id);
+    setFeedback(null);
+    try {
+      const url = action === "review" ? `/api/fiona/proposals/${proposal.id}/request-review` : `/api/fiona/proposals/${proposal.id}/decision`;
+      const body = action === "review" ? {} : { decision: action, ...(notes[proposal.id]?.trim() ? { note: notes[proposal.id]!.trim() } : {}) };
+      const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error?.message ?? "That did not go through.");
+      setFeedback(
+        action === "review"
+          ? "The Guardian is reviewing it again."
+          : action === "approve"
+            ? `Approved. It pays from the sandbox wallet on ${proposal.payload.pay_on ?? "its date"}.`
+            : "Rejected. The agent will not pay it.",
+      );
+      await load();
+    } catch (err) {
+      setFeedback(err instanceof Error ? err.message : "That did not go through.");
+    } finally {
+      setBusy(null);
+    }
   }
+
+  async function payDueToday() {
+    setBusy("pay");
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/fiona/agents/pay-approved", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error?.message ?? "Payments could not be sent.");
+      const results = (data.results ?? []) as Array<{ status: string; reason?: string }>;
+      const paid = results.filter((r) => r.status === "executed").length;
+      const refused = results.filter((r) => r.status !== "executed" && r.status !== "already_executed");
+      setFeedback(
+        results.length === 0
+          ? "Nothing approved is due today."
+          : `${paid} paid from the sandbox wallet.${refused.length ? ` ${refused.length} not paid: ${refused.map((r) => r.reason ?? "refused").join("; ")}` : ""}`,
+      );
+      await load();
+    } catch (err) {
+      setFeedback(err instanceof Error ? err.message : "Payments could not be sent.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const byTab = (key: Tab) => (proposals ?? []).filter((p) => TABS.find((t) => t.key === key)!.statuses.includes(p.status));
+  const shown = byTab(tab);
 
   return (
     <div className="approvals-workbench">
-      {/* 4 Primary Navigation Tabs */}
       <div className="approvals-nav-bar" role="tablist">
-        <button
-          className={`approvals-tab-btn ${activeTab === "unread" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("unread")}
-          role="tab"
-          aria-selected={activeTab === "unread"}
-        >
-          <span className="tab-icon">▣</span>
-          <span className="tab-label">Unread & Pending</span>
-          <span className={`tab-counter ${counts.unread > 0 ? "counter-attention" : ""}`}>{counts.unread}</span>
-        </button>
-
-        <button
-          className={`approvals-tab-btn ${activeTab === "reconsideration" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("reconsideration")}
-          role="tab"
-          aria-selected={activeTab === "reconsideration"}
-        >
-          <span className="tab-icon">↺</span>
-          <span className="tab-label">Reconsideration</span>
-          <span className="tab-counter">{counts.reconsideration}</span>
-        </button>
-
-        <button
-          className={`approvals-tab-btn ${activeTab === "rejected" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("rejected")}
-          role="tab"
-          aria-selected={activeTab === "rejected"}
-        >
-          <span className="tab-icon">✕</span>
-          <span className="tab-label">Rejected & Blocked</span>
-          <span className={`tab-counter ${counts.rejected > 0 ? "counter-danger" : ""}`}>{counts.rejected}</span>
-        </button>
-
-        <button
-          className={`approvals-tab-btn ${activeTab === "approved" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("approved")}
-          role="tab"
-          aria-selected={activeTab === "approved"}
-        >
-          <span className="tab-icon">✓</span>
-          <span className="tab-label">Approved & Cleared</span>
-          <span className="tab-counter counter-success">{counts.approved}</span>
-        </button>
+        {TABS.map((t) => {
+          const count = byTab(t.key).length;
+          return (
+            <button
+              key={t.key}
+              className={`approvals-tab-btn ${tab === t.key ? "tab-active" : ""}`}
+              onClick={() => setTab(t.key)}
+              role="tab"
+              aria-selected={tab === t.key}
+            >
+              <span className="tab-icon">{t.icon}</span>
+              <span className="tab-label">{t.label}</span>
+              <span className={`tab-counter ${t.key === "needs_you" && count > 0 ? "counter-attention" : t.key === "blocked" && count > 0 ? "counter-danger" : t.key === "approved" ? "counter-success" : ""}`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {feedback && (
@@ -212,194 +192,123 @@ export function ProposalInbox({ initial, mockEnabled }: { initial: MockProposalR
         </div>
       )}
 
-      {/* Main Approvals List */}
       <div className="approvals-stream">
-        {filteredProposals.length > 0 ? (
-          filteredProposals.map((item) => (
-            <Card key={item.id} className="approval-luxury-card">
-              <div className="approval-card-header">
-                <div className="approval-card-badges">
-                  <span className={`agent-pill agent-${item.agent.toLowerCase()}`}>{item.agent}</span>
-                  <span className="type-pill">{item.type}</span>
-                  <span className="date-pill">{item.date}</span>
-                </div>
-                <div className="approval-amount-block">
-                  <span className="amount-label">Authorized Amount</span>
-                  <strong className="approval-money">
-                    <MoneyText amountMinor={item.amountMinor} currency={item.currency} />
-                  </strong>
-                </div>
-              </div>
-
-              <div className="approval-card-body">
-                <h3 className="approval-title">{item.summary}</h3>
-                <p className="approval-rationale">{item.reasoning}</p>
-
-                <div className="approval-specs-grid">
-                  <div className="spec-item">
-                    <span className="spec-label">Verified Payee</span>
-                    <strong className="spec-value">{item.payee}</strong>
-                  </div>
-                  {item.iban && (
-                    <div className="spec-item">
-                      <span className="spec-label">Destination IBAN</span>
-                      <code className="spec-code">{item.iban}</code>
-                    </div>
-                  )}
-                  <div className="spec-item spec-guardian-item">
-                    <span className="spec-label">Guardian Invariant Gauntlet</span>
-                    <div className="guardian-chips">
-                      {item.guardianRulesChecked.map((rule) => (
-                        <span
-                          key={rule}
-                          className={`guardian-chip ${rule.includes("FAILED") || rule.includes("FLAGGED") ? "chip-failed" : "chip-ok"}`}
-                        >
-                          {rule}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Bar based on Tab */}
-              <div className="approval-card-footer">
-                <div className="approval-footer-left">
-                  <span className="status-indicator">
-                    {item.status === "unread" && "⚡ Requires Human Executive Sign-off"}
-                    {item.status === "reconsideration" && "⏳ Council Deliberation Active"}
-                    {item.status === "rejected" && "🛑 Intercepted by Guardian Invariant Ring"}
-                    {item.status === "approved" && "🔒 Cryptographically Sealed · Ready for Settlement"}
-                  </span>
-                </div>
-
-                <div className="approval-footer-actions">
-                  {item.status === "unread" && (
-                    <>
-                      <button
-                        className="button button-secondary action-reconsider"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "reconsideration", `Proposal ${item.id} routed to Council for reconsideration.`)}
-                      >
-                        Request Reconsideration
-                      </button>
-                      <button
-                        className="button button-danger action-reject"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "rejected", `Proposal ${item.id} rejected and logged in security register.`)}
-                      >
-                        Reject
-                      </button>
-                      <button
-                        className="button button-primary action-approve"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "approved", `Proposal ${item.id} approved and signed via verified session.`)}
-                      >
-                        Approve & Sign →
-                      </button>
-                    </>
-                  )}
-
-                  {item.status === "reconsideration" && (
-                    <>
-                      <button
-                        className="button button-danger"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "rejected", `Deliberation terminated: ${item.id} rejected.`)}
-                      >
-                        Terminate & Reject
-                      </button>
-                      <button
-                        className="button button-primary"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "approved", `Revised terms accepted: ${item.id} approved.`)}
-                      >
-                        Accept Revised Terms →
-                      </button>
-                    </>
-                  )}
-
-                  {item.status === "rejected" && (
-                    <>
-                      <Link className="button button-secondary" href="/audit">
-                        View Interception Telemetry
-                      </Link>
-                      <button
-                        className="button button-quiet"
-                        type="button"
-                        onClick={() => transitionStatus(item.id, "unread", `Proposal ${item.id} returned to pending queue for re-evaluation.`)}
-                      >
-                        Re-evaluate Case
-                      </button>
-                    </>
-                  )}
-
-                  {item.status === "approved" && (
-                    <>
-                      <Link className="button button-secondary" href="/wallet">
-                        Inspect Sandbox Vault Dispatch
-                      </Link>
-                      <Link className="button button-quiet" href="/audit">
-                        RFC 8785 Hash Receipt ↗
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </div>
-            </Card>
-          ))
-        ) : (
+        {problem && (
           <Card className="empty-panel-card">
-            <EmptyState title={`No proposals in ${activeTab}`}>
-              There are currently zero entries waiting under this state filter. All policy invariants are operating smoothly.
+            <EmptyState title="Proposals could not be loaded">{problem}</EmptyState>
+          </Card>
+        )}
+        {!problem && proposals === null && (
+          <Card className="empty-panel-card"><EmptyState title="Loading proposals">Reading the ledger…</EmptyState></Card>
+        )}
+        {!problem && proposals !== null && shown.length === 0 && (
+          <Card className="empty-panel-card">
+            <EmptyState title={tab === "needs_you" ? "Nothing waits for you" : "Nothing here yet"}>
+              {tab === "needs_you"
+                ? "When the Treasurer plans payments they appear here, checked by the Guardian. Run the team from the agents panel."
+                : "Proposals move here as you decide on them."}
             </EmptyState>
           </Card>
         )}
+
+        {shown.map((p) => (
+          <Card key={p.id} className="approval-luxury-card">
+            <div className="approval-card-header">
+              <div className="approval-card-badges">
+                <span className={`agent-pill agent-${p.agent}`}>{AGENTS[p.agent] ?? p.agent}</span>
+                <span className="type-pill">{p.type.replaceAll("_", " ")}</span>
+                <span className="date-pill">{when(p.created_at)}</span>
+              </div>
+              <div className="approval-amount-block">
+                <span className="amount-label">Amount</span>
+                <strong className="approval-money">
+                  {p.amount ? <MoneyText amountMinor={p.amount.minor} currency={p.amount.currency} animateCount={false} /> : "—"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="approval-card-body">
+              <h3 className="approval-title">{p.summary}</h3>
+              <p className="approval-rationale"><strong>{AGENTS[p.agent] ?? p.agent}&rsquo;s reasoning:</strong> {p.reasoning}</p>
+              <div className="approval-specs-grid">
+                {p.payload.payee_id && (
+                  <div className="spec-item">
+                    <span className="spec-label">Payee</span>
+                    <strong className="spec-value">{p.payload.payee_id}</strong>
+                  </div>
+                )}
+                {p.payload.bill_id && (
+                  <div className="spec-item">
+                    <span className="spec-label">Bill · pays on</span>
+                    <code className="spec-code">{p.payload.bill_id} · {p.payload.pay_on ?? "—"}</code>
+                  </div>
+                )}
+                <GuardianSection proposal={p} />
+              </div>
+            </div>
+
+            <div className="approval-card-footer">
+              <div className="approval-footer-left">
+                <span className="status-indicator">
+                  {p.status === "needs_owner" && "Waiting for your decision"}
+                  {p.status === "submitted" && "The Guardian is checking it"}
+                  {p.status === "blocked" && "Blocked: no approval can release it"}
+                  {p.status === "approved" && "Approved by you · pays on its date"}
+                  {p.status === "cleared" && "Cleared to pay within the mandate"}
+                  {p.status === "executed" && "Paid from the sandbox wallet"}
+                  {p.status === "rejected" && "Rejected by you"}
+                </span>
+              </div>
+              <div className="approval-footer-actions">
+                {p.status === "needs_owner" && (
+                  <>
+                    <input
+                      className="approval-note"
+                      aria-label="Note for the audit trail"
+                      placeholder="Note (optional)"
+                      maxLength={1000}
+                      value={notes[p.id] ?? ""}
+                      onChange={(e) => setNotes((n) => ({ ...n, [p.id]: e.target.value }))}
+                    />
+                    <button className="button button-quiet" type="button" disabled={busy !== null} onClick={() => act(p, "review")}>
+                      Review again
+                    </button>
+                    <button className="button button-danger action-reject" type="button" disabled={busy !== null} onClick={() => act(p, "reject")}>
+                      Reject
+                    </button>
+                    <button className="button button-primary action-approve" type="button" disabled={busy !== null} onClick={() => act(p, "approve")}>
+                      {busy === p.id ? "Recording…" : "Approve"}
+                    </button>
+                  </>
+                )}
+                {(p.status === "approved" || p.status === "executed" || p.status === "blocked" || p.status === "rejected") && (
+                  <Link className="button button-secondary" href={`/audit?proposal_id=${p.id}`}>Audit trail</Link>
+                )}
+              </div>
+            </div>
+          </Card>
+        ))}
       </div>
 
-      {/* New Proposal Fast-Dispatcher Drawer */}
-      <Card className="proposal-intake-card">
-        <div className="intake-header">
-          <div>
-            <span className="eyebrow">AUTONOMOUS INTAKE ENGINE</span>
-            <h2>Dispatch Financial Proposal to Guardian</h2>
+      {tab === "approved" && (
+        <Card className="proposal-intake-card">
+          <div className="intake-header">
+            <div>
+              <span className="eyebrow">SANDBOX WALLET</span>
+              <h2>Send approved payments due today</h2>
+            </div>
+            <span className="intake-badge">Simulated money</span>
           </div>
-          <span className="intake-badge">Zero Float Math Enforced</span>
-        </div>
-        <p className="intake-desc">
-          Propose an emergency or scheduled liquidity dispatch. Every proposed payload passes through the 15 Guardian invariant checks (arithmetic verification, bank detail change protection, mandate caps, and adversarial prompt defense) before committing to the ledger.
-        </p>
-        <div className="intake-actions">
-          <button
-            className="button button-primary"
-            type="button"
-            onClick={() => {
-              const newProp: ProposalItem = {
-                id: `prop_${Date.now().toString(36)}`,
-                agent: "Treasurer",
-                type: "Manual Fast-Dispatch",
-                summary: "Emergency Working Capital Allocation to Dawood Yarn Distributors",
-                reasoning: "Immediate raw material yarn batch booking to lock in early-bird discount (44.6% APR).",
-                payee: "Dawood Yarn Distributors Ltd.",
-                iban: "PK44MEZN0001928374655647",
-                amountMinor: 8_500_000,
-                currency: "PKR",
-                status: "unread",
-                guardianRulesChecked: ["G-01 (Arithmetic: Clean)", "G-03 (Bank Detail: Matched)", "G-08 (Mandate Cap: Within Limits)"],
-                guardianVerdict: "approve",
-                date: "Just now",
-                urgency: "high",
-              };
-              setProposals((prev) => [newProp, ...prev]);
-              setActiveTab("unread");
-              setFeedback("New proposal dispatched and queued in Unread & Pending.");
-              setTimeout(() => setFeedback(null), 3500);
-            }}
-          >
-            + Dispatch New Financial Proposal
-          </button>
-        </div>
-      </Card>
+          <p className="intake-desc">
+            The wallet pays only what you approved, on its date, and checks the Guardian&rsquo;s verdict, your decision and every limit again before it moves anything.
+          </p>
+          <div className="intake-actions">
+            <button className="button button-primary" type="button" disabled={busy !== null} onClick={payDueToday}>
+              {busy === "pay" ? "Sending…" : "Pay what is due today"}
+            </button>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

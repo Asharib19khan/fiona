@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { AutonomyBadge, StateChip } from "@fiona/ui";
 import { CommandBar } from "../components/command-bar";
 import { BootScreen } from "../components/boot-screen";
-import { AuthModal, USERS, type UserSession } from "../components/auth-modal";
-import { LoginPage } from "../components/login-page";
+import { AgentActivity } from "../components/agent-activity";
+import { AuthModal, initials, roleLabel, type ShellUser } from "../components/auth-modal";
 
 // Luxury SVG Icon set for navigation
 function NavIcon({ name }: { name: string }) {
@@ -144,11 +144,11 @@ const navigation = [
 ];
 
 const agents = [
-  { name: "Controller", role: "Bookkeeping & Reconciliation", level: "Prepare only", code: "CT", color: "agent-ct" },
-  { name: "Treasurer", role: "Payments & Liquidity", level: "Up to PKR 150k", code: "TR", color: "agent-tr" },
-  { name: "CFO Strategist", role: "Capital Allocation & Planning", level: "Recommend", code: "CF", color: "agent-cf" },
-  { name: "Growth Analyst", role: "Inventory & Working Capital", level: "Recommend", code: "GA", color: "agent-ga" },
-  { name: "Guardian", role: "Independent Invariant Gatekeeper", level: "Always checks", code: "G", color: "agent-g" },
+  { name: "Controller", role: "Reconciliation & bill checks", level: "Reports", code: "CT", color: "agent-ct" },
+  { name: "Treasurer", role: "Payment planning", level: "Prepares · you approve", code: "TR", color: "agent-tr" },
+  { name: "CFO Strategist", role: "Capital decisions", level: "Advises", code: "CF", color: "agent-cf" },
+  { name: "Growth Analyst", role: "Stock & growth", level: "Advises", code: "GA", color: "agent-ga" },
+  { name: "Guardian", role: "Independent checks", level: "Reviews every proposal", code: "G", color: "agent-g" },
 ];
 
 function safePreference(key: string, fallback: boolean) {
@@ -168,42 +168,23 @@ function savePreference(key: string, value: boolean) {
   }
 }
 
-export function WindowShell({ children, mockMode }: { children: ReactNode; mockMode: boolean }) {
+export interface ShellStatus {
+  /** live: the engine reads the posted ledger; demo: labelled synthetic fixtures. */
+  ledger: "live" | "demo";
+  /** live: the Guardian reviews with its own model; replay: recorded reviews only. */
+  guardian: "live" | "replay";
+  currency: string;
+  timezone: string;
+}
+
+export function WindowShell({ children, user, status }: { children: ReactNode; user: ShellUser | null; status: ShellStatus }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [railOpen, setRailOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<UserSession>(USERS[0]!);
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [booting, setBooting] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const storedAuth = window.localStorage.getItem("fiona:authenticated");
-      const storedUserId = window.localStorage.getItem("fiona:user_id");
-      if (storedAuth === "true") {
-        setAuthenticated(true);
-        if (storedUserId) {
-          const found = USERS.find((u) => u.id === storedUserId);
-          if (found) setCurrentUser(found);
-        }
-      }
-    } catch {
-      // Storage unavailable
-    }
-  }, []);
-
-  useEffect(() => {
-    // Expose quick developer/reviewer triggers
-    (window as unknown as { lockFionaWorkspace?: () => void }).lockFionaWorkspace = () => {
-      setAuthenticated(false);
-      try { window.localStorage.removeItem("fiona:authenticated"); } catch {}
-    };
-  }, []);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -245,37 +226,14 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
     try { window.localStorage.setItem("fiona:theme", next); } catch { /* noop */ }
   }
 
-  function handleLogin(user: UserSession) {
-    setCurrentUser(user);
-    setAuthenticated(true);
-    try {
-      window.localStorage.setItem("fiona:authenticated", "true");
-      window.localStorage.setItem("fiona:user_id", user.id);
-    } catch {
-      // Storage unavailable
-    }
-  }
+  // Not signed in: the proxy has sent this visitor to /login, which renders on its own.
+  if (!user) return <>{children}</>;
 
-  function handleSignOut() {
-    setAuthenticated(false);
-    try {
-      window.localStorage.removeItem("fiona:authenticated");
-    } catch {
-      // Storage unavailable
-    }
-  }
+  const workspaceName = user.workspace === "ten_karachi_apparel" ? "Karachi Apparel" : (user.workspace ?? "No workspace");
 
   return (
     <>
-      <BootScreen onComplete={() => setBooting(false)} />
-
-      {!authenticated && !booting ? (
-        <LoginPage
-          currentTheme={theme}
-          onToggleTheme={toggleTheme}
-          onLogin={handleLogin}
-        />
-      ) : null}
+      <BootScreen />
 
       <div className={`window ${railOpen ? "window-with-rail" : "window-rail-closed"} ${inspectorOpen ? "window-with-inspector" : "window-inspector-closed"}`}>
         {/* Luxury Top Navigation Bar */}
@@ -325,10 +283,10 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
 
           {/* Active Enterprise Workspace Identifier */}
           <div className="workspace-picker">
-            <span className="workspace-avatar">KA</span>
+            <span className="workspace-avatar">{initials(workspaceName)}</span>
             <span>
-              <strong>Karachi Apparel</strong>
-              <small>Sovereign SME Tenant</small>
+              <strong>{workspaceName}</strong>
+              <small>{status.ledger === "live" ? "Live ledger" : "Demo data"}</small>
             </span>
             <span className="chevron">⌄</span>
           </div>
@@ -336,12 +294,12 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
           <div className="topbar-spacer" />
 
           {/* Live Node Badges */}
-          <div className="topbar-live-status">
+          <div className="topbar-live-status" title={status.ledger === "live" ? "Figures are computed from your posted ledger." : "Figures come from labelled synthetic demo files."}>
             <span className="status-halo-dot" />
-            <span className="status-label-top">Sovereign Ledger Active</span>
+            <span className="status-label-top">{status.ledger === "live" ? "Live ledger" : "Demo data"}</span>
           </div>
-          <StateChip>RFC 8785 Verified</StateChip>
-          <StateChip>Guardian Vault Armed</StateChip>
+          <StateChip>{status.guardian === "live" ? "Guardian reviewing live" : "Guardian: recorded reviews"}</StateChip>
+          <StateChip>Sandbox wallet</StateChip>
 
           <button
             className="icon-button theme-toggle"
@@ -357,14 +315,12 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
             className="profile-button-luxury"
             type="button"
             onClick={() => setAuthOpen(true)}
-            title="Click to manage identity session / sign in"
+            title="Account and sign out"
           >
-            <div className="profile-badge-inner" style={{ background: currentUser.avatar }}>
-              {currentUser.initials}
-            </div>
+            <div className="profile-badge-inner">{initials(user.name)}</div>
             <div className="profile-text-compact">
-              <strong>{currentUser.name}</strong>
-              <small>Passkey Verified</small>
+              <strong>{user.name}</strong>
+              <small>{roleLabel(user.role).split(" · ")[0]}</small>
             </div>
           </button>
         </header>
@@ -391,10 +347,10 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
               <span>Mandates & Policies</span>
             </Link>
             <div className="business-card">
-              <span className="business-avatar">KA</span>
+              <span className="business-avatar">{initials(workspaceName)}</span>
               <div>
-                <strong>Karachi Apparel Co.</strong>
-                <small>PKR · Asia/Karachi · Node 01</small>
+                <strong>{workspaceName}</strong>
+                <small>{status.currency} · {status.timezone}</small>
               </div>
             </div>
           </div>
@@ -404,14 +360,14 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
         <main className="canvas">
           <div className="mobile-context">
             <span className="brand-symbol">F</span>
-            <span>Karachi Apparel</span>
-            <StateChip>Sovereign Ledger</StateChip>
+            <span>{workspaceName}</span>
+            <StateChip>{status.ledger === "live" ? "Live ledger" : "Demo data"}</StateChip>
           </div>
           <div className="canvas-content">{children}</div>
           <footer className="statusbar">
-            <span><i className="status-led" />Deterministic Core Active</span>
-            <span>RFC 8785 Canonical Chain · SHA-256</span>
-            <span>PKR · Asia/Karachi</span>
+            <span><i className="status-led" />{status.ledger === "live" ? "Engine reading the posted ledger" : "Demo data"}</span>
+            <span>Hash-chained audit log</span>
+            <span>{status.currency} · {status.timezone}</span>
           </footer>
         </main>
 
@@ -419,8 +375,8 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
         <aside className={`inspector ${inspectorOpen ? "" : "inspector-hidden"}`} aria-label="Agent activity">
           <div className="inspector-heading">
             <div>
-              <span className="eyebrow">AUTONOMOUS COUNCIL</span>
-              <h2>Active Agents</h2>
+              <span className="eyebrow">YOUR FINANCE TEAM</span>
+              <h2>Agents</h2>
             </div>
             <button className="icon-button" type="button" aria-label="Close agent panel" onClick={() => { setInspectorOpen(false); savePreference("fiona:inspector", false); }}>
               ×
@@ -448,51 +404,14 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
 
           <div className="inspector-divider" />
 
-          <div className="inspector-heading activity-heading">
-            <div>
-              <span className="eyebrow">TELEMETRY FEED</span>
-              <h2>Real-Time Activity</h2>
-            </div>
-            <Link className="text-button" href="/audit">Full Ledger ↗</Link>
-          </div>
-
-          <ol className="activity-list-luxury">
-            <li>
-              <span className="activity-glow-mark mark-green">✓</span>
-              <div>
-                <strong>13-Week Cash Forecast Synchronized</strong>
-                <p>Treasurer · Dickinson Stage: Mature</p>
-              </div>
-            </li>
-            <li>
-              <span className="activity-glow-mark mark-amber">!</span>
-              <div>
-                <strong>3 Dispatches Require Executive Sign-Off</strong>
-                <p>Controller · 2/10 Net 30 Discount Window</p>
-              </div>
-            </li>
-            <li>
-              <span className="activity-glow-mark mark-blue">◈</span>
-              <div>
-                <strong>Inventory Coverage Reorder Triggered</strong>
-                <p>Growth Analyst · Wool Shawls Safety Stock</p>
-              </div>
-            </li>
-            <li>
-              <span className="activity-glow-mark mark-red">🛑</span>
-              <div>
-                <strong>Guardian Intercepted Tampered Bill</strong>
-                <p>Guardian Rule G-03: Payee IBAN Altered</p>
-              </div>
-            </li>
-          </ol>
+          <AgentActivity />
 
           <div className="inspector-bottom-luxury">
             <div className="guardian-shield-badge">
               <span className="shield-icon">🛡</span>
               <div>
-                <strong>Guardian Active Verification</strong>
-                <p>15 Invariant Policies (G-01..G-15) enforced on every execution step.</p>
+                <strong>Nothing pays without you</strong>
+                <p>The Guardian checks every proposal against 15 rules, including an independent model review. Then you approve or reject it.</p>
               </div>
             </div>
           </div>
@@ -511,13 +430,7 @@ export function WindowShell({ children, mockMode }: { children: ReactNode; mockM
           currentTheme={theme}
         />
 
-        <AuthModal
-          isOpen={authOpen}
-          onClose={() => setAuthOpen(false)}
-          currentUser={currentUser}
-          onSelectUser={(u) => setCurrentUser(u)}
-          onSignOut={handleSignOut}
-        />
+        <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} user={user} />
 
         {helpOpen && (
           <div className="overlay-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}>

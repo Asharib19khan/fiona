@@ -1985,3 +1985,42 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .meta-sep {
   opacity: 0.4;
 }
+
+/* Data wiring additions (18 Oct): real sign-in errors and the agent activity feed. */
+.login-error { margin: 4px 0 0; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border)); border-radius: 8px; color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); font-size: 13px; line-height: 1.45; }
+.agent-activity-note { margin: 4px 0 12px; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.agent-activity-time { margin-top: 2px; color: var(--text-subtle); font-size: 11px; }
+.agent-run-button { width: 100%; margin: 4px 0 16px; }
+.agent-run-button:disabled { cursor: progress; opacity: .75; }
+.profile-badge-inner { background: linear-gradient(135deg, var(--accent), var(--brand-navy, #1e3a5a)); color: #fff; }
+.approval-note { min-width: 180px; height: 38px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); background: var(--surface-raised); font-size: 13px; }
+.approval-note:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.guardian-review { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-size: 13px; line-height: 1.5; }
+.guardian-review strong { display: block; color: var(--text); font-weight: 650; }
+.guardian-review ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-muted); }
+.guardian-review p { margin: 6px 0 0; color: var(--text-muted); }
+.guardian-review-raised { border-color: color-mix(in srgb, var(--danger) 40%, var(--border)); background: color-mix(in srgb, var(--danger) 6%, var(--surface)); }
+.guardian-review-pending { color: var(--text-muted); font-style: italic; }
+.council-ask-body { display: grid; gap: 10px; padding: 15px; }
+.council-question { width: 100%; padding: 12px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); background: var(--surface-raised); font: inherit; font-size: 14px; line-height: 1.5; resize: vertical; }
+.council-question:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.council-ask-body .panel-actions { padding: 0; }
+.council-reply { margin-top: 8px !important; padding-left: 10px; border-left: 2px solid var(--border-strong); }
+.council-memo { display: grid; gap: 14px; padding: 15px; font-size: 14px; line-height: 1.6; }
+.council-memo p { margin: 0; }
+.council-memo ul { margin: 6px 0 0; padding-left: 18px; }
+.council-cite { color: var(--text-muted); font-size: 12px; }
+.mandate-row-live { align-items: flex-start; flex-wrap: wrap; padding: 14px 15px; }
+.mandate-version { margin-left: 6px; color: var(--text-subtle); font-size: 11px; font-weight: 500; }
+.mandate-levels { display: grid; gap: 10px; min-width: 260px; }
+.mandate-level { display: grid; gap: 4px; }
+.mandate-level select { height: 36px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); background: var(--surface-raised); font-size: 13px; }
+.mandate-level small { color: var(--text-subtle); font-size: 11px; }
+.mandate-notice { margin: 0; padding: 10px 15px; border-bottom: 1px solid var(--border); color: var(--text); background: var(--info-soft); font-size: 13px; }
+.mandates-panel .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 15px; border-bottom: 1px solid var(--border); }
+.mandates-panel .panel-heading h2 { margin: 4px 0 0; font-size: 16px; }
+.mandate-row-live { display: flex; gap: 18px; border-bottom: 1px solid var(--border); }
+.mandate-row-live > div:first-child { display: grid; flex: 1 1 280px; align-content: start; gap: 4px; }
+.mandate-row-live > div:first-child > span { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.mandate-row-live .mandate-levels { flex: 1 1 300px; }
+.mandate-level select { width: 100%; max-width: 100%; }

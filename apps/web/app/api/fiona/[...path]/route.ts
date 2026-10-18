@@ -2,7 +2,8 @@ import { apiMode } from "@/lib/env";
 import { check } from "@fiona/contracts";
 import { getMockBriefing, getMockMandates, getMockProposal, getMockProposals, type BriefingScenario } from "@/lib/mock-api";
 import { hasInternalJwtSecret } from "@/lib/server-auth";
-import { exportAuditEvidence, importEngine, postEngine, readEngine, type EngineRead } from "@/lib/server-read";
+import { agentsRequest, readEnginePath, exportAuditEvidence, importEngine, postEngine, readEngine, type EngineRead, type ReadResult } from "@/lib/server-read";
+import { getWorkspaceSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,15 @@ function mockGet(path: string[], request: Request) {
   if (resource === "/mandates") return Response.json({ api_version: "v1", mandates: getMockMandates() });
   return error(404, "not_found", `No mock BFF route at /v1${resource}.`);
 }
+
+function relay(result: ReadResult, what: string): Response {
+  if (result.kind === "ok") return Response.json(result.data, { status: result.status, headers: { "cache-control": "no-store" } });
+  if (result.kind === "unavailable") return error(result.status, "service_unavailable", result.message);
+  return error(401, "not_signed_in", `${what} needs a signed-in person with a workspace.`);
+}
+
+const AGENT_READS = [/^agents\/team\/runs$/, /^agents\/team\/runs\/run_[a-z_]+_[0-9a-f]{12}$/, /^agents\/pipelines$/, /^agents\/pipelines\/pl_[a-z]+_[0-9a-f]{12}$/];
+const AGENT_WRITES = new Set(["agents/team/run", "agents/council", "agents/pay-approved"]);
 
 function mockApiBase(): string | null {
   const raw = process.env.MOCK_API_PORT ?? "8300";
@@ -77,6 +87,12 @@ async function readLimitedBody(request: Request, maxBytes: number): Promise<Uint
 
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
+  if (!(await getWorkspaceSession())) return error(401, "not_signed_in", "Sign in to a workspace first.");
+  const joined = path.join("/");
+  if (AGENT_READS.some((pattern) => pattern.test(joined))) return relay(await agentsRequest("GET", `/v1/${joined}`), "Agent activity");
+  if (path.length === 2 && path[0] === "proposals" && /^prop_[A-Za-z0-9_]+$/.test(path[1] ?? "") && !localMockMode()) {
+    return relay(await readEnginePath(`/v1/proposals/${path[1]}`), "Proposal detail");
+  }
   if (apiMode() !== "mock" && !hasInternalJwtSecret()) {
     return error(501, "live_bff_not_configured", "The live BFF requires an authenticated server configuration.");
   }
@@ -87,7 +103,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
     return new Response(result.body, { status: 200, headers: { "content-type": result.contentType, "content-disposition": result.contentDisposition ?? 'attachment; filename="fiona-execution-evidence.zip"', "cache-control": "no-store" } });
   }
   const route = path.join("/");
-  const reads: EngineRead[] = ["forecast/cash", "forecast/findings", "inventory/analysis", "stage", "analysis/ratios", "analysis/health", "reconcile/matches", "reconcile/findings", "audit", "ledger/events", "proposals"];
+  const reads: EngineRead[] = ["forecast/cash", "forecast/findings", "inventory/analysis", "stage", "analysis/ratios", "analysis/health", "reconcile/matches", "reconcile/findings", "audit", "ledger/events", "proposals", "mandates"];
   if (reads.includes(route as EngineRead)) {
     const result = await readEngine(route as EngineRead, new URL(request.url).searchParams);
     if (result.kind === "ok") return Response.json(result.data, { status: result.status, headers: { "cache-control": "no-store" } });
@@ -101,6 +117,29 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
 
 export async function POST(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
+  if (!(await getWorkspaceSession())) return error(401, "not_signed_in", "Sign in to a workspace first.");
+  const joined = path.join("/");
+  if (AGENT_WRITES.has(joined)) {
+    const bytes = await readLimitedBody(request, 16 * 1024);
+    if (!bytes) return error(413, "request_too_large", "Agent requests are limited to 16 KB.");
+    let body: unknown = {};
+    if (bytes.byteLength) {
+      try { body = JSON.parse(new TextDecoder().decode(bytes)); }
+      catch { return error(400, "invalid_json", "The request must be valid JSON."); }
+    }
+    return relay(await agentsRequest("POST", `/v1/${joined}`, body), "Starting agent work");
+  }
+  if (path.length === 3 && path[0] === "mandates" && path[2] === "autonomy" && /^[a-z_]{3,40}$/.test(path[1] ?? "")) {
+    const bytes = await readLimitedBody(request, 4 * 1024);
+    if (!bytes) return error(413, "request_too_large", "Mandate changes are limited to 4 KB.");
+    let change: Record<string, unknown>;
+    try { change = JSON.parse(new TextDecoder().decode(bytes)); }
+    catch { return error(400, "invalid_json", "The change must be valid JSON."); }
+    return relay(await postEngine("proposals", change, `/v1/mandates/${path[1]}/autonomy`), "Changing a mandate");
+  }
+  if (path.length === 3 && path[0] === "proposals" && path[2] === "request-review" && /^prop_[A-Za-z0-9_]+$/.test(path[1] ?? "")) {
+    return relay(await postEngine("proposals", {}, `/v1/proposals/${path[1]}/request-review`), "A Guardian re-review");
+  }
   const isLive = apiMode() === "live" || (process.env.FIONA_MODE ?? "mock") === "live";
 
   if (!localMockMode() && !isLive) {

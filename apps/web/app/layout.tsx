@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { WindowShell } from "./shell";
+import { WindowShell, type ShellStatus } from "./shell";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { apiMode } from "@/lib/env";
+import { getSession } from "@/lib/session";
 import "./globals.css";
 import "@fiona/ui/styles.css";
 
@@ -22,8 +23,18 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const mockMode = apiMode() === "mock" && (process.env.FIONA_MODE ?? "mock") === "mock";
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const live = apiMode() === "live" || (process.env.FIONA_MODE ?? "mock") === "live";
+  const status: ShellStatus = {
+    ledger: live ? "live" : "demo",
+    guardian: (process.env.FIONA_LLM_PROVIDER ?? "replay") === "claude_cli" ? "live" : "replay",
+    currency: "PKR",
+    timezone: "Asia/Karachi",
+  };
+  const session = await getSession();
+  const user = session
+    ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo }
+    : null;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -41,7 +52,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       </head>
       <body>
         <SmoothScrollProvider>
-          <WindowShell mockMode={mockMode}>{children}</WindowShell>
+          <WindowShell user={user} status={status}>{children}</WindowShell>
         </SmoothScrollProvider>
       </body>
     </html>
