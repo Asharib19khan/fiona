@@ -7386,6 +7386,52 @@
         ]
       }
     },
+    "/v1/bills/intake": {
+      "post": {
+        "description": "Record a bill a person read and confirmed: document, bill event and ledger posting.",
+        "operationId": "bill_intake_v1_bills_intake_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Bill Intake V1 Bills Intake Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Bill Intake",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/bills/{bill_id}": {
       "get": {
         "description": "One imported bill as the ledger recorded it, with what has been paid against it.",
@@ -8114,6 +8160,53 @@
         ]
       }
     },
+    "/v1/parties": {
+      "get": {
+        "description": "Suppliers and other payees matching a name, tax ID or IBAN (to match a bill).",
+        "operationId": "find_parties_v1_parties_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 120,
+              "minLength": 2,
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Find Parties V1 Parties Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Find Parties",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
     "/v1/proposals": {
       "get": {
         "description": "List proposals for the tenant, projected with current status and verdict.",
@@ -8549,6 +8642,51 @@
           }
         },
         "summary": "Proposal Review Packet",
+        "tags": [
+          "ledger"
+        ]
+      }
+    },
+    "/v1/proposals/{proposal_id}/trace": {
+      "get": {
+        "description": "Everything about one proposal, in order, from the bill to the audit chain.",
+        "operationId": "proposal_trace_v1_proposals__proposal_id__trace_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Proposal Trace V1 Proposals  Proposal Id  Trace Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Proposal Trace",
         "tags": [
           "ledger"
         ]

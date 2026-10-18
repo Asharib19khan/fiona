@@ -151,6 +151,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/bills/intake": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bill Intake
+         * @description Record a bill a person read and confirmed: document, bill event and ledger posting.
+         */
+        post: operations["bill_intake_v1_bills_intake_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/decisions/debt-equity": {
         parameters: {
             query?: never;
@@ -426,6 +446,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/parties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Find Parties
+         * @description Suppliers and other payees matching a name, tax ID or IBAN (to match a bill).
+         */
+        get: operations["find_parties_v1_parties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/proposals": {
         parameters: {
             query?: never;
@@ -565,6 +605,26 @@ export interface paths {
          * @description What the adversarial reviewer may see (G-12): no agent reasoning, documents as data.
          */
         get: operations["proposal_review_packet_v1_proposals__proposal_id__review_packet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proposals/{proposal_id}/trace": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Proposal Trace
+         * @description Everything about one proposal, in order, from the bill to the audit chain.
+         */
+        get: operations["proposal_trace_v1_proposals__proposal_id__trace_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3592,6 +3652,43 @@ export interface operations {
             };
         };
     };
+    bill_intake_v1_bills_intake_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     debt_equity_v1_decisions_debt_equity_post: {
         parameters: {
             query?: never;
@@ -4081,6 +4178,39 @@ export interface operations {
             };
         };
     };
+    find_parties_v1_parties_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_proposals_v1_proposals_get: {
         parameters: {
             query?: {
@@ -4335,6 +4465,39 @@ export interface operations {
         };
     };
     proposal_review_packet_v1_proposals__proposal_id__review_packet_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    proposal_trace_v1_proposals__proposal_id__trace_get: {
         parameters: {
             query?: never;
             header?: never;
