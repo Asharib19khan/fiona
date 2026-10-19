@@ -57,7 +57,7 @@ async function engineData(name: EngineRead): Promise<JsonObject | null> {
 
 function Heading({ section, badge }: { section: keyof typeof routes; badge?: string }) {
   const page = routes[section];
-  return <><div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span>{badge && <StateChip>{badge}</StateChip>}</div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
+  return <><div className="page-kicker">{badge && <StateChip>{badge}</StateChip>}</div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
 }
 
 function DataSource({ connected, fallback }: { connected: boolean; fallback: string }) {

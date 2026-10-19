@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
+import { TwoFactorSettings } from "@/components/two-factor-settings";
 
 /** The signed-in person as the shell shows them (from the server session, never the browser). */
 export interface ShellUser {
@@ -67,6 +68,7 @@ export function AuthModal({ isOpen, onClose, user }: { isOpen: boolean; onClose:
             {passwordNote && <p role="status">{passwordNote}</p>}
           </div>
         )}
+        {!user.demo && <TwoFactorSettings />}
         {!user.demo && (
           <button className="button button-secondary" type="button" onClick={signOut} disabled={signingOut} style={{ marginTop: 16 }}>
             {signingOut ? "Signing out…" : "Sign out"}

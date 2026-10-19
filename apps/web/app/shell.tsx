@@ -185,14 +185,11 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
   const [helpOpen, setHelpOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // phone: the full page list over the canvas
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       setRailOpen(safePreference("fiona:rail", true));
       setInspectorOpen(safePreference("fiona:inspector", true));
-      const stored = document.documentElement.dataset.theme;
-      setTheme(stored === "dark" ? "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
@@ -221,13 +218,6 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  function toggleTheme() {
-    const next = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    setTheme(next);
-    try { window.localStorage.setItem("fiona:theme", next); } catch { /* noop */ }
-  }
-
   // Not signed in: the proxy has sent this visitor to /login, which renders on its own.
   if (!user) return <>{children}</>;
 
@@ -240,37 +230,33 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
       <div className={`window ${railOpen ? "window-with-rail" : "window-rail-closed"} ${inspectorOpen ? "window-with-inspector" : "window-inspector-closed"}`}>
         {/* Luxury Top Navigation Bar */}
         <header className="topbar">
-          {/* Bespoke Geometric Fiona Monogram Brand */}
-          <Link href="/" className="brand-lockup-luxury" aria-label="Fiona Home">
-            <svg className="brand-emblem-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="32" height="32" rx="9" fill="url(#brand-grad-bg)" />
-              <circle cx="16" cy="16" r="11" stroke="url(#brand-grad-ring)" strokeWidth="1.5" />
-              <path d="M16 7V25M11 13H21M11 19H21" stroke="#FFFFFF" strokeWidth="1.7" strokeLinecap="round" />
-              <circle cx="16" cy="16" r="2.5" fill="#38BDF8" />
-              <defs>
-                <linearGradient id="brand-grad-bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#0F172A" />
-                  <stop offset="1" stopColor="#1E293B" />
-                </linearGradient>
-                <linearGradient id="brand-grad-ring" x1="5" y1="5" x2="27" y2="27" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#38BDF8" />
-                  <stop offset="1" stopColor="#6366F1" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div
-              className="brand-text-block"
-              onClick={(e) => {
-                if (e.shiftKey) {
-                  e.preventDefault();
-                  window.dispatchEvent(new CustomEvent("fiona:replay-intro"));
-                }
-              }}
-              title="Shift+Click to replay boot intro"
-            >
-              <span className="brand-name-luxury">FIONA</span>
-              <span className="brand-sub-luxury">TREASURY OS</span>
-            </div>
+          {/* Fiona Brand Serif Wordmark */}
+          <Link
+            href="/"
+            className="brand-lockup-luxury"
+            aria-label="Fiona Home"
+            onClick={(e) => {
+              if (e.shiftKey) {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent("fiona:replay-intro"));
+              }
+            }}
+            title="Shift+Click to replay boot intro"
+          >
+            <img
+              src="/fiona-logo.png"
+              alt="Fiona"
+              className="brand-logo-img brand-logo-light"
+              width={75}
+              height={32}
+            />
+            <img
+              src="/fiona-logo-dark.png"
+              alt="Fiona"
+              className="brand-logo-img brand-logo-dark"
+              width={75}
+              height={32}
+            />
           </Link>
 
           <button
@@ -302,15 +288,6 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
           </div>
           <StateChip>{status.guardian === "live" ? "Guardian reviewing live" : "Guardian: recorded reviews"}</StateChip>
           <StateChip>Sandbox wallet</StateChip>
-
-          <button
-            className="icon-button theme-toggle"
-            type="button"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-          >
-            {theme === "dark" ? "☼" : "☾"}
-          </button>
 
           {/* User Profile / Auth Switcher Button */}
           <button
@@ -456,8 +433,6 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
         <CommandBar
           isOpen={paletteOpen}
           onClose={() => setPaletteOpen(false)}
-          onToggleTheme={toggleTheme}
-          currentTheme={theme}
         />
 
         <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} user={user} />

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Card, EmptyState } from "@fiona/ui";
+import { WORKSPACES } from "@/lib/workspaces";
 
 interface AdminUser {
   id: string;
@@ -15,9 +16,6 @@ interface AdminUser {
   lastSignInAt: string | null;
 }
 
-const WORKSPACES = [
-  { id: "ten_karachi_apparel", label: "Karachi Apparel" },
-];
 
 function when(iso: string | null): string {
   if (!iso) return "never";

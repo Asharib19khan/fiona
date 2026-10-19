@@ -1,38 +1,36 @@
 import Link from "next/link";
-import { Card, DegradedBanner, EmptyState, FindingCard, MoneyText, StateChip } from "@fiona/ui";
+import { Card, DegradedBanner, EmptyState, FindingCard, MoneyText } from "@fiona/ui";
 import { getBriefing } from "@/lib/briefing";
 import { getSession } from "@/lib/session";
+import { LiveClock } from "@/components/live-clock";
+import { Greeting } from "@/components/greeting";
 
 export const dynamic = "force-dynamic";
 
-function greeting(now: Date): string {
-  const hour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Karachi" }).format(now));
-  return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-}
-
-function longDate(iso: string | null): string {
-  if (!iso) return "today";
-  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+/** First name from the account's display name; an email-only account uses the part before the @. */
+function firstNameOf(name: string | undefined): string {
+  const raw = (name ?? "").trim();
+  if (!raw) return "there";
+  const base = raw.includes("@") ? (raw.split("@")[0] ?? "").split(/[._-]+/)[0] : raw.split(/\s+/)[0];
+  return base ? base.charAt(0).toUpperCase() + base.slice(1) : "there";
 }
 
 export default async function Home() {
   const [briefing, session] = await Promise.all([getBriefing(), getSession()]);
   const { cash, approvals, stock, findings } = briefing;
-  const firstName = session?.name.split(/\s+/)[0] ?? "there";
+  const firstName = firstNameOf(session?.name);
   const needsYou = (approvals?.waiting ?? 0) + (cash && cash.firstWeekBelow ? 1 : 0);
   const meter = cash && cash.bufferMinor > 0 ? Math.max(4, Math.min(100, Math.round((Math.max(cash.lowestMinor, 0) / cash.bufferMinor) * 100))) : 0;
-  const workspace = session?.tenantId === "ten_karachi_apparel" ? "KARACHI APPAREL" : (session?.tenantId ?? "").toUpperCase();
 
   return (
     <div className="briefing-page">
       <div className="page-kicker">
-        <span className="eyebrow">BRIEFING · {workspace}</span>
-        <StateChip>As of {longDate(briefing.asOf)}</StateChip>
+        <LiveClock />
       </div>
 
       <header className="page-heading">
         <div>
-          <h1>{greeting(new Date())}, {firstName}.</h1>
+          <Greeting firstName={firstName} />
           <p>
             {needsYou === 0
               ? "Nothing needs you right now."
@@ -44,13 +42,6 @@ export default async function Home() {
         </Link>
       </header>
 
-      <div className="data-note">
-        <span aria-hidden="true">◈</span>
-        <span>
-          <strong>Computed from your ledger</strong> · Every figure below comes from the engine reading posted transactions. Agents propose; the Guardian checks; nothing pays until you approve.
-        </span>
-        <span className="data-note-date">{briefing.asOf ? `Ledger · ${briefing.asOf}` : "Ledger date unavailable"}</span>
-      </div>
 
       {briefing.unavailable.length > 0 && (
         <DegradedBanner>Could not load: {briefing.unavailable.join(", ")}. The rest of the briefing is current.</DegradedBanner>

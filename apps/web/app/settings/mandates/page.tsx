@@ -10,7 +10,7 @@ export default async function MandatesPage() {
   const owner = session?.role === "owner";
   return (
     <div className="section-page">
-      <div className="page-kicker"><span className="eyebrow">KARACHI APPAREL</span><StateChip>Permission tiers</StateChip></div>
+      <div className="page-kicker"><StateChip>Permission tiers</StateChip></div>
       <header className="page-heading"><div><h1>{routes.mandates.label}</h1><p>{routes.mandates.description}</p></div></header>
       <div className="data-note">
         <span aria-hidden="true">●</span>
