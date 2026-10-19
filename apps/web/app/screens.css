@@ -743,3 +743,67 @@
 @keyframes skBackdropIn { to { opacity: 1; } }
 @media (max-width: 700px) { .briefing-backdrop { height: 460px; } }
 @media (prefers-reduced-motion: reduce) { .briefing-backdrop { animation: none; opacity: 1; } }
+
+/* Approvals: five tabs, selection, bulk decisions, reconsideration, review points */
+.approvals-nav-bar { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 1180px) { .approvals-nav-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .approvals-nav-bar { grid-template-columns: 1fr; } }
+.approval-footer-actions { flex-wrap: wrap; justify-content: flex-end; }
+.approval-row { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.approval-select { display: grid; place-items: center; width: 28px; height: 28px; margin-top: 22px; border-radius: 6px; cursor: pointer; }
+.approval-select:hover { background: var(--surface-soft); }
+.approval-select input, .bulk-select-all input { width: 17px; height: 17px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+.approval-selected { border-color: var(--accent) !important; box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow); }
+.bulk-select-all { display: inline-flex; align-items: center; gap: 10px; justify-self: start; margin: -6px 0 -8px 5px; color: var(--text-muted); font-size: 13px; font-weight: 650; cursor: pointer; }
+.bulk-bar { position: sticky; bottom: 16px; z-index: 6; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px 10px 16px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: #ffffff; box-shadow: 0 12px 32px rgba(15, 35, 60, 0.16); }
+.bulk-count { color: var(--text); font-size: 13px; font-weight: 750; white-space: nowrap; }
+.bulk-note { flex: 1 1 200px; }
+.bulk-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.bulk-actions .button-danger.action-reject { color: var(--danger) !important; border: 1px solid color-mix(in srgb, var(--danger) 55%, var(--border)) !important; background: var(--surface-raised); }
+
+.review-points { display: grid; gap: 8px; margin: 8px 0 0; padding-left: 18px; color: var(--text-muted); list-style: disc; }
+.review-points > li, .recon-findings > li { display: list-item; list-style-type: disc; }
+.review-points > li::marker { color: var(--text-subtle); }
+.review-lead { color: var(--text); font-weight: 600; }
+.review-sub { display: grid; gap: 3px; margin: 4px 0 0; padding-left: 16px; list-style: circle; }
+.review-sub > li { display: list-item; list-style-type: circle; }
+.review-sub li { line-height: 1.5; }
+
+.recon-panel { display: grid; gap: 10px; margin-top: 16px; padding: 14px 16px; border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius-sm); background: var(--surface); font-size: 13px; line-height: 1.55; }
+.recon-panel.recon-failed { border-left-color: var(--danger); }
+.recon-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.recon-eyebrow { color: var(--text-muted); font-size: 11px; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.recon-state { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 750; background: var(--surface-soft); color: var(--text-muted); }
+.recon-state-checking { background: var(--accent-soft); color: var(--accent); }
+.recon-state-done { background: var(--success-soft); color: var(--success); }
+.recon-state-failed { background: var(--danger-soft); color: var(--danger); }
+.recon-note { display: grid; gap: 2px; margin: 0; padding: 8px 12px; border-radius: 6px; background: var(--surface-soft); color: var(--text); }
+.recon-note-label { color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.recon-progress { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--text-muted); }
+.recon-pulse { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: reconPulse 1.2s ease-in-out infinite; }
+@keyframes reconPulse { 50% { opacity: 0.25; transform: scale(0.7); } }
+.recon-failed p { margin: 0; color: var(--danger); }
+.recon-failed { display: grid; gap: 8px; justify-items: start; }
+.recon-source { margin: 0; color: var(--text); font-weight: 700; }
+.recon-source-supplier::before, .recon-source-treasurer::before, .recon-source-both::before, .recon-source-neither::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 2px; background: var(--warning); vertical-align: 1px; }
+.recon-source-treasurer::before { background: var(--accent); }
+.recon-source-both::before { background: var(--danger); }
+.recon-source-neither::before { background: var(--success); }
+.recon-summary { margin: 0; color: var(--text); }
+.recon-findings { display: grid; gap: 4px; margin: 0; padding-left: 18px; color: var(--text-muted); list-style: disc; }
+.recon-email { display: grid; gap: 8px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-raised); }
+.recon-email-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; color: var(--text-muted); }
+.recon-email-head strong { color: var(--text); }
+.recon-email-subject { display: flex; gap: 10px; margin: 0; color: var(--text); font-weight: 650; }
+.recon-email-subject span { color: var(--text-muted); font-weight: 600; }
+.recon-email-body { margin: 0; padding-top: 8px; border-top: 1px solid var(--border); color: var(--text); font: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
+.recon-email-meta { color: var(--text-subtle); font-size: 12px; }
+.recon-rerun { display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid var(--border); }
+.recon-rerun-label { color: var(--text); font-weight: 650; }
+.recon-rerun p { margin: 0; color: var(--text-muted); }
+@media (max-width: 640px) {
+  .approval-row { grid-template-columns: 24px minmax(0, 1fr); gap: 6px; }
+  .bulk-actions { margin-left: 0; }
+  .approval-footer-actions { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .recon-pulse { animation: none; } }

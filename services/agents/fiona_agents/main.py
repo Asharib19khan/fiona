@@ -20,6 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fiona_agents import orchestrator
 from fiona_agents.api import router
 from fiona_agents.body_limit import BodyLimit
+from fiona_agents.reconsider import router as reconsider_router
 from fiona_agents.team_api import router as team_router
 
 API_VERSION = "v1"
@@ -88,6 +89,7 @@ def create_app() -> FastAPI:
 
     app.include_router(router)
     app.include_router(team_router)
+    app.include_router(reconsider_router)
     orchestrator.start_autopilot()
 
     return app

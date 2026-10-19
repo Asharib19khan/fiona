@@ -36,8 +36,8 @@ function relay(result: ReadResult, what: string): Response {
   return error(401, "not_signed_in", `${what} needs a signed-in person with a workspace.`);
 }
 
-const AGENT_READS = [/^agents\/team\/runs$/, /^agents\/team\/runs\/run_[a-z_]+_[0-9a-f]{12}$/, /^agents\/pipelines$/, /^agents\/pipelines\/pl_[a-z]+_[0-9a-f]{12}$/];
-const AGENT_WRITES = new Set(["agents/team/run", "agents/council", "agents/pay-approved"]);
+const AGENT_READS = [/^agents\/reconsiderations$/,/^agents\/team\/runs$/, /^agents\/team\/runs\/run_[a-z_]+_[0-9a-f]{12}$/, /^agents\/pipelines$/, /^agents\/pipelines\/pl_[a-z]+_[0-9a-f]{12}$/];
+const AGENT_WRITES = new Set(["agents/reconsider", "agents/team/run", "agents/council", "agents/pay-approved"]);
 
 function mockApiBase(): string | null {
   const raw = process.env.MOCK_API_PORT ?? "8300";
