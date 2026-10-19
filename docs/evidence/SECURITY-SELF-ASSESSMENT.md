@@ -60,7 +60,8 @@ found.** The same tool runs as a pre-commit hook.
   Opus run in `runs/`. Model output varies between runs.
 - **G-14 and G-15 are off.** Written and tested, not enabled in verdicts.
 - **Hosted agents need an Anthropic API key and spend money.** Each run is capped by
-  `LLM_RUN_BUDGET_USD`; there is no daily cap in code yet. No replay recordings exist yet, so if the
+  `LLM_RUN_BUDGET_USD`, and each service also has a daily cap (`LLM_DAILY_BUDGET_USD`): once a
+  day's spend reaches it, new Claude calls are refused and the run fails closed. No replay recordings exist yet, so if the
   model is unavailable the hosted demo cannot propose or review (it fails closed, but it stops).
 - **Verdict age is fixed at 7 days** in the wallet, not set per business in the rulebook.
 - **Decisions can come from the owner or the finance role.** There is no per-amount approver limit.

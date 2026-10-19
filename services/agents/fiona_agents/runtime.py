@@ -34,7 +34,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from fiona_agents import credentials
+from fiona_agents import credentials, spend
 
 log = logging.getLogger("fiona_agents.runtime")
 
@@ -236,6 +236,10 @@ def _invoke(record: dict[str, Any], journal: Path, timeout: float) -> dict[str, 
     executable = shutil.which("claude")
     if executable is None:
         raise AgentFailure("Claude CLI ('claude') is not on PATH")
+    try:
+        spend.check()
+    except spend.BudgetExhausted as exc:
+        raise AgentFailure(str(exc)) from exc
     prompt = load_prompt(record.get("prompt") or agent)
     toolbox = record.get("toolbox", agent)
     ephemeral = bool(record.get("ephemeral"))
@@ -299,6 +303,7 @@ def _invoke(record: dict[str, Any], journal: Path, timeout: float) -> dict[str, 
         if session and "--resume" in cmd and "session" in detail.lower():
             reset_memory(tenant_id, agent)  # a lost session must not block the agent forever
         raise AgentFailure(f"Claude CLI exited {proc.returncode}: {detail}") from exc
+    spend.record(envelope.get("total_cost_usd"))
     if envelope.get("is_error") or proc.returncode != 0:
         raise AgentFailure(f"Claude CLI error: {str(envelope.get('result'))[:400]}")
     report = envelope.get("structured_output")
@@ -340,6 +345,10 @@ def structured_call(
     executable = shutil.which("claude")
     if executable is None:
         raise AgentFailure("Claude CLI ('claude') is not on PATH")
+    try:
+        spend.check()
+    except spend.BudgetExhausted as exc:
+        raise AgentFailure(str(exc)) from exc
     workdir = home() / "work" / workdir_name
     workdir.mkdir(parents=True, exist_ok=True)
     cmd = [
@@ -382,6 +391,7 @@ def structured_call(
         raise AgentFailure(
             f"Claude CLI exited {proc.returncode}: {(proc.stderr or proc.stdout)[:300]}"
         ) from exc
+    spend.record(envelope.get("total_cost_usd"))
     output = envelope.get("structured_output")
     if envelope.get("is_error") or not isinstance(output, dict):
         raise AgentFailure(f"Claude CLI error: {str(envelope.get('result'))[:300]}")

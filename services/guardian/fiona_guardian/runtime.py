@@ -20,6 +20,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from fiona_guardian import spend
+
 log = logging.getLogger("fiona_guardian.runtime")
 
 DEFAULT_MODEL = "claude-opus-5-5"
@@ -64,6 +66,10 @@ def run_structured(
     executable = shutil.which("claude")
     if executable is None:
         raise RuntimeFailure("Claude CLI ('claude') is not on PATH")
+    try:
+        spend.check()
+    except spend.BudgetExhausted as exc:
+        raise RuntimeFailure(str(exc)) from exc
     model = model_name()
     cmd = [
         executable,
@@ -108,6 +114,7 @@ def run_structured(
     except json.JSONDecodeError as exc:
         detail = (proc.stderr or proc.stdout).strip()[:300]
         raise RuntimeFailure(f"Claude CLI exited {proc.returncode}: {detail}") from exc
+    spend.record(envelope.get("total_cost_usd"))
     if envelope.get("is_error") or proc.returncode != 0:
         raise RuntimeFailure(f"Claude CLI error: {str(envelope.get('result'))[:300]}")
     output = envelope.get("structured_output")
