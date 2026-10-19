@@ -1,4 +1,5 @@
 import { AdminError, createUser, listUsers, requireSuperAdmin } from "@/lib/admin";
+import { allow, clientKey, tooMany } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,8 @@ function fail(err: unknown): Response {
 }
 
 /** Every account (super admin only). */
-export async function GET() {
+export async function GET(request?: Request) {
+  if (!allow(`admin:${request ? clientKey(request) : "unknown"}`, 60, 60_000)) return tooMany();
   try {
     await requireSuperAdmin();
     return Response.json({ api_version: "v1", users: await listUsers() }, { headers: { "cache-control": "no-store" } });
@@ -21,6 +23,7 @@ export async function GET() {
 
 /** Create an account with a workspace and role; the temporary password is returned once. */
 export async function POST(request: Request) {
+  if (!allow(`admin:${clientKey(request)}`, 60, 60_000)) return tooMany();
   try {
     await requireSuperAdmin();
     const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;

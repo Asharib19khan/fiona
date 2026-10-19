@@ -42,8 +42,21 @@ def run_claude_cli(
         raise RuntimeError("Claude CLI ('claude') is not found on PATH.")
 
     model = ROLE_MODELS.get(role, "sonnet")
-    # Pure headless non-interactive invocation
-    cmd = ["claude", "-p", prompt, "--model", model, "--tools", ""]
+    # Headless, no tools, no MCP servers, no local settings or slash commands. The prompt goes on
+    # stdin, never the command line, so text that starts with "--" can't be read as a CLI flag.
+    cmd = [
+        "claude",
+        "-p",
+        "--model",
+        model,
+        "--tools",
+        "",
+        "--strict-mcp-config",
+        "--setting-sources",
+        "",
+        "--disable-slash-commands",
+        "--no-session-persistence",
+    ]
     if system_prompt:
         cmd.extend(["--system-prompt", system_prompt])
 
@@ -51,7 +64,7 @@ def run_claude_cli(
     try:
         proc = subprocess.run(
             cmd,
-            stdin=subprocess.DEVNULL,
+            input=prompt,
             capture_output=True,
             text=True,
             timeout=timeout_seconds,

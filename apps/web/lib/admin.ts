@@ -70,6 +70,17 @@ export async function requireSuperAdmin(): Promise<{ id: string; email: string }
   if (!isSuperAdmin((user.app_metadata ?? {}) as Record<string, unknown>, user.email)) {
     throw new AdminError(403, "super_admin_only", "Only the super admin can manage accounts.");
   }
+  // Two-step verification is mandatory for the super admin: this session must have used an
+  // authenticator (token at aal2), with no exception for an account that never set one up.
+  // The aal comes from the verified token, never the cookie. Any failure refuses.
+  const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
+  const verified = !claimsError && claimsData?.claims?.sub === user.id && claimsData.claims.aal === "aal2";
+  if (!verified) {
+    const enrolled = (user.factors ?? []).some((factor) => factor.status === "verified");
+    throw enrolled
+      ? new AdminError(401, "mfa_required", "Enter your two-step code first.")
+      : new AdminError(403, "mfa_setup_required", "Turn on two-step verification to manage accounts.");
+  }
   return { id: user.id, email: user.email };
 }
 

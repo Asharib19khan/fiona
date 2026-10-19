@@ -15,6 +15,7 @@ from starlette.datastructures import UploadFile
 from fiona_agents.auth import AuthNotConfigured, TokenError, verify_agents_token
 from fiona_agents.extraction import MAX_DOCUMENT_BYTES, ExtractionError, extract_bill
 from fiona_agents.replay import ReplayUnavailable, provider_name, replay_answer
+from fiona_agents.team_api import principal
 
 router = APIRouter(tags=["agents"])
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -190,8 +191,21 @@ def briefing() -> dict[str, Any]:
     return _fixture("packages/contracts/examples/Briefing.seed-42.json")
 
 
+_MAX_RUNS = 500
+
+
+def _remember(run_id: str, record: dict[str, Any]) -> None:
+    """Keep recent answers for the run lookup, bounded so callers can't grow memory forever."""
+    _runs[run_id] = record
+    while len(_runs) > _MAX_RUNS:
+        _runs.pop(next(iter(_runs)))
+
+
 @router.post("/v1/agents/ask")
-def ask(body: AskRequest) -> dict[str, Any]:
+def ask(body: AskRequest, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    # Same rule as the team endpoints: a signed 60-second token when INTERNAL_JWT_SECRET is set,
+    # refused in live mode without one. Otherwise anyone could spend the model on this account.
+    caller = principal(authorization)
     provider = provider_name()
     if provider == "claude_cli":
         from fiona_agents.cli_bridge import is_claude_cli_available, run_claude_cli
@@ -222,12 +236,16 @@ def ask(body: AskRequest) -> dict[str, Any]:
                         "recorded_at": "2026-10-22T04:00:00Z",
                     },
                 }
-                _runs[run_id] = {
-                    "api_version": "v1",
-                    "status": "completed",
-                    "answer": answer,
-                    "meta": response["meta"],
-                }
+                _remember(
+                    run_id,
+                    {
+                        "api_version": "v1",
+                        "status": "completed",
+                        "answer": answer,
+                        "meta": response["meta"],
+                        "tenant_id": caller.tenant_id,
+                    },
+                )
                 return response
             except Exception as exc:
                 # Fallback gracefully to replay if CLI call encounters timeout/network glitch
@@ -260,20 +278,27 @@ def ask(body: AskRequest) -> dict[str, Any]:
             "recorded_at": "2026-10-22T04:00:00Z",
         },
     }
-    _runs[replay.run_id] = {
-        "api_version": "v1",
-        "status": "completed",
-        "answer": replay.answer,
-        "meta": response["meta"],
-    }
+    _remember(
+        replay.run_id,
+        {
+            "api_version": "v1",
+            "status": "completed",
+            "answer": replay.answer,
+            "meta": response["meta"],
+            "tenant_id": caller.tenant_id,
+        },
+    )
     return response
 
 
 @router.get("/v1/agents/runs/{run_id}")
-def agent_run(run_id: str) -> dict[str, Any]:
-    if run_id not in _runs:
+def agent_run(run_id: str, authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    caller = principal(authorization)
+    record = _runs.get(run_id)
+    # Another workspace's run looks exactly like a missing one.
+    if record is None or record.get("tenant_id") != caller.tenant_id:
         raise HTTPException(
             status_code=404,
             detail={"code": "not_found", "message": "No replay run matches this ID."},
         )
-    return _runs[run_id]
+    return {key: value for key, value in record.items() if key != "tenant_id"}

@@ -23,3 +23,14 @@ def test_run_claude_cli_mocked() -> None:
             assert "claude" in args
             assert "--model" in args
             assert "sonnet" in args
+
+
+def test_prompt_goes_on_stdin_so_it_cannot_become_a_flag() -> None:
+    with mock.patch("fiona_agents.cli_bridge.is_claude_cli_available", return_value=True):
+        with mock.patch("subprocess.run") as mock_sub:
+            mock_sub.return_value = mock.Mock(returncode=0, stdout="ok", stderr="")
+            run_claude_cli("--dangerously-skip-permissions", role="reason")
+            args = mock_sub.call_args[0][0]
+            assert "--dangerously-skip-permissions" not in args
+            assert mock_sub.call_args.kwargs["input"] == "--dangerously-skip-permissions"
+            assert "--strict-mcp-config" in args

@@ -4,6 +4,7 @@ import { getMockBriefing, getMockMandates, getMockProposal, getMockProposals, ty
 import { hasInternalJwtSecret } from "@/lib/server-auth";
 import { agentsRequest, readEnginePath, exportAuditEvidence, importEngine, postEngine, readEngine, type EngineRead, type ReadResult } from "@/lib/server-read";
 import { getWorkspaceSession } from "@/lib/session";
+import { allow, tooMany } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -125,7 +126,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
 
 export async function POST(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
-  if (!(await getWorkspaceSession())) return error(401, "not_signed_in", "Sign in to a workspace first.");
+  const session = await getWorkspaceSession();
+  if (!session) return error(401, "not_signed_in", "Sign in to a workspace first.");
+  // Writes start agent runs and model calls; cap them per person.
+  if (!allow(`write:${session.userId}`, 60, 60_000)) return tooMany();
   const joined = path.join("/");
   if (joined === "agents/read-bill") {
     const bytes = await readLimitedBody(request, 7_300_000);

@@ -301,6 +301,19 @@ def test_team_api_needs_a_token_when_auth_is_configured(monkeypatch: pytest.Monk
     assert res.status_code == 401
 
 
+def test_ask_and_run_lookup_need_a_token_when_auth_is_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The ask endpoint can spend the model, so it follows the team API's auth rule."""
+    client = TestClient(create_app())
+    monkeypatch.setenv("INTERNAL_JWT_SECRET", "s" * 40)
+    assert client.post("/v1/agents/ask", json={"question": "cash?"}).status_code == 401
+    assert client.get("/v1/agents/runs/run_x").status_code == 401
+    monkeypatch.delenv("INTERNAL_JWT_SECRET")
+    monkeypatch.setenv("FIONA_MODE", "live")
+    assert client.post("/v1/agents/ask", json={"question": "cash?"}).status_code == 503
+
+
 def test_live_runs_are_off_in_replay_mode(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("INTERNAL_JWT_SECRET", raising=False)
     monkeypatch.delenv("FIONA_MODE", raising=False)

@@ -6,9 +6,17 @@ import { GET as listRoute } from "@/app/api/admin/users/route";
 
 vi.mock("@/lib/supabase/server", () => ({ supabaseServer: vi.fn(), authConfigured: () => true }));
 
-function signedInAs(user: { email: string; app_metadata: Record<string, unknown> } | null) {
+const USER_ID = "11111111-1111-1111-1111-111111111111";
+
+function signedInAs(
+  user: { email: string; app_metadata: Record<string, unknown>; factors?: Array<{ status: string }> } | null,
+  aal: "aal1" | "aal2" = "aal1",
+) {
   vi.mocked(supabaseServer).mockResolvedValue({
-    auth: { getUser: async () => ({ data: { user: user && { id: "11111111-1111-1111-1111-111111111111", ...user } }, error: null }) },
+    auth: {
+      getUser: async () => ({ data: { user: user && { id: USER_ID, ...user } }, error: null }),
+      getClaims: async () => ({ data: user ? { claims: { sub: USER_ID, aal } } : null, error: null }),
+    },
   } as never);
 }
 
@@ -38,7 +46,36 @@ describe("super admin", () => {
     await expect(requireSuperAdmin()).rejects.toMatchObject({ status: 403 });
     signedInAs(null);
     await expect(requireSuperAdmin()).rejects.toMatchObject({ status: 401 });
-    signedInAs({ email: "boss@example.com", app_metadata: { super_admin: true } });
+    signedInAs({ email: "boss@example.com", app_metadata: { super_admin: true }, factors: [{ status: "verified" }] }, "aal2");
+    await expect(requireSuperAdmin()).resolves.toMatchObject({ email: "boss@example.com" });
+  });
+
+  it("refuses a super admin who never set up two-step verification: it is mandatory", async () => {
+    signedInAs({ email: "boss@example.com", app_metadata: { super_admin: true } }, "aal1");
+    await expect(requireSuperAdmin()).rejects.toMatchObject({ status: 403, code: "mfa_setup_required" });
+    const res = await listRoute();
+    expect(res.status).toBe(403);
+    expect((await res.json()).error.code).toBe("mfa_setup_required");
+  });
+
+  it("refuses when the verified token belongs to someone else", async () => {
+    vi.mocked(supabaseServer).mockResolvedValue({
+      auth: {
+        getUser: async () => ({ data: { user: { id: USER_ID, email: "boss@example.com", app_metadata: { super_admin: true }, factors: [{ status: "verified" }] } }, error: null }),
+        getClaims: async () => ({ data: { claims: { sub: "99999999-9999-9999-9999-999999999999", aal: "aal2" } }, error: null }),
+      },
+    } as never);
+    await expect(requireSuperAdmin()).rejects.toMatchObject({ code: "mfa_required" });
+  });
+
+  it("asks a super admin with an authenticator for the two-step code before any admin call", async () => {
+    const boss = { email: "boss@example.com", app_metadata: { super_admin: true }, factors: [{ status: "verified" }] };
+    signedInAs(boss, "aal1");
+    await expect(requireSuperAdmin()).rejects.toMatchObject({ status: 401, code: "mfa_required" });
+    const res = await listRoute();
+    expect(res.status).toBe(401);
+    expect((await res.json()).error.code).toBe("mfa_required");
+    signedInAs(boss, "aal2");
     await expect(requireSuperAdmin()).resolves.toMatchObject({ email: "boss@example.com" });
   });
 
