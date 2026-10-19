@@ -34,6 +34,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from fiona_agents import credentials
+
 log = logging.getLogger("fiona_agents.runtime")
 
 PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
@@ -275,10 +277,12 @@ def _invoke(record: dict[str, Any], journal: Path, timeout: float) -> dict[str, 
         cmd += ["--max-budget-usd", budget]
 
     task = f"Today's task (run {record['id']}, tenant {tenant_id}):\n{record['task']}"
+    env = _claude_env(tenant_id)
     try:
         proc = subprocess.run(
             cmd,
             input=task,
+            env=env,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -312,6 +316,14 @@ def _invoke(record: dict[str, Any], journal: Path, timeout: float) -> dict[str, 
     }
 
 
+def _claude_env(tenant_id: str | None) -> dict[str, str] | None:
+    """The workspace's own Claude credential (see credentials.py); fail closed as an AgentFailure."""
+    try:
+        return credentials.claude_env(tenant_id)
+    except credentials.CredentialUnavailable as exc:
+        raise AgentFailure(str(exc)) from exc
+
+
 def structured_call(
     prompt: str,
     *,
@@ -320,6 +332,7 @@ def structured_call(
     model: str,
     timeout: float,
     workdir_name: str,
+    tenant_id: str | None = None,
 ) -> dict[str, Any]:
     """One stateless, tool-less Claude call whose answer must match `schema` (for example
     reading a bill). Same isolation as an agent run: own empty directory, no settings, no
@@ -348,10 +361,12 @@ def structured_call(
         "--disable-slash-commands",
         "--no-session-persistence",
     ]
+    env = _claude_env(tenant_id)
     try:
         proc = subprocess.run(
             cmd,
             input=prompt,
+            env=env,
             capture_output=True,
             text=True,
             encoding="utf-8",

@@ -17,7 +17,7 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 
-from fiona_guardian import engine_client, reviewer
+from fiona_guardian import credentials, engine_client, reviewer
 from fiona_guardian.replay import guardian_rules
 
 router = APIRouter(tags=["guardian"])
@@ -58,6 +58,19 @@ def _authorise(token: str | None) -> None:
         )
 
 
+def _review_with_workspace_claude(tenant_id: str, packet: dict[str, Any]) -> dict[str, Any]:
+    """Review with this workspace's own Claude account. If its connection can't be read, the
+    answer is an error, which the engine records as a CHECK_ERROR escalation (fail closed)."""
+    live = reviewer.provider() == "claude_cli" and not reviewer._flag("AGENTS_FORCE_REPLAY")
+    if not live:
+        return reviewer.review(packet)
+    try:
+        env = credentials.claude_env(tenant_id)
+    except credentials.CredentialUnavailable as exc:
+        return {"prompt_version": reviewer.PROMPT_VERSION, "error": f"AI connection: {exc}"[:500]}
+    return reviewer.review(packet, claude_env=env)
+
+
 def run_review(tenant_id: str, proposal_id: str) -> dict[str, Any] | None:
     """Fetch, review, record. Returns the engine's new verdict, or None when nothing was recorded."""
     with _slots:
@@ -68,7 +81,7 @@ def run_review(tenant_id: str, proposal_id: str) -> dict[str, Any] | None:
             return None
         if not packet.get("review_required"):
             return None
-        answer = reviewer.review(packet)
+        answer = _review_with_workspace_claude(tenant_id, packet)
         try:
             recorded = engine_client.post_review(
                 tenant_id,

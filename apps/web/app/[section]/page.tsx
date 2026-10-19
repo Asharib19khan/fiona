@@ -331,7 +331,7 @@ async function LaunchLabScreen() {
             <span aria-hidden="true">●</span>
             <span><strong>Run by the engine</strong> · Your costs and price, plus comparable products and lead times from your ledger. The odds come from a simulation of these assumptions.</span>
           </div>
-          <LaunchLabSimulator currency={currency} />
+          <LaunchLabSimulator currency={currency} canSaveDefaults={session?.role === "owner"} />
         </>
       ) : (
         <DegradedBanner>Sign in to a registered workspace to run a launch simulation.</DegradedBanner>
@@ -396,12 +396,12 @@ async function WalletScreen() {
 }
 
 export function generateStaticParams() {
-  return Object.keys(routes).filter((key) => key !== "briefing" && key !== "mandates" && key !== "payment-timing").map((section) => ({ section }));
+  return Object.keys(routes).filter((key) => key !== "briefing" && key !== "mandates" && key !== "ai-connection" && key !== "payment-timing").map((section) => ({ section }));
 }
 
 export default async function WorkspaceSection({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
-  if (!Object.hasOwn(routes, section) || section === "briefing" || section === "mandates" || section === "payment-timing") notFound();
+  if (!Object.hasOwn(routes, section) || section === "briefing" || section === "mandates" || section === "ai-connection" || section === "payment-timing") notFound();
   if (section === "forecast") return <ForecastScreen />;
   if (section === "financing") return <FinancingLiveScreen />;
   if (section === "analysis") return <AnalysisScreen />;

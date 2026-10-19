@@ -98,6 +98,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
   if (path.length === 3 && path[0] === "proposals" && path[2] === "trace" && /^prop_[A-Za-z0-9_]+$/.test(path[1] ?? "")) {
     return relay(await readEnginePath(`/v1/proposals/${path[1]}/trace`), "The proposal trail");
   }
+  // Workspace settings. The AI connection read shows the mode and last four characters only;
+  // the secret itself is served to Fiona's own services, never through this route.
+  if (joined === "settings/ai" || joined === "settings/launch-lab") {
+    return relay(await readEnginePath(`/v1/${joined}`), "Workspace settings");
+  }
   if (joined === "parties") {
     const q = (new URL(request.url).searchParams.get("q") ?? "").trim();
     if (q.length < 2 || q.length > 120) return error(400, "invalid_query", "Search with 2 to 120 characters.");
@@ -140,6 +145,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ pat
     try { body = JSON.parse(new TextDecoder().decode(bytes)); }
     catch { return error(400, "invalid_json", "The request must be valid JSON."); }
     return relay(await agentsRequest("POST", "/v1/agents/read-bill", body, 120_000), "Reading a bill");
+  }
+  if (joined === "settings/ai" || joined === "settings/launch-lab") {
+    const bytes = await readLimitedBody(request, 4 * 1024);
+    if (!bytes) return error(413, "request_too_large", "Settings are limited to 4 KB.");
+    let change: Record<string, unknown>;
+    try { change = JSON.parse(new TextDecoder().decode(bytes)); }
+    catch { return error(400, "invalid_json", "The settings must be valid JSON."); }
+    if (!change || typeof change !== "object" || Array.isArray(change)) return error(400, "invalid_json", "The settings must be a JSON object.");
+    return relay(await postEngine(joined, change), "Changing workspace settings");
+  }
+  if (joined === "agents/ai/test") {
+    return relay(await agentsRequest("POST", "/v1/agents/ai/test", {}, 90_000), "Testing the AI connection");
   }
   if (joined === "launch-lab/simulate") {
     const bytes = await readLimitedBody(request, 16 * 1024);

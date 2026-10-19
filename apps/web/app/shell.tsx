@@ -328,9 +328,13 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
 
           <div className="sidebar-bottom">
             <div className="side-section-label">ENTERPRISE GOVERNANCE</div>
-            <Link className={`nav-item ${pathname.startsWith("/settings") ? "nav-item-active" : ""}`} href="/settings/mandates">
+            <Link className={`nav-item ${pathname.startsWith("/settings/mandates") ? "nav-item-active" : ""}`} href="/settings/mandates">
               <span className="nav-icon">⚙</span>
               <span>Mandates & Policies</span>
+            </Link>
+            <Link className={`nav-item ${pathname.startsWith("/settings/ai") ? "nav-item-active" : ""}`} href="/settings/ai">
+              <span className="nav-icon">✦</span>
+              <span>AI connection</span>
             </Link>
             {user.superAdmin && (
               <Link className={`nav-item ${pathname.startsWith("/admin") ? "nav-item-active" : ""}`} href="/admin">

@@ -198,7 +198,7 @@ def check(output: dict[str, Any], text: str) -> dict[str, Any]:
     }
 
 
-def read_bill(content: bytes, filename: str) -> dict[str, Any]:
+def read_bill(content: bytes, filename: str, tenant_id: str | None = None) -> dict[str, Any]:
     text = document_text(content, filename)
     model = os.environ.get("FIONA_MODEL_EXTRACT") or "claude-haiku-5-5"
     pinned = os.environ.get("FIONA_NOW")  # the business's clock (a demo dataset pins it)
@@ -216,6 +216,7 @@ def read_bill(content: bytes, filename: str) -> dict[str, Any]:
             model=model,
             timeout=float(os.environ.get("READ_BILL_TIMEOUT_SECONDS", "90")),
             workdir_name="reader",
+            tenant_id=tenant_id,
         )
     except runtime.AgentFailure as exc:
         raise ReadError("model_unavailable", f"The bill could not be read: {exc}", 503) from exc

@@ -26,6 +26,8 @@ const enginePosts = {
   "participation/run": { path: "/v1/participation/run" },
   "proposals": { path: "/v1/proposals" },
   "launch-lab/simulate": { path: "/v1/launch-lab/simulate" },
+  "settings/ai": { path: "/v1/settings/ai" },
+  "settings/launch-lab": { path: "/v1/settings/launch-lab" },
 } as const;
 
 export type EngineWrite = keyof typeof enginePosts;
@@ -244,7 +246,7 @@ export async function agentsRequest(method: "GET" | "POST", path: string, body?:
 
 /** Server-only engine GET of one vetted path (for example a single proposal). */
 export async function readEnginePath(path: string): Promise<ReadResult> {
-  if (!/^\/v1\/(proposals\/prop_[A-Za-z0-9_]+(\/trace)?|bills\/bill_[A-Za-z0-9_]+|parties\?q=[^&#]{2,160})$/.test(path)) {
+  if (!/^\/v1\/(proposals\/prop_[A-Za-z0-9_]+(\/trace)?|bills\/bill_[A-Za-z0-9_]+|parties\?q=[^&#]{2,160}|settings\/(ai|launch-lab))$/.test(path)) {
     return { kind: "unavailable", status: 400, message: "Unknown engine route." };
   }
   const headers = await sessionHeaders();

@@ -87,5 +87,10 @@ def review_packet(tenant_id: str, proposal_id: str) -> dict[str, Any]:
     return _request("GET", f"/v1/proposals/{quote(proposal_id)}/review-packet", tenant_id)
 
 
+def ai_credential(tenant_id: str) -> dict[str, Any]:
+    """The workspace's AI connection secret (the engine gives it only to Fiona's services)."""
+    return _request("GET", "/v1/settings/ai/credential", tenant_id)
+
+
 def post_review(tenant_id: str, proposal_id: str, review: dict[str, Any]) -> dict[str, Any]:
     return _request("POST", f"/v1/proposals/{quote(proposal_id)}/review", tenant_id, review)

@@ -12,6 +12,7 @@ dependencies = [
   "numpy>=2.5.4",
   "pyyaml>=6.0.3",
   "fiona-contracts",
+  "cryptography>=50.0.2",
 ]
 
 [dependency-groups]

@@ -120,7 +120,12 @@ def _record(key: str, answer: dict[str, Any]) -> None:
     (REPLAY_DIR / f"{key}.json").write_text(json.dumps(keep, indent=2) + "\n", encoding="utf-8")
 
 
-def review(packet: dict[str, Any], *, timeout_seconds: float | None = None) -> dict[str, Any]:
+def review(
+    packet: dict[str, Any],
+    *,
+    timeout_seconds: float | None = None,
+    claude_env: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """The G-12 answer for one packet: live, replayed, or an error (never a silent pass)."""
     key = replay_key(packet)
     base = {"prompt_version": PROMPT_VERSION}
@@ -147,6 +152,7 @@ def review(packet: dict[str, Any], *, timeout_seconds: float | None = None) -> d
             system_prompt=SYSTEM_PROMPT,
             schema=OUTPUT_SCHEMA,
             timeout_seconds=timeout,
+            env=claude_env,
         )
     except runtime.RuntimeFailure as exc:
         log.warning("live review failed: %s", exc)

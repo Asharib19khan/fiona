@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, EmptyState, MoneyText, OutcomeBadge } from "@fiona/ui";
 
 type Json = Record<string, unknown>;
@@ -58,13 +58,81 @@ const ORIGIN: Record<string, string> = {
   draft_default: "Unverified default",
 };
 
+/** Business-wide defaults: a share of unit cost (%) for per-unit costs, amounts for the rest. */
+const ASSUMPTIONS = [
+  { key: "freight_share_bp", label: "Freight (% of unit cost)", kind: "pct" },
+  { key: "packaging_share_bp", label: "Packaging (% of unit cost)", kind: "pct" },
+  { key: "storage_share_bp_per_month", label: "Storage per month (% of unit cost)", kind: "pct" },
+  { key: "launch_costs_minor", label: "One-off launch costs", kind: "money" },
+  { key: "marketing_monthly_minor", label: "Marketing per month", kind: "money" },
+  { key: "monthly_fixed_costs_minor", label: "Other fixed costs per month", kind: "money" },
+  { key: "discount_rate_bp", label: "Average discount (%)", kind: "pct" },
+  { key: "return_rate_bp", label: "Returns (% of units sold)", kind: "pct" },
+  { key: "payment_fee_rate_bp", label: "Payment fees (%)", kind: "pct" },
+  { key: "lead_time_days", label: "Supplier lead time (days)", kind: "int" },
+  { key: "moq", label: "Minimum order (units)", kind: "int" },
+  { key: "horizon_months", label: "Plan horizon (months)", kind: "int" },
+] as const;
+
+type AssumptionKey = (typeof ASSUMPTIONS)[number]["key"];
+
+/** A typed number, or null when blank or not a number. */
+function numberOf(text: string): number | null {
+  if (text.trim() === "") return null;
+  const value = Number(text.replaceAll(",", ""));
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
 /**
  * Launch Lab: the owner states a product's costs, price and capital, plus a what-if; the engine
  * resolves the rest from the workspace's ledger (comparable products, lead times), runs the
  * Monte Carlo simulation and returns a labelled recommendation. Nothing here is computed in the
  * browser, and no order or commitment is created.
  */
-export function LaunchLabSimulator({ currency }: { currency: string }) {
+export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: string; canSaveDefaults: boolean }) {
+  const [assume, setAssume] = useState<Record<string, string>>({});
+  const [defaultsNote, setDefaultsNote] = useState<string | null>(null);
+  const [savingDefaults, setSavingDefaults] = useState(false);
+
+  // The business's saved defaults prefill the assumptions (stored in this workspace's currency).
+  useEffect(() => {
+    let live = true;
+    void fetch("/api/fiona/settings/launch-lab", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: Json | null) => {
+        const saved = obj(data?.defaults);
+        if (!live || !saved || saved.currency !== currency) return;
+        const filled: Record<string, string> = {};
+        for (const item of ASSUMPTIONS) {
+          const value = saved[item.key];
+          if (typeof value !== "number") continue;
+          filled[item.key] = String(item.kind === "int" ? value : value / 100);
+        }
+        setAssume(filled);
+        setDefaultsNote("Prefilled from your business defaults.");
+      })
+      .catch(() => undefined);
+    return () => { live = false; };
+  }, [currency]);
+
+  async function saveDefaults() {
+    const body: Json = { currency };
+    for (const item of ASSUMPTIONS) {
+      const value = numberOf(assume[item.key] ?? "");
+      if (value === null) continue;
+      body[item.key] = item.kind === "int" ? Math.round(value) : Math.round(value * 100);
+    }
+    setSavingDefaults(true);
+    try {
+      const res = await fetch("/api/fiona/settings/launch-lab", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const data = (await res.json().catch(() => ({}))) as Json;
+      setDefaultsNote(res.ok ? "Saved as your business defaults. Every new launch plan starts from these." : String(obj(data.error)?.message ?? "The defaults could not be saved."));
+    } catch {
+      setDefaultsNote("The defaults could not be saved. Try again in a moment.");
+    } finally {
+      setSavingDefaults(false);
+    }
+  }
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [comparables, setComparables] = useState("");
@@ -113,10 +181,32 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
     };
     const reserve = money(capital);
     if (reserve) plan.available_capital = reserve;
-    // Blank means "let the engine assume"; zero is a real answer ("no freight").
-    for (const [field, text] of [["freight_per_unit", freight], ["packaging_per_unit", packaging]] as const) {
-      const value = Number(text.replaceAll(",", ""));
-      if (text.trim() !== "" && Number.isFinite(value) && value >= 0) plan[field] = { minor: Math.round(value * 100), currency };
+    // Precedence: this product's figure, then the business default, then the engine's guess.
+    // Blank means "not given"; zero is a real answer ("no freight").
+    const given = (key: AssumptionKey) => numberOf(assume[key] ?? "");
+    const perUnit = (amount: string, key: AssumptionKey) => {
+      const own = numberOf(amount);
+      if (own !== null) return { minor: Math.round(own * 100), currency };
+      const pct = given(key);
+      return pct === null ? null : { minor: Math.round((cost.minor * pct) / 100), currency };
+    };
+    const freightMoney = perUnit(freight, "freight_share_bp");
+    const packagingMoney = perUnit(packaging, "packaging_share_bp");
+    const storagePct = given("storage_share_bp_per_month");
+    if (freightMoney) plan.freight_per_unit = freightMoney;
+    if (packagingMoney) plan.packaging_per_unit = packagingMoney;
+    if (storagePct !== null) plan.storage_cost_per_unit_month = { minor: Math.round((cost.minor * storagePct) / 100), currency };
+    for (const [field, key] of [["launch_costs", "launch_costs_minor"], ["marketing_monthly", "marketing_monthly_minor"], ["monthly_fixed_costs", "monthly_fixed_costs_minor"]] as const) {
+      const value = given(key);
+      if (value !== null) plan[field] = { minor: Math.round(value * 100), currency };
+    }
+    for (const field of ["discount_rate_bp", "return_rate_bp", "payment_fee_rate_bp"] as const) {
+      const value = given(field);
+      if (value !== null) plan[field] = Math.min(9_999, Math.round(value * 100));
+    }
+    for (const field of ["lead_time_days", "moq", "horizon_months"] as const) {
+      const value = given(field);
+      if (value !== null) plan[field] = Math.round(value);
     }
     setBusy(true);
     setProblem(null);
@@ -168,9 +258,27 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
             <label><span className="spec-label">Unit cost</span><input required inputMode="decimal" placeholder="0" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} /></label>
             <label><span className="spec-label">Selling price</span><input required inputMode="decimal" placeholder="0" value={price} onChange={(e) => setPrice(e.target.value)} /></label>
             <label><span className="spec-label">Capital you can commit (optional)</span><input inputMode="decimal" placeholder="0" value={capital} onChange={(e) => setCapital(e.target.value)} /></label>
-            <label><span className="spec-label">Freight per unit (optional)</span><input inputMode="decimal" placeholder="Engine assumes if blank" value={freight} onChange={(e) => setFreight(e.target.value)} /></label>
-            <label><span className="spec-label">Packaging per unit (optional)</span><input inputMode="decimal" placeholder="Engine assumes if blank" value={packaging} onChange={(e) => setPackaging(e.target.value)} /></label>
+            <label><span className="spec-label">This product&apos;s freight per unit (optional)</span><input inputMode="decimal" placeholder="Blank: your default" value={freight} onChange={(e) => setFreight(e.target.value)} /></label>
+            <label><span className="spec-label">This product&apos;s packaging per unit (optional)</span><input inputMode="decimal" placeholder="Blank: your default" value={packaging} onChange={(e) => setPackaging(e.target.value)} /></label>
           </div>
+
+          <details className="launch-assumptions" style={{ padding: "0 15px 12px" }}>
+            <summary className="spec-label" style={{ cursor: "pointer" }}>Assumptions: your business defaults (blank = the engine guesses and flags it)</summary>
+            <div className="admin-form">
+              {ASSUMPTIONS.map((item) => (
+                <label key={item.key}>
+                  <span className="spec-label">{item.label}{item.kind === "money" ? ` (${currency})` : ""}</span>
+                  <input inputMode="decimal" placeholder="Engine guesses" value={assume[item.key] ?? ""} onChange={(e) => setAssume({ ...assume, [item.key]: e.target.value })} />
+                </label>
+              ))}
+            </div>
+            {canSaveDefaults && (
+              <button className="button button-secondary" type="button" onClick={saveDefaults} disabled={savingDefaults}>
+                {savingDefaults ? "Saving…" : "Save these as my business defaults"}
+              </button>
+            )}
+            {defaultsNote && <p className="footnote">{defaultsNote}</p>}
+          </details>
 
           <div className="simulator-controls-grid">
             <label className="slider-group">

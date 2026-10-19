@@ -22,6 +22,11 @@ from engine.forecast.launch_lab.service import ResolvedCase
 from engine.forecast.ledger_source import TenantDataMissing
 from engine.forecast.money import Money
 
+# Default per-unit costs as a share of the product's unit cost (see the freight block below).
+FREIGHT_SHARE_BP = 500
+PACKAGING_SHARE_BP = 250
+STORAGE_SHARE_PER_100K = 625  # 0.625% of unit cost per unit-month (PKR 15 at PKR 2,400)
+
 
 def _in(
     name: str,
@@ -209,26 +214,40 @@ def resolve_case(tenant_id: str, request: LaunchLabRequest) -> ResolvedCase:
             )
         )
 
-    # Freight & Packaging
-    freight_minor = request.freight_per_unit.minor if request.freight_per_unit else 120_00
+    # Freight & Packaging. Without the owner's figure, assume a share of this product's own unit
+    # cost (5% freight, 2.5% packaging), so the default fits a cheap item and a dear one alike
+    # and works in any currency. At the PKR 2,400 base case this is PKR 120 and PKR 60.
+    freight_minor = (
+        request.freight_per_unit.minor
+        if request.freight_per_unit
+        else round(unit_cost_minor * FREIGHT_SHARE_BP / 10_000)
+    )
     inputs.append(
         _in(
             "freight_per_unit",
             freight_minor,
             cur,
             Origin.USER if request.freight_per_unit else Origin.ASSUMPTION,
-            "Courier/freight rate per unit",
+            "Courier/freight rate per unit"
+            if request.freight_per_unit
+            else f"Assumed at {FREIGHT_SHARE_BP / 100:g}% of unit cost (no freight figure given)",
         )
     )
 
-    pkg_minor = request.packaging_per_unit.minor if request.packaging_per_unit else 60_00
+    pkg_minor = (
+        request.packaging_per_unit.minor
+        if request.packaging_per_unit
+        else round(unit_cost_minor * PACKAGING_SHARE_BP / 10_000)
+    )
     inputs.append(
         _in(
             "packaging_per_unit",
             pkg_minor,
             cur,
             Origin.USER if request.packaging_per_unit else Origin.ASSUMPTION,
-            "Packaging and materials per unit",
+            "Packaging and materials per unit"
+            if request.packaging_per_unit
+            else f"Assumed at {PACKAGING_SHARE_BP / 100:g}% of unit cost (no packaging figure given)",
         )
     )
 
@@ -258,7 +277,9 @@ def resolve_case(tenant_id: str, request: LaunchLabRequest) -> ResolvedCase:
     )
 
     storage_minor = (
-        request.storage_cost_per_unit_month.minor if request.storage_cost_per_unit_month else 15_00
+        request.storage_cost_per_unit_month.minor
+        if request.storage_cost_per_unit_month
+        else round(unit_cost_minor * STORAGE_SHARE_PER_100K / 100_000)
     )
     inputs.append(
         _in(

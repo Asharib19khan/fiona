@@ -12,6 +12,7 @@ export const routes = {
   "launch-lab": { href: "/launch-lab", label: "Launch Lab", description: "Test a product launch against your ledger before you commit cash." },
   council: { href: "/council", label: "Council", description: "Compare perspectives on a business decision and keep disagreements visible." },
   audit: { href: "/audit", label: "Audit trail", description: "Follow proposals, Guardian verdicts and simulated wallet events." },
+  "ai-connection": { href: "/settings/ai", label: "AI connection", description: "Choose which Claude account runs this workspace's agents and Guardian." },
   mandates: { href: "/settings/mandates", label: "Mandates & limits", description: "See the autonomy levels and spending limits that constrain each agent." },
   "payment-timing": { href: "/decisions/payment-timing", label: "Payment timing", description: "Compare payment dates against discounts, financing cost and cash buffer." },
 } as const;

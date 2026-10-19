@@ -49,6 +49,7 @@ export const ENV_SPEC = [
   { name: "GUARDIAN_BASE_URL", group: "Services", usedBy: "engine", secret: false, required: [], default: "http://localhost:8200", deployedIn: "Fly (fiona-engine)", validate: url },
   { name: "INTERNAL_JWT_SECRET", group: "Services", usedBy: "web BFF, engine, agents, guardian", secret: true, required: ["live"], deployedIn: "Vercel, Fly (all three)", validate: minLength(32), note: "Signs the BFF's 60-second internal token." },
   { name: "AGENTS_SERVICE_TOKEN", group: "Services", usedBy: "reserved", secret: true, required: [], deployedIn: "-", validate: minLength(24), note: "Unused: each agent signs its own 60-second internal token (role agent) with INTERNAL_JWT_SECRET." },
+  { name: "SETTINGS_ENCRYPTION_KEY", group: "Services", usedBy: "engine", secret: true, required: [], deployedIn: "Fly (fiona-engine)", validate: minLength(43), note: "32 random bytes, base64url. Seals each workspace's own Claude API key or subscription token (AES-GCM). Unset: workspaces can only use the server's own Claude." },
   { name: "GUARDIAN_INBOUND_TOKEN", group: "Services", usedBy: "engine → guardian", secret: true, required: ["live"], deployedIn: "Fly (fiona-engine, fiona-guardian)", validate: minLength(24), note: "Only the engine's proposals service may call the Guardian." },
 
   // Claude (D-001: one capped workspace, two keys)

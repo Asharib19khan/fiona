@@ -59,6 +59,7 @@ def run_structured(
     system_prompt: str,
     schema: dict[str, Any],
     timeout_seconds: float,
+    env: dict[str, str] | None = None,
 ) -> ModelAnswer:
     executable = shutil.which("claude")
     if executable is None:
@@ -91,6 +92,7 @@ def run_structured(
         proc = subprocess.run(
             cmd,
             input=prompt,  # the prompt goes on stdin: no command-line length limit, no quoting
+            env=env,  # the workspace's own Claude credential, or None to inherit this process's
             capture_output=True,
             text=True,
             encoding="utf-8",

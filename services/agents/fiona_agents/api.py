@@ -221,6 +221,7 @@ def ask(body: AskRequest, authorization: str | None = Header(default=None)) -> d
                         "Answer directly and concisely."
                     ),
                     timeout_seconds=25.0,
+                    tenant_id=caller.tenant_id,
                 )
                 import secrets
 

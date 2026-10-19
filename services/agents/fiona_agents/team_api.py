@@ -229,7 +229,7 @@ def read_bill_route(
             400, {"code": "invalid_file", "message": "The file could not be decoded."}
         ) from exc
     try:
-        result = reader.read_bill(content, body.filename)
+        result = reader.read_bill(content, body.filename, who.tenant_id)
     except reader.ReadError as exc:
         raise HTTPException(exc.status, {"code": exc.code, "message": str(exc)}) from exc
     # Suggest the supplier: tax ID first, then IBAN, then name. A suggestion, never a decision.
@@ -244,3 +244,48 @@ def read_bill_route(
             except EngineError:
                 candidates = []
     return {"api_version": "v1", **result, "supplier_candidates": candidates[:5]}
+
+
+@router.post("/v1/agents/ai/test")
+def test_ai_connection(authorization: str | None = Header(default=None)) -> dict[str, Any]:
+    """The owner checks their AI connection: one tiny Claude call with this workspace's
+    credential. Reports whether it worked and how long it took; never echoes the secret."""
+    import time
+
+    from fiona_agents import credentials
+    from fiona_agents.cli_bridge import is_claude_cli_available, run_claude_cli
+
+    who = principal(authorization)
+    if who.role != "owner":
+        raise HTTPException(
+            403, {"code": "owner_only", "message": "Only the owner can test the AI connection."}
+        )
+    _live_enabled()
+    if not is_claude_cli_available():
+        raise HTTPException(
+            503, {"code": "cli_missing", "message": "Claude CLI is not installed on this server."}
+        )
+    try:
+        mode, _ = credentials.lookup(who.tenant_id)
+    except credentials.CredentialUnavailable as exc:
+        return {"api_version": "v1", "ok": False, "mode": None, "message": str(exc)}
+    started = time.monotonic()
+    try:
+        answer = run_claude_cli(
+            "Reply with the single word OK.",
+            role="extract",
+            timeout_seconds=60.0,
+            tenant_id=who.tenant_id,
+        )
+    except Exception as exc:  # any failure is the answer here, shown to the owner
+        message = str(exc)
+        for var in credentials.SECRET_VARS:  # belt and braces: never echo a credential
+            message = message.replace(os.environ.get(var) or "\0", "…")
+        return {"api_version": "v1", "ok": False, "mode": mode, "message": message[:300]}
+    return {
+        "api_version": "v1",
+        "ok": "ok" in answer.lower(),
+        "mode": mode,
+        "message": "Claude answered." if "ok" in answer.lower() else answer[:120],
+        "latency_ms": round((time.monotonic() - started) * 1000),
+    }

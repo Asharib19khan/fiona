@@ -3,7 +3,14 @@
 The database is already done: the hosted Supabase project has every migration (17 tables, RLS forced, no
 `anon`/`authenticated` grants) and the full demo dataset (193 MB). This page covers the other two.
 
+**One new migration since then (19 Oct):** `20261019120000_tenant_settings.sql` (per-workspace settings:
+the AI connection and Launch Lab defaults). Apply it to the hosted database before deploying, with
+`DATABASE_URL` set to the hosted URL: `node scripts/engine-py.mjs engine.ledger.db migrate`. It only adds
+the new table.
+
 Copy secret values from `Y:\Fiona\.env.local`. Never paste them into chat, docs or `fly.toml`.
+`SETTINGS_ENCRYPTION_KEY` seals each business's own Claude key or token: keep the same value forever (a
+new value makes saved keys unreadable, and owners would have to paste them again).
 
 ## 1. Fly: three apps, in this order
 
@@ -17,7 +24,7 @@ the matching `https://….fly.dev` URLs in the other two `fly.toml` files and in
 
 ```powershell
 fly apps create fiona-engine
-fly secrets set --app fiona-engine DATABASE_URL="<SUPABASE_DB_URL from .env.local>" INTERNAL_JWT_SECRET="<from .env.local>" GUARDIAN_INBOUND_TOKEN="<from .env.local>"
+fly secrets set --app fiona-engine DATABASE_URL="<SUPABASE_DB_URL from .env.local>" INTERNAL_JWT_SECRET="<from .env.local>" GUARDIAN_INBOUND_TOKEN="<from .env.local>" SETTINGS_ENCRYPTION_KEY="<from .env.local>"
 fly deploy --config services/engine/fly.toml --dockerfile services/engine/Dockerfile .
 ```
 

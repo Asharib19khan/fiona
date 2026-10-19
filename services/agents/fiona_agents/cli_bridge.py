@@ -13,6 +13,8 @@ import shutil
 import subprocess
 import time
 
+from fiona_agents import credentials
+
 log = logging.getLogger("fiona.cli_bridge")
 
 # High-affinity model routing per agent role
@@ -36,6 +38,7 @@ def run_claude_cli(
     role: str = "default",
     system_prompt: str | None = None,
     timeout_seconds: float = 30.0,
+    tenant_id: str | None = None,
 ) -> str:
     """Execute a prompt via headless Claude CLI with smart role-based model routing."""
     if not is_claude_cli_available():
@@ -60,11 +63,14 @@ def run_claude_cli(
     if system_prompt:
         cmd.extend(["--system-prompt", system_prompt])
 
+    # The workspace's own Claude account, if its owner connected one (fails closed).
+    env = credentials.claude_env(tenant_id)
     t0 = time.monotonic()
     try:
         proc = subprocess.run(
             cmd,
             input=prompt,
+            env=env,
             capture_output=True,
             text=True,
             timeout=timeout_seconds,
