@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from fiona_guardian import api, engine_client, reviewer, runtime
+from fiona_guardian import api, credentials, engine_client, reviewer, runtime
 from fiona_guardian.main import create_app
 
 PRESSURE = (
@@ -146,6 +146,8 @@ def test_review_fetches_its_own_packet_and_posts_the_answer(
         return {"verdict": {"id": "vrd_02", "outcome": "escalate"}}
 
     monkeypatch.setattr(engine_client, "post_review", post)
+    # The workspace uses the server's own Claude (no key of its own).
+    monkeypatch.setattr(credentials, "claude_env", lambda tenant: None)
     monkeypatch.setattr(
         runtime,
         "run_structured",
@@ -165,6 +167,31 @@ def test_review_fetches_its_own_packet_and_posts_the_answer(
     assert res.json()["verdict"]["outcome"] == "escalate"
     assert posted["review"]["reviewed_verdict_id"] == "vrd_01ABC"
     assert posted["review"]["concern"] == "high"
+
+
+def test_unreadable_ai_connection_fails_closed(live, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A workspace connection that can't be read is posted as an error (a CHECK_ERROR
+    escalation), and the model is never called with someone else's account."""
+    posted: dict[str, Any] = {}
+    monkeypatch.setattr(engine_client, "review_packet", lambda tenant, pid: PACKET)
+
+    def post(tenant: str, pid: str, review: dict[str, Any]) -> dict[str, Any]:
+        posted.update(review=review)
+        return {"verdict": {"id": "vrd_03", "outcome": "escalate"}}
+
+    def unreadable(tenant: str) -> None:
+        raise credentials.CredentialUnavailable("the AI connection could not be read (engine 503)")
+
+    def never(*_: Any, **__: Any) -> runtime.ModelAnswer:
+        raise AssertionError("the model must not run without the workspace's connection")
+
+    monkeypatch.setattr(engine_client, "post_review", post)
+    monkeypatch.setattr(credentials, "claude_env", unreadable)
+    monkeypatch.setattr(runtime, "run_structured", never)
+    verdict = api.run_review("ten_karachi_apparel", "prop_1")
+    assert verdict == {"id": "vrd_03", "outcome": "escalate"}
+    assert "AI connection" in posted["review"]["error"]
+    assert "concern" not in posted["review"]
 
 
 def test_unreachable_engine_records_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
