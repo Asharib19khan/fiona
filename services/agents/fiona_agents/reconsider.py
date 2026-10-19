@@ -247,6 +247,18 @@ def _work(record: dict[str, Any]) -> None:
 # ---------------------------------------------------------------- endpoints
 
 
+_SENT_BACK = "Sent back for reconsideration"
+
+
+def _note_from_rejection(proposal: dict[str, Any]) -> str:
+    """The CFO's note from the rejection that sent it back, so a retry keeps it."""
+    for decision in reversed(proposal.get("decisions") or []):
+        note = str(decision.get("note") or "")
+        if decision.get("decision") == "reject" and note.startswith(_SENT_BACK):
+            return note.removeprefix(_SENT_BACK).lstrip(":").strip()[:1_000]
+    return ""
+
+
 class ReconsiderRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     proposal_ids: list[str] = Field(min_length=1, max_length=25)
@@ -284,7 +296,7 @@ def reconsider(
             "id": f"rcn_{secrets.token_hex(6)}",
             "tenant_id": who.tenant_id,
             "proposal_id": pid,
-            "note": body.note.strip(),
+            "note": body.note.strip() or _note_from_rejection(proposal),
             "requested_by": who.user_id,
             "requested_at": _now(),
             "status": "checking",

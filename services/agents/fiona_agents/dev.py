@@ -28,6 +28,9 @@ def load_root_env() -> None:
 
 if __name__ == "__main__":
     load_root_env()
+    # Some drives (mapped or shared folders) send no file-change events, so reload never fired
+    # and new routes stayed missing until a manual restart. Polling works everywhere.
+    os.environ.setdefault("WATCHFILES_FORCE_POLLING", "true")
     uvicorn.run(
         "fiona_agents.main:app",
         host="127.0.0.1",

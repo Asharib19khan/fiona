@@ -122,3 +122,11 @@ def test_off_when_live_agents_are_off(env: dict[str, Any], monkeypatch: Any) -> 
     client = TestClient(create_app())
     res = client.post("/v1/agents/reconsider", json={"proposal_ids": ["prop_1"]})
     assert res.status_code == 503
+
+
+def test_retry_without_note_keeps_the_cfo_note(env: dict[str, Any], monkeypatch: Any) -> None:
+    decisions = [{"decision": "reject", "note": "Sent back for reconsideration: check freight"}]
+    monkeypatch.setitem(PROPOSAL, "decisions", decisions)
+    env["answer"] = '{"source": "neither", "summary": "Fine.", "findings": ["ok"]}'
+    record = _post(note="")
+    assert record["note"] == "check freight"

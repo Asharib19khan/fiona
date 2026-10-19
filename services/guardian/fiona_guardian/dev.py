@@ -28,6 +28,8 @@ def load_root_env() -> None:
 
 if __name__ == "__main__":
     load_root_env()
+    # Some drives send no file-change events, so reload never fired; polling works everywhere.
+    os.environ.setdefault("WATCHFILES_FORCE_POLLING", "true")
     uvicorn.run(
         "fiona_guardian.main:app",
         host="127.0.0.1",

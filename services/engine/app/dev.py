@@ -41,6 +41,8 @@ def code_dirs() -> list[str]:
 
 if __name__ == "__main__":
     load_root_env()
+    # Some drives send no file-change events, so reload never fired; polling works everywhere.
+    os.environ.setdefault("WATCHFILES_FORCE_POLLING", "true")
     uvicorn.run(
         "engine.app.main:app",
         app_dir=str(ENGINE.parent),
