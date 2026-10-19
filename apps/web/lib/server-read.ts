@@ -25,6 +25,7 @@ const enginePosts = {
   "decisions/payment-timing": { path: "/v1/decisions/payment-timing" },
   "participation/run": { path: "/v1/participation/run" },
   "proposals": { path: "/v1/proposals" },
+  "launch-lab/simulate": { path: "/v1/launch-lab/simulate" },
 } as const;
 
 export type EngineWrite = keyof typeof enginePosts;

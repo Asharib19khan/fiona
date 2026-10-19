@@ -141,6 +141,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ pat
     catch { return error(400, "invalid_json", "The request must be valid JSON."); }
     return relay(await agentsRequest("POST", "/v1/agents/read-bill", body, 120_000), "Reading a bill");
   }
+  if (joined === "launch-lab/simulate") {
+    const bytes = await readLimitedBody(request, 16 * 1024);
+    if (!bytes) return error(413, "request_too_large", "A launch plan is limited to 16 KB.");
+    let plan: Record<string, unknown>;
+    try { plan = JSON.parse(new TextDecoder().decode(bytes)); }
+    catch { return error(400, "invalid_json", "The launch plan must be valid JSON."); }
+    if (!plan || typeof plan !== "object" || Array.isArray(plan)) return error(400, "invalid_json", "The launch plan must be a JSON object.");
+    return relay(await postEngine("launch-lab/simulate", plan), "A launch simulation");
+  }
   if (joined === "bills/intake") {
     const bytes = await readLimitedBody(request, 64 * 1024);
     if (!bytes) return error(413, "request_too_large", "The bill is limited to 64 KB of text.");

@@ -1,382 +1,288 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Card, OutcomeBadge } from "@fiona/ui";
+import { useState } from "react";
+import { Card, EmptyState, MoneyText, OutcomeBadge } from "@fiona/ui";
 
-interface LaunchLabSimulatorProps {
-  initialCurrency?: string;
-  defaultCapitalMinor?: number;
+type Json = Record<string, unknown>;
+
+function obj(value: unknown): Json | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value) ? (value as Json) : null;
 }
 
-export function LaunchLabSimulator({
-  defaultCapitalMinor = 180_000_000, // PKR 1.8m
-}: LaunchLabSimulatorProps) {
-  // Base scenario defaults (Winter Shawl)
-  const baseUnitCost = 3500; // PKR
-  const basePrice = 7500; // PKR
-  const baseDemand = 1200; // units over 6 months
-  const marketingBudget = 350_000; // PKR total
-  const monthlyOverhead = 85_000; // PKR / month
-  const [availableCapital, setAvailableCapital] = useState<number>(defaultCapitalMinor / 100); // PKR 1.8m
-  const horizonMonths = 6; // months
+function list(value: unknown): Json[] {
+  return Array.isArray(value) ? value.map(obj).filter((item): item is Json => item !== null) : [];
+}
 
-  // Interactive What-If adjustments
-  const [priceShiftPct, setPriceShiftPct] = useState<number>(0); // -30% to +50%
-  const [demandShiftPct, setDemandShiftPct] = useState<number>(0); // -50% to +80%
-  const [marketingMultiplier, setMarketingMultiplier] = useState<number>(1.0); // 0.5x to 3x
-  const [unitCostShiftPct, setUnitCostShiftPct] = useState<number>(0); // -20% to +40%
-  const [batchSize, setBatchSize] = useState<number>(400); // Initial run
+function strings(value: unknown): string[] {
+  return Array.isArray(value) ? value.map(String) : [];
+}
 
-  // Recalculations
-  const sim = useMemo(() => {
-    const effPrice = Math.round(basePrice * (1 + priceShiftPct / 100));
-    const effUnitCost = Math.round(baseUnitCost * (1 + unitCostShiftPct / 100));
-    const unitContribution = effPrice - effUnitCost;
-    const contributionMarginPct = effPrice > 0 ? (unitContribution / effPrice) * 100 : 0;
+const OUTCOME: Record<string, "approve" | "conditions" | "escalate" | "block"> = {
+  LAUNCH: "approve",
+  PILOT_FIRST: "conditions",
+  REVISE: "escalate",
+  HOLD: "escalate",
+  NOT_RECOMMENDED: "block",
+};
 
-    // Price elasticity: every +10% price change reduces demand by ~8%
-    const elasticityDampening = 1 - (priceShiftPct / 100) * 0.8;
-    const effDemand = Math.max(
-      10,
-      Math.round(baseDemand * (1 + demandShiftPct / 100) * elasticityDampening)
-    );
+const UNITS: Record<string, string> = { units: "units", count: "", months: "months", days: "days" };
 
-    const effMarketing = Math.round(marketingBudget * marketingMultiplier);
-    const totalFixedCosts = effMarketing + monthlyOverhead * horizonMonths;
+/** One engine Figure as text: money with its currency, basis points as a percentage, else value and unit. */
+function FigureValue({ figure }: { figure: Json }) {
+  const money = obj(figure.money);
+  if (money && Number.isSafeInteger(money.minor)) {
+    return <MoneyText amountMinor={money.minor as number} currency={String(money.currency ?? "")} animateCount={false} />;
+  }
+  if (typeof figure.value === "number") {
+    if (figure.unit === "bp") return <>{(figure.value / 100).toFixed(1)}%</>;
+    const unit = UNITS[String(figure.unit)] ?? String(figure.unit ?? "");
+    return <>{figure.value.toLocaleString("en-GB")}{unit ? ` ${unit}` : ""}</>;
+  }
+  return <>Not available</>;
+}
 
-    // Break-even units = Total Fixed Costs / Unit Contribution
-    const breakevenUnits = unitContribution > 0 ? Math.ceil(totalFixedCosts / unitContribution) : 99999;
-    const breakevenRevenue = breakevenUnits * effPrice;
+function readable(code: string): string {
+  return code.replaceAll("_", " ").toLowerCase().replace(/^./, (c) => c.toUpperCase());
+}
 
-    // Peak cash need = Initial Batch Inventory Cost + Launch Marketing + Month 1 Overhead
-    const initialInventoryCost = batchSize * effUnitCost;
-    const peakCash = initialInventoryCost + effMarketing * 0.5 + monthlyOverhead * 2;
+/**
+ * Launch Lab: the owner states a product's costs, price and capital, plus a what-if; the engine
+ * resolves the rest from the workspace's ledger (comparable products, lead times), runs the
+ * Monte Carlo simulation and returns a labelled recommendation. Nothing here is computed in the
+ * browser, and no order or commitment is created.
+ */
+export function LaunchLabSimulator({ currency }: { currency: string }) {
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [comparables, setComparables] = useState("");
+  const [unitCost, setUnitCost] = useState("");
+  const [price, setPrice] = useState("");
+  const [capital, setCapital] = useState("");
+  const [pricePct, setPricePct] = useState(0);
+  const [demandPct, setDemandPct] = useState(0);
+  const [costPct, setCostPct] = useState(0);
+  const [marketing, setMarketing] = useState(1);
+  const [busy, setBusy] = useState(false);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [result, setResult] = useState<Json | null>(null);
 
-    // Projected revenue and profit
-    const actualUnitsSold = Math.min(effDemand, batchSize * 2);
-    const totalRevenue = actualUnitsSold * effPrice;
-    const totalCogs = actualUnitsSold * effUnitCost;
-    const grossProfit = totalRevenue - totalCogs;
-    const netProfit = grossProfit - totalFixedCosts;
+  const money = (text: string) => {
+    const value = Number(text.replaceAll(",", ""));
+    return Number.isFinite(value) && value > 0 ? { minor: Math.round(value * 100), currency } : null;
+  };
 
-    // Payback month estimation
-    let paybackMonth = 12;
-    if (unitContribution > 0 && actualUnitsSold > 0) {
-      const monthlyContribution = (actualUnitsSold * unitContribution) / horizonMonths;
-      const netMonthlyCashflow = monthlyContribution - monthlyOverhead;
-      if (netMonthlyCashflow > 0) {
-        paybackMonth = Math.min(12, Math.max(1, Math.ceil(peakCash / netMonthlyCashflow)));
+  async function run(event: { preventDefault(): void }) {
+    event.preventDefault();
+    const cost = money(unitCost);
+    const sell = money(price);
+    if (!name.trim() || !category.trim()) return setProblem("Name the product and its category.");
+    if (!cost || !sell) return setProblem("Enter a unit cost and a selling price above zero.");
+    const plan: Json = {
+      currency,
+      product: {
+        name: name.trim(),
+        category: category.trim().toLowerCase(),
+        comparable_skus: comparables.split(/[\s,]+/).map((sku) => sku.trim()).filter(Boolean).slice(0, 20),
+      },
+      unit_cost: cost,
+      price: sell,
+      what_ifs: [
+        {
+          name: "your_what_if",
+          price_change_bp: pricePct * 100,
+          demand_change_bp: demandPct * 100,
+          unit_cost_change_bp: costPct * 100,
+          marketing_multiplier_bp: Math.round(marketing * 10_000),
+        },
+      ],
+    };
+    const reserve = money(capital);
+    if (reserve) plan.available_capital = reserve;
+    setBusy(true);
+    setProblem(null);
+    try {
+      const res = await fetch("/api/fiona/launch-lab/simulate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(plan),
+      });
+      const data = (await res.json().catch(() => ({}))) as Json;
+      if (!res.ok) {
+        const error = obj(data.error);
+        setProblem(String(error?.message ?? "The engine could not run this simulation."));
+        return;
       }
+      setResult(data);
+    } catch {
+      setProblem("The engine did not answer. Try again in a moment.");
+    } finally {
+      setBusy(false);
     }
+  }
 
-    // Rules Evaluation
-    const rules = [
-      {
-        id: "LL-01",
-        label: "Positive Unit Contribution",
-        detail: `PKR ${unitContribution.toLocaleString()} per unit (Price: PKR ${effPrice.toLocaleString()}, Cost: PKR ${effUnitCost.toLocaleString()})`,
-        passed: unitContribution > 0,
-      },
-      {
-        id: "LL-02",
-        label: "Contribution Margin ≥ 20.0%",
-        detail: `Actual margin is ${contributionMarginPct.toFixed(1)}%`,
-        passed: contributionMarginPct >= 20.0,
-      },
-      {
-        id: "LL-03",
-        label: `Payback within Horizon (≤ ${horizonMonths} mo)`,
-        detail: `Est. payback in ${paybackMonth <= horizonMonths ? `${paybackMonth} months` : `> ${horizonMonths} months (Breached)`}`,
-        passed: paybackMonth <= horizonMonths,
-      },
-      {
-        id: "LL-04",
-        label: "Peak Cash within Capital Reserve",
-        detail: `Peak cash needed: PKR ${peakCash.toLocaleString()} vs Available: PKR ${availableCapital.toLocaleString()}`,
-        passed: peakCash <= availableCapital,
-      },
-      {
-        id: "LL-05",
-        label: "Break-even within Forecast Demand",
-        detail: `Break-even requires ${breakevenUnits} units (${((breakevenUnits / Math.max(1, effDemand)) * 100).toFixed(0)}% of expected demand)`,
-        passed: breakevenUnits <= effDemand,
-      },
-    ];
-
-    const failedCount = rules.filter((r) => !r.passed).length;
-
-    let recommendation: {
-      label: "LAUNCH" | "PILOT_FIRST" | "REVISE" | "NOT_RECOMMENDED";
-      badge: "approve" | "conditions" | "escalate" | "block";
-      description: string;
-    };
-
-    if (unitContribution <= 0 || netProfit < -availableCapital * 0.5) {
-      recommendation = {
-        label: "NOT_RECOMMENDED",
-        badge: "block",
-        description: "Negative unit economics or catastrophic loss exposure. Do not produce.",
-      };
-    } else if (failedCount >= 2) {
-      recommendation = {
-        label: "REVISE",
-        badge: "escalate",
-        description: "Multiple guardrail breaches (capital or horizon limit). Re-negotiate unit cost or adjust retail price before proceeding.",
-      };
-    } else if (failedCount === 1 || actualUnitsSold < breakevenUnits * 1.25) {
-      recommendation = {
-        label: "PILOT_FIRST",
-        badge: "conditions",
-        description: `Viable unit economics, but capital or demand buffer is tight. Recommend a restricted pilot batch of ${Math.min(batchSize, 250)} units first.`,
-      };
-    } else {
-      recommendation = {
-        label: "LAUNCH",
-        badge: "approve",
-        description: `Strong margins (${contributionMarginPct.toFixed(1)}%), break-even reached in month ${paybackMonth}, and peak cash is safely within the capital cap.`,
-      };
-    }
-
-    return {
-      effPrice,
-      effUnitCost,
-      unitContribution,
-      contributionMarginPct,
-      effDemand,
-      breakevenUnits,
-      breakevenRevenue,
-      peakCash,
-      actualUnitsSold,
-      totalRevenue,
-      netProfit,
-      paybackMonth,
-      rules,
-      recommendation,
-    };
-  }, [
-    basePrice,
-    baseUnitCost,
-    baseDemand,
-    marketingBudget,
-    monthlyOverhead,
-    availableCapital,
-    horizonMonths,
-    priceShiftPct,
-    demandShiftPct,
-    marketingMultiplier,
-    unitCostShiftPct,
-    batchSize,
-  ]);
+  const recommendation = obj(result?.recommendation);
+  const label = String(recommendation?.label ?? "");
+  const simulation = obj(result?.simulation);
+  const whatIf = list(result?.what_ifs)[0];
+  const explain = obj(result?.explain);
+  const gaps = list(result?.data_gaps);
+  const pct = (value: number) => (value >= 0 ? `+${value}%` : `${value}%`);
 
   return (
     <div className="launch-lab-interactive">
-      {/* Top Banner / Recommendation */}
-      <Card className="tier-panel" style={{ borderLeft: "4px solid var(--accent)" }}>
-        <div className="panel-heading">
-          <div>
-            <span className="eyebrow">YAHYA SIMULATION ENGINE · MONTE CARLO RESOLVER</span>
-            <h2>Scenario Recommendation: {sim.recommendation.label.replaceAll("_", " ")}</h2>
-          </div>
-          <OutcomeBadge outcome={sim.recommendation.badge} />
-        </div>
-        <p className="proposal-reasoning" style={{ fontSize: "12px", color: "var(--text)" }}>
-          {sim.recommendation.description}
-        </p>
-      </Card>
-
-      {/* Metrics Row */}
-      <div className="tier-metric-grid">
-        <Card className="tier-metric">
-          <span className="eyebrow">ESTIMATED PAYBACK</span>
-          <strong>{sim.paybackMonth <= horizonMonths ? `Month ${sim.paybackMonth}` : "Breaches horizon"}</strong>
-          <small>Owner horizon: {horizonMonths} months</small>
-        </Card>
-        <Card className="tier-metric">
-          <span className="eyebrow">PEAK CASH DRAW</span>
-          <strong className={sim.peakCash > availableCapital ? "money-negative" : ""}>
-            PKR {sim.peakCash.toLocaleString()}
-          </strong>
-          <small>Cap: PKR {availableCapital.toLocaleString()}</small>
-        </Card>
-        <Card className="tier-metric">
-          <span className="eyebrow">PROJECTED NET PROFIT</span>
-          <strong className={sim.netProfit < 0 ? "money-negative" : "money-positive"}>
-            PKR {sim.netProfit.toLocaleString()}
-          </strong>
-          <small>At {sim.actualUnitsSold} units sold</small>
-        </Card>
-      </div>
-
-      {/* What-If Interactive Sliders */}
       <Card className="tier-panel">
         <div className="panel-heading">
           <div>
-            <span className="eyebrow">SENSITIVITY &amp; STRESS TEST</span>
-            <h2>Interactive What-If Sliders</h2>
+            <span className="eyebrow">YOUR LAUNCH PLAN</span>
+            <h2>What would you launch?</h2>
           </div>
-          <span className="placeholder-tag">LIVE DYNAMIC MODEL</span>
+          <span className="placeholder-tag">Amounts in {currency}</span>
         </div>
+        <form onSubmit={run}>
+          <div className="admin-form">
+            <label><span className="spec-label">Product</span><input required maxLength={120} placeholder="e.g. Wool winter shawl" value={name} onChange={(e) => setName(e.target.value)} /></label>
+            <label><span className="spec-label">Category</span><input required maxLength={60} placeholder="e.g. shawl" value={category} onChange={(e) => setCategory(e.target.value)} /></label>
+            <label><span className="spec-label">Comparable SKUs (optional)</span><input maxLength={400} placeholder="SKUs from Inventory, comma separated" value={comparables} onChange={(e) => setComparables(e.target.value)} /></label>
+            <label><span className="spec-label">Unit cost</span><input required inputMode="decimal" placeholder="0" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} /></label>
+            <label><span className="spec-label">Selling price</span><input required inputMode="decimal" placeholder="0" value={price} onChange={(e) => setPrice(e.target.value)} /></label>
+            <label><span className="spec-label">Capital you can commit (optional)</span><input inputMode="decimal" placeholder="0" value={capital} onChange={(e) => setCapital(e.target.value)} /></label>
+          </div>
 
-        <div className="simulator-controls-grid">
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Price Shift: {priceShiftPct >= 0 ? `+${priceShiftPct}%` : `${priceShiftPct}%`}</span>
-              <strong>PKR {sim.effPrice.toLocaleString()}</strong>
-            </div>
-            <input
-              type="range"
-              min="-30"
-              max="50"
-              step="5"
-              value={priceShiftPct}
-              onChange={(e) => setPriceShiftPct(Number(e.target.value))}
-            />
-            <small className="footnote">Base: PKR {basePrice.toLocaleString()} (reflects price elasticity)</small>
-          </label>
+          <div className="simulator-controls-grid">
+            <label className="slider-group">
+              <div className="slider-label"><span>What if the price changes</span><strong>{pct(pricePct)}</strong></div>
+              <input type="range" min="-30" max="50" step="5" value={pricePct} onChange={(e) => setPricePct(Number(e.target.value))} />
+              <small className="footnote">Demand responds to price (elasticity applied by the engine).</small>
+            </label>
+            <label className="slider-group">
+              <div className="slider-label"><span>What if demand changes</span><strong>{pct(demandPct)}</strong></div>
+              <input type="range" min="-50" max="80" step="5" value={demandPct} onChange={(e) => setDemandPct(Number(e.target.value))} />
+            </label>
+            <label className="slider-group">
+              <div className="slider-label"><span>What if unit cost changes</span><strong>{pct(costPct)}</strong></div>
+              <input type="range" min="-20" max="40" step="5" value={costPct} onChange={(e) => setCostPct(Number(e.target.value))} />
+            </label>
+            <label className="slider-group">
+              <div className="slider-label"><span>Marketing spend</span><strong>{marketing.toFixed(2)}×</strong></div>
+              <input type="range" min="0.5" max="3" step="0.25" value={marketing} onChange={(e) => setMarketing(Number(e.target.value))} />
+            </label>
+          </div>
 
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Demand Shock: {demandShiftPct >= 0 ? `+${demandShiftPct}%` : `${demandShiftPct}%`}</span>
-              <strong>{sim.effDemand} units</strong>
-            </div>
-            <input
-              type="range"
-              min="-50"
-              max="80"
-              step="5"
-              value={demandShiftPct}
-              onChange={(e) => setDemandShiftPct(Number(e.target.value))}
-            />
-            <small className="footnote">Base seasonal demand: {baseDemand} units</small>
-          </label>
-
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Marketing Multiplier: {marketingMultiplier.toFixed(1)}×</span>
-              <strong>PKR {Math.round(marketingBudget * marketingMultiplier).toLocaleString()}</strong>
-            </div>
-            <input
-              type="range"
-              min="0.5"
-              max="3.0"
-              step="0.25"
-              value={marketingMultiplier}
-              onChange={(e) => setMarketingMultiplier(Number(e.target.value))}
-            />
-            <small className="footnote">Social ads, influencer seeding, photography</small>
-          </label>
-
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Unit Cost Variation: {unitCostShiftPct >= 0 ? `+${unitCostShiftPct}%` : `${unitCostShiftPct}%`}</span>
-              <strong>PKR {sim.effUnitCost.toLocaleString()}</strong>
-            </div>
-            <input
-              type="range"
-              min="-20"
-              max="40"
-              step="5"
-              value={unitCostShiftPct}
-              onChange={(e) => setUnitCostShiftPct(Number(e.target.value))}
-            />
-            <small className="footnote">Raw wool inflation, dyeing &amp; tailoring labor</small>
-          </label>
-
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Initial Batch Production</span>
-              <strong>{batchSize} units</strong>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="1500"
-              step="50"
-              value={batchSize}
-              onChange={(e) => setBatchSize(Number(e.target.value))}
-            />
-            <small className="footnote">First production run commitments</small>
-          </label>
-
-          <label className="slider-group">
-            <div className="slider-label">
-              <span>Capital Reserve Allocation</span>
-              <strong>PKR {availableCapital.toLocaleString()}</strong>
-            </div>
-            <input
-              type="range"
-              min="500000"
-              max="4000000"
-              step="100000"
-              value={availableCapital}
-              onChange={(e) => setAvailableCapital(Number(e.target.value))}
-            />
-            <small className="footnote">Working capital limit for this SKU launch</small>
-          </label>
-        </div>
+          <button className="button button-primary" type="submit" disabled={busy}>{busy ? "Simulating…" : "Run the simulation"}</button>
+          {problem && <p className="mandate-notice" role="alert">{problem}</p>}
+        </form>
       </Card>
 
-      {/* Break-even & Rule Checks */}
-      <div className="launch-sub-grid">
-        <Card className="tier-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="eyebrow">UNIT ECONOMICS</span>
-              <h2>Break-even &amp; Unit Margin</h2>
-            </div>
-            <span className="placeholder-tag">{sim.contributionMarginPct.toFixed(1)}% MARGIN</span>
-          </div>
-          <div className="breakeven-stats-list">
-            <div className="breakeven-row">
-              <span>Unit Selling Price</span>
-              <strong>PKR {sim.effPrice.toLocaleString()}</strong>
-            </div>
-            <div className="breakeven-row">
-              <span>Unit Direct Cost (COGS)</span>
-              <strong>PKR {sim.effUnitCost.toLocaleString()}</strong>
-            </div>
-            <div className="breakeven-row">
-              <span>Unit Contribution</span>
-              <strong style={{ color: "var(--accent)" }}>PKR {sim.unitContribution.toLocaleString()}</strong>
-            </div>
-            <div className="breakeven-row">
-              <span>Break-even Volume</span>
-              <strong>{sim.breakevenUnits} units</strong>
-            </div>
-            <div className="breakeven-row">
-              <span>Break-even Turnover</span>
-              <strong>PKR {sim.breakevenRevenue.toLocaleString()}</strong>
-            </div>
-          </div>
-        </Card>
+      {!result && !busy && (
+        <EmptyState title="No simulation yet">Describe the product and run it. The engine fills the rest from your ledger and says what it had to assume.</EmptyState>
+      )}
 
-        <Card className="tier-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="eyebrow">GUARDIAN VERIFICATION</span>
-              <h2>Launch Guardrail Checklist</h2>
+      {result && (
+        <>
+          <Card className="tier-panel">
+            <div className="panel-heading">
+              <div>
+                <span className="eyebrow">ENGINE RECOMMENDATION · {String(recommendation?.plan ?? "").toUpperCase()} PLAN</span>
+                <h2>{readable(label || "No recommendation")}</h2>
+              </div>
+              {OUTCOME[label] && <OutcomeBadge outcome={OUTCOME[label]} />}
             </div>
-            <span className="placeholder-tag">5 CHECKS</span>
-          </div>
-          <ul className="rule-checklist">
-            {sim.rules.map((rule) => (
-              <li key={rule.id} className={`rule-item ${rule.passed ? "passed" : "failed"}`}>
-                <span className="rule-icon" aria-hidden="true">
-                  {rule.passed ? "✓" : "×"}
-                </span>
-                <div>
-                  <strong>{rule.id} · {rule.label}</strong>
-                  <p>{rule.detail}</p>
-                </div>
-              </li>
+            {strings(recommendation?.reason_codes).length > 0 && (
+              <p className="proposal-reasoning">Why: {strings(recommendation?.reason_codes).map(readable).join(" · ")}</p>
+            )}
+            {strings(recommendation?.levers_that_fix).length > 0 && (
+              <p className="proposal-reasoning">What would change it: {strings(recommendation?.levers_that_fix).map(readable).join(" · ")}</p>
+            )}
+          </Card>
+
+          <div className="tier-metric-grid">
+            {list(result.headline).slice(0, 6).map((figure, index) => (
+              <Card className="tier-metric" key={String(figure.metric_id ?? index)}>
+                <span className="eyebrow">{String(figure.label ?? figure.metric_id)}</span>
+                <strong><FigureValue figure={figure} /></strong>
+                {typeof figure.formula === "string" && <small>{figure.formula}</small>}
+              </Card>
             ))}
-          </ul>
-        </Card>
-      </div>
+          </div>
 
-      <p className="footnote">
-        Launch Lab simulations synthesize tenant historical ledger trends, seasonal sales records, and stated owner assumptions. The simulation is purely advisory; no purchase order or manufacturing commitment is created.
-      </p>
+          <div className="launch-sub-grid">
+            <Card className="tier-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="eyebrow">SIMULATION · {String(simulation?.runs ?? "—")} RUNS</span>
+                  <h2>Odds (model-based, not calibrated)</h2>
+                </div>
+              </div>
+              <div className="breakeven-stats-list">
+                {list(simulation?.figures).map((figure, index) => (
+                  <div className="breakeven-row" key={String(figure.metric_id ?? index)}>
+                    <span>{String(figure.label ?? figure.metric_id)}</span>
+                    <strong><FigureValue figure={figure} /></strong>
+                  </div>
+                ))}
+                {whatIf && list(whatIf.figures).map((figure, index) => (
+                  <div className="breakeven-row" key={`whatif-${String(figure.metric_id ?? index)}`}>
+                    <span>Your what-if · {String(figure.label ?? figure.metric_id)}</span>
+                    <strong><FigureValue figure={figure} /></strong>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="tier-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="eyebrow">LAUNCH RULES · RULEBOOK</span>
+                  <h2>Checks behind the recommendation</h2>
+                </div>
+              </div>
+              <ul className="rule-checklist">
+                {list(recommendation?.rule_trace).map((rule, index) => (
+                  <li key={String(rule.rule_id ?? index)} className={`rule-item ${rule.passed ? "passed" : "failed"}`}>
+                    <span className="rule-icon" aria-hidden="true">{rule.passed ? "✓" : "×"}</span>
+                    <div>
+                      <strong>{String(rule.rule_id ?? "")} · {String(rule.description ?? "")}</strong>
+                      <p>{rule.passed ? "Passed" : "Not met"}{rule.hard ? " · hard rule" : ""}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
+
+          {explain && (
+            <Card className="tier-panel">
+              <div className="panel-heading"><div><span className="eyebrow">IN SHORT</span><h2>Risks and the best lever</h2></div></div>
+              <div className="breakeven-stats-list">
+                <div className="breakeven-row"><span>Biggest risks</span><strong>{strings(explain.main_risks).map(readable).join(", ") || "None ranked"}</strong></div>
+                <div className="breakeven-row"><span>Best lever</span><strong>{explain.best_lever ? readable(String(explain.best_lever)) : "None found"}</strong></div>
+                <div className="breakeven-row"><span>Safest first step</span><strong>{readable(String(explain.safest_test ?? ""))}</strong></div>
+                {obj(explain.max_amount_at_risk) && (
+                  <div className="breakeven-row"><span>{String(obj(explain.max_amount_at_risk)?.label ?? "Most at risk")}</span><strong><FigureValue figure={obj(explain.max_amount_at_risk)!} /></strong></div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {gaps.length > 0 && (
+            <Card className="tier-panel">
+              <div className="panel-heading"><div><span className="eyebrow">DATA GAPS</span><h2>Answer these to sharpen the result</h2></div></div>
+              <ul className="rule-checklist">
+                {gaps.map((gap, index) => (
+                  <li key={String(gap.field ?? index)} className={`rule-item ${gap.blocking ? "failed" : "passed"}`}>
+                    <span className="rule-icon" aria-hidden="true">?</span>
+                    <div><strong>{String(gap.question ?? gap.field)}</strong><p>{String(gap.impact ?? "")}{gap.blocking ? " · blocks a launch call" : ""}</p></div>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+
+          <p className="footnote">
+            {strings(result.limitations).join(" ")} Advisory only: no order or commitment is created. Run {String(result.run_id ?? "")} · inputs {String(result.inputs_hash ?? "").slice(0, 12)} · as of {String(result.as_of ?? "")} · {String(result.mode ?? "")} mode.
+          </p>
+        </>
+      )}
     </div>
   );
 }

@@ -10,7 +10,6 @@ import {
   ProvenancePopover,
   StateChip,
 } from "@fiona/ui";
-import { demoFinanceSnapshot } from "@/lib/tier-one-data";
 import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/server-read";
 import { routes } from "@/lib/routes";
 import { ImportPreview } from "@/components/import-preview";
@@ -20,8 +19,8 @@ import { CouncilRoom } from "@/components/council-room";
 import { ReconcileRunner } from "@/components/reconcile-runner";
 import { InventoryView, type InventoryItemData, type InventorySummaryData } from "@/components/inventory-view";
 import { LaunchLabSimulator } from "@/components/launch-lab-simulator";
-import { WalletStation } from "@/components/wallet-station";
 import { getWorkspaceSession } from "@/lib/session";
+import { workspaceCurrency } from "@/lib/workspaces";
 
 type JsonObject = Record<string, unknown>;
 
@@ -146,13 +145,23 @@ async function AnalysisScreen() {
 
 
 async function FinancingLiveScreen() {
-  const snapshot = demoFinanceSnapshot;
+  // The amount to finance is the forecast's own largest shortfall against the cash buffer. Facts
+  // the engine doesn't hold (valuation, supplier terms) are left out; the matcher names them as
+  // missing instead of the page inventing them.
+  const forecast = await engineData("forecast/cash");
+  const lowest = figureMinor(forecast?.lowest_closing);
+  const buffer = figureMinor(forecast?.buffer);
+  const currency = typeof forecast?.currency === "string" ? forecast.currency : null;
+  if (lowest === null || buffer === null || !currency) {
+    return <div className="section-page"><Heading section="financing" /><DataSource connected={false} fallback="The cash forecast did not load, so there is no shortfall to finance yet." /></div>;
+  }
+  const requestedMinor = Math.max(0, buffer - lowest);
+  if (requestedMinor === 0) {
+    return <div className="section-page"><Heading section="financing" badge="Computed from your ledger" /><EmptyState title="Nothing to finance">Your 13-week cash forecast stays above your buffer, so there is no shortfall to fund.</EmptyState></div>;
+  }
   const result = await postEngine("financing/match", {
-    amount: { minor: snapshot.requestedMinor, currency: snapshot.currency },
+    amount: { minor: requestedMinor, currency },
     purpose: "working_capital_seasonal",
-    profile: { industry: "retail_apparel" },
-    pre_money_valuation: { minor: 1_800_000_000, currency: snapshot.currency },
-    supplier_discount: { discount_bp: snapshot.supplierCreditCostBp, within_days: snapshot.supplierCreditDays, net_days: 30 },
   });
   const data = result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
   if (!data) return <div className="section-page"><Heading section="financing" /><DataSource connected={false} fallback={result.kind === "unavailable" ? result.message : "The financing matcher could not run right now."} /></div>;
@@ -165,14 +174,14 @@ async function FinancingLiveScreen() {
     const unit = String(figure.unit ?? "");
     const value = figureValue(figure);
     const text = amount !== null
-      ? <MoneyText amountMinor={amount} currency={String(object(figure.money)?.currency ?? snapshot.currency)} />
+      ? <MoneyText amountMinor={amount} currency={String(object(figure.money)?.currency ?? currency)} />
       : value !== null ? `${unit === "bp" && String(figure.metric_id ?? "").includes("dscr") ? `${(value / 10_000).toFixed(2)}×` : value}${unit === "bp" ? " bp" : unit ? ` ${unit}` : ""}` : "Insufficient data";
     return <div className="band-card" key={String(figure.metric_id ?? index)}><span className="eyebrow">{label}</span><strong>{text}</strong><p>{Array.isArray(figure.source_refs) ? figure.source_refs.map(String).join(" · ") : String(figure.status ?? "")}</p></div>;
   });
   const unavailable = result.kind === "unavailable" ? result.message : "Start the local engine and fixture database to load the matcher response.";
   return <div className="section-page"><Heading section="financing" badge="Computed from your ledger" /><DataSource connected={Boolean(data)} fallback={unavailable} />
     {proxy && <DegradedBanner><strong>Proxy used for EBITDA.</strong> {String(proxy.label ?? "EBITDA")} is estimated from operating cash flow, not audited EBITDA ({String(proxy.note ?? "")}). It feeds debt-service cover and therefore the ranking below; treat the ranking as indicative until real EBITDA is available.</DegradedBanner>}
-    <div className="tier-metric-grid"><Metric label="Funding request" amount={minor(data?.amount) ?? snapshot.requestedMinor} note="Seasonal working capital" /><Metric label="Snapshot date" value={String(data?.as_of ?? "Not loaded")} note="Fixture as-of date" /><Metric label="Eligible options" value={options.filter((option) => option.eligible === true).length} note="Catalogue and known business facts" /></div>
+    <div className="tier-metric-grid"><Metric label="Funding request" amount={minor(data?.amount) ?? requestedMinor} note="Your forecast's largest shortfall below the buffer" /><Metric label="Snapshot date" value={String(data?.as_of ?? "Not loaded")} note="Fixture as-of date" /><Metric label="Eligible options" value={options.filter((option) => option.eligible === true).length} note="Catalogue and known business facts" /></div>
     <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCHED OPTIONS</span><h2>Compare cost, coverage and conditions</h2></div><span className="placeholder-tag">Each option carries its source</span></div>
       {options.length ? <div className="option-list">{options.map((option, index) => <article className="option-row" key={String(option.option_id ?? index)}><div><span className="eyebrow">{String(option.provider_label ?? option.kind ?? "Catalogue option")} · {option.illustrative === true ? "Illustrative" : "Catalogue"}</span><h3>{String(option.name ?? option.option_id)}</h3><p>{Array.isArray(option.rank_reasons) ? option.rank_reasons.map(String).join(" · ") : ""}</p><p className="footnote">{String(option.source_ref ?? "")}</p></div><div className="option-facts"><strong>{String(option.outcome ?? "needs_information").replaceAll("_", " ")}{typeof option.rank === "number" ? ` · rank ${option.rank}` : ""}</strong><span>{option.eligible === true ? "Eligible" : option.eligible === false ? "Ineligible" : "Needs more information"}</span><div className="band-grid">{detail(option.figures)}</div></div></article>)}</div> : <EmptyState title="No matcher response">{data ? "The matcher returned no options." : unavailable}</EmptyState>}
     </Card><Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BUSINESS INPUTS</span><h2>Figures used in the comparison</h2></div></div><div className="band-grid">{detail(figures)}</div><p className="proposal-reasoning">Missing inputs are surfaced by the matcher; an operating-cash-flow proxy is not treated as approved EBITDA.</p></Card>
@@ -248,29 +257,12 @@ async function AuditScreen() {
   </div>;
 }
 
-const defaultInventorySummary: InventorySummaryData = {
-  stock_value_minor: 105_530_000,
-  dead_stock_value_minor: 8_280_000,
-  slow_stock_value_minor: 53_300_000,
-  sku_count: 10,
-  gmroi_bp: 39864,
-};
-
-const defaultInventoryItems: InventoryItemData[] = [
-  { sku: "KRT-M-BLU", name: "Cotton kurta - M - Blue", category: "kurta", season: "all", on_hand: 40, unit_cost_minor: 180000, price_minor: 300000, stock_value_minor: 7200000, units_sold_window: 210, revenue_minor: 63000000, gross_margin_bp: 4000, abc: "A", xyz: "X", movement: "fast", days_of_cover: 17, reorder_point: 29, suggested_order_qty: 59, lead_time_days: 7, safety_stock: 13 },
-  { sku: "KRT-L-BLU", name: "Cotton kurta - L - Blue", category: "kurta", season: "all", on_hand: 34, unit_cost_minor: 180000, price_minor: 300000, stock_value_minor: 6120000, units_sold_window: 165, revenue_minor: 49500000, gross_margin_bp: 4000, abc: "A", xyz: "X", movement: "fast", days_of_cover: 19, reorder_point: 23, suggested_order_qty: 46, lead_time_days: 7, safety_stock: 10 },
-  { sku: "KRT-M-RED", name: "Cotton kurta - M - Crimson", category: "kurta", season: "festive", on_hand: 22, unit_cost_minor: 190000, price_minor: 320000, stock_value_minor: 4180000, units_sold_window: 95, revenue_minor: 30400000, gross_margin_bp: 4062, abc: "B", xyz: "Y", movement: "normal", days_of_cover: 21, reorder_point: 16, suggested_order_qty: 32, lead_time_days: 7, safety_stock: 9 },
-  { sku: "TRS-32-BEI", name: "Linen trousers - 32 - Beige", category: "trousers", season: "all", on_hand: 55, unit_cost_minor: 220000, price_minor: 380000, stock_value_minor: 12100000, units_sold_window: 140, revenue_minor: 53200000, gross_margin_bp: 4210, abc: "A", xyz: "X", movement: "normal", days_of_cover: 35, reorder_point: 22, suggested_order_qty: 0, lead_time_days: 7, safety_stock: 11 },
-  { sku: "SUIT-3P-EMB", name: "Embroidered lawn 3-pc suit", category: "unstitched", season: "summer", on_hand: 85, unit_cost_minor: 380000, price_minor: 650000, stock_value_minor: 32300000, units_sold_window: 12, revenue_minor: 7800000, gross_margin_bp: 4153, abc: "B", xyz: "Z", movement: "slow", days_of_cover: 638, reorder_point: 4, suggested_order_qty: 0, lead_time_days: 14, safety_stock: 3 },
-  { sku: "DUP-SLK-GLD", name: "Silk dupatta - Golden zari", category: "accessories", season: "wedding", on_hand: 30, unit_cost_minor: 140000, price_minor: 280000, stock_value_minor: 4200000, units_sold_window: 8, revenue_minor: 2240000, gross_margin_bp: 5000, abc: "C", xyz: "Z", movement: "slow", days_of_cover: 338, reorder_point: 3, suggested_order_qty: 0, lead_time_days: 14, safety_stock: 2 },
-  { sku: "SHL-WOL-GRY", name: "Wool pashmina shawl - Charcoal", category: "shawl", season: "winter", on_hand: 12, unit_cost_minor: 320000, price_minor: 620000, stock_value_minor: 3840000, units_sold_window: 70, revenue_minor: 43400000, gross_margin_bp: 4838, abc: "A", xyz: "Y", movement: "fast", days_of_cover: 15, reorder_point: 18, suggested_order_qty: 45, lead_time_days: 10, safety_stock: 10 },
-  { sku: "DEN-34-IND", name: "Stretch denim jeans - 34", category: "denim", season: "all", on_hand: 48, unit_cost_minor: 260000, price_minor: 440000, stock_value_minor: 12480000, units_sold_window: 26, revenue_minor: 11440000, gross_margin_bp: 4090, abc: "B", xyz: "Y", movement: "slow", days_of_cover: 166, reorder_point: 6, suggested_order_qty: 0, lead_time_days: 10, safety_stock: 4 },
-  { sku: "SCF-CHF-PRT", name: "Printed chiffon scarf - Multi", category: "accessories", season: "summer", on_hand: 92, unit_cost_minor: 50000, price_minor: 120000, stock_value_minor: 4600000, units_sold_window: 0, revenue_minor: 0, gross_margin_bp: 5833, abc: "C", xyz: "Z", movement: "dead", days_of_cover: 999, reorder_point: 0, suggested_order_qty: 0, lead_time_days: 7, safety_stock: 0 },
-  { sku: "BLT-LTH-BRN", name: "Full-grain leather belt - Brown", category: "accessories", season: "all", on_hand: 41, unit_cost_minor: 90000, price_minor: 190000, stock_value_minor: 3690000, units_sold_window: 0, revenue_minor: 0, gross_margin_bp: 5263, abc: "C", xyz: "Z", movement: "dead", days_of_cover: 999, reorder_point: 0, suggested_order_qty: 0, lead_time_days: 14, safety_stock: 0 },
-];
 
 async function InventoryScreen() {
   const data = await engineData("inventory/analysis");
+  if (!data) {
+    return <div className="section-page"><Heading section="inventory" /><DataSource connected={false} fallback="The engine did not answer, so no inventory figures are shown." /></div>;
+  }
   const connectedItems = objects(data?.items);
   const items: InventoryItemData[] = connectedItems.length
     ? connectedItems.map((item) => ({
@@ -294,7 +286,7 @@ async function InventoryScreen() {
         lead_time_days: typeof item.lead_time_days === "number" ? item.lead_time_days : 7,
         safety_stock: typeof item.safety_stock === "number" ? item.safety_stock : 0,
       }))
-    : defaultInventoryItems;
+    : [];
 
   const summaryData = objects(data?.summary);
   const stockVal = summaryData.find((s) => s.metric_id === "inventory.stock_value");
@@ -303,20 +295,17 @@ async function InventoryScreen() {
   const gmroiFig = summaryData.find((s) => s.metric_id === "inventory.gmroi");
 
   const summary: InventorySummaryData = {
-    stock_value_minor: minor(stockVal?.money) ?? defaultInventorySummary.stock_value_minor,
-    dead_stock_value_minor: minor(deadVal?.money) ?? defaultInventorySummary.dead_stock_value_minor,
-    slow_stock_value_minor: minor(slowVal?.money) ?? defaultInventorySummary.slow_stock_value_minor,
+    stock_value_minor: minor(stockVal?.money) ?? 0,
+    dead_stock_value_minor: minor(deadVal?.money) ?? 0,
+    slow_stock_value_minor: minor(slowVal?.money) ?? 0,
     sku_count: items.length,
-    gmroi_bp: figureValue(gmroiFig) ?? defaultInventorySummary.gmroi_bp,
+    gmroi_bp: figureValue(gmroiFig) ?? 0,
   };
 
   return (
     <div className="section-page">
-      <Heading section="inventory" badge={data ? "Engine · read only" : "Calibrated preview"} />
-      <DataSource
-        connected={Boolean(data)}
-        fallback="Showing the calibrated Karachi Apparel 10-SKU catalogue with movement analysis and interactive EOQ calculator."
-      />
+      <Heading section="inventory" badge="Engine · read only" />
+      <DataSource connected fallback="" />
       <InventoryView summary={summary} items={items} />
       <p className="footnote">
         Inventory movement analytics are decision support. Draft reorder suggestions do not automatically dispatch purchase orders or commit cash.
@@ -325,44 +314,76 @@ async function InventoryScreen() {
   );
 }
 
-function LaunchLabScreen() {
+async function LaunchLabScreen() {
+  const session = await getWorkspaceSession();
+  const currency = workspaceCurrency(session?.tenantId ?? null);
   return (
     <div className="section-page">
-      <Heading section="launch-lab" badge="Monte Carlo · resolver" />
-      <DataSource
-        connected={false}
-        fallback="Explore the interactive launch simulator with unit contribution, breakeven horizon, and dynamic what-if sliders."
-      />
-      <LaunchLabSimulator />
+      <Heading section="launch-lab" badge="Engine · Monte Carlo" />
+      {currency ? (
+        <>
+          <div className="data-note">
+            <span aria-hidden="true">●</span>
+            <span><strong>Run by the engine</strong> · Your costs and price, plus comparable products and lead times from your ledger. The odds come from a simulation of these assumptions.</span>
+          </div>
+          <LaunchLabSimulator currency={currency} />
+        </>
+      ) : (
+        <DegradedBanner>Sign in to a registered workspace to run a launch simulation.</DegradedBanner>
+      )}
     </div>
   );
 }
 
-function WalletScreen() {
+async function WalletScreen() {
+  const [audit, mandates] = await Promise.all([engineData("audit"), engineData("mandates")]);
+  const payments = objects(audit?.records)
+    .map((entry): JsonObject => ({ ...(object(entry.record) ?? {}), seq: entry.seq }))
+    .filter((record) => record.action === "payment_executed" || record.action === "payment_refused")
+    .reverse();
+  const executed = payments.filter((record) => record.action === "payment_executed");
+  const treasurer = objects(mandates?.mandates).find((mandate) => mandate.agent === "treasurer") ?? null;
+  const verified = audit?.verified === true;
+  const rows = payments.slice(0, 25).map((record) => {
+    const paid = record.action === "payment_executed";
+    return [
+      String(record.at ?? "—").replace("T", " ").slice(0, 16),
+      String(record.payee_id ?? "—"),
+      typeof record.amount_minor === "number" ? <MoneyText amountMinor={record.amount_minor} currency={String(record.currency ?? "")} animateCount={false} /> : "—",
+      paid ? <OutcomeBadge outcome="approve" /> : <OutcomeBadge outcome="block" />,
+      paid ? `Wallet ref ${String(record.wallet_ref ?? "—")} · verdict ${String(record.verdict_hash ?? "").slice(0, 10)}…` : String(record.reason ?? "Refused"),
+      record.proposal_id ? <Link className="text-link" href={`/proposals/${String(record.proposal_id)}`}>{String(record.proposal_id)}</Link> : "—",
+    ];
+  });
   return (
     <div className="section-page">
-      <Heading section="wallet" badge="Sandbox · cryptographic" />
-      <DataSource
-        connected={false}
-        fallback="The local wallet endpoint executes in simulated sandbox mode. No live bank rails are connected."
-      />
-      <WalletStation />
-      <Card className="tier-panel" style={{ marginTop: "14px" }}>
-        <div className="panel-heading">
-          <div>
-            <span className="eyebrow">DEMO LIMITS</span>
-            <h2>Owner mandate fixture</h2>
+      <Heading section="wallet" badge="Simulated wallet · no real money moves" />
+      <DataSource connected={Boolean(audit)} fallback="The engine did not answer, so no wallet activity is shown." />
+      {audit && (
+        <>
+          <div className="tier-metric-grid">
+            <Metric label="Payments made" value={executed.length} note="Simulated; each one is a posted ledger event" />
+            <Metric label="Attempts refused" value={payments.length - executed.length} note="Every refusal is recorded with its reason" />
+            <Metric label="Audit chain" value={verified ? "Verified" : "Check failed"} note={`${String(audit.chain_length ?? 0)} hash-chained entries`} />
           </div>
-        </div>
+          <Card className="tier-panel">
+            <div className="panel-heading">
+              <div><span className="eyebrow">FROM THE AUDIT CHAIN</span><h2>Every payment attempt</h2></div>
+              <span className={`placeholder-tag ${verified ? "tag-positive" : ""}`}>{verified ? "CHAIN VERIFIED" : "CHAIN CHECK FAILED"}</span>
+            </div>
+            <Table headers={["When (UTC)", "Payee", "Amount", "Result", "Detail", "Proposal"]} rows={rows} empty="No payment has been attempted yet. The wallet pays only proposals the Guardian cleared and a person approved." />
+          </Card>
+        </>
+      )}
+      <Card className="tier-panel">
+        <div className="panel-heading"><div><span className="eyebrow">TREASURER MANDATE</span><h2>Limits the wallet enforces</h2></div></div>
         <div className="tier-metric-grid inner-metrics">
-          <Metric label="Per-payment cap" amount={15_000_000} note="PKR 150,000 synthetic limit" />
-          <Metric label="Daily cap" amount={45_000_000} note="PKR 450,000 synthetic limit" />
-          <Metric label="Execution mode" value="Sandbox only" note="No real money moves." />
+          <Metric label="Per-payment cap" amount={minor(treasurer?.per_payment_cap)} note={treasurer ? `Version ${String(treasurer.version ?? "—")}` : "Mandate not loaded"} />
+          <Metric label="Daily cap" amount={minor(treasurer?.daily_cap)} note={treasurer ? `Effective ${String(treasurer.effective_from ?? "—")}` : "Mandate not loaded"} />
+          <Metric label="Execution" value="Simulated" note="No bank rails are connected." />
         </div>
         <div style={{ padding: "0 15px 15px" }}>
-          <Link className="button button-secondary" href="/settings/mandates">
-            Review mandate details
-          </Link>
+          <Link className="button button-secondary" href="/settings/mandates">Review mandates</Link>
         </div>
       </Card>
     </div>
