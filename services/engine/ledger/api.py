@@ -71,14 +71,22 @@ async def _csv(request: Request) -> str:
         raise ApiError(400, "invalid_file", "Files must be UTF-8 CSV.") from exc
 
 
+def _people_import(actor: Any) -> None:
+    """Bank, POS and bill files are the ledger's source of truth: only a person loads them."""
+    if not actor.is_person:
+        raise ApiError(403, "people_only", "Only the owner or finance team can import files.")
+
+
 @router.post("/v1/import/bank", response_model=ImportResponse)
 async def import_bank(
     request: Request,
     tenant_id: TenantId,
+    actor: CurrentActor,
     conn: Conn,
     now: Clock,
     file_name: str = "bank_statement.csv",
 ) -> ImportResponse:
+    _people_import(actor)
     result = importers.import_bank_csv(
         conn, tenant_id, await _csv(request), file_name=file_name, now=now
     )
@@ -87,8 +95,14 @@ async def import_bank(
 
 @router.post("/v1/import/pos", response_model=ImportResponse)
 async def import_pos(
-    request: Request, tenant_id: TenantId, conn: Conn, now: Clock, file_name: str = "pos_sales.csv"
+    request: Request,
+    tenant_id: TenantId,
+    actor: CurrentActor,
+    conn: Conn,
+    now: Clock,
+    file_name: str = "pos_sales.csv",
 ) -> ImportResponse:
+    _people_import(actor)
     result = importers.import_pos_csv(
         conn, tenant_id, await _csv(request), file_name=file_name, now=now
     )
@@ -103,7 +117,10 @@ class BillsImport(BaseModel):
 
 
 @router.post("/v1/import/bills", response_model=ImportResponse)
-def import_bills(tenant_id: TenantId, conn: Conn, now: Clock, body: BillsImport) -> ImportResponse:
+def import_bills(
+    tenant_id: TenantId, actor: CurrentActor, conn: Conn, now: Clock, body: BillsImport
+) -> ImportResponse:
+    _people_import(actor)
     try:
         documents = {
             path: base64.b64decode(data, validate=True) for path, data in body.documents.items()
@@ -401,8 +418,18 @@ class PayResponse(BaseModel):
 
 
 @router.post("/v1/wallet/pay", response_model=PayResponse)
-def wallet_pay(tenant_id: TenantId, conn: Conn, now: Clock, body: PayRequest) -> PayResponse:
-    """Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves."""
+def wallet_pay(
+    tenant_id: TenantId, actor: CurrentActor, conn: Conn, now: Clock, body: PayRequest
+) -> PayResponse:
+    """Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.
+
+    The Guardian reviews and never acts, so it can't pay. People and the agents' pay-approved
+    step may ask; the wallet's own checks decide whether money moves.
+    """
+    if actor.role == "guardian":
+        raise ApiError(
+            403, "guardian_never_acts", "The Guardian reviews payments; it never makes one."
+        )
     result = execute_payment(
         conn,
         tenant_id,

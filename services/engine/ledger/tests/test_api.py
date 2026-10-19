@@ -150,3 +150,32 @@ def test_bill_duplicate_check_is_read_only(client: TestClient) -> None:
     assert result["check"]["rule"] == "G-05"
     assert result["check"]["outcome"] == "block"
     assert result["check"]["audit"]["matched_bill_id"] == "bill_duplicate_prior"
+
+
+def test_agents_and_the_guardian_cannot_import_files(client: TestClient) -> None:
+    for who in ("treasurer", "guardian"):
+        headers = {**HEADERS, "X-Fiona-Agent": who, "Content-Type": "text/csv"}
+        for kind in ("bank", "pos"):
+            res = client.post(f"/v1/import/{kind}", content=BANK, headers=headers)
+            assert res.status_code == 403, res.text
+            assert res.json()["error"]["code"] == "people_only"
+        res = client.post(
+            "/v1/import/bills",
+            json={"bills": [], "documents": {}},
+            headers={**HEADERS, "X-Fiona-Agent": who},
+        )
+        assert res.status_code == 403 and res.json()["error"]["code"] == "people_only"
+
+
+def test_the_guardian_never_pays(client: TestClient) -> None:
+    body = {
+        "proposal_id": "prop_guardian_pay",
+        "verdict_id": "vrd_x",
+        "payee_id": "sup_001",
+        "amount_minor": 1,
+        "currency": "PKR",
+        "pay_on": "2026-10-22",
+    }
+    res = client.post("/v1/wallet/pay", json=body, headers={**HEADERS, "X-Fiona-Agent": "guardian"})
+    assert res.status_code == 403
+    assert res.json()["error"]["code"] == "guardian_never_acts"
