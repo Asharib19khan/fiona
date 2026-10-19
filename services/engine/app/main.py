@@ -59,6 +59,10 @@ def fiona_mode() -> Mode:
     raw = os.environ.get("FIONA_MODE", "") or "mock"
     if raw not in ("mock", "live"):
         raise RuntimeError(f'FIONA_MODE must be "mock" or "live" (got "{raw}").')
+    # A hosted engine must never serve fixtures by accident (a missing env var would otherwise
+    # fall back to mock). Fly sets FLY_APP_NAME on every machine.
+    if raw == "mock" and os.environ.get("FLY_APP_NAME"):
+        raise RuntimeError("FIONA_MODE=mock is refused on a hosted machine; set FIONA_MODE=live.")
     return raw  # type: ignore[return-value]
 
 

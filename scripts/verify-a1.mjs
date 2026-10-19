@@ -40,7 +40,8 @@ async function probe(url) {
   }
 }
 function run(cmd, cmdArgs, cwd) {
-  const r = spawnSync(cmd, cmdArgs, { cwd, stdio: "inherit", shell: win });
+  // Windows runs pnpm/git through cmd.exe explicitly (fixed arguments), not shell: true.
+  const r = win ? spawnSync("cmd.exe", ["/d", "/s", "/c", cmd, ...cmdArgs], { cwd, stdio: "inherit" }) : spawnSync(cmd, cmdArgs, { cwd, stdio: "inherit" });
   if (r.status !== 0) throw new Error(`${cmd} ${cmdArgs.join(" ")} exited ${r.status}`);
 }
 function killTree(child) {
@@ -81,7 +82,7 @@ try {
   const env = { ...process.env, NEXT_PUBLIC_API_MODE: "mock", FIONA_MODE: "mock", CI: "1" };
   for (const s of ENV_SPEC) if (s.secret || s.required.length) delete env[s.name];
   const log = createWriteStream(logPath);
-  dev = spawn("pnpm", ["dev"], { cwd: clone, env, shell: win, detached: !win });
+  dev = win ? spawn("cmd.exe", ["/d", "/s", "/c", "pnpm", "dev"], { cwd: clone, env }) : spawn("pnpm", ["dev"], { cwd: clone, env, detached: true });
   dev.stdout.pipe(log);
   dev.stderr.pipe(log);
 

@@ -123,3 +123,12 @@ def test_large_reads_are_gzipped_only_for_callers_that_accept_it() -> None:
     assert "content-encoding" not in plain.headers
     small = test.get("/healthz", headers={"Accept-Encoding": "gzip"})
     assert "content-encoding" not in small.headers
+
+
+def test_a_hosted_engine_refuses_mock_mode(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("FLY_APP_NAME", "fiona-engine")
+    monkeypatch.delenv("FIONA_MODE", raising=False)
+    with pytest.raises(RuntimeError, match="refused on a hosted machine"):
+        create_app(modules=[])
+    monkeypatch.setenv("FIONA_MODE", "live")
+    assert create_app(modules=[]).state.mode == "live"

@@ -116,7 +116,7 @@ The end-to-end engine tests in `services/engine/ledger/tests/test_flow.py` cover
 - **Accounting simplifications.** Cost of sales at item cost, no depreciation run, no monthly sales-tax offset; financing uses operating cash flow as a stand-in for EBITDA (the screen says so). Ratios are indicative.
 - **Inventory analysis** still reads the generator's files rather than the ledger.
 - **Bill reading** needs a text layer (PDF or text file); scanned images are not supported yet.
-- **The analysis endpoint** returns every source event ID for each ratio (about 45 MB), so that page takes several seconds.
+- **The analysis endpoint** returns every source event ID for each ratio (about 45 MB). The engine gzips it for callers that accept it (about 20x smaller over a network), and the page loads in about 2 seconds locally; sending counts instead of full lists needs a contract change.
 
 ## Repository
 
