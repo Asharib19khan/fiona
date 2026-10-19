@@ -21,6 +21,7 @@ import { InventoryView, type InventoryItemData, type InventorySummaryData } from
 import { LaunchLabSimulator } from "@/components/launch-lab-simulator";
 import { getWorkspaceSession } from "@/lib/session";
 import { workspaceCurrency } from "@/lib/workspaces";
+import { basisPointsText } from "@/lib/figure-format";
 
 type JsonObject = Record<string, unknown>;
 
@@ -129,7 +130,7 @@ async function AnalysisScreen() {
   const ratioFigures = objects(ratioData?.figures);
   const healthDimensions = object(health?.dimensions) ?? {};
   const rows = ratioFigures.map((figure) => {
-    const shown = figure.money ? <MoneyText amountMinor={minor(figure.money) ?? 0} /> : figure.value !== undefined ? `${figure.value}${figure.unit === "bp" ? " bp" : ` ${String(figure.unit ?? "")}`}` : figure.status === "insufficient_data" ? "Insufficient data" : "—";
+    const shown = figure.money ? <MoneyText amountMinor={minor(figure.money) ?? 0} /> : figure.value !== undefined ? (figure.unit === "bp" && typeof figure.value === "number" ? basisPointsText(figure.value, String(figure.metric_id ?? "")) : `${String(figure.value)} ${String(figure.unit ?? "")}`) : figure.status === "insufficient_data" ? "Insufficient data" : "—";
     return [String(figure.label ?? figure.metric_id ?? "Metric"), shown, String(figure.status ?? "ok"), <ProvenancePopover key={String(figure.metric_id)} sourceRefs={Array.isArray(figure.source_refs) ? figure.source_refs.slice(0, 12).map(String) : []} total={Array.isArray(figure.source_refs) ? figure.source_refs.length : 0} />];
   });
   const stageName = typeof stage?.stage === "string" ? stage.stage.replaceAll("_", " ") : null;
@@ -175,7 +176,11 @@ async function FinancingLiveScreen() {
     const value = figureValue(figure);
     const text = amount !== null
       ? <MoneyText amountMinor={amount} currency={String(object(figure.money)?.currency ?? currency)} />
-      : value !== null ? `${unit === "bp" && String(figure.metric_id ?? "").includes("dscr") ? `${(value / 10_000).toFixed(2)}×` : value}${unit === "bp" ? " bp" : unit ? ` ${unit}` : ""}` : "Insufficient data";
+      : value !== null
+        ? unit === "bp"
+          ? basisPointsText(value, String(figure.metric_id ?? ""))
+          : `${value.toLocaleString("en-GB")}${unit ? ` ${unit}` : ""}`
+        : "Insufficient data";
     return <div className="band-card" key={String(figure.metric_id ?? index)}><span className="eyebrow">{label}</span><strong>{text}</strong><p>{Array.isArray(figure.source_refs) ? figure.source_refs.map(String).join(" · ") : String(figure.status ?? "")}</p></div>;
   });
   const unavailable = result.kind === "unavailable" ? result.message : "Start the local engine and fixture database to load the matcher response.";
@@ -350,7 +355,7 @@ async function WalletScreen() {
       String(record.at ?? "—").replace("T", " ").slice(0, 16),
       String(record.payee_id ?? "—"),
       typeof record.amount_minor === "number" ? <MoneyText amountMinor={record.amount_minor} currency={String(record.currency ?? "")} animateCount={false} /> : "—",
-      paid ? <OutcomeBadge outcome="approve" /> : <OutcomeBadge outcome="block" />,
+      <span key="result" className={`outcome-badge ${paid ? "outcome-approve" : "outcome-block"}`}><span aria-hidden="true">{paid ? "✓" : "×"}</span>{paid ? "Paid" : "Refused"}</span>,
       paid ? `Wallet ref ${String(record.wallet_ref ?? "—")} · verdict ${String(record.verdict_hash ?? "").slice(0, 10)}…` : String(record.reason ?? "Refused"),
       record.proposal_id ? <Link className="text-link" href={`/proposals/${String(record.proposal_id)}`}>{String(record.proposal_id)}</Link> : "—",
     ];
