@@ -41,9 +41,22 @@ function FigureValue({ figure }: { figure: Json }) {
   return <>Not available</>;
 }
 
+/** An engine code as words: "hard_rule_failed:LL-01" -> "Hard rule failed: LL-01", "20pct" -> "20%". */
 function readable(code: string): string {
-  return code.replaceAll("_", " ").toLowerCase().replace(/^./, (c) => c.toUpperCase());
+  const [head = "", ...rest] = code.split(":");
+  const words = head.replaceAll("_", " ").replace(/(\d+)pct\b/g, "$1%").toLowerCase().replace(/^./, (c) => c.toUpperCase());
+  return rest.length ? `${words}: ${rest.join(":")}` : words;
 }
+
+const ORIGIN: Record<string, string> = {
+  user_provided: "You",
+  ledger_derived: "Your ledger",
+  market_observed: "Market data",
+  rulebook: "Rulebook",
+  engine_estimate: "Engine estimate",
+  assumption_unverified: "Unverified default",
+  draft_default: "Unverified default",
+};
 
 /**
  * Launch Lab: the owner states a product's costs, price and capital, plus a what-if; the engine
@@ -58,6 +71,8 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
   const [unitCost, setUnitCost] = useState("");
   const [price, setPrice] = useState("");
   const [capital, setCapital] = useState("");
+  const [freight, setFreight] = useState("");
+  const [packaging, setPackaging] = useState("");
   const [pricePct, setPricePct] = useState(0);
   const [demandPct, setDemandPct] = useState(0);
   const [costPct, setCostPct] = useState(0);
@@ -98,6 +113,11 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
     };
     const reserve = money(capital);
     if (reserve) plan.available_capital = reserve;
+    // Blank means "let the engine assume"; zero is a real answer ("no freight").
+    for (const [field, text] of [["freight_per_unit", freight], ["packaging_per_unit", packaging]] as const) {
+      const value = Number(text.replaceAll(",", ""));
+      if (text.trim() !== "" && Number.isFinite(value) && value >= 0) plan[field] = { minor: Math.round(value * 100), currency };
+    }
     setBusy(true);
     setProblem(null);
     try {
@@ -126,6 +146,8 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
   const whatIf = list(result?.what_ifs)[0];
   const explain = obj(result?.explain);
   const gaps = list(result?.data_gaps);
+  const inputs = list(result?.inputs);
+  const unverified = inputs.filter((input) => input.origin === "assumption_unverified" || input.origin === "draft_default");
   const pct = (value: number) => (value >= 0 ? `+${value}%` : `${value}%`);
 
   return (
@@ -146,6 +168,8 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
             <label><span className="spec-label">Unit cost</span><input required inputMode="decimal" placeholder="0" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} /></label>
             <label><span className="spec-label">Selling price</span><input required inputMode="decimal" placeholder="0" value={price} onChange={(e) => setPrice(e.target.value)} /></label>
             <label><span className="spec-label">Capital you can commit (optional)</span><input inputMode="decimal" placeholder="0" value={capital} onChange={(e) => setCapital(e.target.value)} /></label>
+            <label><span className="spec-label">Freight per unit (optional)</span><input inputMode="decimal" placeholder="Engine assumes if blank" value={freight} onChange={(e) => setFreight(e.target.value)} /></label>
+            <label><span className="spec-label">Packaging per unit (optional)</span><input inputMode="decimal" placeholder="Engine assumes if blank" value={packaging} onChange={(e) => setPackaging(e.target.value)} /></label>
           </div>
 
           <div className="simulator-controls-grid">
@@ -194,6 +218,12 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
               <p className="proposal-reasoning">What would change it: {strings(recommendation?.levers_that_fix).map(readable).join(" · ")}</p>
             )}
           </Card>
+
+          {unverified.length > 0 && (
+            <p className="mandate-notice" role="status">
+              The engine filled {unverified.length} value{unverified.length === 1 ? "" : "s"} you didn&apos;t give with unverified defaults ({unverified.map((input) => readable(String(input.name ?? ""))).join(", ")}). Check them below; enter your own freight and packaging above to replace the biggest ones.
+            </p>
+          )}
 
           <div className="tier-metric-grid">
             {list(result.headline).slice(0, 6).map((figure, index) => (
@@ -247,6 +277,34 @@ export function LaunchLabSimulator({ currency }: { currency: string }) {
                   </li>
                 ))}
               </ul>
+            </Card>
+          </div>
+
+          <div className="launch-sub-grid">
+            <Card className="tier-panel">
+              <div className="panel-heading"><div><span className="eyebrow">PER UNIT</span><h2>Where each unit&apos;s cost comes from</h2></div></div>
+              <div className="breakeven-stats-list">
+                {list(result.cost_lines).map((figure, index) => (
+                  <div className="breakeven-row" key={String(figure.metric_id ?? figure.label ?? index)}>
+                    <span>{String(figure.label ?? figure.metric_id)}</span>
+                    <strong><FigureValue figure={figure} /></strong>
+                  </div>
+                ))}
+              </div>
+            </Card>
+            <Card className="tier-panel">
+              <div className="panel-heading"><div><span className="eyebrow">INPUTS</span><h2>What the engine used, and where from</h2></div></div>
+              <div className="breakeven-stats-list">
+                {inputs.map((input, index) => {
+                  const doubtful = input.origin === "assumption_unverified" || input.origin === "draft_default";
+                  return (
+                    <div className="breakeven-row" key={String(input.name ?? index)} title={String(input.basis ?? "")}>
+                      <span>{readable(String(input.name ?? ""))} · <em className={doubtful ? "money-negative" : ""}>{ORIGIN[String(input.origin)] ?? readable(String(input.origin ?? ""))}</em></span>
+                      <strong><FigureValue figure={input} /></strong>
+                    </div>
+                  );
+                })}
+              </div>
             </Card>
           </div>
 
