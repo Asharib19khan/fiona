@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -277,16 +278,18 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
             }}
             title="Shift+Click to replay boot intro"
           >
-            <img
+            <Image
               src="/fiona-logo.png"
               alt="Fiona"
               className="brand-logo-img brand-logo-light"
               width={75}
               height={32}
+              priority
             />
-            <img
+            <Image
               src="/fiona-logo-dark.png"
-              alt="Fiona"
+              alt=""
+              aria-hidden="true"
               className="brand-logo-img brand-logo-dark"
               width={75}
               height={32}

@@ -711,6 +711,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/settings/ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ai Connection */
+        get: operations["get_ai_connection_v1_settings_ai_get"];
+        put?: never;
+        /** Set Ai Connection */
+        post: operations["set_ai_connection_v1_settings_ai_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/settings/ai/credential": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ai Credential
+         * @description The secret, for the agents and the Guardian only: they start Claude with it.
+         */
+        get: operations["ai_credential_v1_settings_ai_credential_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/settings/launch-lab": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Launch Defaults */
+        get: operations["get_launch_defaults_v1_settings_launch_lab_get"];
+        put?: never;
+        /** Set Launch Defaults */
+        post: operations["set_launch_defaults_v1_settings_launch_lab_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/stage": {
         parameters: {
             query?: never;
@@ -740,6 +796,9 @@ export interface paths {
         /**
          * Wallet Pay
          * @description Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.
+         *
+         *     The Guardian reviews and never acts, so it can't pay. People and the agents' pay-approved
+         *     step may ask; the wallet's own checks decide whether money moves.
          */
         post: operations["wallet_pay_v1_wallet_pay_post"];
         delete?: never;
@@ -769,6 +828,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AiConnectionChange */
+        AiConnectionChange: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "server" | "api_key" | "subscription_token";
+            /** Secret */
+            secret?: string | null;
+        };
         /** AmortisationRow */
         AmortisationRow: {
             balance: components["schemas"]["engine__forecast__money__Money"];
@@ -2369,6 +2438,39 @@ export interface components {
             figures: components["schemas"]["engine__forecast___contracts__Figure"][];
             /** Flags */
             flags?: string[];
+        };
+        /**
+         * LaunchDefaults
+         * @description Defaults for products this business launches. Per-unit costs are a share of the unit
+         *     cost (basis points), so one default fits a PKR 50 item and a PKR 5,000 item alike.
+         */
+        LaunchDefaults: {
+            /** Currency */
+            currency: string;
+            /** Discount Rate Bp */
+            discount_rate_bp?: number | null;
+            /** Freight Share Bp */
+            freight_share_bp?: number | null;
+            /** Horizon Months */
+            horizon_months?: number | null;
+            /** Launch Costs Minor */
+            launch_costs_minor?: number | null;
+            /** Lead Time Days */
+            lead_time_days?: number | null;
+            /** Marketing Monthly Minor */
+            marketing_monthly_minor?: number | null;
+            /** Monthly Fixed Costs Minor */
+            monthly_fixed_costs_minor?: number | null;
+            /** Moq */
+            moq?: number | null;
+            /** Packaging Share Bp */
+            packaging_share_bp?: number | null;
+            /** Payment Fee Rate Bp */
+            payment_fee_rate_bp?: number | null;
+            /** Return Rate Bp */
+            return_rate_bp?: number | null;
+            /** Storage Share Bp Per Month */
+            storage_share_bp_per_month?: number | null;
         };
         /**
          * LaunchInput
@@ -4635,6 +4737,169 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReconcileRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ai_connection_v1_settings_ai_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_ai_connection_v1_settings_ai_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiConnectionChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ai_credential_v1_settings_ai_credential_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_launch_defaults_v1_settings_launch_lab_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_launch_defaults_v1_settings_launch_lab_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LaunchDefaults"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */

@@ -19,6 +19,11 @@
     "typecheck": {
       "outputs": []
     },
+    "@fiona/web#build": {
+      "dependsOn": ["^build", "@fiona/web#typecheck"],
+      "env": ["NEXT_PUBLIC_*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
     "test": {
       "outputs": []
     },

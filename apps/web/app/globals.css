@@ -1367,7 +1367,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Times New Roman", Times, "Playfair Display", "Cinzel", Baskerville, Georgia, serif;
+  font-family: "Times New Roman", Times, var(--font-playfair), var(--font-cinzel), Baskerville, Georgia, serif;
   font-size: clamp(68px, 12vw, 128px);
   font-weight: 700;
   letter-spacing: clamp(0.01em, 0.4vw, 0.04em);
@@ -1667,7 +1667,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .signin-brand-top { display: flex; align-items: baseline; gap: 14px; }
 
 .signin-wordmark {
-  font-family: "Times New Roman", Times, "Playfair Display", Georgia, serif;
+  font-family: "Times New Roman", Times, var(--font-playfair), Georgia, serif;
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.05em;

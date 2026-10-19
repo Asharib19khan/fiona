@@ -42,6 +42,8 @@ export function AuthModal({ isOpen, onClose, user }: { isOpen: boolean; onClose:
   async function signOut() {
     setSigningOut(true);
     await supabaseBrowser().auth.signOut();
+    // A full page load on purpose: it drops everything this tab held for the old session.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.assign("/login");
   }
 

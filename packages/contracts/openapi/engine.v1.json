@@ -1,6 +1,38 @@
 {
   "components": {
     "schemas": {
+      "AiConnectionChange": {
+        "additionalProperties": false,
+        "properties": {
+          "mode": {
+            "enum": [
+              "server",
+              "api_key",
+              "subscription_token"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "secret": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "minLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret"
+          }
+        },
+        "required": [
+          "mode"
+        ],
+        "title": "AiConnectionChange",
+        "type": "object"
+      },
       "AmortisationRow": {
         "properties": {
           "balance": {
@@ -2909,6 +2941,178 @@
           "figures"
         ],
         "title": "InventoryPlan",
+        "type": "object"
+      },
+      "LaunchDefaults": {
+        "additionalProperties": false,
+        "description": "Defaults for products this business launches. Per-unit costs are a share of the unit\ncost (basis points), so one default fits a PKR 50 item and a PKR 5,000 item alike.",
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "discount_rate_bp": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discount Rate Bp"
+          },
+          "freight_share_bp": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freight Share Bp"
+          },
+          "horizon_months": {
+            "anyOf": [
+              {
+                "maximum": 36.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Horizon Months"
+          },
+          "launch_costs_minor": {
+            "anyOf": [
+              {
+                "maximum": 10000000000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Launch Costs Minor"
+          },
+          "lead_time_days": {
+            "anyOf": [
+              {
+                "maximum": 365.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Time Days"
+          },
+          "marketing_monthly_minor": {
+            "anyOf": [
+              {
+                "maximum": 10000000000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketing Monthly Minor"
+          },
+          "monthly_fixed_costs_minor": {
+            "anyOf": [
+              {
+                "maximum": 10000000000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Fixed Costs Minor"
+          },
+          "moq": {
+            "anyOf": [
+              {
+                "maximum": 10000000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moq"
+          },
+          "packaging_share_bp": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Packaging Share Bp"
+          },
+          "payment_fee_rate_bp": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Fee Rate Bp"
+          },
+          "return_rate_bp": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Rate Bp"
+          },
+          "storage_share_bp_per_month": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storage Share Bp Per Month"
+          }
+        },
+        "required": [
+          "currency"
+        ],
+        "title": "LaunchDefaults",
         "type": "object"
       },
       "LaunchInput": {
@@ -8839,6 +9043,188 @@
         ]
       }
     },
+    "/v1/settings/ai": {
+      "get": {
+        "operationId": "get_ai_connection_v1_settings_ai_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Ai Connection V1 Settings Ai Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Ai Connection",
+        "tags": [
+          "settings"
+        ]
+      },
+      "post": {
+        "operationId": "set_ai_connection_v1_settings_ai_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiConnectionChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Set Ai Connection V1 Settings Ai Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Ai Connection",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/v1/settings/ai/credential": {
+      "get": {
+        "description": "The secret, for the agents and the Guardian only: they start Claude with it.",
+        "operationId": "ai_credential_v1_settings_ai_credential_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Ai Credential V1 Settings Ai Credential Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ai Credential",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/v1/settings/launch-lab": {
+      "get": {
+        "operationId": "get_launch_defaults_v1_settings_launch_lab_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Launch Defaults V1 Settings Launch Lab Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Launch Defaults",
+        "tags": [
+          "settings"
+        ]
+      },
+      "post": {
+        "operationId": "set_launch_defaults_v1_settings_launch_lab_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaunchDefaults"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Set Launch Defaults V1 Settings Launch Lab Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Launch Defaults",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
     "/v1/stage": {
       "get": {
         "operationId": "get_stage_v1_stage_get",
@@ -8872,7 +9258,7 @@
     },
     "/v1/wallet/pay": {
       "post": {
-        "description": "Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.",
+        "description": "Pays only a cleared proposal; every attempt is audited. SIMULATED: no real money moves.\n\nThe Guardian reviews and never acts, so it can't pay. People and the agents' pay-approved\nstep may ask; the wallet's own checks decide whether money moves.",
         "operationId": "wallet_pay_v1_wallet_pay_post",
         "requestBody": {
           "content": {

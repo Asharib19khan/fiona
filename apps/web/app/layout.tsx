@@ -1,5 +1,6 @@
 import { workspaceInfo } from "@/lib/workspaces";
 import type { Metadata, Viewport } from "next";
+import { Cinzel, Playfair_Display } from "next/font/google";
 import type { ReactNode } from "react";
 import { WindowShell, type ShellStatus } from "./shell";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
@@ -8,6 +9,10 @@ import { getSession } from "@/lib/session";
 import "./globals.css";
 import "@fiona/ui/styles.css";
 import "./screens.css";
+
+// Downloaded at build time and served from this site, so the browser never calls Google Fonts.
+const cinzel = Cinzel({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-cinzel", display: "swap" });
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600", "700", "800"], style: ["normal", "italic"], variable: "--font-playfair", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Fiona",
@@ -39,15 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo, superAdmin: session.superAdmin }
     : null;
   return (
-    <html lang="en" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" data-theme="light" data-scroll-behavior="smooth" className={`${cinzel.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body>
         <SmoothScrollProvider>
           <WindowShell user={user} status={status}>{children}</WindowShell>

@@ -36,6 +36,8 @@ export function ResetPasswordPage() {
       return;
     }
     setPhase("success");
+    // A full page load on purpose: the new session's cookies apply to everything from scratch.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.assign("/");
   }
 

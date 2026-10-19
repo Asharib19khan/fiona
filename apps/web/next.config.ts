@@ -7,6 +7,35 @@ import type { NextConfig } from "next";
 // plain call would return that cache and never read the root file.
 loadEnvConfig(path.resolve(process.cwd(), "../.."), process.env.NODE_ENV !== "production", console, true);
 
+/**
+ * What the browser may load. Scripts and styles come only from this site (Next's inline
+ * bootstrap needs 'unsafe-inline'; dev also needs 'unsafe-eval' for fast refresh), fonts are
+ * self-hosted, and the only outside connection is the Supabase project for sign-in. Nothing
+ * may frame Fiona, and plugins, <base> and cross-site form posts are refused.
+ */
+function contentSecurityPolicy(): string {
+  const dev = process.env.NODE_ENV !== "production";
+  const supabase = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/+$/, "");
+  const connect = ["'self'"];
+  if (supabase.startsWith("https://")) connect.push(supabase, supabase.replace(/^https:/, "wss:"));
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(supabase)) connect.push(supabase);
+  if (dev) connect.push("ws:", "http://localhost:*", "http://127.0.0.1:*");
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    "img-src 'self' data: blob:",
+    `connect-src ${connect.join(" ")}`,
+    "worker-src 'self' blob:",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+    ...(dev ? [] : ["upgrade-insecure-requests"]),
+  ].join("; ");
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -23,7 +52,7 @@ const nextConfig: NextConfig = {
   // forms and <base> stay on this site. script-src is left to Next's defaults so nothing breaks.
   async headers() {
     const security = [
-      { key: "Content-Security-Policy", value: "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'" },
+      { key: "Content-Security-Policy", value: contentSecurityPolicy() },
       { key: "X-Frame-Options", value: "DENY" },
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
