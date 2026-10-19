@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, type DragEvent } from "react";
+import { UploadIcon } from "@/components/briefing-icons";
 import { useRouter } from "next/navigation";
 
 type ImportKind = "bank" | "pos";
@@ -58,8 +59,20 @@ export function ImportPreview({ enabled }: { enabled: boolean }) {
   const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<{ inserted: number; skipped: number; errors: Array<{ row?: number; reason?: string }> } | null>(null);
 
-  async function chooseFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  const [dragging, setDragging] = useState(false);
+
+  function chooseFile(event: ChangeEvent<HTMLInputElement>) {
+    void readFile(event.target.files?.[0]);
+    event.target.value = "";
+  }
+
+  function dropFile(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    setDragging(false);
+    void readFile(event.dataTransfer.files?.[0]);
+  }
+
+  async function readFile(file: File | undefined) {
     setError(null);
     setFileName(file?.name ?? null);
     setFile(file ?? null);
@@ -133,15 +146,23 @@ export function ImportPreview({ enabled }: { enabled: boolean }) {
     }
   }
 
-  return <div className="import-preview">
-    <div className="import-controls"><label>Record type<select value={kind} onChange={(event) => changeKind(event.target.value as ImportKind)}><option value="bank">Bank statement</option><option value="pos">POS sales</option></select></label><label className="file-picker">Choose CSV<input type="file" accept=".csv,text/csv" onChange={chooseFile} /></label></div>
+  const labels: Record<ImportKind, string> = { bank: "Bank statement", pos: "POS sales" };
+  return <div className="import-preview sk-import">
+    <div className="sk-import-type" role="radiogroup" aria-label="Record type">
+      <span className="sk-field-label">Record type</span>
+      <div className="sk-segmented">{(Object.keys(labels) as ImportKind[]).map((option) => <button key={option} type="button" role="radio" aria-checked={kind === option} className={kind === option ? "is-active" : undefined} onClick={() => changeKind(option)}>{labels[option]}</button>)}</div>
+    </div>
+    <label className={`sk-drop ${dragging ? "is-dragging" : ""} ${fileName && !error ? "has-file" : ""}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={dropFile}>
+      <input type="file" accept=".csv,text/csv" onChange={chooseFile} />
+      <span className="sk-drop-icon" aria-hidden="true"><UploadIcon width="20" height="20" /></span>
+      <span className="sk-drop-text">{fileName ? <><strong>{fileName}</strong><small>{rowCount > 0 ? `${rowCount.toLocaleString()} data rows · choose another file to replace it` : "Choose another file to replace it"}</small></> : <><strong>Choose CSV</strong><small>or drop a {labels[kind].toLowerCase()} file here · up to 2 MB</small></>}</span>
+    </label>
     <p className="import-privacy">The file is previewed in this tab. It is sent to the local synthetic ledger only after you choose Import.</p>
-    {fileName && <p className="import-file-name"><strong>{fileName}</strong>{rowCount > 0 && ` · ${rowCount.toLocaleString()} data rows`}</p>}
     {error && <p className="import-error" role="alert">{error}</p>}
     {file && enabled && !error && <button className="button button-primary" type="button" onClick={importFile} disabled={busy}>{busy ? "Importing…" : `Import ${kind === "bank" ? "bank statement" : "POS sales"}`}</button>}
     {file && !enabled && <p className="footnote">Import is disabled outside local mock mode.</p>}
     {report && <div className="import-report" role="status" aria-live="polite"><strong>{report.inserted} inserted · {report.skipped} already present · {report.errors.length} row errors</strong>{report.errors.slice(0, 20).map((item, index) => <p className="import-error" key={`${item.row ?? index}-${index}`}>Row {item.row ?? "?"}: {item.reason ?? "Invalid row"}</p>)}</div>}
-    {headers.length > 0 && <div className="data-table-wrap"><table className="data-table"><thead><tr>{headers.slice(0, 8).map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex}>{row.slice(0, 8).map((cell, cellIndex) => <td key={cellIndex}>{cell || "—"}</td>)}</tr>)}</tbody></table></div>}
-    <p className="footnote">Expected columns: {requiredColumns[kind].join(", ")}.</p>
+    {headers.length > 0 && <div className="data-table-wrap sk-table-wrap sk-import-table"><table className="data-table sk-table"><thead><tr>{headers.slice(0, 8).map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{previewRows.map((row, rowIndex) => <tr key={rowIndex}>{row.slice(0, 8).map((cell, cellIndex) => <td key={cellIndex}>{cell || "—"}</td>)}</tr>)}</tbody></table></div>}
+    <div className="sk-columns"><span className="sk-field-label">Expected columns</span><div>{requiredColumns[kind].map((column) => <code className="sk-mono" key={column}>{column}</code>)}</div></div>
   </div>;
 }

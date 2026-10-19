@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { AutonomyBadge, Card, EmptyState, MoneyText } from "@fiona/ui";
 
 interface Mandate {
@@ -17,12 +17,14 @@ interface Mandate {
   effective_from: string;
 }
 
-const AGENTS: Record<string, { name: string; job: string }> = {
-  controller: { name: "Controller", job: "Reconciles the bank and checks bills" },
-  treasurer: { name: "Treasurer", job: "Plans and prepares supplier payments" },
-  cfo_strategist: { name: "CFO Strategist", job: "Advises on capital decisions" },
-  growth_analyst: { name: "Growth Analyst", job: "Advises on stock and growth" },
+const AGENTS: Record<string, { name: string; job: string; code: string; color: string }> = {
+  controller: { name: "Controller", job: "Reconciles the bank and checks bills", code: "CT", color: "agent-ct" },
+  treasurer: { name: "Treasurer", job: "Plans and prepares supplier payments", code: "TR", color: "agent-tr" },
+  cfo_strategist: { name: "CFO Strategist", job: "Advises on capital decisions", code: "CF", color: "agent-cf" },
+  growth_analyst: { name: "Growth Analyst", job: "Advises on stock and growth", code: "GA", color: "agent-ga" },
 };
+
+const LEVEL_SHORT: Record<string, string> = { advise: "Advise", prepare: "Prepare", act_within_mandate: "Act within mandate" };
 
 const LEVEL_TEXT: Record<string, string> = {
   advise: "Advise: recommends only",
@@ -77,57 +79,78 @@ export function MandatesPanel({ canEdit }: { canEdit: boolean }) {
     }
   }
 
-  if (problem) return <Card className="mandates-panel"><EmptyState title="Mandates could not be loaded">{problem}</EmptyState></Card>;
-  if (!mandates) return <Card className="mandates-panel"><EmptyState title="Loading mandates">Reading the mandates in force…</EmptyState></Card>;
+  if (problem) return <Card className="mandates-panel sk-panel"><EmptyState title="Mandates could not be loaded">{problem}</EmptyState></Card>;
+  if (!mandates) return <div className="sk-skeleton-list" role="status" aria-label="Loading mandates">{[0, 1, 2, 3].map((i) => <div key={i} className="sk-skeleton-card" style={{ animationDelay: `${i * 100}ms` }}><span /><span /><span /></div>)}<span className="sr-only">Reading the mandates in force…</span></div>;
 
   return (
-    <Card className="mandates-panel">
-      <div className="panel-heading">
-        <div><span className="eyebrow">MANDATES IN FORCE</span><h2>What each agent may do</h2></div>
-        <span className="placeholder-tag">{canEdit ? "You can change levels" : "Read only"}</span>
+    <Card className="mandates-panel sk-panel sk-rise" style={{ "--d": "90ms" } as CSSProperties}>
+      <div className="panel-heading sk-panel-heading">
+        <div><span className="eyebrow">Mandates in force</span><h2>What each agent may do</h2></div>
+        <span className={`sk-pill ${canEdit ? "sk-pill-blue" : "sk-pill-neutral"}`}>{canEdit ? "You can change levels" : "Read only"}</span>
       </div>
-      {notice && <p className="mandate-notice" role="status">{notice}</p>}
-      <div className="mandate-rows">
-        {mandates.map((m) => (
-          <div className="mandate-row mandate-row-live" key={m.id}>
-            <div>
-              <strong>{AGENTS[m.agent]?.name ?? m.agent} <span className="mandate-version">v{m.version} · {m.source === "owner" ? "set by you" : "default"}</span></strong>
-              <span>{AGENTS[m.agent]?.job ?? ""}</span>
+      {notice && <p className="mandate-notice sk-notice" role="status">{notice}</p>}
+      <div className="mandate-cards">
+        {mandates.map((m, index) => {
+          const meta = AGENTS[m.agent];
+          return (
+            <section className="mandate-card sk-rise" key={m.id} style={{ "--d": `${120 + index * 60}ms` } as CSSProperties} aria-label={meta?.name ?? m.agent}>
+              <header>
+                <span className={`council-avatar ${meta?.color ?? ""}`} aria-hidden="true">{meta?.code ?? m.agent.slice(0, 2).toUpperCase()}</span>
+                <div>
+                  <strong>{meta?.name ?? m.agent}</strong>
+                  <span>{meta?.job ?? ""}</span>
+                </div>
+                <span className="sk-pill sk-pill-neutral mandate-version">v{m.version} · {m.source === "owner" ? "set by you" : "default"}</span>
+              </header>
               {m.per_payment_cap.minor > 0 && (
-                <span>
-                  Caps: <MoneyText amountMinor={m.per_payment_cap.minor} currency={m.per_payment_cap.currency} animateCount={false} /> per payment,{" "}
-                  <MoneyText amountMinor={m.daily_cap.minor} currency={m.daily_cap.currency} animateCount={false} /> a day
-                  {m.allowed_categories ? ` · ${m.allowed_categories.join(", ").replaceAll("_", " ")}` : ""}
-                </span>
+                <div className="mandate-caps">
+                  <div><span>Per payment</span><strong><MoneyText amountMinor={m.per_payment_cap.minor} currency={m.per_payment_cap.currency} animateCount={false} /></strong></div>
+                  <div><span>Per day</span><strong><MoneyText amountMinor={m.daily_cap.minor} currency={m.daily_cap.currency} animateCount={false} /></strong></div>
+                  {m.allowed_categories && <div className="mandate-cats"><span>Categories</span><strong>{m.allowed_categories.join(", ").replaceAll("_", " ")}</strong></div>}
+                </div>
               )}
-            </div>
-            <div className="mandate-levels">
-              {m.allowed_action_types.length === 0 && <AutonomyBadge>Advises only</AutonomyBadge>}
-              {m.allowed_action_types.map((action) => {
-                const ceiling = m.ceiling[action] ?? "advise";
-                const options = LEVELS.slice(0, LEVELS.indexOf(ceiling) + 1);
-                return (
-                  <label key={action} className="mandate-level">
-                    <span className="spec-label">{action.replaceAll("_", " ")}</span>
-                    {canEdit && options.length > 1 ? (
-                      <select
-                        value={m.autonomy[action] ?? "prepare"}
-                        disabled={saving !== null}
-                        onChange={(e) => change(m.agent, action, e.target.value)}
-                        aria-label={`${AGENTS[m.agent]?.name ?? m.agent} autonomy for ${action}`}
-                      >
-                        {options.map((level) => <option key={level} value={level}>{LEVEL_TEXT[level]}</option>)}
-                      </select>
-                    ) : (
-                      <AutonomyBadge>{LEVEL_TEXT[m.autonomy[action] ?? "prepare"]}</AutonomyBadge>
-                    )}
-                    <small>Ceiling: {ceiling.replaceAll("_", " ")}</small>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+              <div className="mandate-actions">
+                {m.allowed_action_types.length === 0 && <div className="mandate-advise"><AutonomyBadge>Advises only</AutonomyBadge><small>Recommends; never drafts or acts.</small></div>}
+                {m.allowed_action_types.map((action) => {
+                  const ceiling = m.ceiling[action] ?? "advise";
+                  const allowed = LEVELS.slice(0, LEVELS.indexOf(ceiling) + 1);
+                  const current = m.autonomy[action] ?? "prepare";
+                  const editable = canEdit && allowed.length > 1;
+                  const busy = saving === `${m.agent}:${action}`;
+                  return (
+                    <div key={action} className={`mandate-action ${busy ? "is-saving" : ""}`}>
+                      <div className="mandate-action-head">
+                        <span className="spec-label">{action.replaceAll("_", " ")}</span>
+                        <small>Ceiling: {ceiling.replaceAll("_", " ")}</small>
+                      </div>
+                      <div className="mandate-ladder" role="radiogroup" aria-label={`${meta?.name ?? m.agent} autonomy for ${action}`}>
+                        {LEVELS.map((level) => {
+                          const locked = !allowed.includes(level);
+                          const active = current === level;
+                          return (
+                            <button
+                              key={level}
+                              type="button"
+                              role="radio"
+                              aria-checked={active}
+                              className={`${active ? "is-active" : ""} ${locked ? "is-locked" : ""}`}
+                              disabled={!editable || locked || saving !== null}
+                              title={locked ? "Above this agent's ceiling" : LEVEL_TEXT[level]}
+                              onClick={() => { if (!active) void change(m.agent, action, level); }}
+                            >
+                              {LEVEL_SHORT[level]}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className="mandate-level-text">{busy ? "Saving as a new mandate version…" : LEVEL_TEXT[current]}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </Card>
   );

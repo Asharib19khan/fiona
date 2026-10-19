@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, MoneyText } from "@fiona/ui";
+import { Kpi, KpiGrid } from "@/components/screen-kit";
+import { BoxIcon, GaugeIcon, TrendDownIcon } from "@/components/briefing-icons";
+
+const PAGE = 20;
 
 export interface InventoryItemData {
   sku: string;
@@ -43,6 +47,26 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
   const [selectedSku, setSelectedSku] = useState<string>(items[0]?.sku ?? "");
   const [setupCost, setSetupCost] = useState<number>(2500); // PKR
   const [holdingRate, setHoldingRate] = useState<number>(20); // 20% per year
+  const [visible, setVisible] = useState(PAGE);
+  const lab = useRef<HTMLDivElement>(null);
+  const picked = useRef(false);
+
+  // After someone picks an item, bring the EOQ calculator into view (it sits below the register).
+  useEffect(() => {
+    if (!picked.current) return;
+    picked.current = false;
+    lab.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [selectedSku]);
+
+  function pick(sku: string) {
+    picked.current = true;
+    setSelectedSku(sku);
+  }
+
+  function chooseFilter(next: "all" | "fast" | "normal" | "slow" | "dead") {
+    setFilter(next);
+    setVisible(PAGE);
+  }
 
   const filteredItems = useMemo(() => {
     if (filter === "all") return items;
@@ -96,31 +120,15 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
   return (
     <div className="inventory-view-interactive">
       {/* Metrics Row */}
-      <div className="tier-metric-grid">
-        <Card className="tier-metric">
-          <span className="eyebrow">STOCK AT COST</span>
-          <strong><MoneyText amountMinor={summary.stock_value_minor} /></strong>
-          <small>{summary.sku_count} active SKUs in catalogue</small>
-        </Card>
-        <Card className="tier-metric">
-          <span className="eyebrow">SLOW / DEAD CAPITAL</span>
-          <strong className="money-negative">
-            <MoneyText amountMinor={summary.slow_stock_value_minor + summary.dead_stock_value_minor} />
-          </strong>
-          <small>
-            Slow: <MoneyText amountMinor={summary.slow_stock_value_minor} /> · Dead: <MoneyText amountMinor={summary.dead_stock_value_minor} />
-          </small>
-        </Card>
-        <Card className="tier-metric">
-          <span className="eyebrow">ANNUALISED GMROI</span>
-          <strong>{(summary.gmroi_bp / 100).toFixed(1)}%</strong>
-          <small>Gross margin return on inventory</small>
-        </Card>
-      </div>
+      <KpiGrid label="Inventory summary">
+        <Kpi index={1} label="Stock at cost" icon={<BoxIcon />} value={<MoneyText amountMinor={summary.stock_value_minor} />} note={`${summary.sku_count} active SKUs in catalogue`} />
+        <Kpi index={2} label="Slow / dead capital" icon={<TrendDownIcon />} tone="danger" emphasis="negative" value={<MoneyText amountMinor={summary.slow_stock_value_minor + summary.dead_stock_value_minor} />} note={<>Slow: <MoneyText amountMinor={summary.slow_stock_value_minor} /> · Dead: <MoneyText amountMinor={summary.dead_stock_value_minor} /></>} />
+        <Kpi index={3} label="Annualised GMROI" icon={<GaugeIcon />} tone="green" value={`${(summary.gmroi_bp / 100).toFixed(1)}%`} note="Gross margin return on inventory" />
+      </KpiGrid>
 
       {/* ABC-XYZ Classification Matrix */}
-      <Card className="tier-panel">
-        <div className="panel-heading">
+      <Card className="tier-panel sk-panel">
+        <div className="panel-heading sk-panel-heading">
           <div>
             <span className="eyebrow">PORTFOLIO CLASSIFICATION</span>
             <h2>ABC-XYZ Inventory Matrix</h2>
@@ -158,7 +166,7 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
                         key={item.sku}
                         type="button"
                         className="cell-item-chip"
-                        onClick={() => setSelectedSku(item.sku)}
+                        onClick={() => pick(item.sku)}
                         title={`${item.name} - ${item.movement}`}
                       >
                         {item.sku}
@@ -173,8 +181,8 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
       </Card>
 
       {/* Filter and Item Table */}
-      <Card className="tier-panel">
-        <div className="panel-heading">
+      <Card className="tier-panel sk-panel">
+        <div className="panel-heading sk-panel-heading">
           <div>
             <span className="eyebrow">STOCK REGISTER</span>
             <h2>Stock Movement &amp; Coverage Analysis</h2>
@@ -183,43 +191,43 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
             <button
               type="button"
               className={`filter-btn ${filter === "all" ? "active" : ""}`}
-              onClick={() => setFilter("all")}
+              onClick={() => chooseFilter("all")}
             >
               All ({items.length})
             </button>
             <button
               type="button"
               className={`filter-btn ${filter === "fast" ? "active" : ""}`}
-              onClick={() => setFilter("fast")}
+              onClick={() => chooseFilter("fast")}
             >
               Fast ({items.filter((i) => i.movement === "fast").length})
             </button>
             <button
               type="button"
               className={`filter-btn ${filter === "normal" ? "active" : ""}`}
-              onClick={() => setFilter("normal")}
+              onClick={() => chooseFilter("normal")}
             >
               Normal ({items.filter((i) => i.movement === "normal").length})
             </button>
             <button
               type="button"
               className={`filter-btn ${filter === "slow" ? "active" : ""}`}
-              onClick={() => setFilter("slow")}
+              onClick={() => chooseFilter("slow")}
             >
               Slow ({items.filter((i) => i.movement === "slow").length})
             </button>
             <button
               type="button"
               className={`filter-btn ${filter === "dead" ? "active" : ""}`}
-              onClick={() => setFilter("dead")}
+              onClick={() => chooseFilter("dead")}
             >
               Dead ({items.filter((i) => i.movement === "dead").length})
             </button>
           </div>
         </div>
 
-        <div className="data-table-wrap">
-          <table className="data-table">
+        <div className="data-table-wrap sk-table-wrap">
+          <table className="data-table sk-table inventory-table">
             <thead>
               <tr>
                 <th>SKU / Name</th>
@@ -234,24 +242,24 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item) => {
+              {filteredItems.slice(0, visible).map((item, index) => {
                 const isSelected = item.sku === selectedSku;
                 return (
-                  <tr key={item.sku} className={isSelected ? "table-row-selected" : ""}>
+                  <tr key={item.sku} className={`${isSelected ? "table-row-selected" : ""} ${index >= PAGE ? "sk-row-new" : ""}`.trim() || undefined}>
                     <td>
                       <strong>{item.sku}</strong>
                       <div className="table-subtext">{item.name}</div>
                     </td>
                     <td>
                       <span className={`movement-tag movement-${item.movement}`}>
-                        {item.movement.toUpperCase()}
+                        {item.movement.charAt(0).toUpperCase() + item.movement.slice(1)}
                       </span>
                     </td>
                     <td>
                       <span className="badge-class">{item.abc}{item.xyz}</span>
                     </td>
                     <td>{item.on_hand} pcs</td>
-                    <td><MoneyText amountMinor={item.stock_value_minor} /></td>
+                    <td className="is-num"><MoneyText amountMinor={item.stock_value_minor} animateCount={false} /></td>
                     <td>
                       <span className={item.days_of_cover > 180 ? "status-warning" : item.days_of_cover < 20 ? "status-warning" : ""}>
                         {item.days_of_cover} days
@@ -271,8 +279,7 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
                       <button
                         type="button"
                         className="button button-quiet"
-                        style={{ padding: "4px 8px", fontSize: "10px" }}
-                        onClick={() => setSelectedSku(item.sku)}
+                        onClick={() => pick(item.sku)}
                       >
                         {isSelected ? "Calculating" : "Analyze EOQ"}
                       </button>
@@ -283,12 +290,16 @@ export function InventoryView({ summary, items }: InventoryViewProps) {
             </tbody>
           </table>
         </div>
+        {filteredItems.length > visible ? (
+          <div className="sk-more"><span>Showing {visible} of {filteredItems.length} SKUs</span><div><button type="button" className="button button-secondary" onClick={() => setVisible((v) => v + PAGE)}>Show {Math.min(PAGE, filteredItems.length - visible)} more</button><button type="button" className="sk-link-button" onClick={() => setVisible(filteredItems.length)}>Show all</button></div></div>
+        ) : filteredItems.length > 0 ? <p className="sk-more-note">All {filteredItems.length} SKUs shown</p> : null}
       </Card>
 
       {/* Interactive EOQ Optimization Calculator */}
+      <div ref={lab} className="inventory-lab-anchor" />
       {activeItem && eoqCalculation && (
-        <Card className="tier-panel">
-          <div className="panel-heading">
+        <Card className="tier-panel sk-panel sk-rise" key={activeItem.sku}>
+          <div className="panel-heading sk-panel-heading">
             <div>
               <span className="eyebrow">INTERACTIVE DECISION LAB</span>
               <h2>Economic Order Quantity (EOQ) Optimizer: {activeItem.sku}</h2>

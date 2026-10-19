@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, MoneyText } from "@fiona/ui";
+import { UploadIcon } from "@/components/briefing-icons";
 
 interface Sourced { value: string | null; quote: string | null; quote_verified: boolean }
 interface Party { id: string; name: string; tax_id: string | null; bank_iban: string | null; on_allow_list: boolean }
@@ -18,6 +19,14 @@ interface Reading {
 }
 
 type Step = "choose" | "reading" | "review" | "recording" | "treasurer" | "done";
+
+/** The four stages shown above the form, and which internal steps belong to each. */
+const BILL_STAGES: Array<[string, Step[]]> = [
+  ["Read", ["choose", "reading"]],
+  ["Review", ["review"]],
+  ["Record", ["recording"]],
+  ["Treasurer", ["treasurer", "done"]],
+];
 
 const FIELD_LABELS: Array<[string, string]> = [
   ["supplier_name", "Supplier"],
@@ -58,6 +67,7 @@ async function post(url: string, body: unknown): Promise<Record<string, unknown>
 /** Upload a bill, check what Fiona read, record it, and let the Treasurer take it from there. */
 export function BillIntake() {
   const [step, setStep] = useState<Step>("choose");
+  const [dragging, setDragging] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [reading, setReading] = useState<Reading | null>(null);
   const [form, setForm] = useState({ supplierId: "", number: "", issueDate: "", dueDate: "", subtotal: "", tax: "", total: "", category: "inventory_supplier" });
@@ -154,17 +164,34 @@ export function BillIntake() {
   const billIban = reading?.fields.bank_iban?.value?.replace(/\s/g, "") ?? null;
 
   return (
-    <Card className="tier-panel bill-intake">
-      <div className="panel-heading">
-        <div><span className="eyebrow">ADD A BILL</span><h2>Upload a bill and follow it through</h2></div>
-        <span className="placeholder-tag">Read by Claude · checked by code · you confirm</span>
+    <Card className="tier-panel sk-panel bill-intake">
+      <div className="panel-heading sk-panel-heading">
+        <div><span className="eyebrow">Add a bill</span><h2>Upload a bill and follow it through</h2></div>
+        <span className="sk-pill sk-pill-neutral">Read by Claude · checked by code · you confirm</span>
       </div>
+
+      <ol className="sk-progress" aria-label="Where this bill is">
+        {BILL_STAGES.map(([label], index) => {
+          const at = BILL_STAGES.findIndex(([, s]) => s.includes(step));
+          const state = index < at || step === "done" ? "is-done" : index === at ? "is-current" : "";
+          return <li key={label} className={state} aria-current={index === at && step !== "done" ? "step" : undefined}><i aria-hidden="true" />{label}</li>;
+        })}
+      </ol>
 
       <div className="bill-intake-body">
         {(step === "choose" || step === "reading") && (
-          <label className="file-picker">
+          <label
+            className={`sk-drop ${dragging ? "is-dragging" : ""} ${step === "reading" ? "is-busy" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); if (step === "choose") setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f && step === "choose") read(f); }}
+          >
             <input type="file" accept=".pdf,.txt,application/pdf,text/plain" disabled={step === "reading"} onChange={(e) => { const f = e.target.files?.[0]; if (f) read(f); }} />
-            {step === "reading" ? "Reading the bill…" : "Choose a bill (PDF or text)"}
+            <span className="sk-drop-icon" aria-hidden="true">{step === "reading" ? <span className="sk-spinner" /> : <UploadIcon width="20" height="20" />}</span>
+            <span className="sk-drop-text">
+              <strong>{step === "reading" ? "Reading the bill…" : "Choose a bill (PDF or text)"}</strong>
+              <small>{step === "reading" ? "Claude transcribes it with quotes; code checks every quote against the document." : "or drop it here · nothing is posted until you confirm"}</small>
+            </span>
           </label>
         )}
         {problem && <p className="login-error" role="alert">{problem}</p>}

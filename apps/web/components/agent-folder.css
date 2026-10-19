@@ -1,0 +1,115 @@
+/* Agent roster folder in the right panel. Sizes scale with the folder (--folder-scale). */
+
+.agent-folder {
+  display: flex;
+  justify-content: center;
+  /* Room above the folder for the stacked pages (and a page brought up close). */
+  padding-top: 26px;
+  margin-top: 6px;
+  transition: padding-top 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.agent-folder-open {
+  padding-top: 144px;
+}
+
+/* Same footprint as the folder at size 1.05, so the panel doesn't jump when it loads. */
+.agent-folder-placeholder {
+  width: 235px;
+  height: 206px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-folder { transition: none; }
+}
+
+.agent-page {
+  display: flex;
+  height: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: calc(5px * var(--folder-scale));
+  margin: 0;
+  padding: calc(6px * var(--folder-scale)) calc(9px * var(--folder-scale)) calc(10px * var(--folder-scale));
+  color: var(--text, #10233d);
+}
+
+.agent-page-head {
+  display: flex;
+  align-items: center;
+  gap: calc(6px * var(--folder-scale));
+  min-height: calc(18px * var(--folder-scale));
+  margin-bottom: calc(3px * var(--folder-scale));
+}
+
+.agent-page-head strong {
+  overflow: hidden;
+  font-size: calc(10.5px * var(--folder-scale));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-page-avatar {
+  position: relative;
+  display: grid;
+  flex: none;
+  width: calc(18px * var(--folder-scale));
+  height: calc(18px * var(--folder-scale));
+  place-items: center;
+  border-radius: calc(5px * var(--folder-scale));
+  color: #ffffff;
+  font-size: calc(7px * var(--folder-scale));
+  font-weight: 800;
+}
+
+.agent-page-avatar.agent-ct { background: linear-gradient(135deg, #0284c7, #0369a1); }
+.agent-page-avatar.agent-tr { background: linear-gradient(135deg, #059669, #047857); }
+.agent-page-avatar.agent-cf { background: linear-gradient(135deg, #4f46e5, #3730a3); }
+.agent-page-avatar.agent-ga { background: linear-gradient(135deg, #d97706, #b45309); }
+.agent-page-avatar.agent-g  { background: linear-gradient(135deg, #dc2626, #991b1b); }
+
+.agent-page-live {
+  position: absolute;
+  top: calc(-2px * var(--folder-scale));
+  right: calc(-2px * var(--folder-scale));
+  width: calc(5px * var(--folder-scale));
+  height: calc(5px * var(--folder-scale));
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.agent-page-level {
+  align-self: flex-start;
+  padding: calc(2px * var(--folder-scale)) calc(5px * var(--folder-scale));
+  border: 1px solid var(--border, #dbe5f0);
+  border-radius: calc(4px * var(--folder-scale));
+  color: var(--text-muted, #52627a);
+  font-size: calc(7px * var(--folder-scale));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.agent-page-role {
+  margin: 0;
+  color: var(--text-muted, #52627a);
+  font-size: calc(8px * var(--folder-scale));
+  line-height: 1.35;
+}
+
+.agent-page-rule {
+  height: 1px;
+  flex: none;
+  margin: calc(3px * var(--folder-scale)) 0;
+  background: var(--border, #dbe5f0);
+}
+
+.agent-page-line {
+  height: calc(3px * var(--folder-scale));
+  flex: none;
+  border-radius: 999px;
+  background: #e7edf5;
+}

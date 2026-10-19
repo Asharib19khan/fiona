@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { CheckCircleIcon, InboxIcon, UndoIcon, XCircleIcon } from "@/components/briefing-icons";
 import { Card, EmptyState, MoneyText } from "@fiona/ui";
 
 type Tab = "needs_you" | "blocked" | "approved" | "rejected";
@@ -37,15 +38,20 @@ const AGENTS: Record<string, string> = {
 
 const REVIEWED = new Set(["payment", "bill_approval", "journal_adjustment", "send_document", "purchase_order"]);
 
-const TABS: Array<{ key: Tab; label: string; icon: string; statuses: string[] }> = [
-  { key: "needs_you", label: "Needs your decision", icon: "▣", statuses: ["needs_owner", "submitted"] },
-  { key: "blocked", label: "Blocked by the Guardian", icon: "✕", statuses: ["blocked"] },
-  { key: "approved", label: "Approved & paid", icon: "✓", statuses: ["approved", "cleared", "executed"] },
-  { key: "rejected", label: "Rejected", icon: "↺", statuses: ["rejected"] },
+const TABS: Array<{ key: Tab; label: string; icon: ReactNode; statuses: string[] }> = [
+  { key: "needs_you", label: "Needs your decision", icon: <InboxIcon width="16" height="16" />, statuses: ["needs_owner", "submitted"] },
+  { key: "blocked", label: "Blocked by the Guardian", icon: <XCircleIcon width="16" height="16" />, statuses: ["blocked"] },
+  { key: "approved", label: "Approved & paid", icon: <CheckCircleIcon width="16" height="16" />, statuses: ["approved", "cleared", "executed"] },
+  { key: "rejected", label: "Rejected", icon: <UndoIcon width="16" height="16" />, statuses: ["rejected"] },
 ];
 
 function when(iso: string): string {
   return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Karachi" }).format(new Date(iso));
+}
+
+const VERDICTS: Record<string, string> = { approve: "approved", approve_with_conditions: "approved with conditions", escalate: "escalated to you", block: "blocked" };
+function verdictLabel(outcome: string): string {
+  return VERDICTS[outcome] ?? outcome.replaceAll("_", " ");
 }
 
 function GuardianSection({ proposal }: { proposal: Proposal }) {
@@ -56,7 +62,7 @@ function GuardianSection({ proposal }: { proposal: Proposal }) {
   return (
     <div className="spec-item spec-guardian-item">
       <span className="spec-label">
-        Guardian verdict: {proposal.verdict ? proposal.verdict.outcome.replaceAll("_", " ") : "not yet checked"}
+        Guardian verdict: {proposal.verdict ? verdictLabel(proposal.verdict.outcome) : "not yet checked"}
       </span>
       <div className="guardian-chips">
         {passed > 0 && <span className="guardian-chip chip-ok">{passed} rule{passed === 1 ? "" : "s"} passed</span>}
@@ -199,7 +205,7 @@ export function ProposalInbox() {
           </Card>
         )}
         {!problem && proposals === null && (
-          <Card className="empty-panel-card"><EmptyState title="Loading proposals">Reading the ledger…</EmptyState></Card>
+          <div className="sk-skeleton-list" role="status" aria-label="Loading proposals">{[0, 1, 2].map((i) => <div key={i} className="sk-skeleton-card" style={{ animationDelay: `${i * 120}ms` }}><span /><span /><span /></div>)}<span className="sr-only">Reading the ledger…</span></div>
         )}
         {!problem && proposals !== null && shown.length === 0 && (
           <Card className="empty-panel-card">
@@ -211,8 +217,8 @@ export function ProposalInbox() {
           </Card>
         )}
 
-        {shown.map((p) => (
-          <Card key={p.id} className="approval-luxury-card">
+        {shown.map((p, index) => (
+          <Card key={p.id} className="approval-luxury-card sk-rise" style={{ "--d": `${Math.min(index, 6) * 50}ms` } as CSSProperties}>
             <div className="approval-card-header">
               <div className="approval-card-badges">
                 <span className={`agent-pill agent-${p.agent}`}>{AGENTS[p.agent] ?? p.agent}</span>

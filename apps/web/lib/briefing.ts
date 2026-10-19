@@ -54,7 +54,7 @@ async function read(name: EngineRead, query?: Record<string, string>): Promise<J
   return result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
 }
 
-function finding(raw: Json, fallbackTime: string): BriefingFinding | null {
+export function parseFinding(raw: Json, fallbackTime: string): BriefingFinding | null {
   const title = typeof raw.title === "string" ? raw.title : null;
   if (!title) return null;
   const action = list(raw.actions)[0];
@@ -125,7 +125,7 @@ export async function getBriefing(): Promise<Briefing> {
   // At most two findings per source, so one engine (say, many slow-stock lines) cannot crowd out the rest.
   const perSource = new Map<string, number>();
   const findings = [...list(feed?.findings), ...list(reconcile?.findings)]
-    .map((raw) => finding(raw, now))
+    .map((raw) => parseFinding(raw, now))
     .filter((f): f is BriefingFinding => f !== null)
     .sort((a, b) => b.moneyMinor - a.moneyMinor)
     .filter((f) => {

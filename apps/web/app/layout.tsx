@@ -7,6 +7,7 @@ import { apiMode } from "@/lib/env";
 import { getSession } from "@/lib/session";
 import "./globals.css";
 import "@fiona/ui/styles.css";
+import "./screens.css";
 
 export const metadata: Metadata = {
   title: "Fiona",
@@ -38,7 +39,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo, superAdmin: session.superAdmin }
     : null;
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -109,31 +109,32 @@ export function AiConnectionPanel({ canEdit }: { canEdit: boolean }) {
   }
 
   if (problem) return <EmptyState title="Couldn't load the AI connection">{problem}</EmptyState>;
-  if (!current) return <p className="footnote">Loading…</p>;
+  if (!current) return <div className="sk-skeleton-list" role="status" aria-label="Loading the AI connection">{[0, 1].map((i) => <div key={i} className="sk-skeleton-card" style={{ animationDelay: `${i * 120}ms` }}><span /><span /><span /></div>)}</div>;
 
   const active = OPTIONS.find((option) => option.mode === current.mode);
   const needsSecret = mode !== "server" && !(mode === current.mode && current.hint);
 
   return (
-    <div className="admin-portal">
-      <Card className="tier-panel">
-        <div className="panel-heading">
+    <div className="admin-portal ai-connection">
+      <Card className="tier-panel sk-panel ai-current">
+        <div className="panel-heading sk-panel-heading">
           <div>
-            <span className="eyebrow">IN USE NOW</span>
+            <span className="eyebrow">In use now</span>
             <h2>{active?.title ?? current.mode}</h2>
           </div>
-          {current.hint && <span className="placeholder-tag tag-positive">Connected {current.hint}</span>}
+          {current.hint && <span className="sk-pill sk-pill-green"><i aria-hidden="true" />Connected {current.hint}</span>}
         </div>
         <p className="proposal-reasoning">
           {current.updated_at ? `Changed ${current.updated_at.replace("T", " ").slice(0, 16)} UTC by ${current.updated_by ?? "the owner"}.` : "Not changed yet: Fiona uses the server's own Claude."}
         </p>
         {canEdit && (
-          <div style={{ padding: "0 15px 15px" }}>
+          <div className="ai-test">
             <button className="button button-secondary" type="button" onClick={runTest} disabled={busy !== null}>
+              {busy === "test" && <span className="sk-spinner" aria-hidden="true" />}
               {busy === "test" ? "Testing… (up to a minute)" : "Test connection"}
             </button>
             {test && (
-              <p className="mandate-notice" role="status">
+              <p className={`sk-notice ${test.ok ? "is-ok" : "is-bad"}`} role="status">
                 {test.ok ? `Working: ${test.message}${test.latency_ms ? ` (${(test.latency_ms / 1000).toFixed(1)} s)` : ""}` : `Not working: ${test.message}`}
               </p>
             )}
@@ -142,23 +143,23 @@ export function AiConnectionPanel({ canEdit }: { canEdit: boolean }) {
       </Card>
 
       {canEdit ? (
-        <Card className="tier-panel">
-          <div className="panel-heading"><div><span className="eyebrow">CHANGE</span><h2>Which Claude should run your agents?</h2></div></div>
+        <Card className="tier-panel sk-panel">
+          <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">Change</span><h2>Which Claude should run your agents?</h2></div></div>
           {!current.storage_ready && (
             <p className="mandate-notice" role="status">
               This server can&apos;t store keys yet (its SETTINGS_ENCRYPTION_KEY isn&apos;t set), so only the server&apos;s own Claude is available.
             </p>
           )}
-          <form onSubmit={save} style={{ padding: "0 15px 15px" }}>
-            <div className="option-list">
+          <form onSubmit={save} className="ai-form">
+            <div className="ai-options" role="radiogroup" aria-label="Claude account">
               {OPTIONS.map((option) => {
                 const disabled = option.mode !== "server" && !current.storage_ready;
                 return (
-                  <label className="option-row" key={option.mode} style={{ cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.55 : 1 }}>
+                  <label className={`ai-option ${mode === option.mode ? "is-selected" : ""} ${disabled ? "is-disabled" : ""}`} key={option.mode}>
                     <div>
-                      <span className="eyebrow">
-                        <input type="radio" name="ai-mode" value={option.mode} checked={mode === option.mode} disabled={disabled} onChange={() => { setMode(option.mode); setSecret(""); }} />{" "}
-                        {option.mode === current.mode ? "IN USE" : "OPTION"}
+                      <span className="ai-option-top">
+                        <input type="radio" name="ai-mode" value={option.mode} checked={mode === option.mode} disabled={disabled} onChange={() => { setMode(option.mode); setSecret(""); }} />
+                        <span className={`sk-pill ${option.mode === current.mode ? "sk-pill-green" : "sk-pill-neutral"}`}>{option.mode === current.mode ? "In use" : "Option"}</span>
                       </span>
                       <h3>{option.title}</h3>
                       <p>{option.body}</p>
@@ -169,7 +170,7 @@ export function AiConnectionPanel({ canEdit }: { canEdit: boolean }) {
               })}
             </div>
             {mode !== "server" && (
-              <label className="admin-form" style={{ display: "block", marginTop: 12 }}>
+              <label className="admin-form ai-secret">
                 <span className="spec-label">{mode === "api_key" ? "API key" : "Subscription token"}{!needsSecret && " (leave blank to keep the saved one)"}</span>
                 <input
                   type="password"
@@ -183,10 +184,12 @@ export function AiConnectionPanel({ canEdit }: { canEdit: boolean }) {
                 />
               </label>
             )}
-            <button className="button button-primary" type="submit" disabled={busy !== null} style={{ marginTop: 12 }}>
-              {busy === "save" ? "Saving…" : "Save"}
-            </button>
-            {notice && <p className="mandate-notice" role="status">{notice}</p>}
+            <div className="ai-save">
+              <button className="button button-primary" type="submit" disabled={busy !== null}>
+                {busy === "save" ? "Saving…" : "Save"}
+              </button>
+              {notice && <p className="sk-notice" role="status">{notice}</p>}
+            </div>
           </form>
         </Card>
       ) : (

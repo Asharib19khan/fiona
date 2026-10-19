@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import { AutonomyBadge, StateChip } from "@fiona/ui";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { StateChip } from "@fiona/ui";
+import { AgentFolder } from "../components/agent-folder";
+import { WorkspaceSwitcher } from "../components/workspace-switcher";
+import { workspaceLabel } from "../lib/workspaces";
 import { CommandBar } from "../components/command-bar";
 import { BootScreen } from "../components/boot-screen";
+import { NavProgress } from "../components/nav-progress";
 import { AgentActivity } from "../components/agent-activity";
 import { AuthModal, initials, roleLabel, type ShellUser } from "../components/auth-modal";
 
@@ -187,6 +191,33 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
   const [helpOpen, setHelpOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // phone: the full page list over the canvas
+  const navRef = useRef<HTMLElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [modKey, setModKey] = useState("Ctrl");
+
+  // The top bar lifts off the page once you scroll, and shows the right shortcut key for this computer.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const frame = window.requestAnimationFrame(() => {
+      if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) setModKey("⌘");
+    });
+    return () => { window.removeEventListener("scroll", onScroll); window.cancelAnimationFrame(frame); };
+  }, []);
+
+  const [indicator, setIndicator] = useState<{ top: number; height: number } | null>(null);
+
+  // One highlight glides to the active page instead of each item lighting up on its own.
+  useLayoutEffect(() => {
+    const place = () => {
+      const active = navRef.current?.querySelector<HTMLElement>(".nav-item-active");
+      setIndicator(active ? { top: active.offsetTop, height: active.offsetHeight } : null);
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [pathname, railOpen]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -223,15 +254,16 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
   // Not signed in: the proxy has sent this visitor to /login, which renders on its own.
   if (!user) return <>{children}</>;
 
-  const workspaceName = user.workspace === "ten_karachi_apparel" ? "Karachi Apparel" : (user.workspace ?? "No workspace");
+  const workspaceName = workspaceLabel(user.workspace ?? null);
 
   return (
     <>
       <BootScreen />
+      <NavProgress />
 
       <div className={`window ${railOpen ? "window-with-rail" : "window-rail-closed"} ${inspectorOpen ? "window-with-inspector" : "window-inspector-closed"}`}>
         {/* Luxury Top Navigation Bar */}
-        <header className="topbar">
+        <header className={`topbar topbar-pro ${scrolled ? "is-scrolled" : ""}`}>
           {/* Fiona Brand Serif Wordmark */}
           <Link
             href="/"
@@ -267,29 +299,49 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
             onClick={() => { setRailOpen((open) => { savePreference("fiona:rail", !open); return !open; }); }}
             aria-label={railOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={railOpen}
+            title={railOpen ? "Hide navigation ( [ )" : "Show navigation ( [ )"}
           >
-            ☰
+            <svg className={`rail-icon ${railOpen ? "is-open" : ""}`} viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="16" rx="3" />
+              <path className="rail-icon-divider" d="M9 4v16" />
+              <path className="rail-icon-arrow" d="M15 10l-2 2 2 2" />
+            </svg>
           </button>
 
+          <span className="topbar-divider" aria-hidden="true" />
+
           {/* Active Enterprise Workspace Identifier */}
-          <div className="workspace-picker">
-            <span className="workspace-avatar">{initials(workspaceName)}</span>
-            <span>
-              <strong>{workspaceName}</strong>
-              <small>{status.ledger === "live" ? "Live ledger" : "Demo data"}{status.synthetic ? " · synthetic" : ""}</small>
-            </span>
-            <span className="chevron">⌄</span>
-          </div>
+          <WorkspaceSwitcher
+            workspaces={user.workspace ? [{ id: user.workspace, name: workspaceName }] : []}
+            currentId={user.workspace ?? null}
+            sourceLabel={`${status.ledger === "live" ? "Live ledger" : "Demo data"}${status.synthetic ? " · synthetic" : ""}`}
+            superAdmin={Boolean(user.superAdmin)}
+          />
 
           <div className="topbar-spacer" />
 
-          {/* Live Node Badges */}
-          <div className="topbar-live-status" title={`${status.ledger === "live" ? "Figures are computed from the posted ledger." : "Figures come from labelled demo files."}${status.synthetic ? " This workspace is a generated demo company: its data is synthetic, not a real customer's." : ""}`}>
-            <span className="status-halo-dot" />
-            <span className="status-label-top">{status.ledger === "live" ? "Live ledger" : "Demo data"}</span>
+          <button className="topbar-search" type="button" onClick={() => setPaletteOpen(true)} aria-label="Search or jump to a page" aria-keyshortcuts="Control+K Meta+K">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+            <span className="topbar-search-label">Search or jump to…</span>
+            <span className="topbar-kbd" aria-hidden="true"><kbd>{modKey}</kbd><kbd>K</kbd></span>
+          </button>
+
+          {/* System status: where figures come from, how the Guardian reviews, and that money is simulated */}
+          <div className="topbar-status" role="group" aria-label="System status">
+            <span className={`topbar-status-item ${status.ledger === "live" ? "is-live" : "is-demo"}`} tabIndex={0} data-tip={`${status.ledger === "live" ? "Figures are computed from the posted ledger." : "Figures come from labelled demo files."}${status.synthetic ? " This workspace is a generated demo company: its data is synthetic, not a real customer's." : ""}`}>
+              <i aria-hidden="true" />{status.ledger === "live" ? "Live ledger" : "Demo data"}
+            </span>
+            <span className={`topbar-status-item ${status.guardian === "live" ? "is-live-blue" : "is-muted"}`} tabIndex={0} data-tip={status.guardian === "live" ? "The Guardian reviews every proposal with its own model, right now." : "The Guardian shows recorded reviews only."}>
+              <i aria-hidden="true" />{status.guardian === "live" ? "Guardian reviewing live" : "Guardian: recorded reviews"}
+            </span>
+            <span className="topbar-status-item is-muted" tabIndex={0} data-tip="Payments run in a sandbox wallet. No real money moves.">
+              <i aria-hidden="true" />Sandbox wallet
+            </span>
           </div>
-          <StateChip>{status.guardian === "live" ? "Guardian reviewing live" : "Guardian: recorded reviews"}</StateChip>
-          <StateChip>Sandbox wallet</StateChip>
+
+          <button className="icon-button topbar-help" type="button" onClick={() => setHelpOpen(true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts ( ? )">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4" /><path d="M12 17h.01" /></svg>
+          </button>
 
           {/* User Profile / Auth Switcher Button */}
           <button
@@ -297,12 +349,14 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
             type="button"
             onClick={() => setAuthOpen(true)}
             title="Account and sign out"
+            aria-haspopup="dialog"
           >
             <div className="profile-badge-inner">{initials(user.name)}</div>
             <div className="profile-text-compact">
               <strong>{user.name}</strong>
               <small>{roleLabel(user.role).split(" · ")[0]}</small>
             </div>
+            <svg className="profile-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
         </header>
 
@@ -314,7 +368,8 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
           onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setMenuOpen(false); }}
         >
           <div className="side-section-label">TREASURY WORKSPACE</div>
-          <nav className="primary-nav">
+          <nav className={`primary-nav ${indicator ? "has-indicator" : ""}`} ref={navRef}>
+            <span className="nav-indicator" aria-hidden="true" style={indicator ? ({ "--y": `${indicator.top}px`, "--h": `${indicator.height}px` } as CSSProperties) : { opacity: 0 }} />
             {navigation.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
               return (
@@ -388,33 +443,13 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
         {/* Right Inspector: The 5 Autonomous Agents */}
         <aside className={`inspector ${inspectorOpen ? "" : "inspector-hidden"}`} aria-label="Agent activity">
           <div className="inspector-heading">
-            <div>
-              <span className="eyebrow">YOUR FINANCE TEAM</span>
-              <h2>Agents</h2>
-            </div>
-            <button className="icon-button" type="button" aria-label="Close agent panel" onClick={() => { setInspectorOpen(false); savePreference("fiona:inspector", false); }}>
+            <button className="icon-button" type="button" style={{ marginLeft: "auto" }} aria-label="Close agent panel" onClick={() => { setInspectorOpen(false); savePreference("fiona:inspector", false); }}>
               ×
             </button>
           </div>
 
-          {/* Revamped Luminous Agent Roster */}
-          <div className="agent-list-luxury">
-            {agents.map((agent) => (
-              <div className="agent-card-luxury" key={agent.name}>
-                <div className={`agent-avatar-luxury ${agent.color}`}>
-                  <span>{agent.code}</span>
-                  <span className="agent-live-pulse" />
-                </div>
-                <div className="agent-meta-luxury">
-                  <div className="agent-name-row">
-                    <strong>{agent.name}</strong>
-                    <AutonomyBadge>{agent.level}</AutonomyBadge>
-                  </div>
-                  <span className="agent-role-sub">{agent.role}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Agent roster: one page per agent in an interactive folder */}
+          <AgentFolder agents={agents} />
 
           <div className="inspector-divider" />
 

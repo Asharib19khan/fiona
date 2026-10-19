@@ -2,13 +2,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import {
-  Card,
   DegradedBanner,
   EmptyState,
   MoneyText,
   OutcomeBadge,
   ProvenancePopover,
-  StateChip,
 } from "@fiona/ui";
 import { postEngine, readEngine, objectValue, type EngineRead } from "@/lib/server-read";
 import { routes } from "@/lib/routes";
@@ -22,6 +20,26 @@ import { LaunchLabSimulator } from "@/components/launch-lab-simulator";
 import { getWorkspaceSession } from "@/lib/session";
 import { workspaceCurrency } from "@/lib/workspaces";
 import { basisPointsText } from "@/lib/figure-format";
+import { ForecastScreen } from "@/components/forecast-screen";
+import { Kpi, KpiGrid, PageHeader, Panel, Pill, nice, rise, toneFor } from "@/components/screen-kit";
+import { PagedTable } from "@/components/paged";
+import { FindingList, MatchTable, type FindingRow, type MatchRow } from "@/components/reconcile-tables";
+import {
+  AlertIcon,
+  ArrowRightIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  CoinsIcon,
+  CompassIcon,
+  DocIcon,
+  GaugeIcon,
+  HashIcon,
+  LayersIcon,
+  LinkIcon,
+  ShieldCheckIcon,
+  WalletIcon,
+} from "@/components/briefing-icons";
 
 type JsonObject = Record<string, unknown>;
 
@@ -55,72 +73,51 @@ async function engineData(name: EngineRead): Promise<JsonObject | null> {
   return result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
 }
 
-function Heading({ section, badge }: { section: keyof typeof routes; badge?: string }) {
+const LIVE_CHIP = "Computed from your ledger";
+
+/** UTC timestamps as "22 Oct 2026, 09:00 UTC"; the raw value stays in the title. */
+const STAMP = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" });
+function Stamp({ value }: { value: unknown }) {
+  const text = typeof value === "string" ? value : "";
+  const parsed = text ? new Date(text) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) return <>{text || "—"}</>;
+  return <time className="sk-nowrap" dateTime={text} title={text}>{STAMP.format(parsed)} UTC</time>;
+}
+
+function Heading({ section, badge, live = false, actions }: { section: keyof typeof routes; badge?: string | undefined; live?: boolean | undefined; actions?: ReactNode | undefined }) {
   const page = routes[section];
-  return <><div className="page-kicker">{badge && <StateChip>{badge}</StateChip>}</div><header className="page-heading"><div><h1>{page.label}</h1><p>{page.description}</p></div></header></>;
+  const chips = [live ? LIVE_CHIP : null, badge && badge !== LIVE_CHIP ? badge : null];
+  return <PageHeader title={page.label} description={page.description} chips={chips} actions={actions} />;
 }
 
+/** When the engine answered, the heading carries the "computed from your ledger" chip; otherwise this says why there are no figures. */
 function DataSource({ connected, fallback }: { connected: boolean; fallback: string }) {
-  return (
-    connected ? (
-      <div className="data-note">
-        <span aria-hidden="true">●</span>
-        <span><strong>Computed from your ledger</strong> · Read live from the engine.</span>
-      </div>
-    ) : (
-      <DegradedBanner>{fallback || "The engine did not answer, so this page shows no figures."}</DegradedBanner>
-    )
-  );
+  if (connected) return null;
+  return <DegradedBanner>{fallback || "The engine did not answer, so this page shows no figures."}</DegradedBanner>;
 }
 
-function Metric({ label, amount, value, unit, note }: { label: string; amount?: number | null; value?: number | string | null; unit?: string; note?: string }) {
-  return <Card className="tier-metric"><span className="eyebrow">{label}</span><strong>{amount !== undefined && amount !== null ? <MoneyText amountMinor={amount} /> : value !== undefined && value !== null ? `${value}${unit ?? ""}` : "Not available"}</strong>{note && <small>{note}</small>}</Card>;
-}
-
-function Table({ headers, rows, empty }: { headers: string[]; rows: Array<Array<ReactNode>>; empty: string }) {
+function Table({ headers, rows, empty, pageSize = 20, noun, numeric }: { headers: string[]; rows: Array<Array<ReactNode>>; empty: string; pageSize?: number | undefined; noun?: string | undefined; numeric?: number[] | undefined }) {
   if (!rows.length) return <EmptyState title="No records to show">{empty}</EmptyState>;
-  return <div className="data-table-wrap"><table className="data-table"><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>;
+  return <PagedTable headers={headers} rows={rows} pageSize={pageSize} noun={noun} numeric={numeric} />;
 }
 
-async function ForecastScreenBase() {
-  const data = await engineData("forecast/cash");
-  const connectedWeeks = objects(data?.weeks);
-  if (!data) return <div className="section-page"><Heading section="forecast" /><DataSource connected={false} fallback="The cash forecast could not be computed right now (the engine did not answer). No figures are shown rather than old ones." /></div>;
-  const weeks = connectedWeeks.length ? connectedWeeks.map((week) => ({
-    week: typeof week.week === "number" ? week.week : 0,
-    start: typeof week.start === "string" ? week.start : "—",
-    inflows: minor(week.inflows) ?? 0,
-    outflows: minor(week.outflows) ?? 0,
-    closing: minor(week.closing) ?? 0,
-    below: week.below_buffer === true,
-    connected: true,
-  })) : [];
-  const buffer = figureMinor(data?.buffer) ?? 200_000_000;
-  const lowest = figureMinor(data?.lowest_closing) ?? Math.min(...weeks.map((week) => week.closing));
-  const firstBelow = typeof data?.first_week_below_buffer === "number" ? data.first_week_below_buffer : weeks.find((week) => week.closing < buffer)?.week ?? null;
-  const rows = weeks.map((week, index) => {
-    const closing = <span className={week.closing < buffer ? "money-negative" : ""}><MoneyText amountMinor={week.closing} /></span>;
-    const bufferStatus = week.closing < buffer ? <span className="status-text status-warning">Below buffer</span> : <span className="status-text status-positive">Within buffer</span>;
-    if (week.connected) return [
-      `Week ${week.week}`, week.start,
-      <MoneyText amountMinor={week.inflows} key="in" />,
-      <MoneyText amountMinor={week.outflows} key="out" />,
-      closing, bufferStatus,
-    ];
-    const previousClose = index === 0 ? 953_352_992 : (weeks[index - 1]?.closing ?? 953_352_992);
-    return [`Week ${week.week}`, week.start, <MoneyText amountMinor={week.closing - previousClose} key="net" />, closing, bufferStatus];
-  });
-  return <div className="section-page"><Heading section="forecast" badge="Computed from your ledger" /><DataSource connected fallback="" />
-    <div className="tier-metric-grid"><Metric label="Lowest forecast close" amount={lowest} note="13-week view" /><Metric label="Owner cash buffer" amount={buffer} note="Tenant policy" /><Metric label="First buffer breach" value={firstBelow ? `Week ${firstBelow}` : "None"} note="Forecast alert" /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">WEEKLY CASH PATH</span><h2>Closing balance and buffer check</h2></div><span className="placeholder-tag">PKR · minor units</span></div><Table headers={data ? ["Period", "Starting", "Inflows", "Outflows", "Closing", "Buffer check"] : ["Period", "Net movement", "Closing", "Buffer check"]} rows={rows} empty="The engine returned no forecast weeks." /></Card>
-    <p className="footnote">Forecasts are decision support, computed from your posted ledger: last year&rsquo;s seasonal pattern scaled to recent trading, plus the bills, invoices and loan payments already due. The page does not schedule a payment.</p>
-  </div>;
+function Mono({ children, title }: { children: ReactNode; title?: string }) {
+  return <code className="sk-mono" title={title}>{children}</code>;
 }
 
-async function ForecastScreen() {
-  const [base, findingData] = await Promise.all([ForecastScreenBase(), engineData("forecast/findings")]);
-  const findings = objects(findingData?.findings);
-  return <>{base}<Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">RANKED ALERTS</span><h2>Findings by money at stake</h2></div><span className="placeholder-tag">{findingData ? "Engine feed" : "No feed"}</span></div>{findings.length ? <div className="option-list">{findings.map((finding, index) => <article className="option-row" key={String(finding.id ?? index)}><div><span className="eyebrow">{String(finding.source ?? "forecast")} · {String(finding.severity ?? "")}</span><h3>{String(finding.title ?? "Cash-flow finding")}</h3><p>{String(finding.detail ?? "")}</p></div><div className="option-facts"><strong><MoneyText amountMinor={minor(finding.money_at_stake) ?? 0} /></strong>{objects(finding.actions).map((action, actionIndex) => <Link className="text-link" href={String(action.route ?? "/forecast")} key={actionIndex}>{String(action.label ?? "Review finding")}</Link>)}</div></article>)}</div> : <EmptyState title="No engine findings loaded">The ranked findings feed appears when the local engine and fixture data are available.</EmptyState>}</Card></>;
+/** An engine figure (money, ratio, basis points or a count) as text, or a plain reason when there is no value. */
+function figureText(figure: JsonObject, currency?: string): ReactNode {
+  const amount = minor(figure.money);
+  if (amount !== null) return <MoneyText amountMinor={amount} currency={currency ?? String(object(figure.money)?.currency ?? "")} animateCount={false} />;
+  const value = figure.value;
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const unit = String(figure.unit ?? "");
+    if (unit === "bp") return basisPointsText(value, String(figure.metric_id ?? ""));
+    return `${value.toLocaleString("en-GB")}${unit ? ` ${unit}` : ""}`;
+  }
+  if (figure.status === "insufficient_data") return "Insufficient data";
+  if (figure.status === "not_applicable") return "Not applicable";
+  return "Not available";
 }
 
 async function AnalysisScreen() {
@@ -129,17 +126,34 @@ async function AnalysisScreen() {
   const health = object(healthData?.result);
   const ratioFigures = objects(ratioData?.figures);
   const healthDimensions = object(health?.dimensions) ?? {};
+  const connected = Boolean(stageData && ratioData && healthData);
   const rows = ratioFigures.map((figure) => {
-    const shown = figure.money ? <MoneyText amountMinor={minor(figure.money) ?? 0} /> : figure.value !== undefined ? (figure.unit === "bp" && typeof figure.value === "number" ? basisPointsText(figure.value, String(figure.metric_id ?? "")) : `${String(figure.value)} ${String(figure.unit ?? "")}`) : figure.status === "insufficient_data" ? "Insufficient data" : "—";
-    return [String(figure.label ?? figure.metric_id ?? "Metric"), shown, String(figure.status ?? "ok"), <ProvenancePopover key={String(figure.metric_id)} sourceRefs={Array.isArray(figure.source_refs) ? figure.source_refs.slice(0, 12).map(String) : []} total={Array.isArray(figure.source_refs) ? figure.source_refs.length : 0} />];
+    const shown = figure.money ? <MoneyText amountMinor={minor(figure.money) ?? 0} animateCount={false} /> : figureText(figure);
+    const status = String(figure.status ?? "ok");
+    return [
+      String(figure.label ?? figure.metric_id ?? "Metric"),
+      shown,
+      <Pill key="status" tone={toneFor(status)} dot>{status === "ok" ? "OK" : nice(status)}</Pill>,
+      <ProvenancePopover key={String(figure.metric_id)} sourceRefs={Array.isArray(figure.source_refs) ? figure.source_refs.slice(0, 12).map(String) : []} total={Array.isArray(figure.source_refs) ? figure.source_refs.length : 0} />,
+    ];
   });
-  const stageName = typeof stage?.stage === "string" ? stage.stage.replaceAll("_", " ") : null;
-  return <div className="section-page"><Heading section="analysis" badge={stageData ? "Computed from your ledger" : "Unavailable"} /><DataSource connected={Boolean(stageData && ratioData && healthData)} fallback="The analysis could not be computed right now (the engine did not answer). No figures are shown rather than old ones." />
-    <div className="tier-metric-grid"><Metric label="Lifecycle stage" value={stageName ?? "Not loaded"} note={stageName ? `${String(stage?.confidence ?? "")} confidence` : "Load the ledger to classify the stage."} /><Metric label="Overall health band" value={String(health?.overall ?? "Not loaded")} note="Categorical health band; no composite score." /><Metric label="Figures computed" value={ratioFigures.length || "None"} unit={ratioFigures.length ? " figures" : ""} note="Every engine figure has source references." /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">FINANCIAL INDICATORS</span><h2>Ratios and source trail</h2></div><span className="placeholder-tag">No composite health score</span></div>
-      <Table headers={["Metric", "Value", "Status", "Sources"]} rows={rows} empty="The ratios could not be computed right now (the engine did not answer)." />
-    </Card>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">HEALTH BANDS</span><h2>By financial dimension</h2></div></div><div className="band-grid">{Object.entries(healthDimensions).map(([name, raw]) => { const dimension = object(raw); return <div className="band-card" key={name}><span className="eyebrow">{name.replaceAll("_", " ")}</span><strong>{String(dimension?.band ?? "not available")}</strong><p>{Array.isArray(dimension?.reasons) ? dimension.reasons.join(" ") : ""}</p></div>; })}{!Object.keys(healthDimensions).length && <EmptyState title="Health bands not loaded">Connect the local read-only engine to view the bands calculated from posted journal lines.</EmptyState>}</div></Card>
+  const stageName = typeof stage?.stage === "string" ? nice(stage.stage) : null;
+  const overall = health?.overall;
+  const flagged = ratioFigures.filter((figure) => figure.status && figure.status !== "ok").length;
+  return <div className="section-page sk-page">
+    <Heading section="analysis" live={connected} badge={stageData ? undefined : "Unavailable"} />
+    <DataSource connected={connected} fallback="The analysis could not be computed right now (the engine did not answer). No figures are shown rather than old ones." />
+    <KpiGrid label="Analysis summary">
+      <Kpi index={1} label="Lifecycle stage" icon={<CompassIcon />} value={stageName ?? "Not loaded"} note={stageName ? `${nice(stage?.confidence, "Unknown")} confidence` : "Load the ledger to classify the stage."} />
+      <Kpi index={2} label="Overall health band" icon={<GaugeIcon />} tone={toneFor(overall)} value={nice(overall, "Not loaded")} emphasis={toneFor(overall) === "danger" ? "negative" : toneFor(overall) === "amber" ? "warning" : undefined} note="Categorical health band; no composite score." />
+      <Kpi index={3} label="Figures computed" icon={<LayersIcon />} value={ratioFigures.length ? `${ratioFigures.length} figures` : "None"} note={flagged ? `Every engine figure has source references · ${flagged} without a usable value` : "Every engine figure has source references."} />
+    </KpiGrid>
+    <Panel index={4} eyebrow="Health bands" title="By financial dimension">
+      <div className="band-grid sk-band-grid">{Object.entries(healthDimensions).map(([name, raw], index) => { const dimension = object(raw); const band = dimension?.band; return <div className="band-card sk-band sk-rise" style={rise(index + 5)} key={name}><div className="sk-band-top"><span className="eyebrow">{nice(name)}</span><Pill tone={toneFor(band)} dot>{nice(band, "Not available")}</Pill></div><p>{Array.isArray(dimension?.reasons) && dimension.reasons.length ? dimension.reasons.map(String).join(" ") : "No reasons were given for this band."}</p></div>; })}{!Object.keys(healthDimensions).length && <EmptyState title="Health bands not loaded">Connect the local read-only engine to view the bands calculated from posted journal lines.</EmptyState>}</div>
+    </Panel>
+    <Panel index={5} eyebrow="Financial indicators" title="Ratios and source trail" tag="No composite health score">
+      <Table headers={["Metric", "Value", "Status", "Sources"]} rows={rows} numeric={[1]} noun="figures" pageSize={15} empty="The ratios could not be computed right now (the engine did not answer)." />
+    </Panel>
     <p className="footnote">Prototype accounting: cost of sales at item cost, no depreciation run and no monthly sales-tax offset yet, so ratios are indicative, not audited.</p>
   </div>;
 }
@@ -154,50 +168,76 @@ async function FinancingLiveScreen() {
   const buffer = figureMinor(forecast?.buffer);
   const currency = typeof forecast?.currency === "string" ? forecast.currency : null;
   if (lowest === null || buffer === null || !currency) {
-    return <div className="section-page"><Heading section="financing" /><DataSource connected={false} fallback="The cash forecast did not load, so there is no shortfall to finance yet." /></div>;
+    return <div className="section-page sk-page"><Heading section="financing" /><DataSource connected={false} fallback="The cash forecast did not load, so there is no shortfall to finance yet." /></div>;
   }
   const requestedMinor = Math.max(0, buffer - lowest);
   if (requestedMinor === 0) {
-    return <div className="section-page"><Heading section="financing" badge="Computed from your ledger" /><EmptyState title="Nothing to finance">Your 13-week cash forecast stays above your buffer, so there is no shortfall to fund.</EmptyState></div>;
+    return <div className="section-page sk-page"><Heading section="financing" live /><EmptyState title="Nothing to finance">Your 13-week cash forecast stays above your buffer, so there is no shortfall to fund.</EmptyState></div>;
   }
   const result = await postEngine("financing/match", {
     amount: { minor: requestedMinor, currency },
     purpose: "working_capital_seasonal",
   });
   const data = result.kind === "ok" && result.status === 200 ? objectValue(result.data) : null;
-  if (!data) return <div className="section-page"><Heading section="financing" /><DataSource connected={false} fallback={result.kind === "unavailable" ? result.message : "The financing matcher could not run right now."} /></div>;
+  if (!data) return <div className="section-page sk-page"><Heading section="financing" /><DataSource connected={false} fallback={result.kind === "unavailable" ? result.message : "The financing matcher could not run right now."} /></div>;
   const options = objects(data?.options);
   const figures = objects(data?.business_figures);
   const proxy = figures.find((figure) => String(figure.note ?? "").toLowerCase().includes("proxy"));
+  const eligible = options.filter((option) => option.eligible === true).length;
   const detail = (values: unknown) => objects(values).map((figure, index) => {
     const label = String(figure.label ?? figure.metric_id ?? `Metric ${index + 1}`);
-    const amount = minor(figure.money);
-    const unit = String(figure.unit ?? "");
-    const value = figureValue(figure);
-    const text = amount !== null
-      ? <MoneyText amountMinor={amount} currency={String(object(figure.money)?.currency ?? currency)} />
-      : value !== null
-        ? unit === "bp"
-          ? basisPointsText(value, String(figure.metric_id ?? ""))
-          : `${value.toLocaleString("en-GB")}${unit ? ` ${unit}` : ""}`
-        : "Insufficient data";
-    return <div className="band-card" key={String(figure.metric_id ?? index)}><span className="eyebrow">{label}</span><strong>{text}</strong><p>{Array.isArray(figure.source_refs) ? figure.source_refs.map(String).join(" · ") : String(figure.status ?? "")}</p></div>;
+    const sources = Array.isArray(figure.source_refs) ? figure.source_refs.map(String).join(" · ") : String(figure.status ?? "");
+    return <div className="sk-fig" key={String(figure.metric_id ?? index)}><span>{label}</span><strong>{figureText(figure, currency)}</strong>{sources && <small title={sources}>{sources}</small>}</div>;
   });
   const unavailable = result.kind === "unavailable" ? result.message : "Start the local engine and fixture database to load the matcher response.";
-  return <div className="section-page"><Heading section="financing" badge="Computed from your ledger" /><DataSource connected={Boolean(data)} fallback={unavailable} />
+  const renderOption = (option: JsonObject, index: number) => {
+    const outcome = String(option.outcome ?? "needs_information");
+    const eligibility = option.eligible === true ? "Eligible" : option.eligible === false ? "Ineligible" : "Needs more information";
+    const outcomeText = nice(outcome);
+    const same = outcomeText.toLowerCase() === eligibility.toLowerCase() || (outcome === "needs_information" && option.eligible !== true && option.eligible !== false);
+    return <article className={`sk-option sk-rise ${option.eligible === false ? "is-muted" : ""}`} style={rise(index + 5)} key={String(option.option_id ?? index)}>
+      <header className="sk-option-head">
+        {typeof option.rank === "number" && <span className="sk-rank" aria-label={`Rank ${option.rank}`}>{option.rank}</span>}
+        <div className="sk-option-title">
+          <span className="eyebrow">{nice(option.provider_label ?? option.kind, "Catalogue option")} · {option.illustrative === true ? "Illustrative" : "Catalogue"}</span>
+          <h3>{String(option.name ?? option.option_id)}</h3>
+          {Array.isArray(option.rank_reasons) && option.rank_reasons.length > 0 && <p>{option.rank_reasons.map((reason) => nice(reason)).join(" · ")}</p>}
+        </div>
+        <div className="sk-option-status">
+          <Pill tone={toneFor(outcome)} dot>{same ? eligibility : outcomeText}{typeof option.rank === "number" ? ` · rank ${option.rank}` : ""}</Pill>
+          {!same && <Pill tone={toneFor(eligibility)}>{eligibility}</Pill>}
+        </div>
+      </header>
+      {objects(option.figures).length > 0 && <div className="sk-figs">{detail(option.figures)}</div>}
+      {Boolean(option.source_ref) && <p className="sk-source"><LinkIcon width="12" height="12" /> {String(option.source_ref)}</p>}
+    </article>;
+  };
+  const primary = options.filter((option) => option.eligible !== false);
+  const ineligible = options.filter((option) => option.eligible === false);
+  return <div className="section-page sk-page">
+    <Heading section="financing" live actions={<Link className="button button-secondary arrow-link" href="/forecast">See the shortfall <ArrowRightIcon /></Link>} />
     {proxy && <DegradedBanner><strong>Proxy used for EBITDA.</strong> {String(proxy.label ?? "EBITDA")} is estimated from operating cash flow, not audited EBITDA ({String(proxy.note ?? "")}). It feeds debt-service cover and therefore the ranking below; treat the ranking as indicative until real EBITDA is available.</DegradedBanner>}
-    <div className="tier-metric-grid"><Metric label="Funding request" amount={minor(data?.amount) ?? requestedMinor} note="Your forecast's largest shortfall below the buffer" /><Metric label="Snapshot date" value={String(data?.as_of ?? "Not loaded")} note="Fixture as-of date" /><Metric label="Eligible options" value={options.filter((option) => option.eligible === true).length} note="Catalogue and known business facts" /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCHED OPTIONS</span><h2>Compare cost, coverage and conditions</h2></div><span className="placeholder-tag">Each option carries its source</span></div>
-      {options.length ? <div className="option-list">{options.map((option, index) => <article className="option-row" key={String(option.option_id ?? index)}><div><span className="eyebrow">{String(option.provider_label ?? option.kind ?? "Catalogue option")} · {option.illustrative === true ? "Illustrative" : "Catalogue"}</span><h3>{String(option.name ?? option.option_id)}</h3><p>{Array.isArray(option.rank_reasons) ? option.rank_reasons.map(String).join(" · ") : ""}</p><p className="footnote">{String(option.source_ref ?? "")}</p></div><div className="option-facts"><strong>{String(option.outcome ?? "needs_information").replaceAll("_", " ")}{typeof option.rank === "number" ? ` · rank ${option.rank}` : ""}</strong><span>{option.eligible === true ? "Eligible" : option.eligible === false ? "Ineligible" : "Needs more information"}</span><div className="band-grid">{detail(option.figures)}</div></div></article>)}</div> : <EmptyState title="No matcher response">{data ? "The matcher returned no options." : unavailable}</EmptyState>}
-    </Card><Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BUSINESS INPUTS</span><h2>Figures used in the comparison</h2></div></div><div className="band-grid">{detail(figures)}</div><p className="proposal-reasoning">Missing inputs are surfaced by the matcher; an operating-cash-flow proxy is not treated as approved EBITDA.</p></Card>
+    <KpiGrid label="Financing summary">
+      <Kpi index={1} label="Funding request" icon={<CoinsIcon />} tone="amber" value={<MoneyText amountMinor={minor(data?.amount) ?? requestedMinor} />} note="Your forecast's largest shortfall below the buffer" />
+      <Kpi index={2} label="Snapshot date" icon={<CalendarIcon />} value={String(data?.as_of ?? "Not loaded")} note="Fixture as-of date" />
+      <Kpi index={3} label="Eligible options" icon={<CheckCircleIcon />} tone="green" value={<>{eligible}<span className="sk-of"> of {options.length}</span></>} note="Catalogue and known business facts" />
+    </KpiGrid>
+    <Panel index={4} eyebrow="Matched options" title="Compare cost, coverage and conditions" tag="Each option carries its source">
+      {options.length ? <><div className="sk-options">{primary.map(renderOption)}</div>
+        {ineligible.length > 0 && <details className="sk-more-options"><summary><span>{ineligible.length} ineligible {ineligible.length === 1 ? "option" : "options"}, with the figures that ruled them out</span><ChevronDownIcon /></summary><div className="sk-options">{ineligible.map((option, index) => renderOption(option, primary.length + index))}</div></details>}</> : <EmptyState title="No matcher response">{data ? "The matcher returned no options." : unavailable}</EmptyState>}
+    </Panel>
+    <Panel index={6} eyebrow="Business inputs" title="Figures used in the comparison">
+      <div className="sk-figs sk-figs-pad">{detail(figures)}</div>
+      <p className="proposal-reasoning">Missing inputs are surfaced by the matcher; an operating-cash-flow proxy is not treated as approved EBITDA.</p>
+    </Panel>
   </div>;
 }
 
 function CouncilScreen() {
   return (
-    <div className="section-page">
+    <div className="section-page sk-page">
       <Heading section="council" badge="Advice only" />
-      <CouncilRoom />
+      <div className="sk-rise" style={rise(1)}><CouncilRoom /></div>
     </div>
   );
 }
@@ -213,26 +253,36 @@ async function BillsScreen() {
   const since = daysBeforeToday(60);
   const read = await readEngine("ledger/events", new URLSearchParams({ type: "purchase_bill", date_from: since, limit: "1000" }));
   const data = read.kind === "ok" && read.status === 200 ? objectValue(read.data) : null;
-  if (!data) return <div className="section-page"><Heading section="bills" /><DataSource connected={false} fallback="The engine did not answer, so no bills are shown. Try again in a moment." /></div>;
+  if (!data) return <div className="section-page sk-page"><Heading section="bills" /><DataSource connected={false} fallback="The engine did not answer, so no bills are shown. Try again in a moment." /></div>;
   const bills = objects(data?.events).filter((event) => event.event === "purchase_bill").reverse();
   const sampleBillId = typeof bills[0]?.bill_id === "string" ? bills[0].bill_id : null;
   const checkResult = sampleBillId ? await postEngine("bills/check", { bill_id: sampleBillId }) : null;
   const checkData = checkResult?.kind === "ok" && checkResult.status === 200 ? objectValue(checkResult.data) : null;
   const check = object(checkData?.check);
   const checkOutcome = typeof check?.outcome === "string" ? check.outcome : null;
+  const totalShown = bills.slice(0, 50).reduce((sum, bill) => sum + (typeof bill.total_minor === "number" ? bill.total_minor : 0), 0);
   const rows = bills.slice(0, 50).map((bill) => [
-    String(bill.bill_id ?? "—"),
+    <Mono key="id">{String(bill.bill_id ?? "—")}</Mono>,
     String(bill.number ?? "—"),
-    String(bill.date ?? "—"),
+    <span key="date" className="sk-nowrap">{String(bill.date ?? "—")}</span>,
     String(bill.party ?? bill.party_id ?? "—"),
-    <MoneyText key="amount" amountMinor={typeof bill.total_minor === "number" ? bill.total_minor : 0} />,
+    <MoneyText key="amount" amountMinor={typeof bill.total_minor === "number" ? bill.total_minor : 0} animateCount={false} />,
   ]);
   const detail = checkResult?.kind === "unavailable" ? checkResult.message : "Import synthetic bills to the local ledger to run the duplicate check.";
-  return <div className="section-page"><Heading section="bills" badge="Ledger" /><DataSource connected={Boolean(data)} fallback="" /><BillIntake />
-    <div className="tier-metric-grid"><Metric label="Bills in the last 60 days" value={data.next_offset ? `${bills.length}+` : bills.length} note={`Posted since ${since}`} /><Metric label="Duplicate check" value={checkOutcome ? checkOutcome.replaceAll("_", " ") : "Not run"} note="G-05 on the newest bill · read only" /><Metric label="New bills" value="Read, then confirmed" note="Claude transcribes with quotes; code checks them; you confirm before anything is posted." /></div>
-    {check && <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">GUARDIAN DUPLICATE CHECK</span><h2>G-05 · {String(checkOutcome ?? "check")}</h2></div>{checkOutcome && <OutcomeBadge outcome={checkOutcome === "approve_with_conditions" ? "conditions" : (checkOutcome as "approve" | "escalate" | "block" | "conditions")} />}</div><p className="proposal-reasoning">{String(check.detail ?? "")}</p></Card>}
+  return <div className="section-page sk-page">
+    <Heading section="bills" live badge="Ledger" />
+    <div className="sk-rise" style={rise(1)}><BillIntake /></div>
+    <KpiGrid label="Bills summary">
+      <Kpi index={2} label="Bills in the last 60 days" icon={<DocIcon />} value={data.next_offset ? `${bills.length}+` : bills.length} note={`Posted since ${since}`} />
+      <Kpi index={3} label="Duplicate check" icon={<ShieldCheckIcon />} tone={checkOutcome ? toneFor(checkOutcome) : "neutral"} value={checkOutcome ? nice(checkOutcome) : "Not run"} note="G-05 on the newest bill · read only" />
+      <Kpi index={4} label="New bills" icon={<CheckCircleIcon />} value="Read, then confirmed" note="Claude transcribes with quotes; code checks them; you confirm before anything is posted." />
+    </KpiGrid>
+    {check && <Panel index={5} eyebrow="Guardian duplicate check" title={<>G-05 · {nice(checkOutcome, "Check")}</>} actions={checkOutcome ? <OutcomeBadge outcome={checkOutcome === "approve_with_conditions" ? "conditions" : (checkOutcome as "approve" | "escalate" | "block" | "conditions")} /> : undefined}><p className="proposal-reasoning">{String(check.detail ?? "")}</p></Panel>}
     {!check && <DegradedBanner>{detail}</DegradedBanner>}
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">IMPORTED BILL REGISTER</span><h2>Newest bills in the ledger</h2></div><span className="placeholder-tag">{bills.length > 50 ? "Latest 50 shown" : "Read only"}</span></div><Table headers={["Bill ID", "Supplier number", "Received", "Supplier", "Total"]} rows={rows} empty="No imported bill events are available." /></Card>
+    <Panel index={6} eyebrow="Imported bill register" title="Newest bills in the ledger" tag={bills.length > 50 ? "Latest 50 shown" : "Read only"}>
+      {rows.length > 0 && <div className="sk-strip"><span><b>{rows.length}</b> bills listed</span><span>Total <b><MoneyText amountMinor={totalShown} animateCount={false} /></b></span><span>Newest <b>{String(bills[0]?.date ?? "—")}</b></span></div>}
+      <Table headers={["Bill ID", "Supplier number", "Received", "Supplier", "Total"]} rows={rows} numeric={[4]} noun="bills" pageSize={15} empty="No imported bill events are available." />
+    </Panel>
     <p className="footnote">Bill records remain source data. This screen does not approve a bill or issue a payment.</p>
   </div>;
 }
@@ -241,11 +291,35 @@ async function ReconcileScreen() {
   const [matchesData, findingsData] = await Promise.all([engineData("reconcile/matches"), engineData("reconcile/findings")]);
   const matches = objects(matchesData?.matches);
   const findings = objects(findingsData?.findings);
-  const rows = matches.map((match) => [String(match.bank_line_id ?? "—"), String(match.pass_name ?? "—"), `${Math.round(Number(match.confidence ?? 0) * 100)}%`, String(match.status ?? "—"), Array.isArray(match.event_ids) ? match.event_ids.join(", ") : "—"]);
-  return <div className="section-page"><Heading section="reconcile" badge={matchesData ? "Ledger · read only" : "Synthetic preview"} /><DataSource connected={Boolean(matchesData)} fallback="No seeded ledger response is available; the page does not invent reconciliation counts." />
-    <div className="tier-metric-grid"><Metric label="Saved matches" value={matches.length} note="From the ledger endpoint" /><Metric label="Open findings" value={findings.length} note="Ranked by money at stake" /><Metric label="Posting behavior" value="Proposals only" note="Matches remain proposals until reviewed." /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">MATCH REGISTER</span><h2>Bank lines and linked events</h2></div><span className="placeholder-tag">Review before posting</span></div><ReconcileRunner enabled /><Table headers={["Bank line", "Pass", "Confidence", "Review status", "Linked events"]} rows={rows} empty="No match response is available. Run the local engine with the seeded database to load it." /></Card>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">NEEDS REVIEW</span><h2>Unmatched bank-line findings</h2></div></div>{findings.length ? <div className="option-list">{findings.map((finding, index) => <article className="option-row" key={String(finding.id ?? index)}><div><h3>{String(finding.title ?? finding.metric_id ?? "Reconciliation finding")}</h3><p>{String(finding.detail ?? finding.note ?? "Review the source bank line and candidate ledger events.")}</p></div>{minor(finding.money_at_stake) !== null && <strong><MoneyText amountMinor={minor(finding.money_at_stake) ?? 0} /></strong>}</article>)}</div> : <EmptyState title="No live findings loaded">A match decision must remain reviewable. This page has no action that posts ledger events.</EmptyState>}</Card>
+  const exact = matches.filter((match) => Number(match.confidence ?? 0) >= 1).length;
+  const atStake = findings.reduce((sum, finding) => sum + (minor(finding.money_at_stake) ?? 0), 0);
+  const matchRows: MatchRow[] = matches.map((match) => ({
+    line: String(match.bank_line_id ?? "—"),
+    pass: String(match.pass_name ?? "—"),
+    confidence: Number(match.confidence ?? 0),
+    status: String(match.status ?? "—"),
+    events: Array.isArray(match.event_ids) ? match.event_ids.map(String) : [],
+  }));
+  const findingRows: FindingRow[] = findings.map((finding, index) => ({
+    id: String(finding.id ?? index),
+    title: String(finding.title ?? finding.metric_id ?? "Reconciliation finding"),
+    detail: String(finding.detail ?? finding.note ?? "Review the source bank line and candidate ledger events."),
+    minor: minor(finding.money_at_stake),
+  }));
+  return <div className="section-page sk-page">
+    <Heading section="reconcile" live={Boolean(matchesData)} badge={matchesData ? "Ledger · read only" : "Synthetic preview"} />
+    <DataSource connected={Boolean(matchesData)} fallback="No seeded ledger response is available; the page does not invent reconciliation counts." />
+    <KpiGrid label="Reconciliation summary">
+      <Kpi index={1} label="Saved matches" icon={<LinkIcon />} tone="green" value={matches.length.toLocaleString("en-US")} note={matches.length ? `From the ledger endpoint · ${exact.toLocaleString("en-US")} exact` : "From the ledger endpoint"} />
+      <Kpi index={2} label="Open findings" icon={<AlertIcon />} tone={findings.length ? "amber" : "green"} value={findings.length.toLocaleString("en-US")} note={atStake ? <>Ranked by money at stake · <MoneyText amountMinor={atStake} animateCount={false} /> in total</> : "Ranked by money at stake"} />
+      <Kpi index={3} label="Posting behavior" icon={<ShieldCheckIcon />} value="Proposals only" note="Matches remain proposals until reviewed." />
+    </KpiGrid>
+    <Panel index={4} eyebrow="Match register" title="Bank lines and linked events" tag="Review before posting" actions={<ReconcileRunner enabled />}>
+      <MatchTable matches={matchRows} />
+    </Panel>
+    <Panel index={5} eyebrow="Needs review" title="Unmatched bank-line findings" tag={findings.length ? `${findings.length.toLocaleString("en-US")} open` : undefined} tagTone="amber">
+      {findings.length ? <FindingList findings={findingRows} /> : <EmptyState title="No live findings loaded">A match decision must remain reviewable. This page has no action that posts ledger events.</EmptyState>}
+    </Panel>
   </div>;
 }
 
@@ -253,11 +327,23 @@ async function AuditScreen() {
   const data = await engineData("audit");
   const records = objects(data?.records);
   const verified = data?.verified === true;
-  const rows = records.slice(-20).reverse().map((item) => [String(item.seq ?? "—"), String(item.recorded_at ?? "—"), String(item.proposal_id ?? "—"), String(item.hash ?? "—").slice(0, 16) + "…"]);
-  return <div className="section-page"><Heading section="audit" badge={data ? "Ledger · read only" : "Replay preview"} /><DataSource connected={Boolean(data)} fallback="The sample timeline is not an audit-chain export." />
-    <div className="tier-metric-grid"><Metric label="Chain verification" value={data ? (verified ? "Verified" : "Failed") : "Not checked"} note={data?.first_bad_seq ? `First invalid entry: ${String(data.first_bad_seq)}` : "Read-only verification"} /><Metric label="Entries" value={typeof data?.chain_length === "number" ? data.chain_length : "None"} note="Full tenant chain length" /><Metric label="Payment mode" value="SIMULATED" note="No bank rails are connected." /></div>
-    <Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">HASH-CHAIN ENTRIES</span><h2>Latest recorded operations</h2></div><span className={`placeholder-tag ${verified ? "tag-positive" : ""}`}>{data ? (verified ? "VERIFIED" : "CHECK FAILED") : "NOT CONNECTED"}</span></div><Table headers={["Sequence", "Recorded at", "Proposal", "Entry hash"]} rows={rows} empty="Connect the local mock engine with the seeded database to inspect verified audit entries." /></Card>
-    {data && <a className="button button-secondary" href="/api/fiona/audit/export" download>Download execution evidence</a>}
+  const rows = records.slice().reverse().map((item) => [
+    <span key="seq" className="sk-seq"><i aria-hidden="true" />{String(item.seq ?? "—")}</span>,
+    <Stamp key="at" value={item.recorded_at} />,
+    item.proposal_id ? <Link key="p" className="text-link sk-mono-link" href={`/proposals/${String(item.proposal_id)}`}>{String(item.proposal_id)}</Link> : "—",
+    <Mono key="hash" title={String(item.hash ?? "")}>{String(item.hash ?? "—").slice(0, 16) + "…"}</Mono>,
+  ]);
+  return <div className="section-page sk-page">
+    <Heading section="audit" live={Boolean(data)} badge={data ? "Ledger · read only" : "Replay preview"} actions={data ? <a className="button button-secondary" href="/api/fiona/audit/export" download>Download execution evidence</a> : undefined} />
+    <DataSource connected={Boolean(data)} fallback="The sample timeline is not an audit-chain export." />
+    <KpiGrid label="Audit summary">
+      <Kpi index={1} label="Chain verification" icon={<ShieldCheckIcon />} tone={data ? (verified ? "green" : "danger") : "neutral"} value={data ? (verified ? "Verified" : "Failed") : "Not checked"} emphasis={data && !verified ? "negative" : undefined} note={data?.first_bad_seq ? `First invalid entry: ${String(data.first_bad_seq)}` : "Read-only verification"} />
+      <Kpi index={2} label="Entries" icon={<HashIcon />} value={typeof data?.chain_length === "number" ? data.chain_length : "None"} note="Full tenant chain length" />
+      <Kpi index={3} label="Payment mode" icon={<WalletIcon />} value="Simulated" note="No bank rails are connected." />
+    </KpiGrid>
+    <Panel index={4} eyebrow="Hash-chain entries" title="Latest recorded operations" tag={data ? (verified ? "Verified" : "Check failed") : "Not connected"} tagTone={data ? (verified ? "green" : "danger") : "neutral"}>
+      <div className="sk-chain"><Table headers={["Sequence", "Recorded at", "Proposal", "Entry hash"]} rows={rows} noun="entries" pageSize={20} empty="Connect the local mock engine with the seeded database to inspect verified audit entries." /></div>
+    </Panel>
     <p className="footnote">The wallet API itself is not called from this read-only screen. A replay marker is not evidence that an operation occurred.</p>
   </div>;
 }
@@ -266,7 +352,7 @@ async function AuditScreen() {
 async function InventoryScreen() {
   const data = await engineData("inventory/analysis");
   if (!data) {
-    return <div className="section-page"><Heading section="inventory" /><DataSource connected={false} fallback="The engine did not answer, so no inventory figures are shown." /></div>;
+    return <div className="section-page sk-page"><Heading section="inventory" /><DataSource connected={false} fallback="The engine did not answer, so no inventory figures are shown." /></div>;
   }
   const connectedItems = objects(data?.items);
   const items: InventoryItemData[] = connectedItems.length
@@ -308,10 +394,9 @@ async function InventoryScreen() {
   };
 
   return (
-    <div className="section-page">
-      <Heading section="inventory" badge="Engine · read only" />
-      <DataSource connected fallback="" />
-      <InventoryView summary={summary} items={items} />
+    <div className="section-page sk-page">
+      <Heading section="inventory" live badge="Engine · read only" />
+      <div className="sk-rise" style={rise(1)}><InventoryView summary={summary} items={items} /></div>
       <p className="footnote">
         Inventory movement analytics are decision support. Draft reorder suggestions do not automatically dispatch purchase orders or commit cash.
       </p>
@@ -323,15 +408,15 @@ async function LaunchLabScreen() {
   const session = await getWorkspaceSession();
   const currency = workspaceCurrency(session?.tenantId ?? null);
   return (
-    <div className="section-page">
+    <div className="section-page sk-page">
       <Heading section="launch-lab" badge="Engine · Monte Carlo" />
       {currency ? (
         <>
-          <div className="data-note">
+          <div className="data-note sk-rise" style={rise(1)}>
             <span aria-hidden="true">●</span>
             <span><strong>Run by the engine</strong> · Your costs and price, plus comparable products and lead times from your ledger. The odds come from a simulation of these assumptions.</span>
           </div>
-          <LaunchLabSimulator currency={currency} canSaveDefaults={session?.role === "owner"} />
+          <div className="sk-rise" style={rise(2)}><LaunchLabSimulator currency={currency} canSaveDefaults={session?.role === "owner"} /></div>
         </>
       ) : (
         <DegradedBanner>Sign in to a registered workspace to run a launch simulation.</DegradedBanner>
@@ -347,50 +432,65 @@ async function WalletScreen() {
     .filter((record) => record.action === "payment_executed" || record.action === "payment_refused")
     .reverse();
   const executed = payments.filter((record) => record.action === "payment_executed");
+  const paidTotal = executed.reduce((sum, record) => sum + (typeof record.amount_minor === "number" ? record.amount_minor : 0), 0);
   const treasurer = objects(mandates?.mandates).find((mandate) => mandate.agent === "treasurer") ?? null;
   const verified = audit?.verified === true;
   const rows = payments.slice(0, 25).map((record) => {
     const paid = record.action === "payment_executed";
+    const reason = String(record.reason ?? "Refused");
+    const split = reason.match(/^([A-Z][A-Z0-9_]+):\s*(.*)$/);
     return [
-      String(record.at ?? "—").replace("T", " ").slice(0, 16),
+      <span key="when" className="sk-nowrap">{String(record.at ?? "—").replace("T", " ").slice(0, 16)}</span>,
       String(record.payee_id ?? "—"),
       typeof record.amount_minor === "number" ? <MoneyText amountMinor={record.amount_minor} currency={String(record.currency ?? "")} animateCount={false} /> : "—",
       <span key="result" className={`outcome-badge ${paid ? "outcome-approve" : "outcome-block"}`}><span aria-hidden="true">{paid ? "✓" : "×"}</span>{paid ? "Paid" : "Refused"}</span>,
-      paid ? `Wallet ref ${String(record.wallet_ref ?? "—")} · verdict ${String(record.verdict_hash ?? "").slice(0, 10)}…` : String(record.reason ?? "Refused"),
-      record.proposal_id ? <Link className="text-link" href={`/proposals/${String(record.proposal_id)}`}>{String(record.proposal_id)}</Link> : "—",
+      paid
+        ? <span key="detail" className="sk-detail">Wallet ref <Mono>{String(record.wallet_ref ?? "—")}</Mono> · verdict <Mono>{String(record.verdict_hash ?? "").slice(0, 10)}…</Mono></span>
+        : split ? <span key="detail" className="sk-detail"><Mono>{split[1]}</Mono> {split[2]}</span> : <Mono key="detail">{reason}</Mono>,
+      record.proposal_id ? <Link key="proposal" className="text-link sk-truncate" href={`/proposals/${String(record.proposal_id)}`} title={String(record.proposal_id)}>{String(record.proposal_id)}</Link> : "—",
     ];
   });
   return (
-    <div className="section-page">
-      <Heading section="wallet" badge="Simulated wallet · no real money moves" />
+    <div className="section-page sk-page">
+      <Heading section="wallet" live={Boolean(audit)} badge="Simulated wallet · no real money moves" actions={<Link className="button button-secondary" href="/settings/mandates">Review mandates</Link>} />
       <DataSource connected={Boolean(audit)} fallback="The engine did not answer, so no wallet activity is shown." />
       {audit && (
         <>
-          <div className="tier-metric-grid">
-            <Metric label="Payments made" value={executed.length} note="Simulated; each one is a posted ledger event" />
-            <Metric label="Attempts refused" value={payments.length - executed.length} note="Every refusal is recorded with its reason" />
-            <Metric label="Audit chain" value={verified ? "Verified" : "Check failed"} note={`${String(audit.chain_length ?? 0)} hash-chained entries`} />
-          </div>
-          <Card className="tier-panel">
-            <div className="panel-heading">
-              <div><span className="eyebrow">FROM THE AUDIT CHAIN</span><h2>Every payment attempt</h2></div>
-              <span className={`placeholder-tag ${verified ? "tag-positive" : ""}`}>{verified ? "CHAIN VERIFIED" : "CHAIN CHECK FAILED"}</span>
-            </div>
-            <Table headers={["When (UTC)", "Payee", "Amount", "Result", "Detail", "Proposal"]} rows={rows} empty="No payment has been attempted yet. The wallet pays only proposals the Guardian cleared and a person approved." />
-          </Card>
+          <KpiGrid label="Wallet summary">
+            <Kpi index={1} label="Payments made" icon={<CheckCircleIcon />} tone="green" value={executed.length} note={paidTotal ? <>Simulated; each one is a posted ledger event · <MoneyText amountMinor={paidTotal} animateCount={false} /> paid</> : "Simulated; each one is a posted ledger event"} />
+            <Kpi index={2} label="Attempts refused" icon={<AlertIcon />} tone={payments.length - executed.length ? "danger" : "green"} value={payments.length - executed.length} note="Every refusal is recorded with its reason" />
+            <Kpi index={3} label="Audit chain" icon={<HashIcon />} tone={verified ? "green" : "danger"} value={verified ? "Verified" : "Check failed"} emphasis={verified ? undefined : "negative"} note={`${String(audit.chain_length ?? 0)} hash-chained entries`} />
+          </KpiGrid>
+          <Panel index={4} eyebrow="From the audit chain" title="Every payment attempt" tag={verified ? "Chain verified" : "Chain check failed"} tagTone={verified ? "green" : "danger"}>
+            <Table headers={["When (UTC)", "Payee", "Amount", "Result", "Detail", "Proposal"]} rows={rows} numeric={[2]} noun="attempts" pageSize={10} empty="No payment has been attempted yet. The wallet pays only proposals the Guardian cleared and a person approved." />
+          </Panel>
         </>
       )}
-      <Card className="tier-panel">
-        <div className="panel-heading"><div><span className="eyebrow">TREASURER MANDATE</span><h2>Limits the wallet enforces</h2></div></div>
-        <div className="tier-metric-grid inner-metrics">
-          <Metric label="Per-payment cap" amount={minor(treasurer?.per_payment_cap)} note={treasurer ? `Version ${String(treasurer.version ?? "—")}` : "Mandate not loaded"} />
-          <Metric label="Daily cap" amount={minor(treasurer?.daily_cap)} note={treasurer ? `Effective ${String(treasurer.effective_from ?? "—")}` : "Mandate not loaded"} />
-          <Metric label="Execution" value="Simulated" note="No bank rails are connected." />
+      <Panel index={5} eyebrow="Treasurer mandate" title="Limits the wallet enforces">
+        <div className="sk-stats">
+          <div><span>Per-payment cap</span><strong>{minor(treasurer?.per_payment_cap) !== null ? <MoneyText amountMinor={minor(treasurer?.per_payment_cap) ?? 0} /> : "Not available"}</strong><small>{treasurer ? `Version ${String(treasurer.version ?? "—")}` : "Mandate not loaded"}</small></div>
+          <div><span>Daily cap</span><strong>{minor(treasurer?.daily_cap) !== null ? <MoneyText amountMinor={minor(treasurer?.daily_cap) ?? 0} /> : "Not available"}</strong><small>{treasurer ? `Effective ${String(treasurer.effective_from ?? "—")}` : "Mandate not loaded"}</small></div>
+          <div><span>Execution</span><strong>Simulated</strong><small>No bank rails are connected.</small></div>
         </div>
-        <div style={{ padding: "0 15px 15px" }}>
-          <Link className="button button-secondary" href="/settings/mandates">Review mandates</Link>
-        </div>
-      </Card>
+      </Panel>
+    </div>
+  );
+}
+
+function ImportScreen({ localImport }: { localImport: boolean }) {
+  return (
+    <div className="section-page sk-page">
+      <Heading section="import" badge={localImport ? "Your workspace" : undefined} />
+      {localImport ? <div className="data-note sk-rise" style={rise(1)}><span aria-hidden="true">●</span><span><strong>Imports go to your workspace</strong> · Rows are validated, duplicates are skipped, and new bills reach the agents and the Guardian on the next run.</span></div> : <DegradedBanner>Sign in to a workspace to import data.</DegradedBanner>}
+      <ol className="sk-steps sk-rise" style={rise(2)} aria-label="How an import works">
+        <li><b>1</b><div><strong>Choose the record type</strong><span>Bank statement or POS sales</span></div></li>
+        <li><b>2</b><div><strong>Preview the file</strong><span>Checked in this tab first</span></div></li>
+        <li><b>3</b><div><strong>Import</strong><span>Duplicates are skipped</span></div></li>
+      </ol>
+      <Panel index={3} eyebrow="Bank and POS intake" title="Preview, then import source records" tag="Tenant selected server-side">
+        <ImportPreview enabled={localImport} />
+      </Panel>
+      <p className="footnote">Imports are idempotent: the same file twice adds nothing. Your workspace comes from your account, never from the file.</p>
     </div>
   );
 }
@@ -409,22 +509,21 @@ export default async function WorkspaceSection({ params }: { params: Promise<{ s
   if (section === "reconcile") return <ReconcileScreen />;
   if (section === "wallet") return <WalletScreen />;
   if (section === "audit") return <AuditScreen />;
-  if (section === "import") { const localImport = Boolean(await getWorkspaceSession()); return <div className="section-page"><Heading section="import" />{localImport ? <div className="data-note"><span aria-hidden="true">●</span><span><strong>Imports go to your workspace</strong> · Rows are validated, duplicates are skipped, and new bills reach the agents and the Guardian on the next run.</span></div> : <DegradedBanner>Sign in to a workspace to import data.</DegradedBanner>}<Card className="tier-panel"><div className="panel-heading"><div><span className="eyebrow">BANK AND POS INTAKE</span><h2>Preview, then import source records</h2></div><span className="placeholder-tag">Tenant selected server-side</span></div><ImportPreview enabled={localImport} /></Card><p className="footnote">Imports are idempotent: the same file twice adds nothing. Your workspace comes from your account, never from the file.</p></div>; }
+  if (section === "import") return <ImportScreen localImport={Boolean(await getWorkspaceSession())} />;
   if (section === "approvals") {
     return (
-      <div className="section-page">
+      <div className="section-page sk-page">
         <Heading section="approvals" badge="You decide" />
-        <div className="data-note">
+        <div className="data-note sk-rise" style={rise(1)}>
           <span aria-hidden="true">●</span>
           <span><strong>Nothing pays without you</strong> · Agents propose, the Guardian checks every proposal against its rules and with an independent review, and your decision is recorded under your name in the audit trail.</span>
         </div>
-        <ProposalInbox />
+        <div className="sk-rise" style={rise(2)}><ProposalInbox /></div>
       </div>
     );
   }
   if (section === "council") return <CouncilScreen />;
   if (section === "inventory") return <InventoryScreen />;
   if (section === "launch-lab") return <LaunchLabScreen />;
-  return <div className="section-page"><Heading section={section as keyof typeof routes} /><EmptyState title="No screen is available">This route is registered but is outside the current Tier 1 view.</EmptyState></div>;
+  return <div className="section-page sk-page"><Heading section={section as keyof typeof routes} /><EmptyState title="No screen is available">This route is registered but is outside the current Tier 1 view.</EmptyState></div>;
 }
-

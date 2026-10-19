@@ -102,9 +102,9 @@ export function AdminPortal() {
 
   return (
     <div className="admin-portal">
-      <Card className="tier-panel">
-        <div className="panel-heading"><div><span className="eyebrow">NEW ACCOUNT</span><h2>Set up a user</h2></div></div>
-        <form className="admin-form" onSubmit={create}>
+      <Card className="tier-panel sk-panel">
+        <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">New account</span><h2>Set up a user</h2></div><span className="sk-pill sk-pill-neutral">A temporary password is shown once</span></div>
+        <form className="admin-form admin-create" onSubmit={create}>
           <label><span className="spec-label">Email</span><input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
           <label><span className="spec-label">Full name</span><input required minLength={2} maxLength={80} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
           <label>
@@ -120,7 +120,7 @@ export function AdminPortal() {
               <option value="finance">Finance: approves payments</option>
             </select>
           </label>
-          <button className="button button-primary" type="submit" disabled={busy !== null}>{busy === "create" ? "Creating…" : "Create account"}</button>
+          <div className="admin-create-actions"><button className="button button-primary" type="submit" disabled={busy !== null}>{busy === "create" ? "Creating…" : "Create account"}</button></div>
         </form>
       </Card>
 
@@ -131,20 +131,20 @@ export function AdminPortal() {
           <span>Shown once. Hand it over privately; they can change it from their account menu after signing in.</span>
         </div>
       )}
-      {notice && <p className="mandate-notice" role="status">{notice}</p>}
+      {notice && <p className="sk-notice" role="status">{notice}</p>}
 
-      <Card className="tier-panel">
-        <div className="panel-heading"><div><span className="eyebrow">ALL ACCOUNTS</span><h2>{users ? `${users.length} account${users.length === 1 ? "" : "s"}` : "Loading…"}</h2></div></div>
+      <Card className="tier-panel sk-panel">
+        <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">All accounts</span><h2>{users ? `${users.length} account${users.length === 1 ? "" : "s"}` : "Loading…"}</h2></div></div>
         {problem && <EmptyState title="Accounts could not be loaded">{problem}</EmptyState>}
         {users && (
-          <div className="data-table-wrap">
-            <table className="data-table">
+          <div className="data-table-wrap sk-table-wrap admin-table-wrap">
+            <table className="data-table sk-table admin-table">
               <thead><tr><th>Person</th><th>Workspace</th><th>Role</th><th>Last sign-in</th><th>Status</th><th>Actions</th></tr></thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
-                    <td><strong>{u.name}</strong><br /><span className="admin-muted">{u.email}</span></td>
-                    <td>{u.tenantId ?? "—"}</td>
+                    <td><div className="admin-person"><span className="admin-initials" aria-hidden="true">{u.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</span><div><strong>{u.name}</strong><span className="admin-muted">{u.email}</span></div></div></td>
+                    <td>{u.tenantId ? <div className="admin-workspace"><span>{WORKSPACES.find((w) => w.id === u.tenantId)?.label ?? u.tenantId}</span><code className="sk-mono">{u.tenantId}</code></div> : "—"}</td>
                     <td>
                       {u.superAdmin ? "Super admin · owner" : (
                         <select value={u.role ?? ""} disabled={busy !== null} onChange={(e) => change(u, { role: e.target.value }, `${u.email} is now ${e.target.value}.`)} aria-label={`Role for ${u.email}`}>
@@ -154,9 +154,9 @@ export function AdminPortal() {
                       )}
                     </td>
                     <td>{when(u.lastSignInAt)}</td>
-                    <td>{u.disabled ? "Disabled" : "Active"}</td>
+                    <td><span className={`sk-pill ${u.disabled ? "sk-pill-neutral" : "sk-pill-green"}`}><i aria-hidden="true" />{u.disabled ? "Disabled" : "Active"}</span></td>
                     <td className="admin-actions">
-                      {u.superAdmin ? <span className="admin-muted">Protected</span> : (
+                      {u.superAdmin ? <span className="sk-pill sk-pill-blue">Protected</span> : (
                         <>
                           <button className="button button-quiet" type="button" disabled={busy !== null} onClick={() => change(u, { resetPassword: true }, "")}>Reset password</button>
                           <button className="button button-secondary" type="button" disabled={busy !== null} onClick={() => change(u, { disabled: !u.disabled }, `${u.email} is ${u.disabled ? "enabled" : "disabled"}.`)}>{u.disabled ? "Enable" : "Disable"}</button>

@@ -97,7 +97,7 @@ export function AgentActivity() {
       </div>
 
       {problem && <p className="agent-activity-note" role="status">{problem}</p>}
-      {runs === null && !problem && <p className="agent-activity-note">Loading recent runs…</p>}
+      {runs === null && !problem && <div className="activity-skeleton" role="status" aria-label="Loading recent runs">{[0, 1, 2].map((i) => <div key={i}><span className="sk-skel" /><span className="sk-skel" /></div>)}</div>}
       {runs !== null && runs.length === 0 && (
         <p className="agent-activity-note">No runs yet. Start the team and the Controller reconciles the bank, then the Treasurer plans payments for you to approve.</p>
       )}
@@ -124,6 +124,7 @@ export function AgentActivity() {
       )}
 
       <button className="button button-secondary agent-run-button" type="button" onClick={runTeam} disabled={starting || busy}>
+        {(busy || starting) && <span className="sk-spinner" aria-hidden="true" />}
         {busy ? "The team is working…" : starting ? "Starting…" : "Run the team now"}
       </button>
     </>

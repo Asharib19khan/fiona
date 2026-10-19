@@ -31,5 +31,14 @@ export default defineConfig([
       "no-restricted-imports": ["error", { patterns: boundaryPatterns }],
     },
   },
+  {
+    // Third-party components copied in as-is (React Bits). They keep the latest props in a ref
+    // during render on purpose; the boundary rules above still apply.
+    files: ["components/vendor/**"],
+    rules: {
+      "react-hooks/refs": "off",
+      "@next/next/no-img-element": "off",
+    },
+  },
   globalIgnores([".next/**", "out/**", "next-env.d.ts"]),
 ]);

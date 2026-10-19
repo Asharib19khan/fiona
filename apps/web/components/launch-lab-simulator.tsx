@@ -242,8 +242,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
 
   return (
     <div className="launch-lab-interactive">
-      <Card className="tier-panel">
-        <div className="panel-heading">
+      <Card className="tier-panel sk-panel sk-rise">
+        <div className="panel-heading sk-panel-heading">
           <div>
             <span className="eyebrow">YOUR LAUNCH PLAN</span>
             <h2>What would you launch?</h2>
@@ -305,14 +305,21 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
         </form>
       </Card>
 
+      {busy && (
+        <div className="sk-skeleton-list launch-running" role="status" aria-live="polite">
+          <p className="launch-running-note"><span className="sk-spinner" aria-hidden="true" /> The engine is simulating this launch against your ledger…</p>
+          {[0, 1].map((i) => <div key={i} className="sk-skeleton-card" style={{ animationDelay: `${i * 120}ms` }}><span /><span /><span /></div>)}
+        </div>
+      )}
+
       {!result && !busy && (
         <EmptyState title="No simulation yet">Describe the product and run it. The engine fills the rest from your ledger and says what it had to assume.</EmptyState>
       )}
 
       {result && (
         <>
-          <Card className="tier-panel">
-            <div className="panel-heading">
+          <Card className="tier-panel sk-panel sk-rise">
+            <div className="panel-heading sk-panel-heading">
               <div>
                 <span className="eyebrow">ENGINE RECOMMENDATION · {String(recommendation?.plan ?? "").toUpperCase()} PLAN</span>
                 <h2>{readable(label || "No recommendation")}</h2>
@@ -335,7 +342,7 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
 
           <div className="tier-metric-grid">
             {list(result.headline).slice(0, 6).map((figure, index) => (
-              <Card className="tier-metric" key={String(figure.metric_id ?? index)}>
+              <Card className="tier-metric sk-kpi sk-rise" key={String(figure.metric_id ?? index)}>
                 <span className="eyebrow">{String(figure.label ?? figure.metric_id)}</span>
                 <strong><FigureValue figure={figure} /></strong>
                 {typeof figure.formula === "string" && <small>{figure.formula}</small>}
@@ -344,8 +351,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
           </div>
 
           <div className="launch-sub-grid">
-            <Card className="tier-panel">
-              <div className="panel-heading">
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading">
                 <div>
                   <span className="eyebrow">SIMULATION · {String(simulation?.runs ?? "—")} RUNS</span>
                   <h2>Odds (model-based, not calibrated)</h2>
@@ -367,8 +374,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
               </div>
             </Card>
 
-            <Card className="tier-panel">
-              <div className="panel-heading">
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading">
                 <div>
                   <span className="eyebrow">LAUNCH RULES · RULEBOOK</span>
                   <h2>Checks behind the recommendation</h2>
@@ -389,8 +396,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
           </div>
 
           <div className="launch-sub-grid">
-            <Card className="tier-panel">
-              <div className="panel-heading"><div><span className="eyebrow">PER UNIT</span><h2>Where each unit&apos;s cost comes from</h2></div></div>
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">PER UNIT</span><h2>Where each unit&apos;s cost comes from</h2></div></div>
               <div className="breakeven-stats-list">
                 {list(result.cost_lines).map((figure, index) => (
                   <div className="breakeven-row" key={String(figure.metric_id ?? figure.label ?? index)}>
@@ -400,8 +407,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
                 ))}
               </div>
             </Card>
-            <Card className="tier-panel">
-              <div className="panel-heading"><div><span className="eyebrow">INPUTS</span><h2>What the engine used, and where from</h2></div></div>
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">INPUTS</span><h2>What the engine used, and where from</h2></div></div>
               <div className="breakeven-stats-list">
                 {inputs.map((input, index) => {
                   const doubtful = input.origin === "assumption_unverified" || input.origin === "draft_default";
@@ -417,8 +424,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
           </div>
 
           {explain && (
-            <Card className="tier-panel">
-              <div className="panel-heading"><div><span className="eyebrow">IN SHORT</span><h2>Risks and the best lever</h2></div></div>
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">IN SHORT</span><h2>Risks and the best lever</h2></div></div>
               <div className="breakeven-stats-list">
                 <div className="breakeven-row"><span>Biggest risks</span><strong>{strings(explain.main_risks).map(readable).join(", ") || "None ranked"}</strong></div>
                 <div className="breakeven-row"><span>Best lever</span><strong>{explain.best_lever ? readable(String(explain.best_lever)) : "None found"}</strong></div>
@@ -431,8 +438,8 @@ export function LaunchLabSimulator({ currency, canSaveDefaults }: { currency: st
           )}
 
           {gaps.length > 0 && (
-            <Card className="tier-panel">
-              <div className="panel-heading"><div><span className="eyebrow">DATA GAPS</span><h2>Answer these to sharpen the result</h2></div></div>
+            <Card className="tier-panel sk-panel sk-rise">
+              <div className="panel-heading sk-panel-heading"><div><span className="eyebrow">DATA GAPS</span><h2>Answer these to sharpen the result</h2></div></div>
               <ul className="rule-checklist">
                 {gaps.map((gap, index) => (
                   <li key={String(gap.field ?? index)} className={`rule-item ${gap.blocking ? "failed" : "passed"}`}>
