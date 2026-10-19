@@ -1,3 +1,4 @@
+import { workspaceInfo } from "@/lib/workspaces";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { WindowShell, type ShellStatus } from "./shell";
@@ -23,13 +24,16 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const live = apiMode() === "live" || (process.env.FIONA_MODE ?? "mock") === "live";
+  const session = await getSession();
+  const workspace = workspaceInfo(session?.tenantId ?? null);
   const status: ShellStatus = {
     ledger: live ? "live" : "demo",
     guardian: (process.env.FIONA_LLM_PROVIDER ?? "replay") === "claude_cli" ? "live" : "replay",
-    currency: "PKR",
-    timezone: "Asia/Karachi",
+    currency: workspace?.currency ?? "—",
+    timezone: workspace?.timezone ?? "UTC",
+    // An unregistered workspace is not known to be real, so it is labelled synthetic too.
+    synthetic: workspace?.synthetic ?? true,
   };
-  const session = await getSession();
   const user = session
     ? { name: session.name, email: session.email, role: session.role, workspace: session.tenantId, demo: session.demo, superAdmin: session.superAdmin }
     : null;

@@ -175,6 +175,8 @@ export interface ShellStatus {
   guardian: "live" | "replay";
   currency: string;
   timezone: string;
+  /** The workspace is a generated demo company (synthetic ledger). */
+  synthetic: boolean;
 }
 
 export function WindowShell({ children, user, status }: { children: ReactNode; user: ShellUser | null; status: ShellStatus }) {
@@ -274,7 +276,7 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
             <span className="workspace-avatar">{initials(workspaceName)}</span>
             <span>
               <strong>{workspaceName}</strong>
-              <small>{status.ledger === "live" ? "Live ledger" : "Demo data"}</small>
+              <small>{status.ledger === "live" ? "Live ledger" : "Demo data"}{status.synthetic ? " · synthetic" : ""}</small>
             </span>
             <span className="chevron">⌄</span>
           </div>
@@ -282,7 +284,7 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
           <div className="topbar-spacer" />
 
           {/* Live Node Badges */}
-          <div className="topbar-live-status" title={status.ledger === "live" ? "Figures are computed from your posted ledger." : "Figures come from labelled synthetic demo files."}>
+          <div className="topbar-live-status" title={`${status.ledger === "live" ? "Figures are computed from the posted ledger." : "Figures come from labelled demo files."}${status.synthetic ? " This workspace is a generated demo company: its data is synthetic, not a real customer's." : ""}`}>
             <span className="status-halo-dot" />
             <span className="status-label-top">{status.ledger === "live" ? "Live ledger" : "Demo data"}</span>
           </div>
@@ -356,6 +358,7 @@ export function WindowShell({ children, user, status }: { children: ReactNode; u
           <div className="canvas-content">{children}</div>
           <footer className="statusbar">
             <span><i className="status-led" />{status.ledger === "live" ? "Engine reading the posted ledger" : "Demo data"}</span>
+            {status.synthetic && <span>Synthetic demo company · not real customer data</span>}
             <span>Hash-chained audit log</span>
             <span>{status.currency} · {status.timezone}</span>
           </footer>

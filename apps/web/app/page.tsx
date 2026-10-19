@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card, DegradedBanner, EmptyState, FindingCard, MoneyText } from "@fiona/ui";
+import { Card, DegradedBanner, EmptyState, FindingCard, MoneyText, StateChip } from "@fiona/ui";
 import { getBriefing } from "@/lib/briefing";
 import { getSession } from "@/lib/session";
 import { LiveClock } from "@/components/live-clock";
@@ -25,6 +25,7 @@ export default async function Home() {
   return (
     <div className="briefing-page">
       <div className="page-kicker">
+        {briefing.asOf && <StateChip>Figures as of the ledger date · {new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${briefing.asOf}T00:00:00Z`))}</StateChip>}
         <LiveClock />
       </div>
 
