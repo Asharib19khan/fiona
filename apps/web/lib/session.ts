@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { apiMode } from "@/lib/env";
+import { mfaState } from "@/lib/supabase/mfa";
 import { authConfigured, supabaseServer } from "@/lib/supabase/server";
 
 export type Role = "owner" | "finance";
@@ -20,6 +21,16 @@ export interface Session {
 
 const TENANT = /^ten_[a-z0-9_]{1,60}$/;
 
+/**
+ * The no-sign-in stand-in exists for a developer's own machine only. A hosted deployment that
+ * is missing its Supabase settings must refuse everyone, not hand out an owner session.
+ */
+export function localDemoAllowed(): boolean {
+  if (apiMode() !== "mock") return false;
+  if (process.env.VERCEL || process.env.FLY_APP_NAME || process.env.FIONA_MODE === "live") return false;
+  return true;
+}
+
 function demoSession(): Session {
   const tenant = process.env.DEMO_TENANT_ID ?? "ten_karachi_apparel";
   return {
@@ -38,14 +49,18 @@ function demoSession(): Session {
  * call; the cookie alone is never trusted (it can be forged). Workspace and role come only from
  * `app_metadata`, which users cannot edit; `user_metadata` is used for the display name only.
  *
+ * A person who has turned on two-step verification is not signed in until this session has
+ * used their authenticator (token at aal2); until then this returns null, so every API refuses.
+ *
  * Without Supabase Auth configured, local mock mode uses a labelled stand-in; live mode refuses.
  */
 export const getSession = cache(async (): Promise<Session | null> => {
-  if (!authConfigured()) return apiMode() === "mock" ? demoSession() : null;
+  if (!authConfigured()) return localDemoAllowed() ? demoSession() : null;
   const supabase = await supabaseServer();
   const { data, error } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (error || !claims?.sub) return null;
+  if ((await mfaState(supabase, claims.aal)) === "required") return null;
   const app = (claims.app_metadata ?? {}) as Record<string, unknown>;
   const profile = (claims.user_metadata ?? {}) as Record<string, unknown>;
   const tenant = typeof app.tenant_id === "string" && TENANT.test(app.tenant_id) ? app.tenant_id : null;
@@ -78,3 +93,12 @@ export async function getWorkspaceSession(): Promise<(Session & { tenantId: stri
   const session = await getSession();
   return session && session.tenantId && session.role ? (session as Session & { tenantId: string; role: Role }) : null;
 }
+
+/** Where sign-in stands: signed out, password done but the authenticator code still owed, or signed in. */
+export const getAuthStage = cache(async (): Promise<"signed_out" | "mfa_required" | "signed_in"> => {
+  if (!authConfigured()) return localDemoAllowed() ? "signed_in" : "signed_out";
+  const supabase = await supabaseServer();
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims?.sub) return "signed_out";
+  return (await mfaState(supabase, data.claims.aal)) === "required" ? "mfa_required" : "signed_in";
+});

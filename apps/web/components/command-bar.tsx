@@ -44,17 +44,11 @@ interface BrowserSpeechRecognition {
 interface CommandBarProps {
   isOpen: boolean;
   onClose: () => void;
-  onSwitchTenant?: (tenantId: string) => void;
-  onToggleTheme?: () => void;
-  currentTheme?: "light" | "dark";
 }
 
 export function CommandBar({
   isOpen,
   onClose,
-  onSwitchTenant,
-  onToggleTheme,
-  currentTheme = "light",
 }: CommandBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -166,55 +160,8 @@ export function CommandBar({
         keywords: ["mandates", "limits", "caps", "autonomy", "مینڈیٹ", "حدود", "اختیارات", "授权", "额度", "自主权"],
         langHints: { en: "Agent payment caps & allow-lists", ur: "ایجنٹ کی ادائیگی کی حدود اور اجازتیں", zh: "智能体单笔限额与白名单设置" },
       },
-
-      // Actions
-      {
-        id: "act-switch-shenzhen",
-        label: "Switch to Shenzhen Persona (China / CAS)",
-        category: "ACTIONS",
-        icon: "🇨🇳",
-        action: () => {
-          if (onSwitchTenant) onSwitchTenant("ten_shenzhen_electronics");
-          else {
-            try {
-              window.localStorage.setItem("fiona:tenant", "ten_shenzhen_electronics");
-              window.location.reload();
-            } catch { /* session */ }
-          }
-        },
-        keywords: ["shenzhen", "china", "cny", "cas", "fapiao", "uscc", "شینزین", "چین", "深圳", "中国", "人民币", "发票", "统一社会信用代码"],
-        langHints: { en: "Switch active tenant to Shenzhen Electronics", ur: "شینزین الیکٹرانکس پر سوئچ کریں", zh: "切换工作区至深圳市微芯科技有限公司" },
-      },
-      {
-        id: "act-switch-karachi",
-        label: "Switch to Karachi Persona (Pakistan / IFRS)",
-        category: "ACTIONS",
-        icon: "🇵🇰",
-        action: () => {
-          if (onSwitchTenant) onSwitchTenant("ten_karachi_apparel");
-          else {
-            try {
-              window.localStorage.setItem("fiona:tenant", "ten_karachi_apparel");
-              window.location.reload();
-            } catch { /* session */ }
-          }
-        },
-        keywords: ["karachi", "pakistan", "pkr", "ifrs", "ntn", "کراچی", "پاکستان", "روپیہ", "卡拉奇", "巴基斯坦"],
-        langHints: { en: "Switch active tenant to Karachi Apparel", ur: "کراچی اپیرل پر سوئچ کریں", zh: "切换工作区至卡拉奇服装公司" },
-      },
-      {
-        id: "act-toggle-theme",
-        label: `Switch Theme to ${currentTheme === "dark" ? "Light" : "Dark"} Mode`,
-        category: "ACTIONS",
-        icon: currentTheme === "dark" ? "☼" : "☾",
-        action: () => {
-          if (onToggleTheme) onToggleTheme();
-        },
-        keywords: ["theme", "dark", "light", "mode", "رنگ", "ڈارک موڈ", "روشنی", "主题", "暗黑模式", "明亮模式"],
-        langHints: { en: "Toggle visual contrast theme", ur: "تھیم تبدیل کریں", zh: "切换系统深色/浅色外观" },
-      },
     ],
-    [onSwitchTenant, onToggleTheme, currentTheme],
+    [],
   );
 
   const filteredCommands = useMemo(() => {

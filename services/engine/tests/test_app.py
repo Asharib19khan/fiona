@@ -83,3 +83,24 @@ def test_mode_must_be_mock_or_live(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("FIONA_MODE", "staging")
     with pytest.raises(RuntimeError, match="FIONA_MODE"):
         create_app(modules=[])
+
+
+def test_oversized_bodies_are_refused_before_anything_reads_them() -> None:
+    from engine.app.main import MAX_BODY_BYTES
+
+    res = client([]).post(
+        "/v1/proposals",
+        content=b"x" * (MAX_BODY_BYTES + 1),
+        headers={"content-type": "application/json"},
+    )
+    assert res.status_code == 413
+    assert res.json()["error"]["code"] == "request_too_large"
+
+
+def test_live_mode_hides_the_api_docs(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("FIONA_MODE", "live")
+    live = TestClient(create_app(modules=[]))
+    assert live.get("/docs").status_code == 404
+    assert live.get("/openapi.json").status_code == 404
+    monkeypatch.setenv("FIONA_MODE", "mock")
+    assert TestClient(create_app(modules=[])).get("/openapi.json").status_code == 200

@@ -7,6 +7,7 @@ Run from services/agents: `uv run uvicorn fiona_agents.main:app --port 8100`.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import secrets
 from typing import Any
@@ -18,6 +19,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from fiona_agents import orchestrator
 from fiona_agents.api import router
+from fiona_agents.body_limit import BodyLimit
 from fiona_agents.team_api import router as team_router
 
 API_VERSION = "v1"
@@ -38,7 +40,12 @@ def _error(request: Request, status: int, code: str, message: str, details: Any 
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Fiona agents", version="0.1.0")
+    # Live services are on public URLs: no interactive docs or schema there.
+    live = os.environ.get("FIONA_MODE") == "live"
+    hidden = {"docs_url": None, "redoc_url": None, "openapi_url": None} if live else {}
+    app = FastAPI(title="Fiona agents", version="0.1.0", **hidden)
+    # Bills for reading are up to 5 MB, base64-encoded; nothing legitimate is larger.
+    app.add_middleware(BodyLimit, max_bytes=8 * 1024 * 1024)
 
     @app.middleware("http")
     async def request_id(request: Request, call_next):  # type: ignore[no-untyped-def]

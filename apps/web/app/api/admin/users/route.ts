@@ -1,5 +1,6 @@
 import { AdminError, createUser, listUsers, requireSuperAdmin } from "@/lib/admin";
 import { allow, clientKey, tooMany } from "@/lib/rate-limit";
+import { crossSite, sameOrigin } from "@/lib/same-origin";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function GET(request?: Request) {
 
 /** Create an account with a workspace and role; the temporary password is returned once. */
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return crossSite();
   if (!allow(`admin:${clientKey(request)}`, 60, 60_000)) return tooMany();
   try {
     await requireSuperAdmin();

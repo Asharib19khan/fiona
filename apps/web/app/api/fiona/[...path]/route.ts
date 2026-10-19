@@ -5,6 +5,7 @@ import { hasInternalJwtSecret } from "@/lib/server-auth";
 import { agentsRequest, readEnginePath, exportAuditEvidence, importEngine, postEngine, readEngine, type EngineRead, type ReadResult } from "@/lib/server-read";
 import { getWorkspaceSession } from "@/lib/session";
 import { allow, tooMany } from "@/lib/rate-limit";
+import { crossSite, sameOrigin } from "@/lib/same-origin";
 
 export const dynamic = "force-dynamic";
 
@@ -126,6 +127,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
 
 export async function POST(request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
+  if (!sameOrigin(request)) return crossSite();
   const session = await getWorkspaceSession();
   if (!session) return error(401, "not_signed_in", "Sign in to a workspace first.");
   // Writes start agent runs and model calls; cap them per person.
@@ -185,6 +187,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ pat
     try { decision = JSON.parse(new TextDecoder().decode(bytes)); }
     catch { return error(400, "invalid_json", "The decision must be valid JSON."); }
     const proposalId = path[1] ?? "";
+    if (!/^prop_[A-Za-z0-9_]+$/.test(proposalId)) return error(404, "not_found", "No proposal matches this ID.");
     const result = await postEngine("proposals", decision, `/v1/proposals/${encodeURIComponent(proposalId)}/decision`);
     if (result.kind === "ok") return Response.json(result.data, { status: result.status, headers: { "cache-control": "no-store" } });
     if (result.kind === "unavailable") return error(result.status, "engine_unavailable", result.message);

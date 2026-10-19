@@ -1,5 +1,6 @@
 import { AdminError, deleteUser, requireSuperAdmin, updateUser, type WorkspaceRole } from "@/lib/admin";
 import { allow, clientKey, tooMany } from "@/lib/rate-limit";
+import { crossSite, sameOrigin } from "@/lib/same-origin";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ function fail(err: unknown): Response {
 
 /** Change an account's name, workspace or role; disable or enable it; or reset its password. */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!sameOrigin(request)) return crossSite();
   if (!allow(`admin:${clientKey(request)}`, 60, 60_000)) return tooMany();
   try {
     await requireSuperAdmin();
@@ -32,6 +34,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!sameOrigin(request)) return crossSite();
   if (!allow(`admin:${clientKey(request)}`, 60, 60_000)) return tooMany();
   try {
     await requireSuperAdmin();

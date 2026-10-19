@@ -23,6 +23,7 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from engine.app import errors
+from engine.app.body_limit import BodyLimit
 from engine.app.tenancy import TenantId
 
 ENGINE_DIR = Path(__file__).resolve().parents[1]
@@ -48,6 +49,7 @@ CONTRACT_OWNERS: dict[str, str] = {
 }
 
 Mode = Literal["mock", "live"]
+MAX_BODY_BYTES = 8 * 1024 * 1024
 log = logging.getLogger("engine")
 
 
@@ -92,8 +94,13 @@ def contract_owner(path: str) -> str | None:
 
 
 def create_app(modules: Iterable[str] | None = None) -> FastAPI:
-    app = FastAPI(title="Fiona engine", version="0.1.0")
-    app.state.mode = fiona_mode()
+    mode = fiona_mode()
+    # Live services are on public URLs: no interactive docs or schema there.
+    hidden = {"docs_url": None, "redoc_url": None, "openapi_url": None} if mode == "live" else {}
+    app = FastAPI(title="Fiona engine", version="0.1.0", **hidden)
+    app.state.mode = mode
+    # Bills arrive base64-encoded (5 MB documents); nothing legitimate is larger than this.
+    app.add_middleware(BodyLimit, max_bytes=MAX_BODY_BYTES)
     errors.install(app)
 
     @app.get("/healthz", tags=["meta"])

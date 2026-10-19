@@ -7,6 +7,7 @@ Run from services/guardian: `uv run uvicorn fiona_guardian.main:app --port 8200`
 from __future__ import annotations
 
 import logging
+import os
 import re
 import secrets
 from typing import Any
@@ -17,6 +18,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from fiona_guardian.api import router
+from fiona_guardian.body_limit import BodyLimit
 
 API_VERSION = "v1"
 SERVICE = "guardian"
@@ -36,7 +38,12 @@ def _error(request: Request, status: int, code: str, message: str, details: Any 
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Fiona Guardian", version="0.1.0")
+    # Live services are on public URLs: no interactive docs or schema there.
+    live = os.environ.get("FIONA_MODE") == "live"
+    hidden = {"docs_url": None, "redoc_url": None, "openapi_url": None} if live else {}
+    app = FastAPI(title="Fiona Guardian", version="0.1.0", **hidden)
+    # Review requests are a tenant and a proposal ID; 1 MB is generous.
+    app.add_middleware(BodyLimit, max_bytes=1024 * 1024)
 
     @app.middleware("http")
     async def request_id(request: Request, call_next):  # type: ignore[no-untyped-def]
