@@ -1,6 +1,6 @@
 import path from "node:path";
 import { ESLint } from "eslint";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 // Proves each R1 import-boundary pattern in eslint.config.mjs fires on a deliberately bad import.
 const webRoot = path.resolve(import.meta.dirname, "..");
@@ -14,6 +14,12 @@ async function boundaryErrors(source: string) {
 }
 
 describe("R1 import boundaries in apps/web", () => {
+  // ESLint loads its whole config (and the TypeScript parser) on first use; on a cold CI runner
+  // that alone can take most of a minute, so it happens once here, not inside the first test.
+  beforeAll(async () => {
+    await boundaryErrors("export {};");
+  }, 120_000);
+
   it.each([
     ["a service by relative path", `import { app } from "../../../services/engine/app/main";`],
     ["a service package", `import agents from "@fiona/agents";`],

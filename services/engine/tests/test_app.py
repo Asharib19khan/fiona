@@ -104,3 +104,22 @@ def test_live_mode_hides_the_api_docs(monkeypatch: pytest.MonkeyPatch) -> None:
     assert live.get("/openapi.json").status_code == 404
     monkeypatch.setenv("FIONA_MODE", "mock")
     assert TestClient(create_app(modules=[])).get("/openapi.json").status_code == 200
+
+
+def test_large_reads_are_gzipped_only_for_callers_that_accept_it() -> None:
+    app = create_app(modules=[])
+
+    @app.get("/v1/test-large")
+    def large() -> dict[str, list[str]]:
+        return {"source_refs": [f"evt_{i:026d}" for i in range(2000)]}
+
+    # Ahead of the engine's catch-all 501 fallback, which is registered first.
+    app.router.routes.insert(0, app.router.routes.pop())
+    test = TestClient(app)
+    zipped = test.get("/v1/test-large", headers={"Accept-Encoding": "gzip"})
+    assert zipped.headers.get("content-encoding") == "gzip"
+    assert len(zipped.json()["source_refs"]) == 2000
+    plain = test.get("/v1/test-large", headers={"Accept-Encoding": "identity"})
+    assert "content-encoding" not in plain.headers
+    small = test.get("/healthz", headers={"Accept-Encoding": "gzip"})
+    assert "content-encoding" not in small.headers

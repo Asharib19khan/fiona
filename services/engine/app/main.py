@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, FastAPI, Request
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from engine.app import errors
@@ -101,6 +102,9 @@ def create_app(modules: Iterable[str] | None = None) -> FastAPI:
     app.state.mode = mode
     # Bills arrive base64-encoded (5 MB documents); nothing legitimate is larger than this.
     app.add_middleware(BodyLimit, max_bytes=MAX_BODY_BYTES)
+    # Large reads (the ratios carry every source event ID) shrink ~20x when the caller accepts
+    # gzip, as the Window's fetch and httpx do. Callers that don't ask get plain JSON.
+    app.add_middleware(GZipMiddleware, minimum_size=4096, compresslevel=5)
     errors.install(app)
 
     @app.get("/healthz", tags=["meta"])
