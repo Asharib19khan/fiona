@@ -27,6 +27,20 @@ The injection demo bill (`lyari-stitching-LSH-2311-injection.txt`) shows the def
 
 Other screens compute from the same ledger: a 13-week cash forecast with buffer alerts, lifecycle stage and ratios, financing options ranked by cost, bank reconciliation, inventory analysis, a council of agents that debates a decision with dissent on record, and per-agent mandates the owner can tighten.
 
+## Run the full product on a new laptop
+
+Needs Node 20+, pnpm, uv (Python 3.12) and Claude Code logged in (`claude` then `/login`).
+
+```bash
+git clone https://github.com/Asharib19khan/fiona.git && cd fiona
+pnpm install
+node scripts/setup-live.mjs <supabase-publishable-key>   # writes .env.local in live mode
+pnpm db:reset && pnpm demo-data                          # local ledger with the demo business
+pnpm dev                                                 # open http://localhost:3000 and sign in
+```
+
+Without `.env.local` the app falls back to mock mode ("Local developer"), which is for UI work only.
+
 ## Modes
 
 The status chips at the top of every page say which mode you are in.
