@@ -29,17 +29,15 @@ Other screens compute from the same ledger: a 13-week cash forecast with buffer 
 
 ## Run the full product on a new laptop
 
-Needs Node 20+, pnpm, uv (Python 3.12) and Claude Code logged in (`claude` then `/login`).
+Needs Node 20+, pnpm and uv (Python 3.12).
 
 ```bash
 git clone https://github.com/Asharib19khan/fiona.git && cd fiona
 pnpm install
-node scripts/setup-live.mjs <supabase-publishable-key>   # writes .env.local in live mode
-pnpm db:reset && pnpm demo-data                          # local ledger with the demo business
-pnpm dev                                                 # open http://localhost:3000 and sign in
+pnpm dev        # open http://localhost:3000 and sign in with the account you were given
 ```
 
-Without `.env.local` the app falls back to mock mode ("Local developer"), which is for UI work only.
+No settings to copy. On first run, `pnpm dev` writes `.env.local` in live mode from [`scripts/live.env`](scripts/live.env) (public values only) and loads the demo business into a local database; later runs leave both alone. Connect the AI in the app under **AI connection**.
 
 ## Modes
 

@@ -17,3 +17,10 @@ paths = [
   '''^apps/web/test/live-bff-auth\.test\.ts$''',
   '''^apps/web/test/proposal-intake\.test\.ts$''',
 ]
+
+[[allowlists]]
+description = "Supabase publishable key: public by design (shipped to every browser), protected by RLS"
+paths = ['''^scripts/live\.env$''']
+regexes = ['''sb_publishable_[A-Za-z0-9_-]+''']
+condition = "AND"
+
