@@ -158,6 +158,6 @@ data/               synthetic data generator and fixtures
 docs/               blueprint, decisions, demo bills, submission documents
 ```
 
-Submission documents: [technical documentation](docs/submission/01-technical-documentation.md) · [presentation](docs/submission/02-presentation-deck.md) · [demo script](docs/submission/03-demo-video-script.md) · [security self-assessment](docs/submission/05-security-self-assessment.md) · [execution evidence](docs/submission/06-execution-evidence/README.md) · [judge Q&A](docs/submission/07-judge-qa-defense-matrix.md)
+Submission documents: [presentation](docs/submission/02-presentation-deck.md) · [demo script](docs/submission/03-demo-video-script.md) · [security self-assessment](docs/submission/05-security-self-assessment.md) · [execution evidence](docs/submission/06-execution-evidence/README.md) · [judge Q&A](docs/submission/07-judge-qa-defense-matrix.md)
 
 **Team:** Asharib Khan, Abdullah, Daniyal, Yahya
