@@ -3,6 +3,17 @@
 > FinTechathon 2026 International Track (Tsinghua PBCSF & WeBank) · Topic E, SME Finance Copilot
 > **Agents propose. The engine computes. The Guardian checks. The owner decides.**
 
+<p align="center">
+  <a href="docs/media/fiona-launch.mp4" title="Watch the Fiona launch film (34 s)">
+    <img src="docs/media/fiona-launch-poster.png" alt="Fiona launch film: click to play" width="100%">
+  </a>
+  <br>
+  <sub>▶ <a href="docs/media/fiona-launch.mp4"><b>Watch the launch film</b></a> (34 seconds, with sound)</sub>
+</p>
+
+> [!IMPORTANT]
+> **Fiona's AI agents need a Claude account.** Use either an **Anthropic API key** (pay as you go, from [console.anthropic.com](https://console.anthropic.com)) or a **Claude Pro or Max subscription**. Without one, the ledger, forecasts and screens still work, but the agents and the Guardian's AI review cannot run. See [Connect Claude](#connect-claude) below.
+
 Fiona gives a small business four AI colleagues (a Treasurer, a Controller, a CFO Strategist and a Growth Analyst) who work over one double-entry ledger. They read bills, plan payments, forecast cash and compare financing. They cannot move money on their own. Every payment proposal goes through **the Guardian** (14 rule checks in code plus an independent review by a second model), then waits for the **owner's decision**. Only then can the sandbox wallet pay it, and every step is written to a hash-chained audit log.
 
 All the business data in this repository is **synthetic** (a generated Karachi garment business, "Karachi Apparel"). The wallet is a **sandbox**: no real bank is connected and no real money moves.
@@ -29,7 +40,7 @@ Other screens compute from the same ledger: a 13-week cash forecast with buffer 
 
 ## Run the full product on a new laptop
 
-Needs Node 20+, pnpm and uv (Python 3.12). For the AI agents, either install Claude Code and sign in on this computer (`npm install -g @anthropic-ai/claude-code`, then run `claude` once), or paste an Anthropic API key or Claude subscription token on the **AI connection** page after signing in.
+**You need:** Node 20+, pnpm, uv (Python 3.12), and a **Claude API key or Claude Pro/Max subscription** for the AI agents.
 
 ```bash
 git clone https://github.com/Asharib19khan/fiona.git && cd fiona
@@ -37,7 +48,18 @@ pnpm install
 pnpm dev        # open http://localhost:3000 and sign in with the account you were given
 ```
 
-No settings to copy. On first run, `pnpm dev` writes `.env.local` in live mode from [`scripts/live.env`](scripts/live.env) (public values only) and loads the demo business into a local database; later runs leave both alone. Connect the AI in the app under **AI connection**.
+No settings to copy. On first run, `pnpm dev` writes `.env.local` in live mode from [`scripts/live.env`](scripts/live.env) (settings for the competition test project) and loads the demo business into a local database; later runs leave both alone.
+
+### Connect Claude
+
+The agents and the Guardian run on Anthropic's Claude, so one of these is **required**. After signing in, open **AI connection** in the sidebar and pick one:
+
+| Option | What you need | How |
+|---|---|---|
+| **Claude Pro or Max subscription** | A paid Claude plan | Either install Claude Code and sign in on the computer running Fiona (`npm install -g @anthropic-ai/claude-code`, then run `claude` once) and keep *The Claude signed in on Fiona's server*, or run `claude setup-token` on any computer and paste the token under *Your Claude subscription* |
+| **Anthropic API key** | An account at [console.anthropic.com](https://console.anthropic.com) with credit | Create a key under Settings → API keys and paste it under *Your Anthropic API key* |
+
+Then press **Test connection**; it should report *Working* within a minute. Keys and tokens are encrypted (AES-256-GCM) per workspace and never shown again.
 
 ## Modes
 
