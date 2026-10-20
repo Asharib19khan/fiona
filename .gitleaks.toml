@@ -19,8 +19,8 @@ paths = [
 ]
 
 [[allowlists]]
-description = "Supabase publishable key: public by design (shipped to every browser), protected by RLS"
+description = "Supabase keys for the competition test project, committed on purpose (owner decision 20 Oct 2026)"
 paths = ['''^scripts/live\.env$''']
-regexes = ['''sb_publishable_[A-Za-z0-9_-]+''']
+regexes = ['''sb_(publishable|secret)_[A-Za-z0-9_-]+''']
 condition = "AND"
 
