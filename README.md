@@ -29,7 +29,7 @@ Other screens compute from the same ledger: a 13-week cash forecast with buffer 
 
 ## Run the full product on a new laptop
 
-Needs Node 20+, pnpm and uv (Python 3.12).
+Needs Node 20+, pnpm and uv (Python 3.12). For the AI agents, either install Claude Code and sign in on this computer (`npm install -g @anthropic-ai/claude-code`, then run `claude` once), or paste an Anthropic API key or Claude subscription token on the **AI connection** page after signing in.
 
 ```bash
 git clone https://github.com/Asharib19khan/fiona.git && cd fiona
