@@ -3,6 +3,12 @@
 > FinTechathon 2026 International Track (Tsinghua PBCSF & WeBank) · Topic E, SME Finance Copilot
 > **Agents propose. The engine computes. The Guardian checks. The owner decides.**
 
+
+https://github.com/user-attachments/assets/5c0bde09-0d6d-45f6-be08-590a52969a80
+
+
+
+
 > [!IMPORTANT]
 > **Fiona's AI agents need a Claude account.** Use either an **Anthropic API key** (pay as you go, from [console.anthropic.com](https://console.anthropic.com)) or a **Claude Pro or Max subscription**. Without one, the ledger, forecasts and screens still work, but the agents and the Guardian's AI review cannot run. See [Connect Claude](#connect-claude) below.
 
@@ -158,6 +164,6 @@ data/               synthetic data generator and fixtures
 docs/               blueprint, decisions, demo bills, submission documents
 ```
 
-Submission documents: [presentation](docs/submission/02-presentation-deck.md) · [demo script](docs/submission/03-demo-video-script.md) · [security self-assessment](docs/submission/05-security-self-assessment.md) · [execution evidence](docs/submission/06-execution-evidence/README.md) · [judge Q&A](docs/submission/07-judge-qa-defense-matrix.md)
+Submission documents: [technical documentation](docs/submission/01-technical-documentation.md) · [presentation](docs/submission/02-presentation-deck.md) · [demo script](docs/submission/03-demo-video-script.md) · [security self-assessment](docs/submission/05-security-self-assessment.md) · [execution evidence](docs/submission/06-execution-evidence/README.md) · [judge Q&A](docs/submission/07-judge-qa-defense-matrix.md)
 
 **Team:** Asharib Khan, Abdullah, Daniyal, Yahya
