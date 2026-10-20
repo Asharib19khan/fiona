@@ -1,6 +1,6 @@
 import { workspaceInfo } from "@/lib/workspaces";
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { WindowShell, type ShellStatus } from "./shell";
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
@@ -10,9 +10,28 @@ import "./globals.css";
 import "@fiona/ui/styles.css";
 import "./screens.css";
 
-// Downloaded at build time and served from this site, so the browser never calls Google Fonts.
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-cinzel", display: "swap" });
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["600", "700", "800"], style: ["normal", "italic"], variable: "--font-playfair", display: "swap" });
+// Bundled with the app (from @fontsource), so nothing is fetched from Google at build or run time.
+const cinzel = localFont({
+  src: [
+    { path: "../node_modules/@fontsource/cinzel/files/cinzel-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../node_modules/@fontsource/cinzel/files/cinzel-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../node_modules/@fontsource/cinzel/files/cinzel-latin-800-normal.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-cinzel",
+  display: "swap",
+});
+const playfair = localFont({
+  src: [
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-600-italic.woff2", weight: "600", style: "italic" },
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-italic.woff2", weight: "700", style: "italic" },
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-800-normal.woff2", weight: "800", style: "normal" },
+    { path: "../node_modules/@fontsource/playfair-display/files/playfair-display-latin-800-italic.woff2", weight: "800", style: "italic" },
+  ],
+  variable: "--font-playfair",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Fiona",

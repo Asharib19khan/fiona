@@ -14,6 +14,8 @@
   "dependencies": {
     "@fiona/contracts": "workspace:*",
     "@fiona/ui": "workspace:*",
+    "@fontsource/cinzel": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
     "@gsap/react": "2.1.2",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.0",
