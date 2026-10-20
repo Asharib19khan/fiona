@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import Link from "next/link";
+import { LEGAL_VERSION } from "@/lib/legal";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 
 /** How a payment travels through Fiona: the same order the product enforces. */
@@ -211,6 +213,8 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
   const [mode, setMode] = useState<LoginMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Clickwrap: unticked by default, and required before signing in.
+  const [agreed, setAgreed] = useState(false);
   const [code, setCode] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -229,14 +233,25 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
     setShaking(true);
   }
 
-  function enterWorkspace() {
+  async function enterWorkspace() {
     setPhase("success");
+    // Record which version of the terms this person accepted, and when. A failed write never
+    // blocks sign-in; the checkbox is still required on every sign-in.
+    try {
+      await supabaseBrowser().auth.updateUser({ data: { terms_version: LEGAL_VERSION, terms_accepted_at: new Date().toISOString() } });
+    } catch {
+      /* best effort */
+    }
     // A full navigation, so the server renders the workspace with the new session cookie.
     window.location.assign(next);
   }
 
   async function signIn(event: { preventDefault(): void }) {
     event.preventDefault();
+    if (!agreed) {
+      fail("Please accept the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
     setPhase("pending");
     setError(null);
     const supabase = supabaseBrowser();
@@ -251,7 +266,7 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
       go("mfa");
       return;
     }
-    enterWorkspace();
+    await enterWorkspace();
   }
 
   async function verifyCode(value: string) {
@@ -271,7 +286,7 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
       fail(failure.status === 429 ? "Too many attempts. Wait a minute, then try again." : "That code didn't work. Codes change every 30 seconds, so enter the newest one.");
       return;
     }
-    enterWorkspace();
+    await enterWorkspace();
   }
 
   async function sendReset(event: { preventDefault(): void }) {
@@ -344,14 +359,38 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
                   </button>
                 </div>
 
+                <label className="signin-consent signin-rise" style={delay(320)} htmlFor="login-consent">
+                  <input
+                    id="login-consent"
+                    type="checkbox"
+                    className="signin-consent-box"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    disabled={busy}
+                    required
+                  />
+                  <span>
+                    I agree to the{" "}
+                    <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a> and{" "}
+                    <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>, and understand Fiona&apos;s{" "}
+                    <a href="/legal/ai-notice" target="_blank" rel="noopener">AI agents can make mistakes</a> and give no financial advice.
+                  </span>
+                </label>
+
                 <RevealRow open={Boolean(error)}>
                   <p className="login-error signin-error" role={error ? "alert" : undefined}>{error ?? " "}</p>
                 </RevealRow>
 
-                <SubmitButton phase={phase} disabled={!email || !password} idle="Sign in" pending="Signing in…" success="Signed in. Opening your workspace…" style={delay(340)} />
+                <SubmitButton phase={phase} disabled={!email || !password || !agreed} idle="Sign in" pending="Signing in…" success="Signed in. Opening your workspace…" style={delay(340)} />
               </form>
 
               <p className="signin-note signin-rise" style={delay(400)}>No account yet? Ask your workspace owner to invite you.</p>
+              <nav className="signin-legal signin-rise" style={delay(440)} aria-label="Legal">
+                <Link href="/legal/terms">Terms</Link>
+                <Link href="/legal/privacy">Privacy</Link>
+                <Link href="/legal/ai-notice">AI notice</Link>
+                <Link href="/legal/cookies">Cookies</Link>
+              </nav>
             </>
           )}
 

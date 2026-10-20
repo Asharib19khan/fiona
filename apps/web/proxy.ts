@@ -31,8 +31,8 @@ export async function proxy(request: NextRequest) {
   const claims = data?.claims;
   const signedIn = Boolean(claims?.sub);
   const path = request.nextUrl.pathname;
-  // Public: the sign-in page, email links (password reset) and APIs (they answer 401 themselves).
-  const open = path === "/login" || path.startsWith("/auth/") || path.startsWith("/api/");
+  // Public: the sign-in page, the legal documents, email links (password reset) and APIs (they answer 401 themselves).
+  const open = path === "/login" || path === "/legal" || path.startsWith("/legal/") || path.startsWith("/auth/") || path.startsWith("/api/");
 
   // Redirects keep any refreshed session cookies.
   const redirectTo = (pathname: string, next?: string) => {
