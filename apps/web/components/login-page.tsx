@@ -372,8 +372,7 @@ export function LoginPage({ next, initialMode = "signin", notice = null }: { nex
                   <span>
                     I agree to the{" "}
                     <a href="/legal/terms" target="_blank" rel="noopener">Terms of Service</a> and{" "}
-                    <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>, and understand Fiona&apos;s{" "}
-                    <a href="/legal/ai-notice" target="_blank" rel="noopener">AI agents can make mistakes</a> and give no financial advice.
+                    <a href="/legal/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
                   </span>
                 </label>
 
