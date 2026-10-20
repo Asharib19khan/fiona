@@ -3,14 +3,6 @@
 > FinTechathon 2026 International Track (Tsinghua PBCSF & WeBank) · Topic E, SME Finance Copilot
 > **Agents propose. The engine computes. The Guardian checks. The owner decides.**
 
-<p align="center">
-  <a href="docs/media/fiona-launch.mp4" title="Watch the Fiona launch film (34 s)">
-    <img src="docs/media/fiona-launch-poster.png" alt="Fiona launch film: click to play" width="100%">
-  </a>
-  <br>
-  <sub>▶ <a href="docs/media/fiona-launch.mp4"><b>Watch the launch film</b></a> (34 seconds, with sound)</sub>
-</p>
-
 > [!IMPORTANT]
 > **Fiona's AI agents need a Claude account.** Use either an **Anthropic API key** (pay as you go, from [console.anthropic.com](https://console.anthropic.com)) or a **Claude Pro or Max subscription**. Without one, the ledger, forecasts and screens still work, but the agents and the Guardian's AI review cannot run. See [Connect Claude](#connect-claude) below.
 
